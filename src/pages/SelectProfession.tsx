@@ -2,11 +2,14 @@ import React, { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const SelectProfession = () => {
   const [selectedProfession, setSelectedProfession] = useState<string>("");
   const [registrationData, setRegistrationData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { register } = useAuth();
 
   useEffect(() => {
     // Get temporary registration data
@@ -44,12 +47,30 @@ const SelectProfession = () => {
     }
   };
 
-  const completeRegistration = () => {
-    // This would complete registration for patients
-    // For now, simulate successful registration
-    sessionStorage.removeItem("temp_registration");
-    console.log("Patient registration completed");
-    navigate("/dashboard");
+  const completeRegistration = async () => {
+    if (!registrationData) return;
+
+    setIsLoading(true);
+
+    try {
+      // Complete registration for patient
+      const success = await register({
+        email: registrationData.email,
+        password: registrationData.password,
+        profession: "paciente",
+      });
+
+      if (success) {
+        // Clear temporary data
+        sessionStorage.removeItem("temp_registration");
+        // Navigate to dashboard
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleBack = () => {
@@ -109,10 +130,10 @@ const SelectProfession = () => {
           {/* Continue button */}
           <Button
             onClick={handleContinue}
-            disabled={!selectedProfession}
+            disabled={!selectedProfession || isLoading}
             className="w-full h-12 bg-brand-blue hover:bg-blue-600 text-white font-medium rounded-md transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
-            Continuar
+            {isLoading ? "Criando conta..." : "Continuar"}
           </Button>
         </div>
       </div>
