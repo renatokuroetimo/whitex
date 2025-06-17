@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/select";
 import { brazilStates, getCitiesByState } from "@/lib/brazil-locations";
 import { phoneMask, removeMask } from "@/lib/masks";
+import ConfirmDialog from "@/components/ConfirmDialog";
+import { useNavigate } from "react-router-dom";
 
 interface ProfileData {
   name: string;
@@ -24,10 +26,12 @@ interface ProfileData {
 }
 
 const ProfilePage: React.FC = () => {
-  const { user } = useAuth();
+  const { user, deleteAccount } = useAuth();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedState, setSelectedState] = useState("");
   const [availableCities, setAvailableCities] = useState<string[]>([]);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [formData, setFormData] = useState<ProfileData>({
     name: "",
     crm: user?.crm || "",
@@ -148,6 +152,14 @@ const ProfilePage: React.FC = () => {
       setSelectedState("");
       setAvailableCities([]);
     }
+  };
+
+  const handleDeleteAccount = async () => {
+    const success = await deleteAccount();
+    if (success) {
+      navigate("/"); // Redireciona para a página de criar conta
+    }
+    setShowDeleteDialog(false);
   };
 
   if (!user) {
@@ -291,23 +303,55 @@ const ProfilePage: React.FC = () => {
               </div>
 
               {/* Buttons */}
-              <div className="flex justify-end gap-3 mt-8">
-                <Button
-                  variant="outline"
-                  onClick={handleCancel}
-                  disabled={isLoading}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  onClick={handleSave}
-                  disabled={isLoading}
-                  className="bg-blue-600 hover:bg-blue-700"
-                >
-                  {isLoading ? "Salvando..." : "Salvar"}
-                </Button>
+              <div className="flex flex-col gap-4 mt-8">
+                <div className="flex justify-end gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={handleCancel}
+                    disabled={isLoading}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    onClick={handleSave}
+                    disabled={isLoading}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    {isLoading ? "Salvando..." : "Salvar"}
+                  </Button>
+                </div>
+
+                {/* Seção Zona de Perigo */}
+                <div className="border-t border-gray-200 pt-6 mt-6">
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    Zona de perigo
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Esta ação é irreversível. Todos os seus dados serão
+                    permanentemente removidos.
+                  </p>
+                  <Button
+                    variant="destructive"
+                    onClick={() => setShowDeleteDialog(true)}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    Apagar conta
+                  </Button>
+                </div>
               </div>
             </div>
+
+            {/* Dialog de confirmação */}
+            <ConfirmDialog
+              isOpen={showDeleteDialog}
+              onClose={() => setShowDeleteDialog(false)}
+              onConfirm={handleDeleteAccount}
+              title="Apagar conta"
+              message="Tem certeza que deseja apagar sua conta? Esta ação não pode ser desfeita e todos os seus dados serão perdidos permanentemente."
+              confirmText="Sim, apagar conta"
+              cancelText="Cancelar"
+              variant="destructive"
+            />
           </div>
         </div>
       </div>

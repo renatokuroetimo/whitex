@@ -22,6 +22,7 @@ interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<boolean>;
   register: (data: RegisterData) => Promise<boolean>;
   logout: () => Promise<void>;
+  deleteAccount: () => Promise<boolean>;
   clearError: () => void;
 }
 
@@ -182,11 +183,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "CLEAR_ERROR" });
   };
 
+  // Delete account function
+  const deleteAccount = async (): Promise<boolean> => {
+    try {
+      const response = await authAPI.deleteAccount();
+
+      if (response.success) {
+        dispatch({ type: "LOGOUT" });
+        toast({
+          title: "Conta deletada",
+          description: "Sua conta foi deletada com sucesso",
+        });
+        return true;
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Erro ao deletar conta",
+          description: response.error || "Não foi possível deletar a conta",
+        });
+        return false;
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro de conexão",
+        description: "Não foi possível conectar ao servidor",
+      });
+      return false;
+    }
+  };
+
   const value: AuthContextType = {
     ...state,
     login,
     register,
     logout,
+    deleteAccount,
     clearError,
   };
 

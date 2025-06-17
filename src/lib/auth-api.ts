@@ -144,6 +144,40 @@ class AuthAPI {
   isAuthenticated(): boolean {
     return this.getCurrentUser() !== null;
   }
+
+  // Deleta conta do usuário
+  async deleteAccount(): Promise<ApiResponse> {
+    await this.delay(500);
+
+    try {
+      const currentUser = this.getCurrentUser();
+      if (!currentUser) {
+        return {
+          success: false,
+          error: "Usuário não encontrado",
+        };
+      }
+
+      const users = this.getStoredUsers();
+
+      // Remove o usuário da lista
+      const updatedUsers = users.filter((user) => user.id !== currentUser.id);
+      this.saveUsers(updatedUsers);
+
+      // Remove dados do perfil do usuário
+      localStorage.removeItem(`profile_${currentUser.id}`);
+
+      // Remove usuário atual da sessão
+      localStorage.removeItem(this.STORAGE_KEYS.CURRENT_USER);
+
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error: "Erro ao deletar conta",
+      };
+    }
+  }
 }
 
 export const authAPI = new AuthAPI();
