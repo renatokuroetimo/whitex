@@ -343,11 +343,11 @@ const ProfilePage: React.FC = () => {
 
             {/* Dialog de confirmação */}
             <ConfirmDialog
-              isOpen={showDeleteDialog}
-              onClose={() => setShowDeleteDialog(false)}
+              open={showDeleteDialog}
+              onOpenChange={setShowDeleteDialog}
               onConfirm={handleDeleteAccount}
               title="Apagar conta"
-              message="Tem certeza que deseja apagar sua conta? Esta ação não pode ser desfeita e todos os seus dados serão perdidos permanentemente."
+              description="Tem certeza que deseja apagar sua conta? Esta ação não pode ser desfeita e todos os seus dados serão perdidos permanentemente."
               confirmText="Sim, apagar conta"
               cancelText="Cancelar"
               variant="destructive"
