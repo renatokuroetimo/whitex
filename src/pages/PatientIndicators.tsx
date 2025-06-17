@@ -52,7 +52,10 @@ const PatientIndicators = () => {
   }, [patientId]);
 
   useEffect(() => {
-    filterIndicators();
+    const applyFilters = async () => {
+      await filterIndicators();
+    };
+    applyFilters();
   }, [selectedCategory, selectedSubcategory, indicators]);
 
   useEffect(() => {
