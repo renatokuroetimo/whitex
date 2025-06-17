@@ -1,21 +1,62 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const AddCRM = () => {
   const [crm, setCrm] = useState("");
+  const [registrationData, setRegistrationData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { register } = useAuth();
 
-  const handleCreateAccount = () => {
-    if (crm.trim()) {
-      // Process CRM and complete account creation
-      console.log("CRM added:", crm);
-      // Navigate to doctor dashboard or main app
-      console.log(
-        "Account created successfully - redirect to doctor dashboard",
-      );
+  useEffect(() => {
+    // Get temporary registration data
+    const tempData = sessionStorage.getItem("temp_registration");
+    if (!tempData) {
+      // If no temp data, redirect to sign-up
+      navigate("/");
+      return;
+    }
+    const data = JSON.parse(tempData);
+    if (data.profession !== "medico") {
+      // If not a doctor, redirect to profession selection
+      navigate("/select-profession");
+      return;
+    }
+    setRegistrationData(data);
+  }, [navigate]);
+
+  const handleCreateAccount = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!crm.trim() || !registrationData) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Complete registration with CRM
+      const success = await register({
+        email: registrationData.email,
+        password: registrationData.password,
+        profession: "medico",
+        crm: crm.trim(),
+      });
+
+      if (success) {
+        // Clear temporary data
+        sessionStorage.removeItem("temp_registration");
+        // Navigate to dashboard
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -46,7 +87,7 @@ const AddCRM = () => {
           </div>
 
           {/* CRM Form */}
-          <div className="space-y-6">
+          <form onSubmit={handleCreateAccount} className="space-y-6">
             {/* CRM field */}
             <div>
               <label
@@ -62,17 +103,19 @@ const AddCRM = () => {
                 value={crm}
                 onChange={(e) => setCrm(e.target.value)}
                 className="w-full h-12 px-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-blue focus:border-brand-blue"
+                required
               />
             </div>
 
             {/* Create account button */}
             <Button
-              onClick={handleCreateAccount}
-              disabled={!crm.trim()}
+              type="submit"
+              disabled={!crm.trim() || isLoading}
               className="w-full h-12 bg-brand-blue hover:bg-blue-600 text-white font-medium rounded-md transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
-              Criar uma conta
+              {isLoading ? "Criando conta..." : "Criar uma conta"}
             </Button>
+          </form>
           </div>
         </div>
       </div>
