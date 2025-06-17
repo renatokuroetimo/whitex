@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "@/components/Sidebar";
+import ResponsiveSidebar from "@/components/ResponsiveSidebar";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -13,16 +13,13 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <Sidebar />
-
-      <div className="flex-1 overflow-auto">
-        <div className="p-8">
-          <h1 className="text-2xl font-semibold text-gray-900 mb-8">
+    <ResponsiveSidebar>
+      <div className="p-4 sm:p-6 lg:p-8">
+          <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-6 sm:mb-8">
             Dashboard
           </h1>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <h3 className="font-medium text-gray-900 mb-4">
                 Informações da Conta
@@ -80,7 +77,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-    </div>
+    </ResponsiveSidebar>
   );
 };
 

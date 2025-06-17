@@ -41,8 +41,8 @@ const Login = () => {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex items-center justify-center px-4">
-        <div className="w-full max-w-sm">
+      <div className="flex-1 flex items-center justify-center px-4 sm:px-6">
+        <div className="w-full max-w-sm mx-auto">
           {/* Title */}
           <div className="text-center mb-8">
             <h1 className="text-2xl font-medium text-gray-900 mb-2">

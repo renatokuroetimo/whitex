@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
-import Sidebar from "@/components/Sidebar";
+import ResponsiveSidebar from "@/components/ResponsiveSidebar";
 import {
   Select,
   SelectContent,
@@ -155,12 +155,9 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <Sidebar />
-
-      <div className="flex-1 overflow-auto">
-        <div className="p-8">
-          <div className="max-w-2xl">
+    <ResponsiveSidebar>
+      <div className="p-4 sm:p-6 lg:p-8">
+        <div className="max-w-2xl mx-auto">
             <h1 className="text-2xl font-semibold text-gray-900 mb-2">
               Dados pessoais
             </h1>
@@ -180,7 +177,7 @@ const ProfilePage: React.FC = () => {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
                 {/* Nome */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -309,7 +306,7 @@ const ProfilePage: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </ResponsiveSidebar>
   );
 };
 
