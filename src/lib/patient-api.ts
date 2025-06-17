@@ -55,9 +55,9 @@ class PatientAPI {
   }
 
   // Inicializar dados mock se não existirem
-  initializeMockData(doctorId: string): void {
+  initializeMockData(doctorId: string, forceEmpty: boolean = false): void {
     const patients = this.getStoredPatients();
-    if (patients.length === 0) {
+    if (patients.length === 0 && !forceEmpty) {
       const mockPatients: Patient[] = [
         {
           id: "1",
@@ -295,9 +295,15 @@ class PatientAPI {
   async getPatientDiagnoses(patientId: string): Promise<Diagnosis[]> {
     await this.delay(200);
     const diagnoses = this.getStoredDiagnoses();
-    return diagnoses.filter((d) => d.patientId === patientId);
+    return diagnoses.filter((d) => !ids.includes(d.patientId));
+    this.saveDiagnoses(filteredDiagnoses);
   }
 
+  // Método para limpar todos os dados (útil para testes)
+  clearAllData(): void {
+    localStorage.removeItem(this.STORAGE_KEYS.PATIENTS);
+    localStorage.removeItem(this.STORAGE_KEYS.DIAGNOSES);
+  }
   // Adicionar diagnóstico
   async addDiagnosis(
     patientId: string,
