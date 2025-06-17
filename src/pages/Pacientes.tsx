@@ -226,6 +226,21 @@ const Pacientes = () => {
                     </Button>
                   )}
 
+                  {/* Debug button - remove in production */}
+                  {process.env.NODE_ENV === "development" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        patientAPI.clearAllData();
+                        loadPatients();
+                      }}
+                      className="text-gray-600 border-gray-200 hover:bg-gray-50"
+                    >
+                      🧪 Testar Estado Vazio
+                    </Button>
+                  )}
+
                   <Button
                     size="sm"
                     onClick={() => navigate("/pacientes/novo")}
