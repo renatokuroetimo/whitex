@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Plus, Activity, Filter } from "lucide-react";
+import { ArrowLeft, Plus, Activity, Filter, TrendingUp } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -159,13 +159,23 @@ const PatientIndicators = () => {
                 </p>
               </div>
             </div>
-            <Button
-              onClick={handleAddIndicator}
-              className="bg-green-600 hover:bg-green-700 text-white"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Adicionar Indicador
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                onClick={() => navigate(`/pacientes/${patientId}/graficos`)}
+                variant="outline"
+                className="border-blue-600 text-blue-600 hover:bg-blue-50"
+              >
+                <TrendingUp className="h-4 w-4 mr-2" />
+                Ver Gráficos
+              </Button>
+              <Button
+                onClick={handleAddIndicator}
+                className="bg-green-600 hover:bg-green-700 text-white"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Adicionar Indicador
+              </Button>
+            </div>
           </div>
 
           {/* Filtro */}

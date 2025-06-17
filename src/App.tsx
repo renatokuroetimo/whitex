@@ -20,6 +20,8 @@ import CreatedIndicators from "./pages/CreatedIndicators";
 import StandardIndicators from "./pages/StandardIndicators";
 import AddIndicatorToPatient from "./pages/AddIndicatorToPatient";
 import PatientIndicators from "./pages/PatientIndicators";
+import PatientGraphSelector from "./pages/PatientGraphSelector";
+import PatientGraphView from "./pages/PatientGraphView";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -129,6 +131,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <PatientIndicators />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/pacientes/:patientId/graficos"
+              element={
+                <ProtectedRoute>
+                  <PatientGraphSelector />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/pacientes/:patientId/graficos/visualizar"
+              element={
+                <ProtectedRoute>
+                  <PatientGraphView />
                 </ProtectedRoute>
               }
             />
