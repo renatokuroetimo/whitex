@@ -59,7 +59,10 @@ const PatientIndicators = () => {
   }, [selectedCategory, selectedSubcategory, indicators]);
 
   useEffect(() => {
-    updateSubcategories();
+    const loadSubcategories = async () => {
+      await updateSubcategories();
+    };
+    loadSubcategories();
   }, [selectedCategory, indicators]);
 
   const filterIndicators = async () => {
