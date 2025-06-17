@@ -72,15 +72,15 @@ const Pacientes = () => {
   // Seleção de pacientes
   const handleSelectPatient = (patientId: string, checked: boolean) => {
     if (checked) {
-      setSelectedPatients(prev => [...prev, patientId]);
+      setSelectedPatients((prev) => [...prev, patientId]);
     } else {
-      setSelectedPatients(prev => prev.filter(id => id !== patientId));
+      setSelectedPatients((prev) => prev.filter((id) => id !== patientId));
     }
   };
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedPatients(patients.map(p => p.id));
+      setSelectedPatients(patients.map((p) => p.id));
     } else {
       setSelectedPatients([]);
     }
@@ -125,7 +125,7 @@ const Pacientes = () => {
           className="px-3 py-1 text-gray-500 hover:text-gray-700"
         >
           ←
-        </button>
+        </button>,
       );
     }
 
@@ -142,13 +142,17 @@ const Pacientes = () => {
           }`}
         >
           {i}
-        </button>
+        </button>,
       );
     }
 
     // Reticências e última página
     if (totalPages > 6) {
-      pages.push(<span key="dots" className="px-3 py-1 text-gray-400">...</span>);
+      pages.push(
+        <span key="dots" className="px-3 py-1 text-gray-400">
+          ...
+        </span>,
+      );
       pages.push(
         <button
           key={totalPages}
@@ -156,7 +160,7 @@ const Pacientes = () => {
           className="px-3 py-1 text-gray-500 hover:text-gray-700"
         >
           {totalPages}
-        </button>
+        </button>,
       );
     }
 
@@ -169,7 +173,7 @@ const Pacientes = () => {
           className="px-3 py-1 text-gray-500 hover:text-gray-700"
         >
           →
-        </button>
+        </button>,
       );
     }
 
@@ -225,7 +229,7 @@ const Pacientes = () => {
                   )}
 
                   {/* Debug buttons - remove in production */}
-                  {process.env.NODE_ENV === 'development' && (
+                  {process.env.NODE_ENV === "development" && (
                     <>
                       <Button
                         variant="outline"
@@ -274,7 +278,8 @@ const Pacientes = () => {
                     <th className="w-12 px-4 sm:px-6 py-3 text-left">
                       <Checkbox
                         checked={
-                          patients.length > 0 && selectedPatients.length === patients.length
+                          patients.length > 0 &&
+                          selectedPatients.length === patients.length
                         }
                         onCheckedChange={handleSelectAll}
                       />
@@ -293,7 +298,10 @@ const Pacientes = () => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {isLoading ? (
                     <tr>
-                      <td colSpan={4} className="px-4 sm:px-6 py-8 text-center text-gray-500">
+                      <td
+                        colSpan={4}
+                        className="px-4 sm:px-6 py-8 text-center text-gray-500"
+                      >
                         Carregando...
                       </td>
                     </tr>
@@ -305,13 +313,14 @@ const Pacientes = () => {
                             <Plus className="h-8 w-8 text-gray-400" />
                           </div>
                           <h3 className="text-lg font-medium text-gray-900 mb-2">
-                            {searchTerm ? "Nenhum paciente encontrado" : "Nenhum paciente cadastrado"}
+                            {searchTerm
+                              ? "Nenhum paciente encontrado"
+                              : "Nenhum paciente cadastrado"}
                           </h3>
                           <p className="text-gray-500 mb-6">
                             {searchTerm
                               ? "Tente ajustar sua pesquisa ou adicionar um novo paciente."
-                              : "Comece adicionando seu primeiro paciente para gerenciar os atendimentos."
-                            }
+                              : "Comece adicionando seu primeiro paciente para gerenciar os atendimentos."}
                           </p>
                           {!searchTerm && (
                             <Button
@@ -332,7 +341,10 @@ const Pacientes = () => {
                           <Checkbox
                             checked={selectedPatients.includes(patient.id)}
                             onCheckedChange={(checked) =>
-                              handleSelectPatient(patient.id, checked as boolean)
+                              handleSelectPatient(
+                                patient.id,
+                                checked as boolean,
+                              )
                             }
                           />
                         </td>
@@ -352,13 +364,17 @@ const Pacientes = () => {
                         <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex flex-col sm:flex-row items-end sm:items-center justify-end gap-1 sm:gap-2">
                             <button
-                              onClick={() => navigate(`/pacientes/${patient.id}`)}
+                              onClick={() =>
+                                navigate(`/pacientes/${patient.id}`)
+                              }
                               className="text-blue-600 hover:text-blue-800 text-xs sm:text-sm whitespace-nowrap"
                             >
                               Ver perfil
                             </button>
                             <button
-                              onClick={() => navigate(`/pacientes/${patient.id}/editar`)}
+                              onClick={() =>
+                                navigate(`/pacientes/${patient.id}/editar`)
+                              }
                               className="text-blue-600 hover:text-blue-800 text-xs sm:text-sm whitespace-nowrap"
                             >
                               Editar perfil
@@ -377,8 +393,9 @@ const Pacientes = () => {
               <div className="px-4 sm:px-6 py-4 border-t border-gray-200">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
                   <div className="text-sm text-gray-500">
-                    Mostrando {Math.min(pagination.itemsPerPage, pagination.totalItems)} de{" "}
-                    {pagination.totalItems} pacientes
+                    Mostrando{" "}
+                    {Math.min(pagination.itemsPerPage, pagination.totalItems)}{" "}
+                    de {pagination.totalItems} pacientes
                   </div>
                   <div className="flex items-center space-x-1">
                     {renderPagination()}
@@ -400,8 +417,6 @@ const Pacientes = () => {
             )}
           </div>
         </div>
-
-        </div>
       </div>
 
       {/* Delete Confirmation Dialog */}
@@ -416,7 +431,7 @@ const Pacientes = () => {
         variant="destructive"
       />
     </div>
-    );
+  );
 };
 
 export default Pacientes;

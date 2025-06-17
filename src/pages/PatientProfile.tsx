@@ -58,7 +58,6 @@ const PatientProfile = () => {
         navigate("/pacientes");
         return;
       }
-
     } catch (error) {
       toast({
         variant: "destructive",
@@ -305,8 +304,6 @@ const PatientProfile = () => {
               </Button>
             </div>
           </div>
-        </div>
-
         </div>
       </div>
 
