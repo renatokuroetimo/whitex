@@ -2,26 +2,30 @@ import React, { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Index = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleCreateAccount = () => {
+  const handleCreateAccount = (e: React.FormEvent) => {
+    e.preventDefault();
     if (email && password) {
-      // Process account creation
-      console.log("Creating account with:", { email, password });
-      // Navigate to profession selection
+      // Store temporary data and navigate to profession selection
+      sessionStorage.setItem("temp_registration", JSON.stringify({ email, password }));
       navigate("/select-profession");
     }
   };
 
   const handleSocialLogin = (provider: string) => {
-    // Process social login
+    // For social login, we'll simulate by going directly to profession selection
     console.log(`Login with ${provider}`);
-    // Navigate to profession selection
+    sessionStorage.setItem("temp_registration", JSON.stringify({
+      email: `user@${provider.toLowerCase()}.com`,
+      password: "social_login",
+      provider
+    }));
     navigate("/select-profession");
   };
 
@@ -44,14 +48,14 @@ const Index = () => {
             </h1>
             <p className="text-sm text-gray-600">
               Já tem uma conta?{" "}
-              <button className="text-brand-blue hover:underline">
+              <Link to="/login" className="text-brand-blue hover:underline">
                 Entre aqui
-              </button>
+              </Link>
             </p>
           </div>
 
           {/* Form */}
-          <div className="space-y-4">
+          <form onSubmit={handleCreateAccount} className="space-y-4">
             {/* Email field */}
             <div>
               <label
@@ -67,6 +71,7 @@ const Index = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full h-12 px-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-blue focus:border-brand-blue"
+                required
               />
             </div>
 
@@ -85,13 +90,16 @@ const Index = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full h-12 px-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-blue focus:border-brand-blue"
+                required
+                minLength={6}
               />
             </div>
 
             {/* Create account button */}
             <Button
-              onClick={handleCreateAccount}
-              className="w-full h-12 bg-brand-blue hover:bg-blue-600 text-white font-medium rounded-md transition-colors"
+              type="submit"
+              disabled={!email || !password}
+              className="w-full h-12 bg-brand-blue hover:bg-blue-600 text-white font-medium rounded-md transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               Criar uma conta
             </Button>
@@ -103,6 +111,7 @@ const Index = () => {
                 Termos de Serviço
               </button>
             </p>
+          </form>
 
             {/* Divider */}
             <div className="my-6">
