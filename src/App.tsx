@@ -19,6 +19,7 @@ import CreateIndicator from "./pages/CreateIndicator";
 import CreatedIndicators from "./pages/CreatedIndicators";
 import StandardIndicators from "./pages/StandardIndicators";
 import AddIndicatorToPatient from "./pages/AddIndicatorToPatient";
+import PatientIndicators from "./pages/PatientIndicators";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -120,6 +121,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <AddIndicatorToPatient />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/pacientes/:patientId/indicadores"
+              element={
+                <ProtectedRoute>
+                  <PatientIndicators />
                 </ProtectedRoute>
               }
             />

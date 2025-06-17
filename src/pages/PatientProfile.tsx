@@ -187,7 +187,12 @@ const PatientProfile = () => {
                 </div>
 
                 {/* Ver Indicadores Button */}
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                <Button
+                  onClick={() =>
+                    navigate(`/pacientes/${patient.id}/indicadores`)
+                  }
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                >
                   Ver indicadores
                 </Button>
               </div>
