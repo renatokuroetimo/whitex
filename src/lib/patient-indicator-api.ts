@@ -131,6 +131,51 @@ class PatientIndicatorAPI {
     return categories.sort();
   }
 
+  // Obter subcategorias únicas dos indicadores de um paciente
+  async getPatientIndicatorSubcategories(
+    patientId: string,
+    categoryName?: string,
+  ): Promise<string[]> {
+    const values = await this.getPatientIndicatorValues(patientId);
+
+    let filteredValues = values;
+    if (categoryName && categoryName !== "all") {
+      filteredValues = values.filter(
+        (value) => value.categoryName === categoryName,
+      );
+    }
+
+    const subcategories = [
+      ...new Set(filteredValues.map((value) => value.subcategoryName)),
+    ];
+    return subcategories.sort();
+  }
+
+  // Buscar valores de indicadores de um paciente por categoria e subcategoria
+  async getPatientIndicatorValuesByFilters(
+    patientId: string,
+    categoryName?: string,
+    subcategoryName?: string,
+  ): Promise<PatientIndicatorValue[]> {
+    const values = await this.getPatientIndicatorValues(patientId);
+
+    let filteredValues = values;
+
+    if (categoryName && categoryName !== "all") {
+      filteredValues = filteredValues.filter(
+        (value) => value.categoryName === categoryName,
+      );
+    }
+
+    if (subcategoryName && subcategoryName !== "all") {
+      filteredValues = filteredValues.filter(
+        (value) => value.subcategoryName === subcategoryName,
+      );
+    }
+
+    return filteredValues;
+  }
+
   // Atualizar valor de indicador
   async updatePatientIndicatorValue(
     id: string,

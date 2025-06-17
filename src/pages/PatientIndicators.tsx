@@ -36,7 +36,9 @@ const PatientIndicators = () => {
     PatientIndicatorValue[]
   >([]);
   const [categories, setCategories] = useState<string[]>([]);
+  const [subcategories, setSubcategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string>("all");
   const [isLoading, setIsLoading] = useState(true);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [indicatorToDelete, setIndicatorToDelete] = useState<string | null>(
@@ -51,22 +53,60 @@ const PatientIndicators = () => {
 
   useEffect(() => {
     filterIndicators();
+  }, [selectedCategory, selectedSubcategory, indicators]);
+
+  useEffect(() => {
+    updateSubcategories();
   }, [selectedCategory, indicators]);
 
-  const filterIndicators = () => {
-    if (selectedCategory === "all") {
+  const filterIndicators = async () => {
+    if (!patientId) return;
+
+    try {
+      const filteredValues =
+        await patientIndicatorAPI.getPatientIndicatorValuesByFilters(
+          patientId,
+          selectedCategory,
+          selectedSubcategory,
+        );
+      setFilteredIndicators(filteredValues);
+    } catch (error) {
+      console.error("Error filtering indicators:", error);
       setFilteredIndicators(indicators);
-    } else {
-      setFilteredIndicators(
-        indicators.filter(
-          (indicator) => indicator.categoryName === selectedCategory,
-        ),
-      );
+    }
+  };
+
+  const updateSubcategories = async () => {
+    if (!patientId) return;
+
+    try {
+      const categorySubcategories =
+        await patientIndicatorAPI.getPatientIndicatorSubcategories(
+          patientId,
+          selectedCategory,
+        );
+      setSubcategories(categorySubcategories);
+
+      // Reset subcategory se não estiver na lista filtrada
+      if (
+        selectedSubcategory !== "all" &&
+        !categorySubcategories.includes(selectedSubcategory)
+      ) {
+        setSelectedSubcategory("all");
+      }
+    } catch (error) {
+      console.error("Error loading subcategories:", error);
+      setSubcategories([]);
     }
   };
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
+    setSelectedSubcategory("all"); // Reset subcategory quando categoria muda
+  };
+
+  const handleSubcategoryChange = (subcategory: string) => {
+    setSelectedSubcategory(subcategory);
   };
 
   const handleEditIndicator = (indicatorId: string) => {
@@ -106,12 +146,17 @@ const PatientIndicators = () => {
 
     setIsLoading(true);
     try {
-      const [patientData, indicatorValues, indicatorCategories] =
-        await Promise.all([
-          patientAPI.getPatientById(patientId),
-          patientIndicatorAPI.getPatientIndicatorValues(patientId),
-          patientIndicatorAPI.getPatientIndicatorCategories(patientId),
-        ]);
+      const [
+        patientData,
+        indicatorValues,
+        indicatorCategories,
+        indicatorSubcategories,
+      ] = await Promise.all([
+        patientAPI.getPatientById(patientId),
+        patientIndicatorAPI.getPatientIndicatorValues(patientId),
+        patientIndicatorAPI.getPatientIndicatorCategories(patientId),
+        patientIndicatorAPI.getPatientIndicatorSubcategories(patientId),
+      ]);
 
       if (!patientData) {
         toast({
@@ -127,6 +172,7 @@ const PatientIndicators = () => {
       setIndicators(indicatorValues);
       setFilteredIndicators(indicatorValues);
       setCategories(indicatorCategories);
+      setSubcategories(indicatorSubcategories);
     } catch (error) {
       toast({
         variant: "destructive",
@@ -222,33 +268,71 @@ const PatientIndicators = () => {
             </div>
           </div>
 
-          {/* Filtro */}
+          {/* Filtros */}
           {indicators.length > 0 && (
             <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                 <div className="flex items-center gap-2">
                   <Filter className="h-4 w-4 text-gray-500" />
                   <span className="text-sm font-medium text-gray-700">
-                    Filtrar por categoria:
+                    Filtros:
                   </span>
                 </div>
-                <Select
-                  value={selectedCategory}
-                  onValueChange={handleCategoryChange}
-                >
-                  <SelectTrigger className="w-64">
-                    <SelectValue placeholder="Selecione uma categoria" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todas as categorias</SelectItem>
-                    {categories.map((category) => (
-                      <SelectItem key={category} value={category}>
-                        {category}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <div className="text-sm text-gray-500">
+
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                  {/* Filtro por Categoria */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600 min-w-max">
+                      Categoria:
+                    </span>
+                    <Select
+                      value={selectedCategory}
+                      onValueChange={handleCategoryChange}
+                    >
+                      <SelectTrigger className="w-48">
+                        <SelectValue placeholder="Selecione uma categoria" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todas as categorias</SelectItem>
+                        {categories.map((category) => (
+                          <SelectItem key={category} value={category}>
+                            {category}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Filtro por Subcategoria */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600 min-w-max">
+                      Subcategoria:
+                    </span>
+                    <Select
+                      value={selectedSubcategory}
+                      onValueChange={handleSubcategoryChange}
+                      disabled={
+                        selectedCategory === "all" || subcategories.length === 0
+                      }
+                    >
+                      <SelectTrigger className="w-48">
+                        <SelectValue placeholder="Selecione uma subcategoria" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">
+                          Todas as subcategorias
+                        </SelectItem>
+                        {subcategories.map((subcategory) => (
+                          <SelectItem key={subcategory} value={subcategory}>
+                            {subcategory}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="text-sm text-gray-500 sm:ml-auto">
                   Mostrando {filteredIndicators.length} de {indicators.length}{" "}
                   indicadores
                 </div>
@@ -287,9 +371,15 @@ const PatientIndicators = () => {
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-semibold text-gray-900">
-                    {selectedCategory === "all"
-                      ? `Indicadores Registrados (${indicators.length})`
-                      : `${selectedCategory} (${filteredIndicators.length})`}
+                    {(() => {
+                      if (selectedCategory === "all") {
+                        return `Indicadores Registrados (${indicators.length})`;
+                      } else if (selectedSubcategory === "all") {
+                        return `${selectedCategory} (${filteredIndicators.length})`;
+                      } else {
+                        return `${selectedCategory} - ${selectedSubcategory} (${filteredIndicators.length})`;
+                      }
+                    })()}
                   </h2>
                 </div>
 
