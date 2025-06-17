@@ -275,13 +275,31 @@ const Pacientes = () => {
                     </tr>
                   ) : patients.length === 0 ? (
                     <tr>
-                      <td
-                        colSpan={4}
-                        className="px-6 py-8 text-center text-gray-500"
-                      >
-                        {searchTerm
-                          ? "Nenhum paciente encontrado"
-                          : "Nenhum paciente cadastrado"}
+                      <td colSpan={4} className="px-6 py-16">
+                        <div className="text-center">
+                          <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                            <Plus className="h-8 w-8 text-gray-400" />
+                          </div>
+                          <h3 className="text-lg font-medium text-gray-900 mb-2">
+                            {searchTerm
+                              ? "Nenhum paciente encontrado"
+                              : "Nenhum paciente cadastrado"}
+                          </h3>
+                          <p className="text-gray-500 mb-6">
+                            {searchTerm
+                              ? "Tente ajustar sua pesquisa ou adicionar um novo paciente."
+                              : "Comece adicionando seu primeiro paciente para gerenciar os atendimentos."}
+                          </p>
+                          {!searchTerm && (
+                            <Button
+                              onClick={() => navigate("/pacientes/novo")}
+                              className="bg-blue-600 hover:bg-blue-700"
+                            >
+                              <Plus className="h-4 w-4 mr-2" />
+                              Adicionar paciente
+                            </Button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ) : (
@@ -354,15 +372,17 @@ const Pacientes = () => {
               </div>
             )}
 
-            {/* Bottom Action */}
-            <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
-              <Button
-                onClick={() => navigate("/pacientes/novo")}
-                className="w-full bg-blue-600 hover:bg-blue-700"
-              >
-                Criar novo paciente
-              </Button>
-            </div>
+            {/* Bottom Action - Only show if there are patients or search results */}
+            {patients.length > 0 && (
+              <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+                <Button
+                  onClick={() => navigate("/pacientes/novo")}
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                >
+                  Criar novo paciente
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
