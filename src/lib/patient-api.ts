@@ -151,6 +151,7 @@ class PatientAPI {
           state: "PR",
           weight: 54.0,
           status: "ativo",
+          notes: "Paciente precisa ficar em repouso.",
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           doctorId,
