@@ -2,53 +2,32 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import Sidebar from "@/components/Sidebar";
 
 const Dashboard = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    await logout();
-    navigate("/login");
-  };
 
   if (!user) {
     return null;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <h1 className="text-xl font-semibold text-gray-900">
-              Dashboard Médico
-            </h1>
-            <Button
-              onClick={handleLogout}
-              variant="outline"
-              className="text-gray-700"
-            >
-              Sair
-            </Button>
-          </div>
-        </div>
-      </div>
+    <div className="flex h-screen bg-gray-50">
+      <Sidebar />
 
-      {/* Main content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">
-            Bem-vindo ao seu painel
-          </h2>
+      <div className="flex-1 overflow-auto">
+        <div className="p-8">
+          <h1 className="text-2xl font-semibold text-gray-900 mb-8">
+            Dashboard
+          </h1>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 border rounded-lg">
-              <h3 className="font-medium text-gray-900">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <h3 className="font-medium text-gray-900 mb-4">
                 Informações da Conta
               </h3>
-              <div className="mt-2 space-y-1 text-sm text-gray-600">
+              <div className="space-y-2 text-sm text-gray-600">
                 <p>
                   <strong>Email:</strong> {user.email}
                 </p>
@@ -66,19 +45,35 @@ const Dashboard = () => {
                   {new Date(user.createdAt).toLocaleDateString("pt-BR")}
                 </p>
               </div>
+              <Button
+                onClick={() => navigate("/profile")}
+                variant="outline"
+                className="w-full mt-4"
+              >
+                Completar Perfil
+              </Button>
             </div>
 
-            <div className="p-4 border rounded-lg">
-              <h3 className="font-medium text-gray-900">Ações Rápidas</h3>
-              <div className="mt-2 space-y-2">
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <h3 className="font-medium text-gray-900 mb-4">Pacientes</h3>
+              <div className="text-center py-8">
+                <p className="text-gray-500 text-sm mb-4">
+                  Gerencie seus pacientes
+                </p>
                 <Button variant="outline" className="w-full">
                   Ver Pacientes
                 </Button>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <h3 className="font-medium text-gray-900 mb-4">Relatórios</h3>
+              <div className="text-center py-8">
+                <p className="text-gray-500 text-sm mb-4">
+                  Visualize indicadores
+                </p>
                 <Button variant="outline" className="w-full">
-                  Agendar Consulta
-                </Button>
-                <Button variant="outline" className="w-full">
-                  Relatórios
+                  Ver Indicadores
                 </Button>
               </div>
             </div>
