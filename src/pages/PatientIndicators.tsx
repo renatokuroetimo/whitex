@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Plus, Activity, Filter, TrendingUp } from "lucide-react";
+import {
+  ArrowLeft,
+  Plus,
+  Activity,
+  Filter,
+  TrendingUp,
+  Edit,
+  Trash2,
+} from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +38,10 @@ const PatientIndicators = () => {
   const [categories, setCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [isLoading, setIsLoading] = useState(true);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [indicatorToDelete, setIndicatorToDelete] = useState<string | null>(
+    null,
+  );
 
   useEffect(() => {
     if (patientId) {
@@ -55,6 +67,38 @@ const PatientIndicators = () => {
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
+  };
+
+  const handleEditIndicator = (indicatorId: string) => {
+    navigate(`/pacientes/${patientId}/indicadores/${indicatorId}/editar`);
+  };
+
+  const handleDeleteConfirm = (indicatorId: string) => {
+    setIndicatorToDelete(indicatorId);
+    setShowDeleteDialog(true);
+  };
+
+  const handleDeleteIndicator = async () => {
+    if (!indicatorToDelete) return;
+
+    try {
+      await patientIndicatorAPI.deletePatientIndicatorValue(indicatorToDelete);
+      toast({
+        title: "Sucesso",
+        description: "Indicador removido com sucesso",
+      });
+      // Recarregar dados
+      loadData();
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Erro ao remover indicador",
+      });
+    } finally {
+      setShowDeleteDialog(false);
+      setIndicatorToDelete(null);
+    }
   };
 
   const loadData = async () => {
@@ -268,6 +312,9 @@ const PatientIndicators = () => {
                         <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm">
                           Registrado em
                         </th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm">
+                          Ações
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -320,6 +367,28 @@ const PatientIndicators = () => {
                               {formatDate(indicator.createdAt)}
                             </span>
                           </td>
+                          <td className="py-3 px-4">
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() =>
+                                  handleEditIndicator(indicator.id)
+                                }
+                                className="text-blue-600 hover:text-blue-800 p-1"
+                                title="Editar indicador"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() =>
+                                  handleDeleteConfirm(indicator.id)
+                                }
+                                className="text-red-600 hover:text-red-800 p-1"
+                                title="Remover indicador"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -330,6 +399,18 @@ const PatientIndicators = () => {
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        title="Remover Indicador"
+        description="Tem certeza que deseja remover este registro de indicador? Esta ação não pode ser desfeita."
+        confirmText="Remover"
+        cancelText="Cancelar"
+        onConfirm={handleDeleteIndicator}
+        variant="destructive"
+      />
     </div>
   );
 };

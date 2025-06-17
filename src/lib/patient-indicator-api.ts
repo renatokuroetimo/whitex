@@ -101,6 +101,15 @@ class PatientIndicatorAPI {
       );
   }
 
+  // Buscar um valor de indicador específico por ID
+  async getPatientIndicatorValueById(
+    id: string,
+  ): Promise<PatientIndicatorValue | null> {
+    await this.delay(200);
+    const values = this.getStoredIndicatorValues();
+    return values.find((value) => value.id === id) || null;
+  }
+
   // Buscar valores de indicadores de um paciente por categoria
   async getPatientIndicatorValuesByCategory(
     patientId: string,
@@ -120,6 +129,33 @@ class PatientIndicatorAPI {
     const values = await this.getPatientIndicatorValues(patientId);
     const categories = [...new Set(values.map((value) => value.categoryName))];
     return categories.sort();
+  }
+
+  // Atualizar valor de indicador
+  async updatePatientIndicatorValue(
+    id: string,
+    updateData: Partial<PatientIndicatorFormData>,
+  ): Promise<PatientIndicatorValue | null> {
+    await this.delay(500);
+
+    const values = this.getStoredIndicatorValues();
+    const index = values.findIndex((value) => value.id === id);
+
+    if (index === -1) {
+      throw new Error("Valor de indicador não encontrado");
+    }
+
+    // Atualizar apenas os campos fornecidos
+    const updatedValue: PatientIndicatorValue = {
+      ...values[index],
+      ...updateData,
+      updatedAt: new Date().toISOString(),
+    };
+
+    values[index] = updatedValue;
+    this.saveIndicatorValues(values);
+
+    return updatedValue;
   }
 
   // Deletar valor de indicador
