@@ -38,24 +38,36 @@ class PatientIndicatorAPI {
     doctorId: string,
     data: PatientIndicatorFormData,
   ): Promise<PatientIndicatorValue> {
+    console.log("Creating indicator value:", { patientId, doctorId, data });
     await this.delay(500);
 
     // Buscar detalhes do indicador
     let indicatorDetails: any = null;
 
     if (data.indicatorType === "standard") {
+      console.log("Loading standard indicators...");
       const standardIndicators = await indicatorAPI.getStandardIndicators();
+      console.log("Standard indicators:", standardIndicators);
       indicatorDetails = standardIndicators.find(
         (ind) => ind.id === data.indicatorId,
       );
+      console.log("Found standard indicator:", indicatorDetails);
     } else {
+      console.log("Loading custom indicators...");
       const customIndicators = await indicatorAPI.getIndicators(doctorId);
+      console.log("Custom indicators:", customIndicators);
       indicatorDetails = customIndicators.find(
         (ind) => ind.id === data.indicatorId,
       );
+      console.log("Found custom indicator:", indicatorDetails);
     }
 
     if (!indicatorDetails) {
+      console.error(
+        "Indicator not found:",
+        data.indicatorId,
+        data.indicatorType,
+      );
       throw new Error("Indicador não encontrado");
     }
 
