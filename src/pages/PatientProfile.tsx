@@ -162,47 +162,50 @@ const PatientProfile = () => {
             </div>
           </div>
 
-          {/* Patient Details */}
+          {/* Patient Details Form */}
           <div className="space-y-4 mb-6">
-            {/* Weight */}
+            {/* Weight Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Peso
               </label>
-              <div className="w-full h-12 px-3 border border-gray-300 rounded-md bg-gray-50 flex items-center">
-                <span className="text-gray-900">{patient.weight} kg</span>
-              </div>
+              <input
+                type="text"
+                value={`${patient.weight} kg`}
+                readOnly
+                className="w-full h-12 px-3 border border-gray-300 rounded-md bg-gray-50 text-gray-900"
+              />
             </div>
 
-            {/* Status */}
+            {/* Age Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Status
+                Idade
               </label>
-              <div className="w-full h-12 px-3 border border-gray-300 rounded-md bg-gray-50 flex items-center">
-                <Badge className="bg-green-100 text-green-800">
-                  {patient.status.toUpperCase()}
-                </Badge>
-              </div>
+              <input
+                type="text"
+                value={`${patient.age} anos`}
+                readOnly
+                className="w-full h-12 px-3 border border-gray-300 rounded-md bg-gray-50 text-gray-900"
+              />
             </div>
           </div>
 
           {/* Main Action Button */}
-          <Button className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors mb-4">
+          <Button className="w-full h-12 bg-brand-blue hover:bg-blue-600 text-white font-medium rounded-md transition-colors">
             Ver indicadores
           </Button>
 
-          {/* Diagnoses text */}
-          <p className="text-xs text-gray-500 text-center mb-6">
-            {diagnoses.length > 0
-              ? `${diagnoses.length} diagnóstico(s) registrado(s)`
-              : "Nenhum diagnóstico registrado"}
+          {/* Status text */}
+          <p className="text-xs text-gray-500 text-center mt-4 mb-6">
+            Status do paciente:{" "}
+            <span className="text-green-600 font-medium">{patient.status}</span>
           </p>
 
           {/* Divider */}
           <div className="my-6">
             <p className="text-sm text-gray-500 text-center">
-              Ou gerencie o perfil:
+              Ou gerencie o perfil usando:
             </p>
           </div>
 
@@ -214,7 +217,9 @@ const PatientProfile = () => {
               variant="outline"
               className="w-full h-12 border border-gray-300 hover:bg-gray-50 text-gray-700 font-normal flex items-center justify-center gap-3"
             >
-              <User className="w-5 h-5" />
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+              </svg>
               Editar perfil do paciente
             </Button>
 
@@ -223,19 +228,11 @@ const PatientProfile = () => {
               variant="outline"
               className="w-full h-12 border border-gray-300 hover:bg-gray-50 text-gray-700 font-normal flex items-center justify-center gap-3"
             >
-              <Plus className="w-5 h-5" />
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+              </svg>
               Adicionar indicador
             </Button>
-          </div>
-
-          {/* Delete button */}
-          <div className="mt-6 text-center">
-            <button
-              onClick={() => setShowDeleteDialog(true)}
-              className="text-sm text-red-600 hover:underline"
-            >
-              Deletar perfil do paciente
-            </button>
           </div>
         </div>
       </div>
