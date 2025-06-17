@@ -293,7 +293,7 @@ const CreateIndicator = () => {
                             <DialogTitle>Criar Nova Categoria</DialogTitle>
                           </DialogHeader>
                           <div className="space-y-4">
-                            <div>
+                            <div className="space-y-2">
                               <Label>Nome da Categoria</Label>
                               <Input
                                 value={newCategoryName}
@@ -377,7 +377,7 @@ const CreateIndicator = () => {
                             <DialogTitle>Criar Nova Subcategoria</DialogTitle>
                           </DialogHeader>
                           <div className="space-y-4">
-                            <div>
+                            <div className="space-y-2">
                               <Label>Nome da Subcategoria</Label>
                               <Input
                                 value={newSubcategoryName}
@@ -419,7 +419,7 @@ const CreateIndicator = () => {
                       onChange={(e) =>
                         handleInputChange("parameter", e.target.value)
                       }
-                      placeholder="Digite o parâmetro (ex: Sistólica, Diastólica)"
+                      placeholder="Digite o parâmetro"
                       className="w-full"
                     />
                   </div>
@@ -448,22 +448,6 @@ const CreateIndicator = () => {
                     </Select>
                   </div>
                 </div>
-
-                {/* Criar novo parâmetro button */}
-                <Button
-                  type="button"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                  onClick={() => {
-                    // This could open a dialog or navigate to a parameter creation page
-                    toast({
-                      title: "Em desenvolvimento",
-                      description:
-                        "Funcionalidade de criar parâmetro em desenvolvimento",
-                    });
-                  }}
-                >
-                  Criar novo parâmetro
-                </Button>
 
                 {/* Obrigatoriedade */}
                 <div>
