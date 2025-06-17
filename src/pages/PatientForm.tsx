@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -33,6 +34,7 @@ const PatientForm = () => {
     state: "",
     weight: 0,
     status: "ativo",
+    notes: "",
   });
 
   useEffect(() => {
@@ -55,6 +57,7 @@ const PatientForm = () => {
           state: patient.state,
           weight: patient.weight,
           status: patient.status,
+          notes: patient.notes || "",
         });
         setSelectedState(patient.state);
         setAvailableCities(getCitiesByState(patient.state));
@@ -348,6 +351,22 @@ const PatientForm = () => {
                         <SelectItem value="inativo">Inativo</SelectItem>
                       </SelectContent>
                     </Select>
+                  </div>
+
+                  {/* Observações */}
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Observações
+                    </label>
+                    <Textarea
+                      value={formData.notes || ""}
+                      onChange={(e) =>
+                        handleInputChange("notes", e.target.value)
+                      }
+                      placeholder="Adicione observações sobre o paciente (ex: precisa ficar em repouso)"
+                      className="w-full"
+                      rows={3}
+                    />
                   </div>
                 </div>
 
