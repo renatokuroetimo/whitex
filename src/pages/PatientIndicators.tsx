@@ -152,6 +152,8 @@ const PatientIndicators = () => {
 
     setIsLoading(true);
     try {
+      console.log("Loading patient data for:", patientId);
+
       const [
         patientData,
         indicatorValues,
@@ -163,6 +165,13 @@ const PatientIndicators = () => {
         patientIndicatorAPI.getPatientIndicatorCategories(patientId),
         patientIndicatorAPI.getPatientIndicatorSubcategories(patientId),
       ]);
+
+      console.log("Loaded data:", {
+        patient: patientData,
+        indicators: indicatorValues,
+        categories: indicatorCategories,
+        subcategories: indicatorSubcategories,
+      });
 
       if (!patientData) {
         toast({
