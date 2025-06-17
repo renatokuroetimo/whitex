@@ -6,6 +6,7 @@ export interface Patient {
   state: string;
   weight: number;
   status: "ativo" | "inativo";
+  notes?: string;
   createdAt: string;
   updatedAt: string;
   doctorId: string;
@@ -28,6 +29,7 @@ export interface PatientFormData {
   state: string;
   weight: number;
   status: "ativo" | "inativo";
+  notes?: string;
 }
 
 export interface PaginationData {
