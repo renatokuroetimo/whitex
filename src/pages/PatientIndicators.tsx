@@ -1,28 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Plus, Activity } from "lucide-react";
+import { ArrowLeft, Plus, Activity, Filter } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
 import { patientAPI } from "@/lib/patient-api";
+import { patientIndicatorAPI } from "@/lib/patient-indicator-api";
 import { Patient } from "@/lib/patient-types";
+import { PatientIndicatorValue } from "@/lib/patient-indicator-types";
 import { toast } from "@/hooks/use-toast";
-
-// Interface para os valores de indicadores (simulada por enquanto)
-interface PatientIndicatorValue {
-  id: string;
-  indicatorName: string;
-  categoryName: string;
-  subcategoryName: string;
-  parameter: string;
-  value: string;
-  unitSymbol: string;
-  date?: string;
-  time?: string;
-  visibleToMedics: boolean;
-  createdAt: string;
-}
 
 const PatientIndicators = () => {
   const navigate = useNavigate();
@@ -30,6 +24,11 @@ const PatientIndicators = () => {
   const { user } = useAuth();
   const [patient, setPatient] = useState<Patient | null>(null);
   const [indicators, setIndicators] = useState<PatientIndicatorValue[]>([]);
+  const [filteredIndicators, setFilteredIndicators] = useState<
+    PatientIndicatorValue[]
+  >([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -38,12 +37,37 @@ const PatientIndicators = () => {
     }
   }, [patientId]);
 
+  useEffect(() => {
+    filterIndicators();
+  }, [selectedCategory, indicators]);
+
+  const filterIndicators = () => {
+    if (selectedCategory === "all") {
+      setFilteredIndicators(indicators);
+    } else {
+      setFilteredIndicators(
+        indicators.filter(
+          (indicator) => indicator.categoryName === selectedCategory,
+        ),
+      );
+    }
+  };
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+  };
+
   const loadData = async () => {
     if (!patientId) return;
 
     setIsLoading(true);
     try {
-      const patientData = await patientAPI.getPatientById(patientId);
+      const [patientData, indicatorValues, indicatorCategories] =
+        await Promise.all([
+          patientAPI.getPatientById(patientId),
+          patientIndicatorAPI.getPatientIndicatorValues(patientId),
+          patientIndicatorAPI.getPatientIndicatorCategories(patientId),
+        ]);
 
       if (!patientData) {
         toast({
@@ -56,14 +80,9 @@ const PatientIndicators = () => {
       }
 
       setPatient(patientData);
-
-      // Por enquanto, vamos simular alguns dados de indicadores
-      // Em uma implementação real, você carregaria os indicadores salvos do paciente
-      const mockIndicators: PatientIndicatorValue[] = [
-        // Lista vazia por padrão - você pode adicionar dados mock aqui para testar
-      ];
-
-      setIndicators(mockIndicators);
+      setIndicators(indicatorValues);
+      setFilteredIndicators(indicatorValues);
+      setCategories(indicatorCategories);
     } catch (error) {
       toast({
         variant: "destructive",
@@ -149,6 +168,40 @@ const PatientIndicators = () => {
             </Button>
           </div>
 
+          {/* Filtro */}
+          {indicators.length > 0 && (
+            <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Filter className="h-4 w-4 text-gray-500" />
+                  <span className="text-sm font-medium text-gray-700">
+                    Filtrar por categoria:
+                  </span>
+                </div>
+                <Select
+                  value={selectedCategory}
+                  onValueChange={handleCategoryChange}
+                >
+                  <SelectTrigger className="w-64">
+                    <SelectValue placeholder="Selecione uma categoria" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas as categorias</SelectItem>
+                    {categories.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <div className="text-sm text-gray-500">
+                  Mostrando {filteredIndicators.length} de {indicators.length}{" "}
+                  indicadores
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Content */}
           {indicators.length === 0 ? (
             /* Empty State */
@@ -180,7 +233,9 @@ const PatientIndicators = () => {
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-semibold text-gray-900">
-                    Indicadores Registrados ({indicators.length})
+                    {selectedCategory === "all"
+                      ? `Indicadores Registrados (${indicators.length})`
+                      : `${selectedCategory} (${filteredIndicators.length})`}
                   </h2>
                 </div>
 
@@ -206,7 +261,7 @@ const PatientIndicators = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {indicators.map((indicator) => (
+                      {filteredIndicators.map((indicator) => (
                         <tr
                           key={indicator.id}
                           className="border-b border-gray-100 hover:bg-gray-50"

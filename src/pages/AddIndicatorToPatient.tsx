@@ -16,7 +16,9 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { indicatorAPI } from "@/lib/indicator-api";
 import { patientAPI } from "@/lib/patient-api";
+import { patientIndicatorAPI } from "@/lib/patient-indicator-api";
 import { Patient } from "@/lib/patient-types";
+import { PatientIndicatorFormData } from "@/lib/patient-indicator-types";
 import { toast } from "@/hooks/use-toast";
 
 const AddIndicatorToPatient = () => {
@@ -148,16 +150,33 @@ const AddIndicatorToPatient = () => {
       return;
     }
 
+    if (!patientId || !user?.id) return;
+
     try {
-      // Here you would save the indicator value to the patient
-      // For now, we'll just show a success message
+      const formData: PatientIndicatorFormData = {
+        indicatorId: selectedIndicator,
+        indicatorType: selectedIndicatorData?.isStandard
+          ? "standard"
+          : "custom",
+        value: value.trim(),
+        date: selectedIndicatorData?.requiresDate ? date : undefined,
+        time: selectedIndicatorData?.requiresTime ? time : undefined,
+        visibleToMedics,
+      };
+
+      await patientIndicatorAPI.createPatientIndicatorValue(
+        patientId,
+        user.id,
+        formData,
+      );
 
       toast({
         title: "Sucesso",
         description: "Indicador adicionado com sucesso",
       });
 
-      navigate(`/pacientes/${patientId}`);
+      // Redirecionar para a lista de indicadores do paciente
+      navigate(`/pacientes/${patientId}/indicadores`);
     } catch (error) {
       toast({
         variant: "destructive",
