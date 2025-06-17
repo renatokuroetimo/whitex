@@ -4,6 +4,7 @@ export interface User {
   name?: string;
   profession: "medico" | "paciente";
   crm?: string;
+  profileImage?: string;
   createdAt: string;
 }
 
