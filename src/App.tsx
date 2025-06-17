@@ -12,6 +12,8 @@ import AddCRM from "./pages/AddCRM";
 import Dashboard from "./pages/Dashboard";
 import ProfilePage from "./pages/ProfilePage";
 import Pacientes from "./pages/Pacientes";
+import PatientProfile from "./pages/PatientProfile";
+import PatientForm from "./pages/PatientForm";
 import Indicadores from "./pages/Indicadores";
 import NotFound from "./pages/NotFound";
 
@@ -58,6 +60,30 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Indicadores />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/pacientes/novo"
+              element={
+                <ProtectedRoute>
+                  <PatientForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/pacientes/:id"
+              element={
+                <ProtectedRoute>
+                  <PatientProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/pacientes/:id/editar"
+              element={
+                <ProtectedRoute>
+                  <PatientForm />
                 </ProtectedRoute>
               }
             />
