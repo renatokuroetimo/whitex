@@ -129,179 +129,149 @@ const PatientProfile = () => {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <div className="hidden lg:block">
-        <Sidebar />
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Header with back arrow */}
+      <div className="p-4 sm:p-6">
+        <button
+          onClick={() => navigate("/pacientes")}
+          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+        >
+          <ArrowLeft className="h-5 w-5 text-gray-600" />
+        </button>
       </div>
 
-      <div className="flex-1 overflow-auto">
-        <div className="p-4 sm:p-6 lg:p-8">
-          {/* Header */}
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => navigate("/pacientes")}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <ArrowLeft className="h-5 w-5 text-gray-600" />
-              </button>
-              <h1 className="text-2xl font-semibold text-gray-900">
-                {patient.name}
-              </h1>
-            </div>
-            <button
-              onClick={() => navigate(-1)}
-              className="text-sm text-blue-600 hover:text-blue-800"
-            >
-              ← Voltar
-            </button>
+      {/* Main content */}
+      <div className="flex-1 flex items-start justify-center px-4 sm:px-6">
+        <div className="w-full max-w-lg mx-auto">
+          {/* Title */}
+          <div className="text-center mb-8">
+            <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+              {patient.name}
+            </h1>
+            <p className="text-sm text-gray-600">
+              {patient.age} anos, {patient.city} - {patient.state}
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
-            {/* Left Column - Patient Info */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Patient Card */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center">
-                    <span className="text-white text-xl font-semibold">
-                      {getInitials(patient.name)}
-                    </span>
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-semibold text-gray-900">
-                      {patient.name}
-                    </h2>
-                    <p className="text-gray-600">{patient.age} anos</p>
-                    <p className="text-gray-600">
-                      {patient.city}, {patient.state}
-                    </p>
-                  </div>
-                </div>
+          {/* Patient Avatar */}
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-white text-2xl font-semibold">
+                {getInitials(patient.name)}
+              </span>
+            </div>
+          </div>
 
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 mb-4">
-                  Ver indicadores
-                </Button>
+          {/* Main Actions */}
+          <div className="space-y-4 mb-8">
+            <Button className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md">
+              Ver indicadores
+            </Button>
+          </div>
+
+          {/* Patient Information Card */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Informações do Paciente
+            </h3>
+
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Nome:</span>
+                <span className="font-medium text-gray-900">
+                  {patient.name}
+                </span>
               </div>
-
-              {/* Diagnoses */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Diagnósticos
-                  </h3>
-                </div>
-
-                {diagnoses.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    <p>Nenhum diagnóstico registrado</p>
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                            Status
-                          </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                            Data
-                          </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                            Código
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200">
-                        {diagnoses.map((diagnosis) => (
-                          <tr key={diagnosis.id}>
-                            <td className="px-4 py-3">
-                              <Badge
-                                className={getStatusColor(diagnosis.status)}
-                              >
-                                {diagnosis.status}
-                              </Badge>
-                            </td>
-                            <td className="px-4 py-3 text-sm text-gray-900">
-                              {diagnosis.date}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-gray-900">
-                              {diagnosis.code}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
+              <div className="flex justify-between">
+                <span className="text-gray-600">Idade:</span>
+                <span className="font-medium text-gray-900">
+                  {patient.age} anos
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Cidade:</span>
+                <span className="font-medium text-gray-900">
+                  {patient.city}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Estado:</span>
+                <span className="font-medium text-gray-900">
+                  {patient.state}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Peso:</span>
+                <span className="font-medium text-gray-900">
+                  {patient.weight}kg
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Status:</span>
+                <Badge className="bg-green-100 text-green-800">
+                  {patient.status.toUpperCase()}
+                </Badge>
               </div>
             </div>
 
-            {/* Right Column - Profile Details */}
-            <div className="space-y-6">
-              {/* Profile Card */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Perfil
-                  </h3>
-                  <button
-                    onClick={() => navigate(`/pacientes/${patient.id}/editar`)}
-                    className="text-blue-600 hover:text-blue-800 text-sm"
-                  >
-                    Editar
-                  </button>
-                </div>
+            <div className="mt-6 pt-4 border-t border-gray-200">
+              <button
+                onClick={() => navigate(`/pacientes/${patient.id}/editar`)}
+                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+              >
+                Editar perfil
+              </button>
+            </div>
+          </div>
 
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-sm text-gray-500">Dados pessoais</p>
-                    <div className="mt-2 space-y-2 text-sm">
-                      <p>
-                        <strong>Nome:</strong> {patient.name}
-                      </p>
-                      <p>
-                        <strong>Idade:</strong> {patient.age} anos
-                      </p>
-                      <p>
-                        <strong>Altura:</strong> 160cm
-                      </p>
-                      <p>
-                        <strong>Peso:</strong> {patient.weight}kg
-                      </p>
-                    </div>
-                  </div>
+          {/* Diagnoses Section */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Diagnósticos
+            </h3>
 
-                  <div>
-                    <p className="text-sm text-gray-500">Endereço</p>
-                    <div className="mt-2 text-sm">
-                      <p>
-                        {patient.city}, {patient.state}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className="text-sm text-gray-500">Nota</p>
-                    <div className="mt-2 text-sm text-gray-600">
-                      <p>Paciente precisa ficar em repouso.</p>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={() => setShowDeleteDialog(true)}
-                    className="text-red-600 hover:text-red-800 text-sm"
-                  >
-                    Deletar perfil
-                  </button>
-                </div>
+            {diagnoses.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <p>Nenhum diagnóstico registrado</p>
               </div>
+            ) : (
+              <div className="space-y-3">
+                {diagnoses.map((diagnosis) => (
+                  <div
+                    key={diagnosis.id}
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  >
+                    <div className="flex-1">
+                      <Badge className={getStatusColor(diagnosis.status)}>
+                        {diagnosis.status}
+                      </Badge>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {diagnosis.date}
+                      </p>
+                    </div>
+                    <span className="text-sm font-medium text-gray-900">
+                      {diagnosis.code}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
-              {/* Add Indicator Button */}
-              <Button className="w-full bg-green-600 hover:bg-green-700">
-                <Plus className="h-4 w-4 mr-2" />
-                Adicionar indicador
-              </Button>
+          {/* Actions */}
+          <div className="space-y-3 mb-8">
+            <Button className="w-full bg-green-600 hover:bg-green-700">
+              <Plus className="h-4 w-4 mr-2" />
+              Adicionar indicador
+            </Button>
+
+            <div className="text-center">
+              <button
+                onClick={() => setShowDeleteDialog(true)}
+                className="text-red-600 hover:text-red-800 text-sm"
+              >
+                Deletar perfil
+              </button>
             </div>
           </div>
         </div>
