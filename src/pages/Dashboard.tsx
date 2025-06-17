@@ -57,19 +57,27 @@ const Dashboard = () => {
               <p className="text-gray-500 text-sm mb-4">
                 Gerencie seus pacientes
               </p>
-              <Button variant="outline" className="w-full">
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => navigate("/pacientes")}
+              >
                 Ver Pacientes
               </Button>
             </div>
           </div>
 
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="font-medium text-gray-900 mb-4">Relatórios</h3>
+            <h3 className="font-medium text-gray-900 mb-4">Indicadores</h3>
             <div className="text-center py-8">
               <p className="text-gray-500 text-sm mb-4">
-                Visualize indicadores
+                Gerencie seus indicadores
               </p>
-              <Button variant="outline" className="w-full">
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => navigate("/indicadores")}
+              >
                 Ver Indicadores
               </Button>
             </div>
