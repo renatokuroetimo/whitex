@@ -14,4 +14,21 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    outDir: "dist",
+    sourcemap: mode === "development",
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ["react", "react-dom"],
+          router: ["react-router-dom"],
+          ui: ["@radix-ui/react-accordion", "@radix-ui/react-dialog"],
+        },
+      },
+    },
+  },
+  preview: {
+    port: 3000,
+    host: true,
+  },
 }));
