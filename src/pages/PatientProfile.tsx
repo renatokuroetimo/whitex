@@ -249,14 +249,14 @@ const PatientProfile = () => {
                 </div>
 
                 {/* Nota */}
-                <div className="mb-6">
-                  <h3 className="text-sm font-medium text-gray-700 mb-3">
-                    Nota
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    Paciente precisa ficar em repouso.
-                  </p>
-                </div>
+                {patient.notes && (
+                  <div className="mb-6">
+                    <h3 className="text-sm font-medium text-gray-700 mb-3">
+                      Nota
+                    </h3>
+                    <p className="text-sm text-gray-600">{patient.notes}</p>
+                  </div>
+                )}
 
                 {/* Actions */}
                 <div className="flex flex-col sm:flex-row gap-3">
