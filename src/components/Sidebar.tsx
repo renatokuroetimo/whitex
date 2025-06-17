@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Home, Users, BarChart3, LogOut, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -36,6 +36,35 @@ const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { logout, user } = useAuth();
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+
+  // Carregar imagem de perfil do localStorage
+  useEffect(() => {
+    if (user?.id) {
+      const savedImage = localStorage.getItem(`profile_image_${user.id}`);
+      setProfileImage(savedImage);
+    }
+  }, [user?.id]);
+
+  // Escutar mudanças na imagem de perfil
+  useEffect(() => {
+    const handleStorageChange = () => {
+      if (user?.id) {
+        const savedImage = localStorage.getItem(`profile_image_${user.id}`);
+        setProfileImage(savedImage);
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    // Também escutar mudanças locais
+    const interval = setInterval(handleStorageChange, 1000);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [user?.id]);
 
   const handleNavigation = (path: string) => {
     navigate(path);
