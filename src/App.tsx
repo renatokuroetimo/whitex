@@ -10,6 +10,9 @@ import Login from "./pages/Login";
 import SelectProfession from "./pages/SelectProfession";
 import AddCRM from "./pages/AddCRM";
 import Dashboard from "./pages/Dashboard";
+import ProfilePage from "./pages/ProfilePage";
+import Pacientes from "./pages/Pacientes";
+import Indicadores from "./pages/Indicadores";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +34,30 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/pacientes"
+              element={
+                <ProtectedRoute>
+                  <Pacientes />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/indicadores"
+              element={
+                <ProtectedRoute>
+                  <Indicadores />
                 </ProtectedRoute>
               }
             />
