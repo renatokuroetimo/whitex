@@ -30,23 +30,34 @@ const PatientProfile = () => {
 
     setIsLoading(true);
     try {
-      const [patientData, diagnosesData] = await Promise.all([
-        patientAPI.getPatientById(id),
-        patientAPI.getPatientDiagnoses(id),
-      ]);
+      try {
+        const [patientData, diagnosesData] = await Promise.all([
+          patientAPI.getPatientById(id),
+          patientAPI.getPatientDiagnoses(id),
+        ]);
 
-      if (!patientData) {
+        if (!patientData) {
+          toast({
+            variant: "destructive",
+            title: "Erro",
+            description: "Paciente não encontrado",
+          });
+          navigate("/pacientes");
+          return;
+        }
+
+        setPatient(patientData);
+        setDiagnoses(diagnosesData);
+      } catch (apiError) {
+        console.error("Error loading patient data:", apiError);
         toast({
           variant: "destructive",
           title: "Erro",
-          description: "Paciente não encontrado",
+          description: "Erro ao carregar dados do paciente",
         });
         navigate("/pacientes");
         return;
       }
-
-      setPatient(patientData);
-      setDiagnoses(diagnosesData);
     } catch (error) {
       toast({
         variant: "destructive",

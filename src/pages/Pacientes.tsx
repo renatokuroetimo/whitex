@@ -39,8 +39,8 @@ const Pacientes = () => {
 
     setIsLoading(true);
     try {
-      // Inicializar dados mock se necessário
-      patientAPI.initializeMockData(user.id);
+      // Inicializar sem dados mock - começar com lista vazia
+      // patientAPI.initializeMockData(user.id);
 
       const result = await patientAPI.getPatients(user.id, page, 10, search);
       setPatients(result.patients);
@@ -226,19 +226,34 @@ const Pacientes = () => {
                     </Button>
                   )}
 
-                  {/* Debug button - remove in production */}
+                  {/* Debug buttons - remove in production */}
                   {process.env.NODE_ENV === "development" && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        patientAPI.clearAllData();
-                        loadPatients();
-                      }}
-                      className="text-gray-600 border-gray-200 hover:bg-gray-50"
-                    >
-                      🧪 Testar Estado Vazio
-                    </Button>
+                    <>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          patientAPI.clearAllData();
+                          loadPatients();
+                        }}
+                        className="text-gray-600 border-gray-200 hover:bg-gray-50"
+                      >
+                        🧪 Limpar Dados
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          if (user?.id) {
+                            patientAPI.initializeMockData(user.id);
+                            loadPatients();
+                          }
+                        }}
+                        className="text-green-600 border-green-200 hover:bg-green-50"
+                      >
+                        🧪 Criar Dados Teste
+                      </Button>
+                    </>
                   )}
 
                   <Button

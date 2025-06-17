@@ -37,11 +37,10 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header with back arrow */}
-      <div className="p-4">
-        <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-          <ArrowLeft className="h-5 w-5 text-gray-600" />
-        </button>
+      {/* Header with WhiteX branding */}
+      <div className="p-6 text-center">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">WhiteX</h1>
+        <p className="text-sm text-gray-600">Sistema Médico Completo</p>
       </div>
 
       {/* Main content */}
