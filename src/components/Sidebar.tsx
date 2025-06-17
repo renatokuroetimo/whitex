@@ -95,8 +95,16 @@ const Sidebar: React.FC = () => {
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-              <User className="w-4 h-4 text-gray-600" />
+            <div className="w-8 h-8 bg-gray-100 rounded-full overflow-hidden flex items-center justify-center">
+              {profileImage ? (
+                <img
+                  src={profileImage}
+                  alt="Foto de perfil"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <User className="w-4 h-4 text-gray-600" />
+              )}
             </div>
             <span className="text-sm text-gray-600">Meu Perfil</span>
           </div>
