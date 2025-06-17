@@ -295,8 +295,7 @@ class PatientAPI {
   async getPatientDiagnoses(patientId: string): Promise<Diagnosis[]> {
     await this.delay(200);
     const diagnoses = this.getStoredDiagnoses();
-    return diagnoses.filter((d) => !ids.includes(d.patientId));
-    this.saveDiagnoses(filteredDiagnoses);
+    return diagnoses.filter((d) => d.patientId === patientId);
   }
 
   // Método para limpar todos os dados (útil para testes)
