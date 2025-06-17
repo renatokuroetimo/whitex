@@ -116,7 +116,6 @@ const AddCRM = () => {
               {isLoading ? "Criando conta..." : "Criar uma conta"}
             </Button>
           </form>
-          </div>
         </div>
       </div>
     </div>
