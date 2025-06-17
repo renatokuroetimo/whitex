@@ -149,34 +149,12 @@ const PatientProfile = () => {
               {patient.name}
             </h1>
             <p className="text-sm text-gray-600">
-              {patient.age} anos • {patient.city}, {patient.state}
+              Paciente ativo • {patient.city}, {patient.state}
             </p>
           </div>
 
-          {/* Patient Avatar */}
-          <div className="text-center mb-6">
-            <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto">
-              <span className="text-white text-xl font-semibold">
-                {getInitials(patient.name)}
-              </span>
-            </div>
-          </div>
-
-          {/* Patient Details Form */}
-          <div className="space-y-4 mb-6">
-            {/* Weight Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Peso
-              </label>
-              <input
-                type="text"
-                value={`${patient.weight} kg`}
-                readOnly
-                className="w-full h-12 px-3 border border-gray-300 rounded-md bg-gray-50 text-gray-900"
-              />
-            </div>
-
+          {/* Form */}
+          <div className="space-y-4">
             {/* Age Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -186,26 +164,42 @@ const PatientProfile = () => {
                 type="text"
                 value={`${patient.age} anos`}
                 readOnly
-                className="w-full h-12 px-3 border border-gray-300 rounded-md bg-gray-50 text-gray-900"
+                placeholder="Idade"
+                className="w-full h-12 px-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-blue focus:border-brand-blue"
               />
             </div>
+
+            {/* Weight Field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Peso
+              </label>
+              <input
+                type="text"
+                value={`${patient.weight} kg`}
+                readOnly
+                placeholder="Peso"
+                className="w-full h-12 px-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-blue focus:border-brand-blue"
+              />
+            </div>
+
+            {/* Main Action Button */}
+            <Button className="w-full h-12 bg-brand-blue hover:bg-blue-600 text-white font-medium rounded-md transition-colors">
+              Ver indicadores
+            </Button>
+
+            {/* Status text */}
+            <p className="text-xs text-gray-500 text-center">
+              {diagnoses.length > 0
+                ? `Paciente possui ${diagnoses.length} diagnóstico(s)`
+                : "Paciente sem diagnósticos registrados"}
+            </p>
           </div>
-
-          {/* Main Action Button */}
-          <Button className="w-full h-12 bg-brand-blue hover:bg-blue-600 text-white font-medium rounded-md transition-colors">
-            Ver indicadores
-          </Button>
-
-          {/* Status text */}
-          <p className="text-xs text-gray-500 text-center mt-4 mb-6">
-            Status do paciente:{" "}
-            <span className="text-green-600 font-medium">{patient.status}</span>
-          </p>
 
           {/* Divider */}
           <div className="my-6">
             <p className="text-sm text-gray-500 text-center">
-              Ou gerencie o perfil usando:
+              Ou gerencie o paciente usando:
             </p>
           </div>
 
@@ -218,7 +212,7 @@ const PatientProfile = () => {
               className="w-full h-12 border border-gray-300 hover:bg-gray-50 text-gray-700 font-normal flex items-center justify-center gap-3"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
               </svg>
               Editar perfil do paciente
             </Button>
