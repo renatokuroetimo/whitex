@@ -332,7 +332,7 @@ const Pacientes = () => {
                 ) : (
                   patients.map((patient) => (
                     <tr key={patient.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4">
+                      <td className="px-4 sm:px-6 py-4">
                         <Checkbox
                           checked={selectedPatients.includes(patient.id)}
                           onCheckedChange={(checked) =>
@@ -340,12 +340,12 @@ const Pacientes = () => {
                           }
                         />
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">
                           {patient.name}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                         <Badge
                           variant="secondary"
                           className="bg-green-100 text-green-800"
@@ -353,11 +353,11 @@ const Pacientes = () => {
                           {patient.status.toUpperCase()}
                         </Badge>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex items-center justify-end gap-2">
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div className="flex flex-col sm:flex-row items-end sm:items-center justify-end gap-1 sm:gap-2">
                           <button
                             onClick={() => navigate(`/pacientes/${patient.id}`)}
-                            className="text-blue-600 hover:text-blue-800 text-sm"
+                            className="text-blue-600 hover:text-blue-800 text-xs sm:text-sm whitespace-nowrap"
                           >
                             Ver perfil
                           </button>
@@ -365,7 +365,7 @@ const Pacientes = () => {
                             onClick={() =>
                               navigate(`/pacientes/${patient.id}/editar`)
                             }
-                            className="text-blue-600 hover:text-blue-800 text-sm"
+                            className="text-blue-600 hover:text-blue-800 text-xs sm:text-sm whitespace-nowrap"
                           >
                             Editar perfil
                           </button>
@@ -380,8 +380,8 @@ const Pacientes = () => {
 
           {/* Pagination */}
           {pagination.totalPages > 1 && (
-            <div className="px-6 py-4 border-t border-gray-200">
-              <div className="flex items-center justify-between">
+            <div className="px-4 sm:px-6 py-4 border-t border-gray-200">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
                 <div className="text-sm text-gray-500">
                   Mostrando{" "}
                   {Math.min(pagination.itemsPerPage, pagination.totalItems)} de{" "}
@@ -396,7 +396,7 @@ const Pacientes = () => {
 
           {/* Bottom Action - Only show if there are patients or search results */}
           {patients.length > 0 && (
-            <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+            <div className="px-4 sm:px-6 py-4 border-t border-gray-200 bg-gray-50">
               <Button
                 onClick={() => navigate("/pacientes/novo")}
                 className="w-full bg-blue-600 hover:bg-blue-700"
