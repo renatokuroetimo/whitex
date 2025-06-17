@@ -1,86 +1,71 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { indicatorAPI } from "@/lib/indicator-api";
+import { toast } from "@/hooks/use-toast";
 
 const StandardIndicators = () => {
   const navigate = useNavigate();
+  const [indicators, setIndicators] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const standardIndicators = [
-    {
-      id: 1,
-      categoryName: "Sinais Vitais",
-      subcategoryName: "Pressão Arterial",
-      parameter: "Sistólica",
-      unitSymbol: "mmHg",
-      requiresDate: true,
-      requiresTime: true,
-    },
-    {
-      id: 2,
-      categoryName: "Sinais Vitais",
-      subcategoryName: "Pressão Arterial",
-      parameter: "Diastólica",
-      unitSymbol: "mmHg",
-      requiresDate: true,
-      requiresTime: true,
-    },
-    {
-      id: 3,
-      categoryName: "Sinais Vitais",
-      subcategoryName: "Frequência Cardíaca",
-      parameter: "Batimentos",
-      unitSymbol: "bpm",
-      requiresDate: true,
-      requiresTime: false,
-    },
-    {
-      id: 4,
-      categoryName: "Sinais Vitais",
-      subcategoryName: "Temperatura",
-      parameter: "Corporal",
-      unitSymbol: "°C",
-      requiresDate: true,
-      requiresTime: true,
-    },
-    {
-      id: 5,
-      categoryName: "Exames Laboratoriais",
-      subcategoryName: "Glicemia",
-      parameter: "Jejum",
-      unitSymbol: "mg/dL",
-      requiresDate: true,
-      requiresTime: false,
-    },
-    {
-      id: 6,
-      categoryName: "Exames Laboratoriais",
-      subcategoryName: "Colesterol",
-      parameter: "Total",
-      unitSymbol: "mg/dL",
-      requiresDate: true,
-      requiresTime: false,
-    },
-    {
-      id: 7,
-      categoryName: "Medidas Antropométricas",
-      subcategoryName: "Peso",
-      parameter: "Corporal",
-      unitSymbol: "kg",
-      requiresDate: true,
-      requiresTime: false,
-    },
-    {
-      id: 8,
-      categoryName: "Medidas Antropométricas",
-      subcategoryName: "Altura",
-      parameter: "Estatura",
-      unitSymbol: "cm",
-      requiresDate: false,
-      requiresTime: false,
-    },
-  ];
+  useEffect(() => {
+    loadStandardIndicators();
+  }, []);
+
+  const loadStandardIndicators = async () => {
+    setIsLoading(true);
+    try {
+      const result = await indicatorAPI.getStandardIndicators();
+      setIndicators(result);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Erro ao carregar indicadores padrão",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVisibilityChange = async (id: string, visible: boolean) => {
+    try {
+      await indicatorAPI.updateStandardIndicatorVisibility(id, visible);
+      setIndicators((prev) =>
+        prev.map((ind) => (ind.id === id ? { ...ind, visible } : ind)),
+      );
+      toast({
+        title: "Sucesso",
+        description: `Indicador ${visible ? "ativado" : "desativado"} com sucesso`,
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Erro ao atualizar indicador",
+      });
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen bg-gray-50">
+        <div className="hidden lg:block">
+          <Sidebar />
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
+            <p className="text-gray-600">Carregando indicadores padrão...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -112,7 +97,7 @@ const StandardIndicators = () => {
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-gray-900">
-                  Indicadores do Sistema ({standardIndicators.length})
+                  Indicadores do Sistema ({indicators.length})
                 </h2>
               </div>
 
@@ -120,6 +105,9 @@ const StandardIndicators = () => {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-gray-200">
+                      <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm">
+                        Visível
+                      </th>
                       <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm">
                         Categoria
                       </th>
@@ -138,11 +126,19 @@ const StandardIndicators = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {standardIndicators.map((indicator) => (
+                    {indicators.map((indicator) => (
                       <tr
                         key={indicator.id}
                         className="border-b border-gray-100 hover:bg-gray-50"
                       >
+                        <td className="py-3 px-4">
+                          <Checkbox
+                            checked={indicator.visible}
+                            onCheckedChange={(checked) =>
+                              handleVisibilityChange(indicator.id, !!checked)
+                            }
+                          />
+                        </td>
                         <td className="py-3 px-4">
                           <span className="text-sm font-medium text-gray-900">
                             {indicator.categoryName}

@@ -270,7 +270,12 @@ const PatientProfile = () => {
 
                 {/* Adicionar Indicador Button */}
                 <div className="mt-6">
-                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+                  <Button
+                    onClick={() =>
+                      navigate(`/pacientes/${patient.id}/adicionar-indicador`)
+                    }
+                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                  >
                     Adicionar indicador
                   </Button>
                 </div>

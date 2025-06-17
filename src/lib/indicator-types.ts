@@ -25,6 +25,8 @@ export interface Indicator {
   unitOfMeasureId: string;
   requiresTime: boolean;
   requiresDate: boolean;
+  visible?: boolean;
+  visibleToMedics?: boolean;
   doctorId: string;
   createdAt: string;
   updatedAt: string;
@@ -37,6 +39,8 @@ export interface IndicatorFormData {
   unitOfMeasureId: string;
   requiresTime: boolean;
   requiresDate: boolean;
+  visible?: boolean;
+  visibleToMedics?: boolean;
 }
 
 export interface IndicatorWithDetails extends Indicator {
@@ -44,4 +48,15 @@ export interface IndicatorWithDetails extends Indicator {
   subcategoryName: string;
   unitOfMeasureName: string;
   unitOfMeasureSymbol: string;
+}
+
+export interface StandardIndicator {
+  id: string;
+  categoryName: string;
+  subcategoryName: string;
+  parameter: string;
+  unitSymbol: string;
+  requiresDate: boolean;
+  requiresTime: boolean;
+  visible: boolean;
 }

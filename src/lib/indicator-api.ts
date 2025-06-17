@@ -13,6 +13,7 @@ class IndicatorAPI {
     SUBCATEGORIES: "medical_app_subcategories",
     UNITS: "medical_app_units",
     INDICATORS: "medical_app_indicators",
+    STANDARD_INDICATORS: "medical_app_standard_indicators",
   };
 
   // Simula delay de rede
@@ -307,12 +308,145 @@ class IndicatorAPI {
     this.saveIndicators(filteredIndicators);
   }
 
+  // === STANDARD INDICATORS ===
+  private getStoredStandardIndicators(): any[] {
+    try {
+      const indicators = localStorage.getItem(
+        this.STORAGE_KEYS.STANDARD_INDICATORS,
+      );
+      return indicators ? JSON.parse(indicators) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  private saveStandardIndicators(indicators: any[]): void {
+    localStorage.setItem(
+      this.STORAGE_KEYS.STANDARD_INDICATORS,
+      JSON.stringify(indicators),
+    );
+  }
+
+  async getStandardIndicators(): Promise<any[]> {
+    await this.delay(200);
+    let indicators = this.getStoredStandardIndicators();
+
+    // Inicializar com indicadores padrão se não existir
+    if (indicators.length === 0) {
+      indicators = [
+        {
+          id: "std1",
+          categoryName: "Sinais Vitais",
+          subcategoryName: "Pressão Arterial",
+          parameter: "Sistólica",
+          unitSymbol: "mmHg",
+          requiresDate: true,
+          requiresTime: true,
+          visible: true,
+        },
+        {
+          id: "std2",
+          categoryName: "Sinais Vitais",
+          subcategoryName: "Pressão Arterial",
+          parameter: "Diastólica",
+          unitSymbol: "mmHg",
+          requiresDate: true,
+          requiresTime: true,
+          visible: true,
+        },
+        {
+          id: "std3",
+          categoryName: "Sinais Vitais",
+          subcategoryName: "Frequência Cardíaca",
+          parameter: "Batimentos",
+          unitSymbol: "bpm",
+          requiresDate: true,
+          requiresTime: false,
+          visible: true,
+        },
+        {
+          id: "std4",
+          categoryName: "Sinais Vitais",
+          subcategoryName: "Temperatura",
+          parameter: "Corporal",
+          unitSymbol: "°C",
+          requiresDate: true,
+          requiresTime: true,
+          visible: true,
+        },
+        {
+          id: "std5",
+          categoryName: "Exames Laboratoriais",
+          subcategoryName: "Glicemia",
+          parameter: "Jejum",
+          unitSymbol: "mg/dL",
+          requiresDate: true,
+          requiresTime: false,
+          visible: true,
+        },
+        {
+          id: "std6",
+          categoryName: "Exames Laboratoriais",
+          subcategoryName: "Colesterol",
+          parameter: "Total",
+          unitSymbol: "mg/dL",
+          requiresDate: true,
+          requiresTime: false,
+          visible: true,
+        },
+        {
+          id: "std7",
+          categoryName: "Medidas Antropométricas",
+          subcategoryName: "Peso",
+          parameter: "Corporal",
+          unitSymbol: "kg",
+          requiresDate: true,
+          requiresTime: false,
+          visible: true,
+        },
+        {
+          id: "std8",
+          categoryName: "Medidas Antropométricas",
+          subcategoryName: "Altura",
+          parameter: "Estatura",
+          unitSymbol: "cm",
+          requiresDate: false,
+          requiresTime: false,
+          visible: true,
+        },
+      ];
+      this.saveStandardIndicators(indicators);
+    }
+
+    return indicators;
+  }
+
+  async updateStandardIndicatorVisibility(
+    id: string,
+    visible: boolean,
+  ): Promise<void> {
+    await this.delay(200);
+    const indicators = this.getStoredStandardIndicators();
+    const indicatorIndex = indicators.findIndex((ind) => ind.id === id);
+
+    if (indicatorIndex !== -1) {
+      indicators[indicatorIndex].visible = visible;
+      this.saveStandardIndicators(indicators);
+    }
+  }
+
+  async getVisibleStandardIndicators(): Promise<any[]> {
+    const indicators = await this.getStandardIndicators();
+    return indicators.filter((ind) => ind.visible);
+  }
+
   // Método para limpar todos os dados (útil para testes)
   clearAllData(): void {
     localStorage.removeItem(this.STORAGE_KEYS.CATEGORIES);
     localStorage.removeItem(this.STORAGE_KEYS.SUBCATEGORIES);
     localStorage.removeItem(this.STORAGE_KEYS.UNITS);
     localStorage.removeItem(this.STORAGE_KEYS.INDICATORS);
+    localStorage.removeItem(this.STORAGE_KEYS.STANDARD_INDICATORS);
   }
 }
 
