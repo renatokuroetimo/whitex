@@ -2,10 +2,28 @@ import React, { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const handleCreateAccount = () => {
+    if (email && password) {
+      // Process account creation
+      console.log("Creating account with:", { email, password });
+      // Navigate to profession selection
+      navigate("/select-profession");
+    }
+  };
+
+  const handleSocialLogin = (provider: string) => {
+    // Process social login
+    console.log(`Login with ${provider}`);
+    // Navigate to profession selection
+    navigate("/select-profession");
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -71,7 +89,10 @@ const Index = () => {
             </div>
 
             {/* Create account button */}
-            <Button className="w-full h-12 bg-brand-blue hover:bg-blue-600 text-white font-medium rounded-md transition-colors">
+            <Button
+              onClick={handleCreateAccount}
+              className="w-full h-12 bg-brand-blue hover:bg-blue-600 text-white font-medium rounded-md transition-colors"
+            >
               Criar uma conta
             </Button>
 
@@ -94,6 +115,7 @@ const Index = () => {
             <div className="space-y-3">
               {/* Google button */}
               <Button
+                onClick={() => handleSocialLogin("Google")}
                 variant="outline"
                 className="w-full h-12 border border-gray-300 hover:bg-gray-50 text-gray-700 font-normal flex items-center justify-center gap-3"
               >
@@ -120,6 +142,7 @@ const Index = () => {
 
               {/* Facebook button */}
               <Button
+                onClick={() => handleSocialLogin("Facebook")}
                 variant="outline"
                 className="w-full h-12 border border-gray-300 hover:bg-gray-50 text-gray-700 font-normal flex items-center justify-center gap-3"
               >
