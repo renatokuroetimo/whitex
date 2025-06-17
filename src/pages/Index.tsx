@@ -21,29 +21,16 @@ const Index = () => {
   };
 
   const handleSocialLogin = (provider: string) => {
-    // For social login, we'll simulate by going directly to profession selection
-    console.log(`Login with ${provider}`);
-    sessionStorage.setItem(
-      "temp_registration",
-      JSON.stringify({
-        email: `user@${provider.toLowerCase()}.com`,
-        password: "social_login",
-        provider,
-      }),
-    );
-    navigate("/select-profession");
+    alert("Em desenvolvimento");
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header with WhiteX branding */}
       <div className="p-4 sm:p-6 text-center">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+        <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-8">
           WhiteX
         </h1>
-        <p className="text-xs sm:text-sm text-gray-600">
-          Sistema Médico Completo
-        </p>
       </div>
 
       {/* Main content */}
