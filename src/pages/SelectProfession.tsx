@@ -1,20 +1,55 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 const SelectProfession = () => {
   const [selectedProfession, setSelectedProfession] = useState<string>("");
+  const [registrationData, setRegistrationData] = useState<any>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Get temporary registration data
+    const tempData = sessionStorage.getItem("temp_registration");
+    if (!tempData) {
+      // If no temp data, redirect to sign-up
+      navigate("/");
+      return;
+    }
+    setRegistrationData(JSON.parse(tempData));
+  }, [navigate]);
 
   const handleContinue = () => {
     if (selectedProfession === "medico") {
+      // Store profession selection and go to CRM page
+      sessionStorage.setItem(
+        "temp_registration",
+        JSON.stringify({
+          ...registrationData,
+          profession: "medico",
+        }),
+      );
       navigate("/add-crm");
     } else if (selectedProfession === "paciente") {
-      // Navigate to patient dashboard or main app
-      // For now, just log it
-      console.log("Patient selected - redirect to main app");
+      // Store profession and complete registration
+      sessionStorage.setItem(
+        "temp_registration",
+        JSON.stringify({
+          ...registrationData,
+          profession: "paciente",
+        }),
+      );
+      // For patients, complete registration directly
+      completeRegistration();
     }
+  };
+
+  const completeRegistration = () => {
+    // This would complete registration for patients
+    // For now, simulate successful registration
+    sessionStorage.removeItem("temp_registration");
+    console.log("Patient registration completed");
+    navigate("/dashboard");
   };
 
   const handleBack = () => {
