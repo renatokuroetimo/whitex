@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
@@ -15,6 +15,7 @@ import { brazilStates, getCitiesByState } from "@/lib/brazil-locations";
 import { phoneMask, removeMask } from "@/lib/masks";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { useNavigate } from "react-router-dom";
+import { Camera, User } from "lucide-react";
 
 interface ProfileData {
   name: string;
@@ -32,6 +33,8 @@ const ProfilePage: React.FC = () => {
   const [selectedState, setSelectedState] = useState("");
   const [availableCities, setAvailableCities] = useState<string[]>([]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState<ProfileData>({
     name: "",
     crm: user?.crm || "",
@@ -51,6 +54,12 @@ const ProfilePage: React.FC = () => {
         setSelectedState(profileData.state);
         setAvailableCities(getCitiesByState(profileData.state));
       }
+    }
+
+    // Carregar imagem de perfil
+    const savedImage = localStorage.getItem(`profile_image_${user?.id}`);
+    if (savedImage) {
+      setProfileImage(savedImage);
     }
   }, [user?.id]);
 
@@ -162,6 +171,57 @@ const ProfilePage: React.FC = () => {
     setShowDeleteDialog(false);
   };
 
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Verificar tamanho do arquivo (máximo 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          variant: "destructive",
+          title: "Erro",
+          description: "A imagem deve ter no máximo 5MB",
+        });
+        return;
+      }
+
+      // Verificar tipo do arquivo
+      if (!file.type.startsWith("image/")) {
+        toast({
+          variant: "destructive",
+          title: "Erro",
+          description: "Por favor, selecione apenas arquivos de imagem",
+        });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setProfileImage(result);
+        // Salvar imagem no localStorage
+        localStorage.setItem(`profile_image_${user?.id}`, result);
+        toast({
+          title: "Sucesso!",
+          description: "Imagem de perfil atualizada",
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const removeProfileImage = () => {
+    setProfileImage(null);
+    localStorage.removeItem(`profile_image_${user?.id}`);
+    toast({
+      title: "Sucesso!",
+      description: "Imagem de perfil removida",
+    });
+  };
+
   if (!user) {
     return null;
   }
@@ -175,16 +235,59 @@ const ProfilePage: React.FC = () => {
       <div className="flex-1 overflow-auto">
         <div className="p-4 sm:p-6 lg:p-8">
           <div className="max-w-2xl mx-auto">
-            <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+            <h1 className="text-2xl font-semibold text-gray-900 mb-8">
               Dados pessoais
             </h1>
 
-            {/* Breadcrumb */}
-            <div className="flex items-center gap-2 text-sm text-blue-600 mb-8">
-              <span>Perfil</span>
-            </div>
-
             <div className="bg-white rounded-lg border border-gray-200 p-6">
+              {/* Seção de imagem de perfil */}
+              <div className="mb-8 text-center">
+                <div className="relative inline-block">
+                  <div
+                    className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 border-2 border-gray-200 cursor-pointer hover:border-blue-400 transition-colors"
+                    onClick={handleImageClick}
+                  >
+                    {profileImage ? (
+                      <img
+                        src={profileImage}
+                        alt="Foto de perfil"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <User className="w-8 h-8 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    onClick={handleImageClick}
+                    className="absolute -bottom-1 -right-1 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700 transition-colors"
+                  >
+                    <Camera className="w-4 h-4" />
+                  </button>
+                </div>
+                <div className="mt-3">
+                  <p className="text-sm text-gray-600 mb-2">
+                    Clique na imagem para alterar sua foto de perfil
+                  </p>
+                  {profileImage && (
+                    <button
+                      onClick={removeProfileImage}
+                      className="text-xs text-red-600 hover:text-red-800"
+                    >
+                      Remover foto
+                    </button>
+                  )}
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+              </div>
+
               <div className="mb-6">
                 <h2 className="text-lg font-medium text-gray-900 mb-1">
                   Detalhes do perfil
