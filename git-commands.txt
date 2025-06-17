@@ -1,0 +1,35 @@
+# Cole estes comandos no terminal, um por vez:
+
+# 1. Navegar para a pasta do projeto
+cd /code
+
+# 2. Verificar se está na pasta correta (deve mostrar package.json)
+ls package.json
+
+# 3. Configurar Git (substitua pelos seus dados)
+git config --global user.name "Seu Nome Aqui"
+git config --global user.email "seuemail@exemplo.com"
+
+# 4. Verificar se é repositório Git
+git status
+
+# 5. Se der erro "not a git repository", execute:
+git init
+
+# 6. Adicionar origin (SUBSTITUA SEU-USUARIO pelo seu username do GitHub)
+git remote add origin https://github.com/SEU-USUARIO/medical-auth-system.git
+
+# 7. Adicionar todos os arquivos
+git add .
+
+# 8. Fazer commit
+git commit -m "🚀 Sistema médico completo - pronto para deploy"
+
+# 9. Configurar branch main
+git branch -M main
+
+# 10. Enviar para GitHub
+git push -u origin main
+
+# SUCESSO! 🎉 
+# Agora vá para AWS Amplify e conecte o repositório
