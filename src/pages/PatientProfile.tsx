@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, Edit } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,40 +30,31 @@ const PatientProfile = () => {
 
     setIsLoading(true);
     try {
-      try {
-        const [patientData, diagnosesData] = await Promise.all([
-          patientAPI.getPatientById(id),
-          patientAPI.getPatientDiagnoses(id),
-        ]);
+      const [patientData, diagnosesData] = await Promise.all([
+        patientAPI.getPatientById(id),
+        patientAPI.getPatientDiagnoses(id),
+      ]);
 
-        if (!patientData) {
-          toast({
-            variant: "destructive",
-            title: "Erro",
-            description: "Paciente não encontrado",
-          });
-          navigate("/pacientes");
-          return;
-        }
-
-        setPatient(patientData);
-        setDiagnoses(diagnosesData);
-      } catch (apiError) {
-        console.error("Error loading patient data:", apiError);
+      if (!patientData) {
         toast({
           variant: "destructive",
           title: "Erro",
-          description: "Erro ao carregar dados do paciente",
+          description: "Paciente não encontrado",
         });
         navigate("/pacientes");
         return;
       }
+
+      setPatient(patientData);
+      setDiagnoses(diagnosesData);
     } catch (error) {
+      console.error("Error loading patient data:", error);
       toast({
         variant: "destructive",
         title: "Erro",
         description: "Erro ao carregar dados do paciente",
       });
+      navigate("/pacientes");
     } finally {
       setIsLoading(false);
     }
@@ -97,23 +88,41 @@ const PatientProfile = () => {
       .slice(0, 2);
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusBadge = (status: string) => {
     switch (status) {
       case "Hipertensão":
-        return "bg-green-100 text-green-800";
+        return (
+          <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
+            Hipertensão
+          </Badge>
+        );
       case "Pré-diabetes":
-        return "bg-orange-100 text-orange-800";
+        return (
+          <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">
+            Pré-diabetes
+          </Badge>
+        );
       case "Diabetes":
-        return "bg-red-100 text-red-800";
+        return (
+          <Badge className="bg-red-100 text-red-700 hover:bg-red-100">
+            Diabetes
+          </Badge>
+        );
       default:
-        return "bg-gray-100 text-gray-800";
+        return (
+          <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-100">
+            {status}
+          </Badge>
+        );
     }
   };
 
   if (isLoading) {
     return (
       <div className="flex h-screen bg-gray-50">
-        <Sidebar />
+        <div className="hidden lg:block">
+          <Sidebar />
+        </div>
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
@@ -129,128 +138,211 @@ const PatientProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header with back arrow */}
-      <div className="p-4">
-        <button
-          onClick={() => navigate("/pacientes")}
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-        >
-          <ArrowLeft className="h-5 w-5 text-gray-600" />
-        </button>
+    <div className="flex h-screen bg-gray-50">
+      {/* Sidebar */}
+      <div className="hidden lg:block">
+        <Sidebar />
       </div>
 
-      {/* Main content */}
-      <div className="flex-1 flex items-center justify-center px-4">
-        <div className="w-full max-w-sm">
-          {/* Title */}
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-medium text-gray-900 mb-2">
+      {/* Main Content */}
+      <div className="flex-1 overflow-auto">
+        <div className="p-4 sm:p-6 lg:p-8">
+          {/* Header with back button */}
+          <div className="flex items-center gap-4 mb-6">
+            <button
+              onClick={() => navigate("/pacientes")}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+            >
+              <ArrowLeft className="h-5 w-5" />
+              <span className="text-sm">Voltar</span>
+            </button>
+          </div>
+
+          {/* Patient Name Header */}
+          <div className="mb-8">
+            <h1 className="text-2xl font-semibold text-gray-900">
               {patient.name}
             </h1>
-            <p className="text-sm text-gray-600">
-              Quer editar o perfil?{" "}
-              <button
-                onClick={() => navigate(`/pacientes/${patient.id}/editar`)}
-                className="text-brand-blue hover:underline"
-              >
-                Edite aqui
-              </button>
-            </p>
           </div>
 
-          {/* Form */}
-          <form className="space-y-4">
-            {/* Age Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Idade
-              </label>
-              <input
-                type="text"
-                value={`${patient.age} anos`}
-                readOnly
-                placeholder="Idade"
-                className="w-full h-12 px-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-blue focus:border-brand-blue"
-              />
+          {/* Two Column Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Column - Patient Info */}
+            <div className="lg:col-span-1">
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                {/* Patient Avatar and Basic Info */}
+                <div className="text-center mb-6">
+                  <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center text-white text-xl font-semibold mx-auto mb-4">
+                    {getInitials(patient.name)}
+                  </div>
+                  <h3 className="font-semibold text-gray-900 mb-1">
+                    {patient.name}
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-1">
+                    {patient.age} anos
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {patient.city}, {patient.state}
+                  </p>
+                </div>
+
+                {/* Ver Indicadores Button */}
+                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                  Ver indicadores
+                </Button>
+              </div>
             </div>
 
-            {/* Weight Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Peso
-              </label>
-              <input
-                type="text"
-                value={`${patient.weight} kg`}
-                readOnly
-                placeholder="Peso"
-                className="w-full h-12 px-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-brand-blue focus:border-brand-blue"
-              />
+            {/* Right Column - Profile Details and Actions */}
+            <div className="lg:col-span-2">
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                {/* Profile Header */}
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Perfil
+                  </h2>
+                  <button
+                    onClick={() => navigate(`/pacientes/${patient.id}/editar`)}
+                    className="flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm"
+                  >
+                    Editar
+                  </button>
+                </div>
+
+                {/* Profile Details */}
+                <div className="mb-6">
+                  <h3 className="text-sm font-medium text-gray-700 mb-3">
+                    Dados pessoais
+                  </h3>
+                  <div className="space-y-2 text-sm">
+                    <div>
+                      <span className="text-gray-600">Nome: </span>
+                      <span className="text-gray-900">{patient.name}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Idade: </span>
+                      <span className="text-gray-900">{patient.age} anos</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Altura: </span>
+                      <span className="text-gray-900">180cm</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Peso: </span>
+                      <span className="text-gray-900">{patient.weight}kg</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Endereço */}
+                <div className="mb-6">
+                  <h3 className="text-sm font-medium text-gray-700 mb-3">
+                    Endereço
+                  </h3>
+                  <div className="space-y-2 text-sm">
+                    <div>
+                      <span className="text-gray-900">
+                        {patient.city}, {patient.state}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Nota */}
+                <div className="mb-6">
+                  <h3 className="text-sm font-medium text-gray-700 mb-3">
+                    Nota
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Paciente precisa ficar em repouso.
+                  </p>
+                </div>
+
+                {/* Actions */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <button
+                    onClick={() => setShowDeleteDialog(true)}
+                    className="text-red-600 hover:text-red-800 text-sm"
+                  >
+                    Deletar perfil
+                  </button>
+                </div>
+
+                {/* Adicionar Indicador Button */}
+                <div className="mt-6">
+                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+                    Adicionar indicador
+                  </Button>
+                </div>
+              </div>
             </div>
-
-            {/* Main Action Button */}
-            <Button className="w-full h-12 bg-brand-blue hover:bg-blue-600 text-white font-medium rounded-md transition-colors">
-              Ver indicadores
-            </Button>
-
-            {/* Status text */}
-            <p className="text-xs text-gray-500 text-center">
-              {diagnoses.length > 0
-                ? `Possui ${diagnoses.length} diagnóstico(s) registrado(s)`
-                : "Nenhum diagnóstico registrado"}
-            </p>
-          </form>
-
-          {/* Divider */}
-          <div className="my-6">
-            <p className="text-sm text-gray-500 text-center">
-              Ou gerencie o paciente usando:
-            </p>
           </div>
 
-          {/* Action buttons */}
-          <div className="space-y-3">
-            {/* Add Indicator button */}
-            <Button
-              variant="outline"
-              className="w-full h-12 border border-gray-300 hover:bg-gray-50 text-gray-700 font-normal flex items-center justify-center gap-3"
-            >
-              <svg className="w-5 h-5" viewBox="0 0 24 24">
-                <path
-                  fill="#4285F4"
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                />
-              </svg>
-              Adicionar com o Google
-            </Button>
+          {/* Diagnósticos Section */}
+          <div className="mt-8">
+            <div className="bg-white rounded-lg border border-gray-200">
+              <div className="p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                  Diagnósticos
+                </h2>
 
-            {/* Edit Profile button */}
-            <Button
-              onClick={() => navigate(`/pacientes/${patient.id}/editar`)}
-              variant="outline"
-              className="w-full h-12 border border-gray-300 hover:bg-gray-50 text-gray-700 font-normal flex items-center justify-center gap-3"
-            >
-              <svg className="w-5 h-5" viewBox="0 0 24 24">
-                <path
-                  fill="#1877F2"
-                  d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
-                />
-              </svg>
-              Editar com o Facebook
-            </Button>
+                {diagnoses.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-gray-200">
+                          <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm">
+                            Status
+                          </th>
+                          <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm">
+                            Data
+                          </th>
+                          <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm">
+                            Condição
+                          </th>
+                          <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm">
+                            Código
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {diagnoses.map((diagnosis) => (
+                          <tr
+                            key={diagnosis.id}
+                            className="border-b border-gray-100"
+                          >
+                            <td className="py-3 px-4">
+                              <span className="text-sm text-gray-600">
+                                Atualizado
+                              </span>
+                            </td>
+                            <td className="py-3 px-4">
+                              <span className="text-sm text-gray-900">
+                                {diagnosis.date}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4">
+                              {getStatusBadge(diagnosis.status)}
+                            </td>
+                            <td className="py-3 px-4">
+                              <span className="text-sm text-gray-900">
+                                {diagnosis.code}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500 text-sm">
+                      Nenhum diagnóstico registrado
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
