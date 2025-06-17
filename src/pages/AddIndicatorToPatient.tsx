@@ -155,9 +155,8 @@ const AddIndicatorToPatient = () => {
     try {
       const formData: PatientIndicatorFormData = {
         indicatorId: selectedIndicator,
-        indicatorType: selectedIndicatorData?.isStandard
-          ? "standard"
-          : "custom",
+        indicatorType:
+          selectedIndicatorData?.isStandard === true ? "standard" : "custom",
         value: value.trim(),
         date: selectedIndicatorData?.requiresDate ? date : undefined,
         time: selectedIndicatorData?.requiresTime ? time : undefined,
