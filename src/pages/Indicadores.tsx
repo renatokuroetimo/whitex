@@ -1,13 +1,10 @@
 import React from "react";
-import Sidebar from "@/components/Sidebar";
+import ResponsiveSidebar from "@/components/ResponsiveSidebar";
 
 const Indicadores = () => {
   return (
-    <div className="flex h-screen bg-gray-50">
-      <Sidebar />
-
-      <div className="flex-1 overflow-auto">
-        <div className="p-8">
+    <ResponsiveSidebar>
+      <div className="p-4 sm:p-6 lg:p-8">
           <h1 className="text-2xl font-semibold text-gray-900 mb-8">
             Indicadores
           </h1>
@@ -22,7 +19,7 @@ const Indicadores = () => {
           </div>
         </div>
       </div>
-    </div>
+    </ResponsiveSidebar>
   );
 };
 
