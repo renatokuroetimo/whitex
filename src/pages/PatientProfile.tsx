@@ -131,7 +131,7 @@ const PatientProfile = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header with back arrow */}
-      <div className="p-4 sm:p-6">
+      <div className="p-4">
         <button
           onClick={() => navigate("/pacientes")}
           className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -141,138 +141,101 @@ const PatientProfile = () => {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex items-start justify-center px-4 sm:px-6">
-        <div className="w-full max-w-lg mx-auto">
+      <div className="flex-1 flex items-center justify-center px-4">
+        <div className="w-full max-w-sm">
           {/* Title */}
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+            <h1 className="text-2xl font-medium text-gray-900 mb-2">
               {patient.name}
             </h1>
             <p className="text-sm text-gray-600">
-              {patient.age} anos, {patient.city} - {patient.state}
+              {patient.age} anos • {patient.city}, {patient.state}
             </p>
           </div>
 
           {/* Patient Avatar */}
-          <div className="text-center mb-8">
-            <div className="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-white text-2xl font-semibold">
+          <div className="text-center mb-6">
+            <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto">
+              <span className="text-white text-xl font-semibold">
                 {getInitials(patient.name)}
               </span>
             </div>
           </div>
 
-          {/* Main Actions */}
-          <div className="space-y-4 mb-8">
-            <Button className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md">
-              Ver indicadores
-            </Button>
-          </div>
+          {/* Patient Details */}
+          <div className="space-y-4 mb-6">
+            {/* Weight */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Peso
+              </label>
+              <div className="w-full h-12 px-3 border border-gray-300 rounded-md bg-gray-50 flex items-center">
+                <span className="text-gray-900">{patient.weight} kg</span>
+              </div>
+            </div>
 
-          {/* Patient Information Card */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Informações do Paciente
-            </h3>
-
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Nome:</span>
-                <span className="font-medium text-gray-900">
-                  {patient.name}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Idade:</span>
-                <span className="font-medium text-gray-900">
-                  {patient.age} anos
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Cidade:</span>
-                <span className="font-medium text-gray-900">
-                  {patient.city}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Estado:</span>
-                <span className="font-medium text-gray-900">
-                  {patient.state}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Peso:</span>
-                <span className="font-medium text-gray-900">
-                  {patient.weight}kg
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Status:</span>
+            {/* Status */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Status
+              </label>
+              <div className="w-full h-12 px-3 border border-gray-300 rounded-md bg-gray-50 flex items-center">
                 <Badge className="bg-green-100 text-green-800">
                   {patient.status.toUpperCase()}
                 </Badge>
               </div>
             </div>
-
-            <div className="mt-6 pt-4 border-t border-gray-200">
-              <button
-                onClick={() => navigate(`/pacientes/${patient.id}/editar`)}
-                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-              >
-                Editar perfil
-              </button>
-            </div>
           </div>
 
-          {/* Diagnoses Section */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Diagnósticos
-            </h3>
+          {/* Main Action Button */}
+          <Button className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors mb-4">
+            Ver indicadores
+          </Button>
 
-            {diagnoses.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <p>Nenhum diagnóstico registrado</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {diagnoses.map((diagnosis) => (
-                  <div
-                    key={diagnosis.id}
-                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                  >
-                    <div className="flex-1">
-                      <Badge className={getStatusColor(diagnosis.status)}>
-                        {diagnosis.status}
-                      </Badge>
-                      <p className="text-sm text-gray-600 mt-1">
-                        {diagnosis.date}
-                      </p>
-                    </div>
-                    <span className="text-sm font-medium text-gray-900">
-                      {diagnosis.code}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
+          {/* Diagnoses text */}
+          <p className="text-xs text-gray-500 text-center mb-6">
+            {diagnoses.length > 0
+              ? `${diagnoses.length} diagnóstico(s) registrado(s)`
+              : "Nenhum diagnóstico registrado"}
+          </p>
+
+          {/* Divider */}
+          <div className="my-6">
+            <p className="text-sm text-gray-500 text-center">
+              Ou gerencie o perfil:
+            </p>
           </div>
 
-          {/* Actions */}
-          <div className="space-y-3 mb-8">
-            <Button className="w-full bg-green-600 hover:bg-green-700">
-              <Plus className="h-4 w-4 mr-2" />
-              Adicionar indicador
+          {/* Action buttons */}
+          <div className="space-y-3">
+            {/* Edit Profile button */}
+            <Button
+              onClick={() => navigate(`/pacientes/${patient.id}/editar`)}
+              variant="outline"
+              className="w-full h-12 border border-gray-300 hover:bg-gray-50 text-gray-700 font-normal flex items-center justify-center gap-3"
+            >
+              <User className="w-5 h-5" />
+              Editar perfil do paciente
             </Button>
 
-            <div className="text-center">
-              <button
-                onClick={() => setShowDeleteDialog(true)}
-                className="text-red-600 hover:text-red-800 text-sm"
-              >
-                Deletar perfil
-              </button>
-            </div>
+            {/* Add Indicator button */}
+            <Button
+              variant="outline"
+              className="w-full h-12 border border-gray-300 hover:bg-gray-50 text-gray-700 font-normal flex items-center justify-center gap-3"
+            >
+              <Plus className="w-5 h-5" />
+              Adicionar indicador
+            </Button>
+          </div>
+
+          {/* Delete button */}
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => setShowDeleteDialog(true)}
+              className="text-sm text-red-600 hover:underline"
+            >
+              Deletar perfil do paciente
+            </button>
           </div>
         </div>
       </div>
