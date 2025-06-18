@@ -339,20 +339,10 @@ class PatientAPI {
           error: patientsError,
         });
 
-        // Buscar pacientes compartilhados com o médico
+        // Buscar pacientes compartilhados com o médico - query simplificada
         const { data: sharedData, error: sharedError } = await supabase
           .from("doctor_patient_sharing")
-          .select(
-            `
-            patient_id,
-            shared_at,
-            users!doctor_patient_sharing_patient_id_fkey (
-              id,
-              email,
-              full_name
-            )
-          `,
-          )
+          .select("patient_id, shared_at")
           .eq("doctor_id", doctorId);
 
         console.log("🤝 ===== DEBUG COMPARTILHAMENTOS =====");
