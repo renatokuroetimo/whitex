@@ -2,8 +2,12 @@ export interface User {
   id: string;
   email: string;
   name?: string;
+  fullName?: string;
   profession: "medico" | "paciente";
   crm?: string;
+  city?: string;
+  state?: string;
+  specialty?: string;
   profileImage?: string;
   createdAt: string;
 }
