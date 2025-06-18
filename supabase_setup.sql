@@ -154,6 +154,7 @@ CREATE TRIGGER update_patient_medical_data_updated_at BEFORE UPDATE ON patient_m
 CREATE TRIGGER update_patients_updated_at BEFORE UPDATE ON patients FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_indicators_updated_at BEFORE UPDATE ON indicators FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_patient_indicator_values_updated_at BEFORE UPDATE ON patient_indicator_values FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_patient_diagnoses_updated_at BEFORE UPDATE ON patient_diagnoses FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- ================================================================
 -- 10. RLS (ROW LEVEL SECURITY) - OPCIONAL PARA SEGURANÇA EXTRA
