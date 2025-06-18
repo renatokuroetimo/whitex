@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import MigrationPanel from "@/components/MigrationPanel";
 
 // Import Supabase test for development
 if (import.meta.env.DEV) {
@@ -40,6 +41,7 @@ const App = () => (
       <AuthProvider>
         <Toaster />
         <Sonner />
+        <MigrationPanel />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
