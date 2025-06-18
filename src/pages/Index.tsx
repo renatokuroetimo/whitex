@@ -31,7 +31,7 @@ const Index = () => {
 
       {/* Main content */}
       <div className="flex-1 flex items-center justify-center px-4 sm:px-6">
-        <div className="w-full max-w-sm mx-auto">
+        <div className="w-full max-w-sm mx-auto min-h-[400px] flex flex-col justify-center">
           {/* Title */}
           <div className="text-center mb-8">
             <h1 className="text-2xl font-medium text-gray-900 mb-2">
