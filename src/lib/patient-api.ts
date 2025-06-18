@@ -752,6 +752,75 @@ class PatientAPI {
       createdAt: new Date().toISOString(),
     };
 
+    console.log("🔥 CRIANDO DIAGNÓSTICO:", newDiagnosis);
+
+    // Se Supabase estiver ativo, usar Supabase
+    if (isFeatureEnabled("useSupabasePatients") && supabase) {
+      console.log("🚀 Criando diagnóstico no Supabase");
+
+      try {
+        const insertData = {
+          id: newDiagnosis.id,
+          patient_id: newDiagnosis.patientId,
+          date: newDiagnosis.date,
+          status: newDiagnosis.status,
+          code: newDiagnosis.code,
+          created_at: newDiagnosis.createdAt,
+        };
+
+        console.log("📝 Dados do diagnóstico:", insertData);
+
+        const { data: supabaseData, error } = await supabase
+          .from("patient_diagnoses")
+          .insert([insertData]);
+
+        console.log("📊 Resposta do Supabase:", { data: supabaseData, error });
+
+        if (error) {
+          console.error(
+            "❌ Erro ao criar diagnóstico:",
+            JSON.stringify(
+              {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+              },
+              null,
+              2,
+            ),
+          );
+          throw error; // Forçar fallback
+        } else {
+          console.log("✅ Diagnóstico criado no Supabase!");
+          return newDiagnosis;
+        }
+      } catch (supabaseError) {
+        console.error(
+          "💥 Erro no Supabase diagnóstico:",
+          JSON.stringify(
+            {
+              message:
+                supabaseError instanceof Error
+                  ? supabaseError.message
+                  : "Unknown error",
+              stack:
+                supabaseError instanceof Error
+                  ? supabaseError.stack
+                  : undefined,
+              error: supabaseError,
+            },
+            null,
+            2,
+          ),
+        );
+        // Continuar para fallback
+      }
+    } else {
+      console.log("⚠️ Supabase não ativo para diagnósticos");
+    }
+
+    console.log("📁 Salvando diagnóstico no localStorage");
     const diagnoses = this.getStoredDiagnoses();
     diagnoses.push(newDiagnosis);
     this.saveDiagnoses(diagnoses);
