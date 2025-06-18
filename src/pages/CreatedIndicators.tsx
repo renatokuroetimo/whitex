@@ -203,7 +203,9 @@ const CreatedIndicators = () => {
                           </td>
                           <td className="py-3 px-4">
                             <span className="text-sm text-gray-600">
-                              {indicator.unitOfMeasureSymbol}
+                              {indicator.unitOfMeasureSymbol ||
+                                indicator.unitSymbol ||
+                                "N/A"}
                             </span>
                           </td>
                           <td className="py-3 px-4">
