@@ -477,7 +477,7 @@ class IndicatorAPI {
         }
       } catch (supabaseError) {
         console.error(
-          "💥 Erro no Supabase indicador:",
+          "💥 Erro no Supabase createIndicator:",
           JSON.stringify(
             {
               message:
@@ -494,18 +494,11 @@ class IndicatorAPI {
             2,
           ),
         );
-        // Continuar para fallback
+        throw supabaseError; // Falhar sem fallback
       }
     } else {
-      console.log("⚠️ Supabase indicadores não ativo");
+      throw new Error("Supabase não está ativo para criação de indicadores");
     }
-
-    console.log("📁 Salvando no localStorage");
-    const indicators = this.getStoredIndicators();
-    indicators.push(newIndicator);
-    this.saveIndicators(indicators);
-
-    return newIndicator;
   }
 
   async deleteIndicator(id: string): Promise<void> {
