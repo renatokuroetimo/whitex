@@ -59,33 +59,20 @@ class PatientProfileAPI {
           .eq("user_id", userId)
           .single();
 
-        console.log("📊 Dados pessoais do Supabase:", {
-          data: supabaseData,
-          error,
-        });
+        console.log("📊 Dados pessoais do Supabase:", { data: supabaseData, error });
 
         if (error) {
           // PGRST116 = no rows returned (normal case - user has no personal data yet)
           if (error.code === "PGRST116") {
-            console.log(
-              "ℹ️ Nenhum dado pessoal encontrado no Supabase para usuário:",
-              userId,
-            );
+            console.log("ℹ️ Nenhum dado pessoal encontrado no Supabase para usuário:", userId);
           } else {
             // Log other errors as actual errors
-            console.error(
-              "❌ Erro ao buscar dados pessoais:",
-              JSON.stringify(
-                {
-                  message: error.message,
-                  details: error.details,
-                  hint: error.hint,
-                  code: error.code,
-                },
-                null,
-                2,
-              ),
-            );
+            console.error("❌ Erro ao buscar dados pessoais:", JSON.stringify({
+              message: error.message,
+              details: error.details,
+              hint: error.hint,
+              code: error.code
+            }, null, 2));
           }
           // Fallback para localStorage
         } else if (supabaseData) {
@@ -111,10 +98,7 @@ class PatientProfileAPI {
           return null;
         }
       } catch (supabaseError) {
-        console.error(
-          "💥 Erro no Supabase getPatientPersonalData:",
-          supabaseError,
-        );
+        console.error("💥 Erro no Supabase getPatientPersonalData:", supabaseError);
         // Continuar para fallback localStorage
       }
     }
@@ -176,57 +160,30 @@ class PatientProfileAPI {
 
         console.log("📝 Dados pessoais para Supabase:", insertData);
 
-        const { data: supabaseData, error } =
-          existingIndex >= 0
-            ? await supabase
-                .from("patient_personal_data")
-                .update(insertData)
-                .eq("user_id", userId)
-            : await supabase.from("patient_personal_data").insert([insertData]);
+        const { data: supabaseData, error } = existingIndex >= 0
+          ? await supabase.from("patient_personal_data").update(insertData).eq("user_id", userId)
+          : await supabase.from("patient_personal_data").insert([insertData]);
 
-        console.log("📊 Resposta Supabase dados pessoais:", {
-          data: supabaseData,
-          error,
-        });
+        console.log("📊 Resposta Supabase dados pessoais:", { data: supabaseData, error });
 
         if (error) {
-          console.error(
-            "❌ Erro ao salvar dados pessoais:",
-            JSON.stringify(
-              {
-                message: error.message,
-                details: error.details,
-                hint: error.hint,
-                code: error.code,
-              },
-              null,
-              2,
-            ),
-          );
+          console.error("❌ Erro ao salvar dados pessoais:", JSON.stringify({
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code
+          }, null, 2));
           throw error; // Forçar fallback
         } else {
           console.log("✅ Dados pessoais salvos no Supabase!");
           return resultData;
         }
       } catch (supabaseError) {
-        console.error(
-          "💥 Erro no Supabase dados pessoais:",
-          JSON.stringify(
-            {
-              message:
-                supabaseError instanceof Error
-                  ? supabaseError.message
-                  : "Unknown error",
-              stack:
-                supabaseError instanceof Error
-                  ? supabaseError.stack
-                  : undefined,
-              error: supabaseError,
-            },
-            null,
-            2,
-          ),
-        );
+        console.error("💥 Erro no Supabase dados pessoais:", JSON.stringify({
+          message: supabaseError instanceof Error ? supabaseError.message : 'Unknown error',
+          stack: supabaseError instanceof Error ? supabaseError.stack : undefined,
+          error: supabaseError
+        }, null, 2));
         // Continuar para fallback
       }
     } else {
@@ -318,27 +275,50 @@ class PatientProfileAPI {
       const users = localStorage.getItem("medical_app_users");
       const parsedUsers = users ? JSON.parse(users) : [];
 
+      console.log("📋 Todos os usuários registrados:", parsedUsers);
+
       // Filter only users with profession "medico" and convert to Doctor format
       const doctorUsers = parsedUsers.filter(
         (user: any) => user.profession === "medico",
       );
 
-      return doctorUsers.map((user: any) => ({
-        id: user.id,
-        name: user.name || `Dr. ${user.email.split("@")[0]}`, // Add Dr. prefix if name not available
-        crm: user.crm || "000000", // Use provided CRM or default
-        state: user.state || "SP",
-        specialty: user.specialty || "Clínico Geral",
-        email: user.email,
-        city: user.city || "São Paulo",
-        createdAt: user.createdAt || new Date().toISOString(),
-      }));
-    } catch {
+      console.log("👨‍⚕️ Usuários médicos encontrados:", doctorUsers);
+
+      return doctorUsers.map((user: any) => {
+        // Generate a more realistic name if not provided
+        const emailPrefix = user.email?.split("@")[0] || "medico";
+        let doctorName = user.name || user.fullName;
+
+        if (!doctorName || doctorName.trim() === "") {
+          // Create a realistic name from email prefix
+          const capitalizedPrefix = emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1);
+          doctorName = `Dr. ${capitalizedPrefix.replace(/[0-9]/g, '')}`;
+        }
+
+        // Ensure name starts with Dr. if not already
+        if (!doctorName.startsWith("Dr.") && !doctorName.startsWith("Dra.")) {
+          doctorName = `Dr. ${doctorName}`;
+        }
+
+        const doctor = {
+          id: user.id,
+          name: doctorName,
+          crm: user.crm || "123456", // Use provided CRM or default
+          state: user.state || "SP",
+          specialty: user.specialty || "Medicina Geral",
+          email: user.email,
+          city: user.city || "São Paulo",
+          createdAt: user.createdAt || new Date().toISOString(),
+        };
+
+        console.log("👨‍⚕️ Médico mapeado:", doctor);
+        return doctor;
+      });
+    } catch (error) {
+      console.error("❌ Erro ao buscar médicos registrados:", error);
       return [];
     }
   }
-
-  async loadRegisteredDoctors(): Promise<void> {
     // Get only doctors from registered users - no mocks
     const registeredDoctors = this.getRegisteredDoctors();
 
@@ -363,32 +343,18 @@ class PatientProfileAPI {
     const filteredDoctors = doctors.filter((doctor) => {
       const nameMatch = doctor.name.toLowerCase().includes(searchTerm);
       const crmMatch = doctor.crm.includes(searchTerm);
-      const crmStateMatch = `${doctor.crm}-${doctor.state}`
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
-      const specialtyMatch = doctor.specialty
-        .toLowerCase()
-        .includes(searchTerm);
-      const stateMatch = doctor.state
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+      const crmStateMatch = `${doctor.crm}-${doctor.state}`.toLowerCase().includes(searchTerm.toLowerCase());
+      const specialtyMatch = doctor.specialty.toLowerCase().includes(searchTerm);
+      const stateMatch = doctor.state.toLowerCase().includes(searchTerm.toLowerCase());
       const cityMatch = doctor.city?.toLowerCase().includes(searchTerm);
 
       // Split search term by spaces to match individual words
-      const searchWords = searchTerm.split(" ");
-      const nameWordsMatch = searchWords.every((word) =>
-        doctor.name.toLowerCase().includes(word),
+      const searchWords = searchTerm.split(' ');
+      const nameWordsMatch = searchWords.every(word =>
+        doctor.name.toLowerCase().includes(word)
       );
 
-      return (
-        nameMatch ||
-        crmMatch ||
-        crmStateMatch ||
-        specialtyMatch ||
-        stateMatch ||
-        cityMatch ||
-        nameWordsMatch
-      );
+      return nameMatch || crmMatch || crmStateMatch || specialtyMatch || stateMatch || cityMatch || nameWordsMatch;
     });
 
     console.log(`Search for "${query}" returned:`, filteredDoctors);
