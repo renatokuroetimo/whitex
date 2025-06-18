@@ -289,14 +289,16 @@ class IndicatorAPI {
           });
           // Fallback para localStorage
         } else {
-          // Converter dados do Supabase para formato local
-          indicators = (supabaseIndicators || []).map(
-            (ind: any): Indicator => ({
+          // Retornar dados do Supabase diretamente como IndicatorWithDetails
+          const indicatorsWithDetails: IndicatorWithDetails[] = (
+            supabaseIndicators || []
+          ).map(
+            (ind: any): IndicatorWithDetails => ({
               id: ind.id,
-              categoryId: ind.category || ind.category_name || "",
-              subcategoryId: ind.subcategory || ind.subcategory_name || "",
-              parameter: ind.name || ind.parameter || "",
-              unitOfMeasureId: ind.unit || ind.unit_symbol || "",
+              categoryId: ind.categoryId || ind.category || "",
+              subcategoryId: ind.subcategory || "",
+              parameter: ind.name || "",
+              unitOfMeasureId: ind.unit || "",
               requiresTime: ind.requires_time || false,
               requiresDate: ind.requires_date || false,
               visible: true,
@@ -304,10 +306,19 @@ class IndicatorAPI {
               doctorId: ind.doctor_id,
               createdAt: ind.created_at,
               updatedAt: ind.updated_at || ind.created_at,
+              // Campos específicos de IndicatorWithDetails
+              categoryName: ind.categoryId || ind.category || "Categoria",
+              subcategoryName: "Subcategoria não encontrada",
+              unitOfMeasureName: ind.unit || "Unidade",
+              unitOfMeasureSymbol: ind.unit || "",
             }),
           );
 
-          console.log("✅ Indicadores convertidos:", indicators);
+          console.log(
+            "✅ Indicadores convertidos diretamente:",
+            indicatorsWithDetails,
+          );
+          return indicatorsWithDetails; // Retornar diretamente sem processamento adicional
         }
       } catch (supabaseError: any) {
         console.error("💥 Erro no Supabase getIndicators:", {
