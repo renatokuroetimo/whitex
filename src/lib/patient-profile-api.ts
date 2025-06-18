@@ -187,7 +187,13 @@ class PatientProfileAPI {
           return resultData;
         }
       } catch (supabaseError) {
-        console.error("💥 Erro no Supabase dados pessoais:", supabaseError);
+        console.error("💥 Erro no Supabase dados pessoais:", {
+          message:
+            supabaseError instanceof Error
+              ? supabaseError.message
+              : "Unknown error",
+          error: supabaseError,
+        });
         // Continuar para fallback
       }
     } else {
