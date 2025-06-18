@@ -1,14 +1,15 @@
 export interface Patient {
   id: string;
   name: string;
-  age: number;
-  city: string;
-  state: string;
-  weight: number;
-  status: "ativo" | "inativo";
+  age?: number;
+  city?: string;
+  state?: string;
+  weight?: number;
+  email?: string;
+  status: "ativo" | "inativo" | "compartilhado";
   notes?: string;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
   doctorId: string;
 }
 
