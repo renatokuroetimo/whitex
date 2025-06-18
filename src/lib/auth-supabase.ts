@@ -116,6 +116,10 @@ class AuthSupabaseAPI {
       email: user.email,
       profession: user.profession,
       crm: user.crm,
+      fullName: user.full_name,
+      city: user.city,
+      state: user.state,
+      specialty: user.specialty,
       createdAt: user.created_at,
     };
 
