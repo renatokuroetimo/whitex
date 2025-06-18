@@ -222,14 +222,30 @@ class PatientAPI {
       // Convert shared patients to Patient format
       const sharedPatients = activeShares
         .map((share: any) => {
+          console.log("🔄 Processando compartilhamento:", share);
+
           const patientData = patients.find(
             (p: any) => p.userId === share.patientId,
           );
           const userData = userList.find((u: any) => u.id === share.patientId);
 
-          if (!patientData && !userData) return null;
+          console.log("📋 Dados encontrados para paciente:", {
+            patientId: share.patientId,
+            hasPatientData: !!patientData,
+            hasUserData: !!userData,
+            patientData,
+            userData,
+          });
 
-          return {
+          if (!patientData && !userData) {
+            console.log(
+              "❌ Nenhum dado encontrado para paciente:",
+              share.patientId,
+            );
+            return null;
+          }
+
+          const patient = {
             id: share.patientId,
             name:
               patientData?.fullName ||
@@ -247,8 +263,16 @@ class PatientAPI {
             createdAt: share.sharedAt,
             notes: "Dados compartilhados pelo paciente",
           };
+
+          console.log("✅ Paciente mapeado:", patient);
+          return patient;
         })
         .filter(Boolean);
+
+      console.log(
+        "🎯 Total de pacientes compartilhados:",
+        sharedPatients.length,
+      );
 
       return sharedPatients;
     } catch (error) {
@@ -379,7 +403,7 @@ class PatientAPI {
         }
       } catch (supabaseError) {
         console.error(
-          "💥 Erro no Supabase getPatients:",
+          "�� Erro no Supabase getPatients:",
           JSON.stringify(
             {
               message:
