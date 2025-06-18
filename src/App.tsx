@@ -105,6 +105,22 @@ const App = () => (
               }
             />
             <Route
+              path="/patient/graficos"
+              element={
+                <ProtectedRoute>
+                  <PatientGraphSelector />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/patient/graficos/visualizar"
+              element={
+                <ProtectedRoute>
+                  <PatientGraphView />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/pacientes"
               element={
                 <ProtectedRoute>
