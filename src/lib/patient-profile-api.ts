@@ -162,10 +162,10 @@ class PatientProfileAPI {
 
       return doctorUsers.map((user: any) => ({
         id: user.id,
-        name: user.email.split("@")[0], // Use email prefix as name
-        crm: user.crm || "000000",
+        name: user.name || user.email.split("@")[0], // Use name if available, otherwise email prefix
+        crm: user.crm || Math.floor(Math.random() * 900000 + 100000).toString(), // Generate random CRM if not provided
         state: user.state || "SP",
-        specialty: "Clínico Geral", // Default specialty
+        specialty: user.specialty || "Clínico Geral", // Default specialty
         email: user.email,
         city: user.city || "São Paulo",
         createdAt: user.createdAt || new Date().toISOString(),

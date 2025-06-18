@@ -242,6 +242,51 @@ const DoctorSearch = () => {
                 >
                   Ver Todos
                 </Button>
+                <Button
+                  onClick={() => {
+                    // Create sample registered doctor user for testing
+                    const sampleDoctor = {
+                      id: "doc_test_" + Date.now(),
+                      email: "renato.kuroe@clinica.com",
+                      profession: "medico",
+                      name: "Dr. Renato Kuroe",
+                      crm: "123333",
+                      state: "SP",
+                      city: "São Paulo",
+                      specialty: "Cardiologia",
+                      createdAt: new Date().toISOString(),
+                    };
+
+                    const users = JSON.parse(
+                      localStorage.getItem("medical_app_users") || "[]",
+                    );
+                    const existingDoctor = users.find(
+                      (u: any) => u.crm === "123333",
+                    );
+                    if (!existingDoctor) {
+                      users.push(sampleDoctor);
+                      localStorage.setItem(
+                        "medical_app_users",
+                        JSON.stringify(users),
+                      );
+                      toast({
+                        title: "Dr. Renato Kuroe criado",
+                        description:
+                          "Agora você pode buscar por 'Renato' ou '123333'",
+                      });
+                    } else {
+                      toast({
+                        title: "Dr. Renato Kuroe já existe",
+                        description:
+                          "Use 'Ver Todos' para visualizar todos os médicos",
+                      });
+                    }
+                  }}
+                  variant="secondary"
+                  size="sm"
+                >
+                  Criar Dr. Renato
+                </Button>
               </div>
             </div>
 
