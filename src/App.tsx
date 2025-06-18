@@ -10,6 +10,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 if (process.env.NODE_ENV === "development") {
   import("@/utils/sidebarValidation");
   import("@/utils/userDebug");
+  import("@/utils/emergencyReset");
 }
 import Index from "./pages/Index";
 import Login from "./pages/Login";
