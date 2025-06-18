@@ -277,7 +277,13 @@ class IndicatorAPI {
         });
 
         if (error) {
-          console.error("❌ Erro ao buscar indicadores:", error);
+          console.error("❌ Erro detalhado ao buscar indicadores:", {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code,
+            fullError: error,
+          });
           // Fallback para localStorage
         } else {
           // Converter dados do Supabase para formato local
@@ -297,8 +303,12 @@ class IndicatorAPI {
 
           console.log("✅ Indicadores convertidos:", indicators);
         }
-      } catch (supabaseError) {
-        console.error("💥 Erro no Supabase getIndicators:", supabaseError);
+      } catch (supabaseError: any) {
+        console.error("💥 Erro no Supabase getIndicators:", {
+          message: supabaseError?.message || "Erro desconhecido",
+          stack: supabaseError?.stack,
+          fullError: supabaseError,
+        });
         // Continuar para fallback localStorage
       }
     }
