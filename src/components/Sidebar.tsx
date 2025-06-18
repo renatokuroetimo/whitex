@@ -139,7 +139,7 @@ const Sidebar: React.FC = () => {
 
       {/* User Profile */}
       <div
-        className={`p-6 border-b border-gray-200 ${isDashboardActive() ? "bg-blue-50" : ""}`}
+        className={`p-6 border-b border-gray-200 transition-all duration-200 ${isDashboardActive() ? "bg-blue-50" : ""}`}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
