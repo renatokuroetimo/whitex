@@ -7,10 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import MigrationPanel from "@/components/MigrationPanel";
 
-// Import Supabase test for development
-if (import.meta.env.DEV) {
-  import("@/lib/supabase-test");
-}
+// Supabase test disponível via console em desenvolvimento
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import SelectProfession from "./pages/SelectProfession";
