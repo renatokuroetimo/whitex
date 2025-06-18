@@ -748,8 +748,58 @@ class IndicatorAPI {
   }
 
   async getVisibleStandardIndicators(doctorId?: string): Promise<any[]> {
-    const indicators = await this.getStandardIndicators(doctorId);
-    return indicators.filter((ind) => ind.visible);
+    if (!doctorId) {
+      // Se não tem doctorId, retornar todos os indicadores padrão
+      return await this.getStandardIndicators();
+    }
+
+    if (isFeatureEnabled("useSupabaseIndicators") && supabase) {
+      console.log("🚀 Buscando configurações de visibilidade no Supabase");
+
+      try {
+        // Buscar indicadores padrão
+        const standardIndicators = await this.getStandardIndicators();
+
+        // Buscar configurações do médico
+        const { data: settings, error } = await supabase
+          .from("doctor_standard_indicator_settings")
+          .select("*")
+          .eq("doctor_id", doctorId);
+
+        if (error) {
+          console.error("❌ Erro ao buscar configurações:", error);
+          // Se der erro, retornar todos os indicadores (fallback)
+          return standardIndicators;
+        }
+
+        // Aplicar configurações de visibilidade
+        const settingsMap = new Map(
+          settings?.map((s) => [s.standard_indicator_id, s.visible]) || [],
+        );
+
+        const visibleIndicators = standardIndicators.filter((indicator) => {
+          // Se não tem configuração específica, assume como visível
+          return settingsMap.get(indicator.id) !== false;
+        });
+
+        console.log(
+          "✅ Configurações de visibilidade aplicadas:",
+          visibleIndicators.length,
+        );
+        return visibleIndicators;
+      } catch (supabaseError) {
+        console.error(
+          "💥 Erro no Supabase getVisibleStandardIndicators:",
+          supabaseError,
+        );
+        // Se der erro, retornar todos os indicadores (fallback)
+        return await this.getStandardIndicators();
+      }
+    } else {
+      // Fallback para localStorage
+      const indicators = await this.getStandardIndicators(doctorId);
+      return indicators.filter((ind) => ind.visible);
+    }
   }
 
   // Garantir que indicadores padrão existam no Supabase
