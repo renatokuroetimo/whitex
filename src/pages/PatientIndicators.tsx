@@ -23,6 +23,8 @@ const PatientIndicators = () => {
   const { user } = useAuth();
   const [indicators, setIndicators] = useState<PatientIndicatorValue[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string>("all");
 
   useEffect(() => {
     if (user?.id) {
