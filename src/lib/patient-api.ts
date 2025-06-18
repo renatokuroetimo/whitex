@@ -552,15 +552,36 @@ class PatientAPI {
       }
     }
 
-    console.log("⚠️ Usando localStorage fallback");
+    console.log("⚠️ ===== USANDO LOCALSTORAGE FALLBACK =====");
 
     let patients = this.getStoredPatients().filter(
       (p) => p.doctorId === doctorId,
     );
 
+    console.log("📁 Pacientes do localStorage (criados):", patients.length);
+
     // Add shared patients
     const sharedPatients = this.getSharedPatients(doctorId);
+    console.log(
+      "📁 Pacientes compartilhados (localStorage):",
+      sharedPatients.length,
+    );
+
     patients = [...patients, ...sharedPatients];
+
+    console.log(
+      "📁 Total localStorage (criados + compartilhados):",
+      patients.length,
+    );
+    console.log(
+      "📁 Lista localStorage:",
+      patients.map((p) => ({
+        id: p.id,
+        name: p.name,
+        status: p.status,
+        doctorId: p.doctorId,
+      })),
+    );
 
     // Filtro de busca
     if (search && search.trim()) {
