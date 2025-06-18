@@ -329,9 +329,14 @@ class PatientAPI {
     // Se Supabase estiver ativo, usar Supabase
     if (isFeatureEnabled("useSupabasePatients") && supabase) {
       console.log("🚀 Criando paciente no Supabase:", newPatient);
+      console.log(
+        "🔧 Feature flag useSupabasePatients:",
+        isFeatureEnabled("useSupabasePatients"),
+      );
+      console.log("🔗 Supabase client:", !!supabase);
 
-      const { error } = await supabase.from("patients").insert([
-        {
+      try {
+        const insertData = {
           id: newPatient.id,
           name: newPatient.name,
           age: newPatient.age,
@@ -343,16 +348,39 @@ class PatientAPI {
           doctor_id: newPatient.doctorId,
           created_at: newPatient.createdAt,
           updated_at: newPatient.updatedAt,
-        },
-      ]);
+        };
 
-      if (error) {
-        console.error("❌ Erro ao criar paciente no Supabase:", error);
-        // Fallback para localStorage
-      } else {
-        console.log("✅ Paciente criado no Supabase com sucesso");
-        return newPatient;
+        console.log("📝 Dados sendo inseridos:", insertData);
+
+        const { data, error } = await supabase
+          .from("patients")
+          .insert([insertData]);
+
+        console.log("📊 Resposta do Supabase:", { data, error });
+
+        if (error) {
+          console.error("❌ Erro detalhado:", {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code,
+          });
+          throw error; // Forçar fallback
+        } else {
+          console.log("✅ Paciente criado no Supabase com sucesso!");
+          return newPatient;
+        }
+      } catch (supabaseError) {
+        console.error("💥 Erro no try/catch:", supabaseError);
+        // Continuar para fallback
       }
+    } else {
+      console.log(
+        "⚠️ Supabase não ativo - useSupabasePatients:",
+        isFeatureEnabled("useSupabasePatients"),
+        "supabase:",
+        !!supabase,
+      );
     }
 
     // Fallback para localStorage
