@@ -287,7 +287,7 @@ const PatientForm = () => {
               <div className="mb-6">
                 <h2 className="text-lg font-medium text-gray-900 mb-1">
                   {isSharedPatient
-                    ? "Diagnósticos e Observações"
+                    ? "Diagnósticos e Observaç��es"
                     : "Dados do paciente"}
                 </h2>
                 <p className="text-sm text-gray-600">
@@ -538,7 +538,7 @@ const PatientForm = () => {
                   {/* Observações */}
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Observações
+                      {isSharedPatient ? "Observações Médicas" : "Observações"}
                     </label>
                     <Textarea
                       value={formData.notes || ""}
