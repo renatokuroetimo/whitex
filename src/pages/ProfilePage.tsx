@@ -12,7 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { brazilStates, getCitiesByState } from "@/lib/brazil-locations";
 import { phoneMask, removeMask } from "@/lib/masks";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { useNavigate } from "react-router-dom";
