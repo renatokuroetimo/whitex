@@ -305,55 +305,34 @@ class PatientIndicatorAPI {
           );
           // Fallback para localStorage
         } else {
-          // Converter dados do Supabase para formato local
-          const values = await Promise.all(
-            (supabaseValues || []).map(
-              async (val: any): Promise<PatientIndicatorValue> => {
-                // Buscar detalhes do indicador para obter dados corretos
-                let indicatorDetails: any = null;
-                let indicatorType = "custom";
-
-                // Primeiro tentar nos indicadores padrão
-                const standardIndicators =
-                  await indicatorAPI.getStandardIndicators();
-                indicatorDetails = standardIndicators.find(
-                  (ind) => ind.id === val.indicator_id,
-                );
-
-                if (indicatorDetails) {
-                  indicatorType = "standard";
-                } else {
-                  // Se não encontrou, buscar nos indicadores customizados
-                  // Nota: Não temos doctorId aqui, então usaremos valores padrão para custom
-                  indicatorType = "custom";
-                }
-
-                return {
-                  id: val.id,
-                  patientId: val.patient_id,
-                  indicatorId: val.indicator_id,
-                  indicatorType: indicatorType,
-                  categoryName:
-                    indicatorDetails?.categoryName || "Categoria Personalizada",
-                  subcategoryName:
-                    indicatorDetails?.subcategoryName ||
-                    "Subcategoria Personalizada",
-                  parameter: indicatorDetails?.parameter || "Parâmetro",
-                  unitSymbol: indicatorDetails?.unitSymbol || "un",
-                  value: val.value,
-                  date: val.date,
-                  time: val.time || "00:00",
-                  visibleToMedics: true,
-                  doctorId: val.doctor_id || "",
-                  createdAt: val.created_at,
-                  updatedAt: val.updated_at || val.created_at,
-                };
-              },
-            ),
+          // Converter dados do Supabase para formato local usando campos diretos da tabela
+          const values = (supabaseValues || []).map(
+            (val: any): PatientIndicatorValue => ({
+              id: val.id,
+              patientId: val.user_id,
+              indicatorId: val.indicator_id,
+              indicatorType: val.indicator_id.startsWith("std")
+                ? "standard"
+                : "custom",
+              categoryName: val.category_name,
+              subcategoryName: val.subcategory_name,
+              parameter: val.parameter,
+              unitSymbol: val.unit_symbol,
+              value: val.value,
+              date: val.date,
+              time: val.time || "00:00",
+              visibleToMedics: true,
+              doctorId: "",
+              createdAt: val.created_at,
+              updatedAt: val.updated_at || val.created_at,
+            }),
           );
 
           console.log("✅ Valores indicadores convertidos:", values);
-          return values;
+          return values.sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          );
         }
       } catch (supabaseError) {
         console.error(
