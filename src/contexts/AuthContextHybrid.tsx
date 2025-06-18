@@ -109,7 +109,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "AUTH_START" });
 
     try {
-      const response = await getAuthAPI().login(credentials);
+      const authAPI = getAuthAPI();
+      console.log(
+        "🔍 Usando API para login:",
+        authAPI === authSupabaseAPI ? "Supabase" : "localStorage",
+      );
+      const response = await authAPI.login(credentials);
 
       if (response.success && response.data) {
         dispatch({ type: "AUTH_SUCCESS", payload: response.data });
@@ -151,7 +156,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "AUTH_START" });
 
     try {
-      const response = await getAuthAPI().register(data);
+      const authAPI = getAuthAPI();
+      console.log(
+        "🔍 Usando API para registro:",
+        authAPI === authSupabaseAPI ? "Supabase" : "localStorage",
+      );
+      const response = await authAPI.register(data);
 
       if (response.success && response.data) {
         dispatch({ type: "AUTH_SUCCESS", payload: response.data });

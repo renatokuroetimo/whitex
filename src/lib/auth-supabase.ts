@@ -34,6 +34,7 @@ class AuthSupabaseAPI {
   private async registerUserSupabase(
     data: RegisterData,
   ): Promise<ApiResponse<User>> {
+    console.log("🚀 Iniciando registro no Supabase para:", data.email);
     if (!supabase) throw new Error("Supabase not available");
 
     const newUser: User = {
@@ -45,6 +46,14 @@ class AuthSupabaseAPI {
     };
 
     // Inserir no Supabase
+    console.log("📝 Inserindo no Supabase:", {
+      id: newUser.id,
+      email: newUser.email,
+      profession: newUser.profession,
+      crm: newUser.crm,
+      created_at: newUser.createdAt,
+    });
+
     const { error } = await supabase.from("users").insert([
       {
         id: newUser.id,
@@ -54,6 +63,10 @@ class AuthSupabaseAPI {
         created_at: newUser.createdAt,
       },
     ]);
+
+    console.log("📊 Resultado do insert:", {
+      error: error?.message || "sucesso",
+    });
 
     if (error) {
       // Se email já existe
