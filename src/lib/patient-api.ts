@@ -999,35 +999,45 @@ class PatientAPI {
                   notes: data.notes,
                 });
 
-                const { data: insertedData, error: insertNoteError } =
-                  await supabase
-                    .from("medical_notes")
-                    .insert([
-                      {
-                        patient_id: id,
-                        doctor_id: currentUser.id,
-                        notes: data.notes,
-                      },
-                    ])
-                    .select();
+                const insertResult = await supabase
+                  .from("medical_notes")
+                  .insert([
+                    {
+                      patient_id: id,
+                      doctor_id: currentUser.id,
+                      notes: data.notes,
+                    },
+                  ])
+                  .select();
 
-                console.log("📊 Resultado da inserção:", {
-                  data: insertedData,
-                  error: insertNoteError,
-                });
+                console.log("📊 ===== RESULTADO COMPLETO DA INSERÇÃO =====");
+                console.log("📊 Status:", insertResult.status);
+                console.log("📊 StatusText:", insertResult.statusText);
+                console.log("📊 Data:", insertResult.data);
+                console.log("📊 Error:", insertResult.error);
+                console.log("📊 Count:", insertResult.count);
 
-                if (insertNoteError) {
+                if (insertResult.error) {
                   console.error(
                     "❌ Erro ao inserir observação:",
-                    JSON.stringify(insertNoteError, null, 2),
+                    JSON.stringify(insertResult.error, null, 2),
                   );
-                  throw insertNoteError;
-                } else {
-                  console.log(
-                    "✅ Nova observação criada com sucesso!",
-                    insertedData,
+                  throw insertResult.error;
+                }
+
+                if (!insertResult.data || insertResult.data.length === 0) {
+                  console.error(
+                    "❌ Insert retornou sucesso mas sem dados - possível problema de RLS/permissões",
+                  );
+                  throw new Error(
+                    "Falha silenciosa no insert - dados não foram salvos",
                   );
                 }
+
+                console.log(
+                  "✅ Nova observação criada com sucesso!",
+                  insertResult.data,
+                );
               }
 
               // Retornar o paciente atualizado com as novas observações
