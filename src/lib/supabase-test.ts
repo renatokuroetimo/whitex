@@ -2,7 +2,10 @@ import { supabase, isSupabaseAvailable } from "./supabase";
 
 // Função para testar a conexão
 export const testSupabaseConnection = async () => {
-  console.log("🔥 Testando conexão com Supabase...");
+  console.log(
+    "%c🚀 TESTE SUPABASE INICIADO",
+    "color: #00ff00; font-size: 16px; font-weight: bold;",
+  );
   console.log("📍 URL:", import.meta.env.VITE_SUPABASE_URL);
   console.log(
     "🔑 Anon Key disponível:",
@@ -20,18 +23,29 @@ export const testSupabaseConnection = async () => {
     const { data, error } = await supabase!.from("users").select("count");
 
     if (error) {
-      console.warn(
-        "⚠️  Tabela 'users' ainda não existe (isso é normal):",
-        error.message,
+      console.log(
+        "%c⚠️ TABELAS AINDA NÃO CRIADAS",
+        "color: #ffaa00; font-size: 14px; font-weight: bold;",
       );
+      console.log(
+        "🔧 Execute o SQL no Supabase Dashboard para criar as tabelas",
+      );
+      console.log("📋 Erro esperado:", error.message);
       return true; // Conexão OK, só precisa criar tabelas
     }
 
-    console.log("✅ Conexão com Supabase estabelecida com sucesso!");
+    console.log(
+      "%c✅ SUPABASE FUNCIONANDO PERFEITAMENTE!",
+      "color: #00ff00; font-size: 16px; font-weight: bold;",
+    );
     console.log("📊 Teste de query executado:", data);
     return true;
   } catch (error) {
-    console.error("❌ Erro ao conectar com Supabase:", error);
+    console.log(
+      "%c❌ ERRO DE CONEXÃO SUPABASE",
+      "color: #ff0000; font-size: 14px; font-weight: bold;",
+    );
+    console.error("🔍 Detalhes do erro:", error);
     return false;
   }
 };
