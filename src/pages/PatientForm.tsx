@@ -97,6 +97,63 @@ const PatientForm = () => {
     }));
   };
 
+  const handleDiagnosisInputChange = (field: string, value: string) => {
+    setDiagnosisForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleAddDiagnosis = async () => {
+    if (!diagnosisForm.cid.trim() || !diagnosisForm.diagnosis.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "CID e Diagnóstico são obrigatórios",
+      });
+      return;
+    }
+
+    if (!id) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Salve o paciente primeiro para adicionar diagnósticos",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await patientAPI.addDiagnosis(id, {
+        date: new Date().toLocaleDateString("pt-BR"),
+        status: diagnosisForm.diagnosis,
+        code: diagnosisForm.cid,
+      });
+
+      setDiagnosisForm({ cid: "", diagnosis: "" });
+      setIsAddingDiagnosis(false);
+
+      toast({
+        title: "Sucesso",
+        description: "Diagnóstico adicionado com sucesso",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Erro ao adicionar diagnóstico",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const cancelAddDiagnosis = () => {
+    setDiagnosisForm({ cid: "", diagnosis: "" });
+    setIsAddingDiagnosis(false);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
