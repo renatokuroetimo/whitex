@@ -156,6 +156,63 @@ const PatientProfile = () => {
   const handlePersonalDataSave = async () => {
     if (!user?.id) return;
 
+    // Validações básicas
+    if (!personalData.fullName.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Nome completo é obrigatório",
+      });
+      return;
+    }
+
+    if (!personalData.email.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "E-mail é obrigatório",
+      });
+      return;
+    }
+
+    // Validação básica de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(personalData.email)) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Por favor, insira um e-mail válido",
+      });
+      return;
+    }
+
+    if (!personalData.birthDate) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Data de nascimento é obrigatória",
+      });
+      return;
+    }
+
+    if (!personalData.state) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Estado é obrigatório",
+      });
+      return;
+    }
+
+    if (!personalData.city) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Cidade é obrigatória",
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       console.log("🔥 INICIANDO SALVAMENTO - Dados pessoais:", {
