@@ -20,7 +20,9 @@ const Indicadores = () => {
         navigate("/patient/indicadores", { replace: true });
         return;
       }
-      loadIndicators();
+      if (user.profession === "medico") {
+        loadIndicators();
+      }
     }
   }, [user?.id, user?.profession, navigate]);
 
@@ -54,9 +56,32 @@ const Indicadores = () => {
     navigate("/indicadores/padrao");
   };
 
-  // Only show doctor indicators for doctors
-  if (!user || user.profession !== "medico") {
+  // Show loading or redirect logic
+  if (!user) {
+    return (
+      <div className="flex h-screen bg-gray-50 items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
+          <p className="text-gray-600">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Patients are redirected in useEffect
+  if (user.profession === "paciente") {
     return null;
+  }
+
+  // Show doctor indicators for doctors
+  if (user.profession !== "medico") {
+    return (
+      <div className="flex h-screen bg-gray-50 items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Acesso não autorizado</p>
+        </div>
+      </div>
+    );
   }
 
   return (
