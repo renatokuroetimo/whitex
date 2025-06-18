@@ -355,9 +355,17 @@ class IndicatorAPI {
 
     const newIndicator: Indicator = {
       id: this.generateId(),
-      ...data,
+      categoryId: data.categoryId,
+      subcategoryId: data.subcategoryId,
+      parameter: data.parameter,
+      unitOfMeasureId: data.unitOfMeasureId,
+      requiresTime: data.requiresTime,
+      requiresDate: data.requiresDate,
+      visible: data.visible,
+      visibleToMedics: data.visibleToMedics,
       doctorId,
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
     console.log("🔥 CRIANDO INDICADOR:", newIndicator);
@@ -372,11 +380,15 @@ class IndicatorAPI {
       console.log("🚀 Criando indicador no Supabase");
 
       try {
+        // Buscar detalhes da unidade para obter símbolo
+        const units = await this.getUnitsOfMeasure();
+        const unit = units.find((u) => u.id === newIndicator.unitOfMeasureId);
+
         const insertData = {
           id: newIndicator.id,
-          name: newIndicator.name,
-          unit: newIndicator.unit,
-          type: newIndicator.type,
+          name: newIndicator.parameter, // Mapear parameter -> name
+          unit: unit?.symbol || "un", // Mapear unitOfMeasureId -> unit symbol
+          type: "numeric", // Tipo padrão
           category: newIndicator.categoryId,
           doctor_id: newIndicator.doctorId,
           is_standard: false,
