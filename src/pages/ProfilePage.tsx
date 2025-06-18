@@ -2,8 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContextHybrid";
+import { profileImageAPI } from "@/lib/profile-image-api";
+import { brazilStates, getCitiesByState } from "@/lib/brazil-locations";
 import { toast } from "@/hooks/use-toast";
-import Sidebar from "@/components/Sidebar";
 import {
   Select,
   SelectContent,
