@@ -107,12 +107,19 @@ class PatientIndicatorAPI {
         console.log("📊 Resposta do Supabase:", { data: supabaseData, error });
 
         if (error) {
-          console.error("❌ Erro ao criar valor indicador:", {
-            message: error.message,
-            details: error.details,
-            hint: error.hint,
-            code: error.code,
-          });
+          console.error(
+            "❌ Erro ao criar valor indicador:",
+            JSON.stringify(
+              {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+              },
+              null,
+              2,
+            ),
+          );
           throw error; // Forçar fallback
         } else {
           console.log("✅ Valor indicador criado no Supabase!");
