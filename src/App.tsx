@@ -14,7 +14,7 @@ import ProfilePage from "./pages/ProfilePage";
 import Pacientes from "./pages/Pacientes";
 import PatientProfile from "./pages/PatientProfile";
 import PatientForm from "./pages/PatientForm";
-import Indicadores from "./pages/Indicadores";
+import Indicadores from "./pages/IndicadoresTest";
 import CreateIndicator from "./pages/CreateIndicator";
 import CreatedIndicators from "./pages/CreatedIndicators";
 import StandardIndicators from "./pages/StandardIndicators";
