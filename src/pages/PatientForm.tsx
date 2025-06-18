@@ -269,7 +269,11 @@ const PatientForm = () => {
                 <ArrowLeft className="h-5 w-5 text-gray-600" />
               </button>
               <h1 className="text-2xl font-semibold text-gray-900">
-                {isEditing ? "Editar Paciente" : "Novo Paciente"}
+                {isEditing
+                  ? isSharedPatient
+                    ? "Adicionar Diagnósticos"
+                    : "Editar Paciente"
+                  : "Novo Paciente"}
               </h1>
             </div>
             <button
@@ -284,11 +288,24 @@ const PatientForm = () => {
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <div className="mb-6">
                 <h2 className="text-lg font-medium text-gray-900 mb-1">
-                  Dados do paciente
+                  {isSharedPatient
+                    ? "Diagnósticos e Observações"
+                    : "Dados do paciente"}
                 </h2>
                 <p className="text-sm text-gray-600">
-                  Preencha as informações básicas do paciente
+                  {isSharedPatient
+                    ? "Adicione diagnósticos e observações para este paciente compartilhado"
+                    : "Preencha as informações básicas do paciente"}
                 </p>
+                {isSharedPatient && (
+                  <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-sm text-blue-800">
+                      <strong>Paciente Compartilhado:</strong> Você pode apenas
+                      adicionar diagnósticos e observações. Os dados pessoais
+                      são gerenciados pelo paciente.
+                    </p>
+                  </div>
+                )}
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
