@@ -332,21 +332,41 @@ class IndicatorAPI {
     const units = await this.getUnitsOfMeasure();
 
     return indicators.map((indicator) => {
-      const category = categories.find(
-        (cat) => cat.id === indicator.categoryId,
-      );
-      const subcategory = subcategories.find(
-        (sub) => sub.id === indicator.subcategoryId,
-      );
-      const unit = units.find((u) => u.id === indicator.unitOfMeasureId);
+      // Se os dados vieram do Supabase, usar mapeamento direto
+      if (indicator.categoryId && !indicator.categoryId.startsWith("cat")) {
+        // Dados do Supabase - usar valores diretos
+        const indicatorWithDetails: IndicatorWithDetails = {
+          ...indicator,
+          categoryName: indicator.categoryId || "Categoria",
+          subcategoryName:
+            indicator.subcategoryId || "Subcategoria não encontrada",
+          unitOfMeasureName: indicator.unitOfMeasureId || "Unidade",
+          unitOfMeasureSymbol: indicator.unitOfMeasureId || "",
+        };
 
-      return {
-        ...indicator,
-        categoryName: category?.name || "Categoria não encontrada",
-        subcategoryName: subcategory?.name || "Subcategoria não encontrada",
-        unitOfMeasureName: unit?.name || "Unidade não encontrada",
-        unitOfMeasureSymbol: unit?.symbol || "",
-      };
+        console.log("🔄 Mapeamento direto Supabase:", indicatorWithDetails);
+        return indicatorWithDetails;
+      } else {
+        // Dados do localStorage - usar lookup nas tabelas
+        const category = categories.find(
+          (cat) => cat.id === indicator.categoryId,
+        );
+        const subcategory = subcategories.find(
+          (sub) => sub.id === indicator.subcategoryId,
+        );
+        const unit = units.find((u) => u.id === indicator.unitOfMeasureId);
+
+        const indicatorWithDetails: IndicatorWithDetails = {
+          ...indicator,
+          categoryName: category?.name || "Categoria não encontrada",
+          subcategoryName: subcategory?.name || "Subcategoria não encontrada",
+          unitOfMeasureName: unit?.name || "Unidade não encontrada",
+          unitOfMeasureSymbol: unit?.symbol || "",
+        };
+
+        console.log("🔄 Mapeamento localStorage:", indicatorWithDetails);
+        return indicatorWithDetails;
+      }
     });
   }
 
