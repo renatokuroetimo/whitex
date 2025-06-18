@@ -457,6 +457,9 @@ class PatientAPI {
                 notes: "Dados compartilhados pelo paciente",
               };
 
+              console.log(
+                `✅ Paciente compartilhado criado: ${sharedPatient.name}`,
+              );
               sharedPatients.push(sharedPatient);
             }
 
