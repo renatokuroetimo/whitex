@@ -32,6 +32,19 @@ class ProfileImageAPI {
     if (isFeatureEnabled("useSupabaseIndicators") && supabase) {
       console.log("🚀 Salvando imagem de perfil no Supabase");
 
+      // Verificar se a tabela existe na primeira vez
+      const tableExists = await this.checkTableExists();
+      if (!tableExists) {
+        console.warn(
+          "⚠️ Tabela profile_images não encontrada. Executando fallback para localStorage.",
+        );
+        console.info(
+          "📋 Para habilitar o Supabase, execute o script: create_profile_images_table.sql",
+        );
+        localStorage.setItem(`${this.STORAGE_KEY_PREFIX}${userId}`, imageData);
+        return;
+      }
+
       try {
         // Calcular tamanho da imagem em bytes (aproximado)
         const base64Size =
