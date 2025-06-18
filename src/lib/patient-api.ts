@@ -1528,6 +1528,109 @@ class PatientAPI {
     const updatedPatients = patients.filter((p) => !ids.includes(p.id));
     this.savePatients(updatedPatients);
   }
+
+  // Remover compartilhamento de paciente
+  async removePatientSharing(
+    patientId: string,
+    doctorId: string,
+  ): Promise<void> {
+    await this.delay(300);
+
+    console.log("🗑️ REMOVENDO COMPARTILHAMENTO:", { patientId, doctorId });
+
+    // Se Supabase estiver ativo, usar Supabase
+    if (isFeatureEnabled("useSupabasePatients") && supabase) {
+      console.log("🚀 Removendo compartilhamento no Supabase");
+
+      try {
+        // Remover da tabela doctor_patient_sharing
+        const { error: sharingError } = await supabase
+          .from("doctor_patient_sharing")
+          .delete()
+          .eq("patient_id", patientId)
+          .eq("doctor_id", doctorId);
+
+        if (sharingError) {
+          console.error(
+            "❌ Erro ao remover compartilhamento:",
+            JSON.stringify(
+              {
+                message: sharingError.message,
+                details: sharingError.details,
+                hint: sharingError.hint,
+                code: sharingError.code,
+              },
+              null,
+              2,
+            ),
+          );
+          throw sharingError;
+        }
+
+        // Remover observações médicas relacionadas
+        const { error: notesError } = await supabase
+          .from("medical_notes")
+          .delete()
+          .eq("patient_id", patientId)
+          .eq("doctor_id", doctorId);
+
+        if (notesError) {
+          console.warn("⚠️ Erro ao remover observações médicas:", notesError);
+          // Não falhar por causa disso, apenas avisar
+        }
+
+        console.log("✅ Compartilhamento removido do Supabase!");
+        return;
+      } catch (supabaseError) {
+        console.error(
+          "💥 Erro no Supabase removePatientSharing:",
+          JSON.stringify(
+            {
+              message:
+                supabaseError instanceof Error
+                  ? supabaseError.message
+                  : "Unknown error",
+              stack:
+                supabaseError instanceof Error
+                  ? supabaseError.stack
+                  : undefined,
+              error: supabaseError,
+            },
+            null,
+            2,
+          ),
+        );
+        // Continuar para fallback
+      }
+    } else {
+      console.log("⚠️ Supabase não ativo para remoção de compartilhamento");
+    }
+
+    console.log("📁 Removendo compartilhamento do localStorage");
+
+    // Fallback para localStorage
+    try {
+      const sharedData = localStorage.getItem("medical_app_shared_data");
+      if (sharedData) {
+        const shares = JSON.parse(sharedData);
+        const updatedShares = shares.filter(
+          (share: any) =>
+            !(share.patientId === patientId && share.doctorId === doctorId),
+        );
+        localStorage.setItem(
+          "medical_app_shared_data",
+          JSON.stringify(updatedShares),
+        );
+        console.log("✅ Compartilhamento removido do localStorage");
+      }
+    } catch (error) {
+      console.error(
+        "❌ Erro ao remover compartilhamento do localStorage:",
+        error,
+      );
+      throw error;
+    }
+  }
 }
 
 export const patientAPI = new PatientAPI();
