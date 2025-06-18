@@ -126,7 +126,7 @@ const ProfilePage: React.FC = () => {
         city: formData.city,
         state: formData.state,
         crm: formData.crm,
-        // Note: phone não está na tabela users, seria necessário adicionar
+        phone: removeMask(formData.phone), // Remove mask before saving
       };
 
       // Tentar salvar no Supabase
