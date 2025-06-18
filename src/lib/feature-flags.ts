@@ -1,5 +1,5 @@
 // Sistema de Feature Flags para migração gradual
-import { isSupabaseAvailable } from "./supabase";
+import { isSupabaseConfigured } from "./supabase";
 
 interface FeatureFlags {
   useSupabaseAuth: boolean;
@@ -54,12 +54,12 @@ export const setFeatureFlag = (
 // Verificar se uma feature está habilitada
 export const isFeatureEnabled = (flag: keyof FeatureFlags): boolean => {
   const flags = getFeatureFlags();
-  const isEnabled = flags[flag] && isSupabaseAvailable();
+  const isEnabled = flags[flag] && isSupabaseConfigured();
 
   // Log para debug
   if (import.meta.env.DEV) {
     console.log(
-      `🔍 Feature check: ${flag} = ${isEnabled} (flag: ${flags[flag]}, supabase: ${isSupabaseAvailable()})`,
+      `🔍 Feature check: ${flag} = ${isEnabled} (flag: ${flags[flag]}, supabase: ${isSupabaseConfigured()})`,
     );
   }
 
@@ -101,7 +101,7 @@ export const disableSupabaseMigration = (): void => {
 export const getMigrationStatus = () => {
   const flags = getFeatureFlags();
   return {
-    supabaseAvailable: isSupabaseAvailable(),
+    supabaseAvailable: isSupabaseConfigured(),
     authMigrated: flags.useSupabaseAuth,
     patientsMigrated: flags.useSupabasePatients,
     indicatorsMigrated: flags.useSupabaseIndicators,

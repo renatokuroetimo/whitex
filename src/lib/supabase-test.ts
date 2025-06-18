@@ -1,4 +1,4 @@
-import { supabase, isSupabaseAvailable } from "./supabase";
+import { supabase, isSupabaseConfigured } from "./supabase";
 
 // Função para testar a conexão
 export const testSupabaseConnection = async () => {
@@ -11,9 +11,9 @@ export const testSupabaseConnection = async () => {
     "🔑 Anon Key disponível:",
     !!import.meta.env.VITE_SUPABASE_ANON_KEY,
   );
-  console.log("📡 Cliente disponível:", isSupabaseAvailable());
+  console.log("📡 Cliente disponível:", isSupabaseConfigured());
 
-  if (!isSupabaseAvailable()) {
+  if (!isSupabaseConfigured()) {
     console.error("❌ Supabase não está configurado corretamente");
     return false;
   }
@@ -50,7 +50,8 @@ export const testSupabaseConnection = async () => {
   }
 };
 
-// Auto-executar o teste em desenvolvimento
-if (import.meta.env.DEV) {
-  testSupabaseConnection();
+// Teste manual disponível via console
+if (import.meta.env.DEV && typeof window !== "undefined") {
+  (window as any).testSupabaseConnection = testSupabaseConnection;
+  console.log("🧪 Para testar Supabase, execute: testSupabaseConnection()");
 }

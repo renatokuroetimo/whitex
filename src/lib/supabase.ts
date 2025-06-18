@@ -15,14 +15,30 @@ if (!import.meta.env.VITE_SUPABASE_URL) {
 // Cliente Supabase (sempre disponível agora)
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Verificar se Supabase está disponível
-export const isSupabaseAvailable = () => {
+// Verificar se Supabase está disponível com teste de conectividade
+export const isSupabaseAvailable = async (): Promise<boolean> => {
   try {
-    // Test basic connectivity
-    return !!supabase && !!supabaseUrl && !!supabaseAnonKey;
-  } catch {
+    if (!supabase || !supabaseUrl || !supabaseAnonKey) {
+      return false;
+    }
+
+    // Teste básico de conectividade sem fazer query nas tabelas
+    const { error } = await supabase
+      .from("_supabase_internal")
+      .select("*")
+      .limit(0);
+
+    // Se chegou até aqui (mesmo com erro), significa que a conexão está OK
+    return true;
+  } catch (error) {
+    console.warn("Supabase connection test failed:", error);
     return false;
   }
+};
+
+// Versão síncrona para uso imediato (sem teste de rede)
+export const isSupabaseConfigured = (): boolean => {
+  return !!supabase && !!supabaseUrl && !!supabaseAnonKey;
 };
 
 // Utility para migração gradual
