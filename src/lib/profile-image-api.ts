@@ -36,7 +36,19 @@ class ProfileImageAPI {
         );
 
         if (error) {
-          console.error("❌ Erro ao salvar imagem no Supabase:", error);
+          console.error(
+            "❌ Erro ao salvar imagem no Supabase:",
+            JSON.stringify(
+              {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+              },
+              null,
+              2,
+            ),
+          );
           throw error;
         }
 
