@@ -702,12 +702,48 @@ class IndicatorAPI {
     doctorId: string,
   ): Promise<void> {
     await this.delay(200);
-    const indicators = this.getStoredStandardIndicators(doctorId);
-    const indicatorIndex = indicators.findIndex((ind) => ind.id === id);
 
-    if (indicatorIndex !== -1) {
-      indicators[indicatorIndex].visible = visible;
-      this.saveStandardIndicators(indicators, doctorId);
+    if (isFeatureEnabled("useSupabaseIndicators") && supabase) {
+      console.log("🚀 Atualizando visibilidade no Supabase");
+
+      try {
+        // Tentar fazer upsert (insert ou update)
+        const { error } = await supabase
+          .from("doctor_standard_indicator_settings")
+          .upsert(
+            {
+              doctor_id: doctorId,
+              standard_indicator_id: id,
+              visible: visible,
+              updated_at: new Date().toISOString(),
+            },
+            {
+              onConflict: "doctor_id,standard_indicator_id",
+            },
+          );
+
+        if (error) {
+          console.error("❌ Erro ao atualizar visibilidade:", error);
+          throw error;
+        }
+
+        console.log("✅ Visibilidade atualizada no Supabase");
+      } catch (supabaseError) {
+        console.error(
+          "💥 Erro no Supabase updateStandardIndicatorVisibility:",
+          supabaseError,
+        );
+        throw supabaseError;
+      }
+    } else {
+      // Fallback para localStorage (temporário)
+      const indicators = this.getStoredStandardIndicators(doctorId);
+      const indicatorIndex = indicators.findIndex((ind) => ind.id === id);
+
+      if (indicatorIndex !== -1) {
+        indicators[indicatorIndex].visible = visible;
+        this.saveStandardIndicators(indicators, doctorId);
+      }
     }
   }
 
