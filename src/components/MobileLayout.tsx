@@ -209,7 +209,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
                         : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                     }`}
                   >
-                    <Icon className="w-5 h-5 flex-shrink-0" />
+                    <Icon className="w-4 h-4 flex-shrink-0" />
                     <span className="truncate">{item.label}</span>
                   </button>
                 </li>
@@ -218,25 +218,6 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
           </ul>
         </nav>
 
-        {/* DEBUG INFO FORÇADO */}
-        <div className="p-2 bg-green-100 border-t border-green-300 text-xs text-green-800">
-          <div>
-            <strong>📱 MOBILE LAYOUT</strong>
-          </div>
-          <div>
-            <strong>👤 User:</strong> {currentUser?.email || "N/A"}
-          </div>
-          <div>
-            <strong>🏥 Prof:</strong> {currentUser?.profession || "N/A"}
-          </div>
-          <div>
-            <strong>📍 URL:</strong> {location.pathname}
-          </div>
-          <div>
-            <strong>📋 Items:</strong> {sidebarItems.length}
-          </div>
-        </div>
-
         {/* Logout */}
         <div className="p-4 border-t border-gray-200">
           <Button
@@ -244,7 +225,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
             variant="ghost"
             className="w-full justify-start gap-3 text-gray-600 hover:text-gray-900 py-3"
           >
-            <LogOut className="w-5 h-5 flex-shrink-0" />
+            <LogOut className="w-4 h-4 flex-shrink-0" />
             <span className="truncate">Sair</span>
           </Button>
         </div>
@@ -351,7 +332,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
                               : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                           }`}
                         >
-                          <Icon className="w-5 h-5 flex-shrink-0" />
+                          <Icon className="w-4 h-4 flex-shrink-0" />
                           <span className="truncate">{item.label}</span>
                         </button>
                       </li>
@@ -367,7 +348,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
                   variant="ghost"
                   className="w-full justify-start gap-3 text-gray-600 hover:text-gray-900 py-3"
                 >
-                  <LogOut className="w-5 h-5 flex-shrink-0" />
+                  <LogOut className="w-4 h-4 flex-shrink-0" />
                   <span className="truncate">Sair</span>
                 </Button>
               </div>

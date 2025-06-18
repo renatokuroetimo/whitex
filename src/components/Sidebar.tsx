@@ -205,7 +205,7 @@ const Sidebar: React.FC = () => {
                       : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className="w-4 h-4 flex-shrink-0" />
                   {item.label}
                 </button>
               </li>
@@ -213,25 +213,6 @@ const Sidebar: React.FC = () => {
           })}
         </ul>
       </nav>
-
-      {/* FORÇAR DEBUG VISUAL */}
-      <div className="p-2 bg-red-100 border-t border-red-300 text-xs text-red-800">
-        <div>
-          <strong>👤 Usuário:</strong> {currentUser?.email || "N/A"}
-        </div>
-        <div>
-          <strong>🏥 Profissão:</strong> {userProfession}
-        </div>
-        <div>
-          <strong>📍 URL:</strong> {location.pathname}
-        </div>
-        <div>
-          <strong>📋 Itens:</strong> {sidebarItems.length}
-        </div>
-        <div>
-          <strong>⏰ Render:</strong> {new Date().toLocaleTimeString()}
-        </div>
-      </div>
 
       {/* Logout */}
       <div className="p-4 border-t border-gray-200">
