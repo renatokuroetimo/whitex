@@ -256,9 +256,61 @@ class IndicatorAPI {
 
   async getIndicators(doctorId: string): Promise<IndicatorWithDetails[]> {
     await this.delay(300);
-    const indicators = this.getStoredIndicators().filter(
-      (ind) => ind.doctorId === doctorId,
-    );
+
+    console.log("🔍 getIndicators chamado para doctorId:", doctorId);
+
+    let indicators: Indicator[] = [];
+
+    // Se Supabase estiver ativo, usar Supabase
+    if (isFeatureEnabled("useSupabaseIndicators") && supabase) {
+      console.log("🚀 Buscando indicadores no Supabase");
+
+      try {
+        const { data: supabaseIndicators, error } = await supabase
+          .from("indicators")
+          .select("*")
+          .eq("doctor_id", doctorId);
+
+        console.log("📊 Indicadores do Supabase:", {
+          data: supabaseIndicators,
+          error,
+        });
+
+        if (error) {
+          console.error("❌ Erro ao buscar indicadores:", error);
+          // Fallback para localStorage
+        } else {
+          // Converter dados do Supabase para formato local
+          indicators = (supabaseIndicators || []).map(
+            (ind: any): Indicator => ({
+              id: ind.id,
+              name: ind.name,
+              unit: ind.unit,
+              type: ind.type,
+              categoryId: ind.category,
+              subcategoryId: ind.subcategory || "",
+              doctorId: ind.doctor_id,
+              createdAt: ind.created_at,
+              updatedAt: ind.updated_at,
+            }),
+          );
+
+          console.log("✅ Indicadores convertidos:", indicators);
+        }
+      } catch (supabaseError) {
+        console.error("💥 Erro no Supabase getIndicators:", supabaseError);
+        // Continuar para fallback localStorage
+      }
+    }
+
+    // Fallback para localStorage se Supabase não funcionou
+    if (indicators.length === 0) {
+      console.log("⚠️ Usando localStorage para indicadores");
+      indicators = this.getStoredIndicators().filter(
+        (ind) => ind.doctorId === doctorId,
+      );
+    }
+
     const categories = await this.getCategories();
     const subcategories = await this.getSubcategories();
     const units = await this.getUnitsOfMeasure();
