@@ -282,9 +282,32 @@ class ProfileImageAPI {
     } else if (base64.startsWith("data:image/webp")) {
       return "image/webp";
     }
-    return "image/jpeg"; // padrão
   }
 
+  // Inicializar tabela se necessário (método manual para desenvolvimento)
+  async initializeTable(): Promise<boolean> {
+    if (!supabase) {
+      console.warn("⚠️ Supabase não está configurado");
+      return false;
+    }
+
+    const tableExists = await this.checkTableExists();
+    if (tableExists) {
+      console.log("✅ Tabela profile_images já existe");
+      return true;
+    }
+
+    console.warn("❌ Tabela profile_images não existe.");
+    console.info(
+      "📋 Para criar a tabela, execute o SQL do arquivo: create_profile_images_table.sql",
+    );
+    console.info(
+      "💡 Ou acesse o Supabase Dashboard > SQL Editor e execute o script",
+    );
+    return false;
+  }
+
+  // Migrar imagens do localStorage para Supabase
   // Migrar imagens do localStorage para Supabase
   async migrateLocalImagesToSupabase(): Promise<void> {
     if (!isFeatureEnabled("useSupabaseIndicators") || !supabase) {
@@ -328,7 +351,7 @@ class ProfileImageAPI {
 
       console.log("✅ Migração de imagens concluída");
     } catch (error) {
-      console.error("💥 Erro na migração de imagens:", error);
+      console.error("���� Erro na migração de imagens:", error);
     }
   }
 }
