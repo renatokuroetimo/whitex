@@ -20,10 +20,6 @@ const Index = () => {
     }
   };
 
-  const handleSocialLogin = (provider: string) => {
-    alert("Em desenvolvimento");
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header with WhiteX branding */}
