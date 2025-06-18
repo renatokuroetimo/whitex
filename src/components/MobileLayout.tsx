@@ -203,7 +203,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
                 <li key={item.id}>
                   <button
                     onClick={() => handleNavigation(item.path)}
-                    className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm transition-colors ${
+                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
                       active
                         ? "bg-blue-50 text-blue-700 border border-blue-200"
                         : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
@@ -223,7 +223,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
           <Button
             onClick={handleLogout}
             variant="ghost"
-            className="w-full justify-start gap-3 text-gray-600 hover:text-gray-900 py-3"
+            className="w-full justify-start gap-3 text-gray-600 hover:text-gray-900 py-2"
           >
             <LogOut className="w-4 h-4 flex-shrink-0" />
             <span className="truncate">Sair</span>
@@ -326,7 +326,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
                       <li key={item.id}>
                         <button
                           onClick={() => handleNavigation(item.path)}
-                          className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm transition-colors ${
+                          className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
                             active
                               ? "bg-blue-50 text-blue-700 border border-blue-200"
                               : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
@@ -346,7 +346,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
                 <Button
                   onClick={handleLogout}
                   variant="ghost"
-                  className="w-full justify-start gap-3 text-gray-600 hover:text-gray-900 py-3"
+                  className="w-full justify-start gap-3 text-gray-600 hover:text-gray-900 py-2"
                 >
                   <LogOut className="w-4 h-4 flex-shrink-0" />
                   <span className="truncate">Sair</span>
