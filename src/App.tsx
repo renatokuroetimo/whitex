@@ -128,6 +128,7 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            <Route path="/debug-sharing" element={<DebugSharing />} />
             <Route
               path="/indicadores"
               element={
