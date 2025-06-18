@@ -690,7 +690,7 @@ class IndicatorAPI {
           visible: true,
         },
       ];
-      this.saveStandardIndicators(indicators);
+      this.saveStandardIndicators(indicators, doctorId);
     }
 
     return indicators;
