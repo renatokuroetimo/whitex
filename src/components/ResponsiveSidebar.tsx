@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Home, Users, BarChart3, LogOut, User, Menu, X } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextHybrid";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
@@ -85,7 +85,7 @@ const SidebarContent: React.FC<SidebarContentProps> = ({ onItemClick }) => {
             }}
             className="text-xs text-blue-600 hover:text-blue-800"
           >
-            ▼
+            ��
           </button>
         </div>
       </div>
