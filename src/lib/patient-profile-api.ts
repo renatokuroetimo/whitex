@@ -66,12 +66,19 @@ class PatientProfileAPI {
 
         if (error) {
           // PGRST116 = no rows returned
-          console.error("❌ Erro ao buscar dados pessoais:", {
-            message: error.message,
-            details: error.details,
-            hint: error.hint,
-            code: error.code,
-          });
+          console.error(
+            "❌ Erro ao buscar dados pessoais:",
+            JSON.stringify(
+              {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+              },
+              null,
+              2,
+            ),
+          );
           // Fallback para localStorage
         } else if (supabaseData) {
           // Converter dados do Supabase para formato local
