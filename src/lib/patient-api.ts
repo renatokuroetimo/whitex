@@ -288,12 +288,19 @@ class PatientAPI {
         });
 
         if (error) {
-          console.error("❌ Erro ao buscar pacientes:", {
-            message: error.message,
-            details: error.details,
-            hint: error.hint,
-            code: error.code,
-          });
+          console.error(
+            "❌ Erro ao buscar pacientes:",
+            JSON.stringify(
+              {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+              },
+              null,
+              2,
+            ),
+          );
           // Fallback para localStorage
         } else {
           // Converter dados do Supabase para formato local
