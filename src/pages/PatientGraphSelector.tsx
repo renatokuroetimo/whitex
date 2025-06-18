@@ -149,13 +149,25 @@ const PatientGraphSelector = () => {
       unit: summary.unitSymbol,
     });
 
-    navigate(
-      `/pacientes/${patientId}/graficos/visualizar?${params.toString()}`,
-    );
+    if (patientId) {
+      // Médico visualizando gráfico de paciente
+      navigate(
+        `/pacientes/${patientId}/graficos/visualizar?${params.toString()}`,
+      );
+    } else {
+      // Paciente visualizando próprio gráfico
+      navigate(`/patient/graficos/visualizar?${params.toString()}`);
+    }
   };
 
   const handleBack = () => {
-    navigate(`/pacientes/${patientId}/indicadores`);
+    if (patientId) {
+      // Médico voltando para indicadores do paciente
+      navigate(`/pacientes/${patientId}/indicadores`);
+    } else {
+      // Paciente voltando para próprios indicadores
+      navigate("/patient/indicadores");
+    }
   };
 
   const formatDate = (dateStr: string) => {
@@ -179,7 +191,8 @@ const PatientGraphSelector = () => {
     );
   }
 
-  if (!patient) {
+  // Só mostrar erro se esperávamos carregar dados do paciente mas não conseguimos
+  if (patientId && !patient) {
     return null;
   }
 
