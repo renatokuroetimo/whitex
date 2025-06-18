@@ -4,6 +4,8 @@ import {
   PatientFormData,
   PaginationData,
 } from "./patient-types";
+import { supabase } from "./supabase";
+import { isFeatureEnabled } from "./feature-flags";
 
 class PatientAPI {
   private readonly STORAGE_KEYS = {
@@ -324,6 +326,36 @@ class PatientAPI {
       updatedAt: new Date().toISOString(),
     };
 
+    // Se Supabase estiver ativo, usar Supabase
+    if (isFeatureEnabled("useSupabasePatients") && supabase) {
+      console.log("🚀 Criando paciente no Supabase:", newPatient);
+
+      const { error } = await supabase.from("patients").insert([
+        {
+          id: newPatient.id,
+          name: newPatient.name,
+          age: newPatient.age,
+          city: newPatient.city,
+          state: newPatient.state,
+          weight: newPatient.weight,
+          status: newPatient.status,
+          notes: newPatient.notes,
+          doctor_id: newPatient.doctorId,
+          created_at: newPatient.createdAt,
+          updated_at: newPatient.updatedAt,
+        },
+      ]);
+
+      if (error) {
+        console.error("❌ Erro ao criar paciente no Supabase:", error);
+        // Fallback para localStorage
+      } else {
+        console.log("✅ Paciente criado no Supabase com sucesso");
+        return newPatient;
+      }
+    }
+
+    // Fallback para localStorage
     const patients = this.getStoredPatients();
     patients.push(newPatient);
     this.savePatients(patients);
