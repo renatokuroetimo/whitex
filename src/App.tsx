@@ -18,6 +18,7 @@ import Dashboard from "./pages/Dashboard";
 import ProfilePage from "./pages/ProfilePage";
 import Pacientes from "./pages/Pacientes";
 import PatientProfile from "./pages/PatientProfile";
+import PatientDetailView from "./pages/PatientDetailView";
 import PatientForm from "./pages/PatientForm";
 import Indicadores from "./pages/IndicadoresNew";
 import CreateIndicator from "./pages/CreateIndicator";
@@ -155,7 +156,7 @@ const App = () => (
               path="/pacientes/:id"
               element={
                 <ProtectedRoute>
-                  <PatientProfile />
+                  <PatientDetailView />
                 </ProtectedRoute>
               }
             />
