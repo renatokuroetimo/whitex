@@ -226,6 +226,12 @@ const ProfilePage: React.FC = () => {
     return null;
   }
 
+  // Redirecionar pacientes para sua página específica
+  if (user.profession === "paciente") {
+    navigate("/patient-profile");
+    return null;
+  }
+
   return (
     <div className="flex h-screen bg-gray-50">
       <div className="hidden lg:block">
