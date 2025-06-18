@@ -23,9 +23,9 @@ import PatientIndicators from "./pages/PatientIndicators";
 import PatientGraphSelector from "./pages/PatientGraphSelector";
 import PatientGraphView from "./pages/PatientGraphView";
 import EditPatientIndicator from "./pages/EditPatientIndicator";
-import PatientProfile from "./pages/PatientProfile";
-import PatientIndicators from "./pages/PatientIndicators";
+import PatientDashboard from "./pages/PatientDashboard";
 import PatientAddIndicator from "./pages/PatientAddIndicator";
+import DoctorSearch from "./pages/DoctorSearch";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -47,6 +47,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/patient-dashboard"
+              element={
+                <ProtectedRoute>
+                  <PatientDashboard />
                 </ProtectedRoute>
               }
             />
@@ -79,6 +87,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <PatientAddIndicator />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/patient/buscar-medicos"
+              element={
+                <ProtectedRoute>
+                  <DoctorSearch />
                 </ProtectedRoute>
               }
             />

@@ -12,12 +12,15 @@ interface SidebarItem {
 }
 
 const getSidebarItems = (userProfession?: string): SidebarItem[] => {
+  const dashboardPath =
+    userProfession === "paciente" ? "/patient-dashboard" : "/dashboard";
+
   const baseItems = [
     {
       id: "inicio",
       label: "Início",
       icon: Home,
-      path: "/dashboard",
+      path: dashboardPath,
     },
   ];
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +8,19 @@ const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  // Redirect patients to PatientDashboard
+  useEffect(() => {
+    if (user?.profession === "paciente") {
+      navigate("/patient-dashboard", { replace: true });
+    }
+  }, [user, navigate]);
+
   if (!user) {
+    return null;
+  }
+
+  // Only show doctor dashboard for doctors
+  if (user.profession !== "medico") {
     return null;
   }
 

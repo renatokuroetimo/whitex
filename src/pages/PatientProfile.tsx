@@ -311,7 +311,7 @@ const PatientProfile = () => {
                 Dados pessoais
               </h1>
               <button
-                onClick={() => navigate("/dashboard")}
+                onClick={() => navigate("/patient-dashboard")}
                 className="text-sm text-blue-600 hover:text-blue-800"
               >
                 ← Voltar
@@ -682,11 +682,11 @@ const PatientProfile = () => {
                         </p>
                       </div>
                       <Button
-                        onClick={() => setShowAddDoctorDialog(true)}
+                        onClick={() => navigate("/patient/buscar-medicos")}
                         className="bg-blue-600 hover:bg-blue-700"
                       >
                         <Plus className="h-4 w-4 mr-2" />
-                        Adicionar médicos
+                        Buscar médicos
                       </Button>
                     </div>
                   </div>
@@ -702,11 +702,11 @@ const PatientProfile = () => {
                         saúde de sua confiança.
                       </p>
                       <Button
-                        onClick={() => setShowAddDoctorDialog(true)}
+                        onClick={() => navigate("/patient/buscar-medicos")}
                         className="bg-blue-600 hover:bg-blue-700"
                       >
                         <Plus className="h-4 w-4 mr-2" />
-                        Adicionar primeiro médico
+                        Buscar primeiro médico
                       </Button>
                     </div>
                   ) : (
