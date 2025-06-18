@@ -151,7 +151,7 @@ const Sidebar: React.FC = () => {
   const profilePath =
     user?.profession === "paciente" ? "/patient-profile" : "/profile";
   return (
-    <div className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col">
+    <div className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col sidebar-container">
       {/* Header */}
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center gap-2">
