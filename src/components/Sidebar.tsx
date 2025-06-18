@@ -9,85 +9,46 @@ const Sidebar: React.FC = () => {
   const location = useLocation();
   const { logout, user } = useAuth();
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [userProfession, setUserProfession] = useState<string>("");
 
-  // Função para detectar a profissão do usuário de forma mais robusta
-  useEffect(() => {
-    const detectUserProfession = () => {
-      // Primeiro, tentar pelo contexto
-      if (user?.profession) {
-        console.log("✅ Profissão detectada pelo contexto:", user.profession);
-        setUserProfession(user.profession);
-        return;
-      }
+  // Log para debug SEMPRE
+  console.log("🚨 SIDEBAR RENDER - User:", user);
+  console.log("🚨 SIDEBAR RENDER - Path:", location.pathname);
 
-      // Segundo, tentar pelo localStorage
-      try {
-        const storedUser = localStorage.getItem("medical_app_current_user");
-        if (storedUser) {
-          const parsedUser = JSON.parse(storedUser);
-          if (parsedUser?.profession) {
-            console.log(
-              "✅ Profissão detectada pelo localStorage:",
-              parsedUser.profession,
-            );
-            setUserProfession(parsedUser.profession);
-            return;
-          }
-        }
-      } catch (error) {
-        console.error("❌ Erro ao ler localStorage:", error);
-      }
-
-      // Terceiro, tentar detectar pela URL atual
-      const path = location.pathname;
-      if (path.includes("/patient")) {
-        console.log("✅ Profissão detectada pela URL (paciente):", path);
-        setUserProfession("paciente");
-        return;
-      }
-
-      if (path.includes("/dashboard") && !path.includes("patient")) {
-        console.log("✅ Profissão detectada pela URL (médico):", path);
-        setUserProfession("medico");
-        return;
-      }
-
-      console.log("❌ Não foi possível detectar a profissão");
-    };
-
-    detectUserProfession();
-
-    // Verificar novamente a cada segundo
-    const interval = setInterval(detectUserProfession, 1000);
-
-    return () => clearInterval(interval);
-  }, [user, location.pathname]);
-
-  // Função para obter itens da sidebar
-  const getSidebarItems = () => {
-    console.log("🔍 Gerando itens para profissão:", userProfession);
-
-    if (userProfession === "medico") {
-      return [
-        { id: "inicio", label: "Início", icon: Home, path: "/dashboard" },
-        {
-          id: "pacientes",
-          label: "Pacientes",
-          icon: Users,
-          path: "/pacientes",
-        },
-        {
-          id: "indicadores",
-          label: "Indicadores",
-          icon: BarChart3,
-          path: "/indicadores",
-        },
-      ];
+  // Obter dados do usuário com fallback duplo
+  const getUserData = () => {
+    // Primeiro: usar contexto
+    if (user?.profession) {
+      return { ...user, source: "context" };
     }
 
+    // Segundo: usar localStorage
+    try {
+      const stored = localStorage.getItem("medical_app_current_user");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        return { ...parsed, source: "localStorage" };
+      }
+    } catch (e) {
+      console.error("🚨 Erro localStorage:", e);
+    }
+
+    return null;
+  };
+
+  const currentUser = getUserData();
+  console.log("🚨 CURRENT USER:", currentUser);
+
+  // Determinar profissão SEMPRE
+  const userProfession = currentUser?.profession || "unknown";
+  console.log("🚨 USER PROFESSION:", userProfession);
+
+  // Função para gerar itens da sidebar - SEMPRE
+  const generateSidebarItems = () => {
+    console.log("🚨 GENERATING ITEMS FOR:", userProfession);
+
+    // FORÇAR items corretos baseado na profissão
     if (userProfession === "paciente") {
-      return [
+      const items = [
         {
           id: "inicio",
           label: "Início",
@@ -107,33 +68,64 @@ const Sidebar: React.FC = () => {
           path: "/patient/indicadores",
         },
       ];
+      console.log("🚨 RETURNING PACIENTE ITEMS:", items);
+      return items;
+    }
+
+    if (userProfession === "medico") {
+      const items = [
+        {
+          id: "inicio",
+          label: "Início",
+          icon: Home,
+          path: "/dashboard",
+        },
+        {
+          id: "pacientes",
+          label: "Pacientes",
+          icon: Users,
+          path: "/pacientes",
+        },
+        {
+          id: "indicadores",
+          label: "Indicadores",
+          icon: BarChart3,
+          path: "/indicadores",
+        },
+      ];
+      console.log("🚨 RETURNING MEDICO ITEMS:", items);
+      return items;
     }
 
     // Fallback
-    return [{ id: "inicio", label: "Início", icon: Home, path: "/" }];
+    const fallbackItems = [
+      {
+        id: "inicio",
+        label: "Início",
+        icon: Home,
+        path: "/",
+      },
+    ];
+    console.log("🚨 RETURNING FALLBACK ITEMS:", fallbackItems);
+    return fallbackItems;
   };
+
+  const sidebarItems = generateSidebarItems();
 
   // Carregar imagem de perfil
   useEffect(() => {
-    const loadProfileImage = () => {
-      const userId = user?.id;
-      if (userId) {
-        const savedImage = localStorage.getItem(`profile_image_${userId}`);
-        if (savedImage && savedImage.startsWith("data:")) {
-          setProfileImage(savedImage);
-        } else {
-          setProfileImage(null);
-        }
+    if (currentUser?.id) {
+      const savedImage = localStorage.getItem(
+        `profile_image_${currentUser.id}`,
+      );
+      if (savedImage && savedImage.startsWith("data:")) {
+        setProfileImage(savedImage);
       }
-    };
-
-    loadProfileImage();
-    const interval = setInterval(loadProfileImage, 2000);
-    return () => clearInterval(interval);
-  }, [user?.id]);
+    }
+  }, [currentUser?.id]);
 
   const handleNavigation = (path: string) => {
-    console.log("🔍 Navegando para:", path);
+    console.log("🚨 NAVIGATING TO:", path);
     navigate(path);
   };
 
@@ -143,23 +135,19 @@ const Sidebar: React.FC = () => {
   };
 
   const isActive = (path: string) => {
-    const isMatch = location.pathname === path;
-    console.log(
-      `🔍 Verificando ativo: ${path} === ${location.pathname} = ${isMatch}`,
-    );
-    return isMatch;
+    const active = location.pathname === path;
+    console.log(`🚨 IS ACTIVE: ${path} === ${location.pathname} = ${active}`);
+    return active;
   };
 
-  const sidebarItems = getSidebarItems();
   const profilePath =
     userProfession === "paciente" ? "/patient-profile" : "/profile";
 
-  console.log("🔍 Itens finais da sidebar:", sidebarItems);
-  console.log("🔍 Caminho do perfil:", profilePath);
+  console.log("🚨 FINAL SIDEBAR ITEMS:", sidebarItems);
 
   return (
     <div className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col">
-      {/* Header */}
+      {/* Header com timestamp para forçar atualização */}
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-gray-900 rounded flex items-center justify-center">
@@ -203,8 +191,12 @@ const Sidebar: React.FC = () => {
             const Icon = item.icon;
             const active = isActive(item.path);
 
+            console.log(
+              `🚨 RENDERING: ${item.label} (${item.path}) - Active: ${active}`,
+            );
+
             return (
-              <li key={item.id}>
+              <li key={`${item.id}-${Date.now()}`}>
                 <button
                   onClick={() => handleNavigation(item.path)}
                   className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
@@ -222,34 +214,24 @@ const Sidebar: React.FC = () => {
         </ul>
       </nav>
 
-      {/* Debug Info */}
-      {process.env.NODE_ENV === "development" && (
-        <div className="p-3 border-t border-red-200 bg-red-50 text-xs">
-          <div className="text-red-700">
-            <div>
-              <strong>Email:</strong> {user?.email || "N/A"}
-            </div>
-            <div>
-              <strong>Profissão:</strong> {userProfession || "N/A"}
-            </div>
-            <div>
-              <strong>URL:</strong> {location.pathname}
-            </div>
-            <div>
-              <strong>Itens:</strong> {sidebarItems.length}
-            </div>
-          </div>
-          <button
-            onClick={() => {
-              localStorage.clear();
-              window.location.reload();
-            }}
-            className="mt-2 px-2 py-1 bg-red-200 text-red-800 rounded text-xs"
-          >
-            🧹 Limpar Cache
-          </button>
+      {/* FORÇAR DEBUG VISUAL */}
+      <div className="p-2 bg-red-100 border-t border-red-300 text-xs text-red-800">
+        <div>
+          <strong>👤 Usuário:</strong> {currentUser?.email || "N/A"}
         </div>
-      )}
+        <div>
+          <strong>🏥 Profissão:</strong> {userProfession}
+        </div>
+        <div>
+          <strong>📍 URL:</strong> {location.pathname}
+        </div>
+        <div>
+          <strong>📋 Itens:</strong> {sidebarItems.length}
+        </div>
+        <div>
+          <strong>⏰ Render:</strong> {new Date().toLocaleTimeString()}
+        </div>
+      </div>
 
       {/* Logout */}
       <div className="p-4 border-t border-gray-200">
