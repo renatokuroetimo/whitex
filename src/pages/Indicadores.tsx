@@ -15,9 +15,14 @@ const Indicadores = () => {
 
   useEffect(() => {
     if (user?.id) {
+      // Redirect patients to their indicators page
+      if (user.profession === "paciente") {
+        navigate("/patient/indicadores", { replace: true });
+        return;
+      }
       loadIndicators();
     }
-  }, [user?.id]);
+  }, [user?.id, user?.profession, navigate]);
 
   const loadIndicators = async () => {
     if (!user?.id) return;
@@ -50,7 +55,7 @@ const Indicadores = () => {
   };
 
   // Only show doctor indicators for doctors
-  if (user?.profession !== "medico") {
+  if (!user || user.profession !== "medico") {
     return null;
   }
 
