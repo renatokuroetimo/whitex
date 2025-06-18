@@ -14,17 +14,24 @@ const Indicadores = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (user?.id) {
+    console.log("Indicadores useEffect - user:", user);
+
+    if (user) {
       // Redirect patients to their indicators page
       if (user.profession === "paciente") {
+        console.log("Redirecting patient to /patient/indicadores");
         navigate("/patient/indicadores", { replace: true });
         return;
       }
       if (user.profession === "medico") {
+        console.log("Loading indicators for doctor");
         loadIndicators();
       }
+    } else {
+      console.log("No user found, setting loading to false");
+      setIsLoading(false);
     }
-  }, [user?.id, user?.profession, navigate]);
+  }, [user, navigate]);
 
   const loadIndicators = async () => {
     if (!user?.id) return;
@@ -56,29 +63,52 @@ const Indicadores = () => {
     navigate("/indicadores/padrao");
   };
 
-  // Show loading or redirect logic
-  if (!user) {
+  console.log("Rendering Indicadores - user:", user, "isLoading:", isLoading);
+
+  // Show loading while user is being fetched
+  if (!user && isLoading) {
     return (
       <div className="flex h-screen bg-gray-50 items-center justify-center">
         <div className="text-center">
           <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
-          <p className="text-gray-600">Carregando...</p>
+          <p className="text-gray-600">Carregando usuário...</p>
         </div>
       </div>
     );
   }
 
-  // Patients are redirected in useEffect
-  if (user.profession === "paciente") {
+  // Redirect to login if no user
+  if (!user) {
+    navigate("/login", { replace: true });
     return null;
   }
 
-  // Show doctor indicators for doctors
+  // Patients are redirected in useEffect - show loading briefly
+  if (user.profession === "paciente") {
+    return (
+      <div className="flex h-screen bg-gray-50 items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
+          <p className="text-gray-600">Redirecionando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Only doctors should see this page
   if (user.profession !== "medico") {
     return (
       <div className="flex h-screen bg-gray-50 items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600">Acesso não autorizado</p>
+          <p className="text-gray-600">
+            Acesso não autorizado para: {user.profession}
+          </p>
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="mt-4 text-blue-600"
+          >
+            Voltar ao Dashboard
+          </button>
         </div>
       </div>
     );
