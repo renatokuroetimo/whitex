@@ -421,7 +421,7 @@ class PatientProfileAPI {
 
   async loadRegisteredDoctors(): Promise<void> {
     // Get only doctors from registered users - no mocks
-    const registeredDoctors = this.getRegisteredDoctors();
+    const registeredDoctors = await this.getRegisteredDoctors();
 
     // Always update with latest registered doctors
     this.saveDoctors(registeredDoctors);
