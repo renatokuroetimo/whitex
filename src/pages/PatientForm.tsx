@@ -400,26 +400,102 @@ const PatientForm = () => {
                     </Select>
                   </div>
 
-                  {/* Status */}
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Status
-                    </label>
-                    <Select
-                      value={formData.status}
-                      onValueChange={(value: "ativo" | "inativo") =>
-                        handleInputChange("status", value)
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ativo">Ativo</SelectItem>
-                        <SelectItem value="inativo">Inativo</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  {/* Diagnóstico */}
+                  {isEditing && (
+                    <div className="md:col-span-2">
+                      <div className="flex items-center justify-between mb-3">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Adicionar Diagnóstico
+                        </label>
+                        {!isAddingDiagnosis && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setIsAddingDiagnosis(true)}
+                            className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                          >
+                            <Plus className="h-4 w-4 mr-1" />
+                            Novo diagnóstico
+                          </Button>
+                        )}
+                      </div>
+
+                      {isAddingDiagnosis && (
+                        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                          <div className="space-y-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              {/* CID */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  CID *
+                                </label>
+                                <Input
+                                  value={diagnosisForm.cid}
+                                  onChange={(e) =>
+                                    handleDiagnosisInputChange(
+                                      "cid",
+                                      e.target.value,
+                                    )
+                                  }
+                                  placeholder="Ex: I10.9"
+                                  className="w-full"
+                                />
+                              </div>
+
+                              {/* Diagnóstico */}
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Diagnóstico *
+                                </label>
+                                <Input
+                                  value={diagnosisForm.diagnosis}
+                                  onChange={(e) =>
+                                    handleDiagnosisInputChange(
+                                      "diagnosis",
+                                      e.target.value,
+                                    )
+                                  }
+                                  placeholder="Ex: Hipertensão arterial"
+                                  className="w-full"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Botões do diagnóstico */}
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={cancelAddDiagnosis}
+                              >
+                                <X className="h-4 w-4 mr-1" />
+                                Cancelar
+                              </Button>
+                              <Button
+                                type="button"
+                                size="sm"
+                                onClick={handleAddDiagnosis}
+                                disabled={isLoading}
+                                className="bg-green-600 hover:bg-green-700"
+                              >
+                                <Plus className="h-4 w-4 mr-1" />
+                                Adicionar
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {!isAddingDiagnosis && (
+                        <p className="text-sm text-gray-500">
+                          Os diagnósticos são exibidos no histórico do paciente
+                          após serem adicionados.
+                        </p>
+                      )}
+                    </div>
+                  )}
 
                   {/* Observações */}
                   <div className="md:col-span-2">
