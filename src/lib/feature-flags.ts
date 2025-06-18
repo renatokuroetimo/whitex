@@ -100,7 +100,12 @@ export const disableSupabaseMigration = (): void => {
   setFeatureFlag("useSupabaseProfiles", false);
   setFeatureFlag("enableDataMigration", false);
 
-  console.log("✅ Rollback concluído! Recarregue a página.");
+  console.log("✅ Rollback concluído!");
+
+  // Notificar mudança
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("migrationChanged"));
+  }
 };
 
 // Status da migração

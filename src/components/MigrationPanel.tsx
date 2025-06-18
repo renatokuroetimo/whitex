@@ -164,7 +164,16 @@ const MigrationPanel: React.FC = () => {
         </div>
 
         <div className="mt-3 text-xs text-gray-500">
-          ⚠️ Mudanças aplicadas após recarregar
+          {status.overallProgress > 0 ? (
+            <div className="text-green-600 font-medium">
+              ✅ Migração ativa - Usando Supabase para {status.overallProgress}{" "}
+              módulo(s)
+            </div>
+          ) : (
+            <div>
+              💾 Usando localStorage - Clique "Ativar Supabase" para migrar
+            </div>
+          )}
         </div>
       </Card>
     </div>
