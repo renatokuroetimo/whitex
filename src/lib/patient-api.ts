@@ -412,13 +412,18 @@ class PatientAPI {
                 .from("users")
                 .select("id, email, full_name")
                 .eq("id", share.patient_id)
-                .single();
+                .maybeSingle();
 
               if (userError) {
                 console.error(
                   `❌ Erro ao buscar usuário ${share.patient_id}:`,
                   userError,
                 );
+                continue;
+              }
+
+              if (!userData) {
+                console.warn(`⚠️ Usuário ${share.patient_id} não encontrado`);
                 continue;
               }
 
@@ -616,7 +621,7 @@ class PatientAPI {
           .from("patients")
           .select("*")
           .eq("id", id)
-          .single();
+          .maybeSingle();
 
         console.log("📊 Resultado do Supabase:", {
           data: supabasePatient,
@@ -637,10 +642,7 @@ class PatientAPI {
               2,
             ),
           );
-          // Se erro for "PGRST116", significa que não encontrou - continuar para localStorage
-          if (error.code !== "PGRST116") {
-            throw error; // Outros erros devem ser tratados
-          }
+          // Continuar para localStorage fallback
         } else if (supabasePatient) {
           // Converter dados do Supabase para formato local
           const patient: Patient = {
