@@ -321,7 +321,7 @@ const PatientProfile = () => {
 
     const reader = new FileReader();
 
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const result = e.target?.result as string;
       if (result) {
         setProfileImage(result);
