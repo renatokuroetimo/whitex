@@ -348,7 +348,13 @@ class PatientAPI {
           };
         }
       } catch (supabaseError) {
-        console.error("💥 Erro no Supabase getPatients:", supabaseError);
+        console.error("💥 Erro no Supabase getPatients:", {
+          message:
+            supabaseError instanceof Error
+              ? supabaseError.message
+              : "Unknown error",
+          error: supabaseError,
+        });
         // Continuar para fallback localStorage
       }
     }
