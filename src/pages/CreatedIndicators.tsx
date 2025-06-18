@@ -192,23 +192,31 @@ const CreatedIndicators = () => {
                         >
                           <td className="py-3 px-4">
                             <span className="text-sm font-medium text-gray-900">
-                              {indicator.categoryName}
+                              {indicator.categoryName ||
+                                (indicator as any).categoryId ||
+                                (indicator as any).category ||
+                                "N/A"}
                             </span>
                           </td>
                           <td className="py-3 px-4">
                             <span className="text-sm text-gray-600">
-                              {indicator.subcategoryName}
+                              {indicator.subcategoryName ||
+                                (indicator as any).subcategory ||
+                                "Subcategoria não encontrada"}
                             </span>
                           </td>
                           <td className="py-3 px-4">
                             <span className="text-sm text-gray-900">
-                              {indicator.parameter}
+                              {indicator.parameter ||
+                                (indicator as any).name ||
+                                "N/A"}
                             </span>
                           </td>
                           <td className="py-3 px-4">
                             <span className="text-sm text-gray-600">
                               {indicator.unitOfMeasureSymbol ||
                                 indicator.unitSymbol ||
+                                (indicator as any).unit ||
                                 "N/A"}
                             </span>
                           </td>
