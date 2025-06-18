@@ -96,11 +96,18 @@ class AuthSupabaseAPI {
   ): Promise<ApiResponse<User>> {
     if (!supabase) throw new Error("Supabase not available");
 
+    console.log("🔍 Fazendo login no Supabase para:", credentials.email);
+
     const { data: users, error } = await supabase
       .from("users")
       .select("*")
       .eq("email", credentials.email.toLowerCase())
       .limit(1);
+
+    console.log("📊 Resposta do login Supabase:", {
+      users: users?.length,
+      error,
+    });
 
     if (error) throw error;
 
@@ -110,7 +117,17 @@ class AuthSupabaseAPI {
 
     const user = users[0];
 
-    // Converter formato Supabase para formato local
+    console.log("👤 Dados do usuário carregados:", {
+      id: user.id,
+      email: user.email,
+      profession: user.profession,
+      full_name: user.full_name,
+      city: user.city,
+      state: user.state,
+      phone: user.phone,
+    });
+
+    // Converter formato Supabase para formato local com TODOS os campos
     const convertedUser: User = {
       id: user.id,
       email: user.email,
@@ -120,8 +137,11 @@ class AuthSupabaseAPI {
       city: user.city,
       state: user.state,
       specialty: user.specialty,
+      phone: user.phone, // Incluir telefone
       createdAt: user.created_at,
     };
+
+    console.log("✅ Usuário convertido para o contexto:", convertedUser);
 
     return { success: true, data: convertedUser };
   }
