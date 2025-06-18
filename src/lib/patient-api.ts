@@ -782,7 +782,7 @@ class PatientAPI {
 
         if (error) {
           console.error(
-            "❌ Erro ao buscar diagnósticos:",
+            "❌ Erro ao buscar diagn��sticos:",
             JSON.stringify(
               {
                 message: error.message,
@@ -932,6 +932,74 @@ class PatientAPI {
     this.saveDiagnoses(diagnoses);
 
     return newDiagnosis;
+  }
+
+  // Deletar pacientes
+  async deletePatients(ids: string[]): Promise<void> {
+    await this.delay(300);
+
+    console.log("🗑️ DELETANDO PACIENTES:", ids);
+
+    // Se Supabase estiver ativo, usar Supabase
+    if (isFeatureEnabled("useSupabasePatients") && supabase) {
+      console.log("🚀 Deletando pacientes no Supabase");
+
+      try {
+        const { error } = await supabase
+          .from("patients")
+          .delete()
+          .in("id", ids);
+
+        console.log("📊 Resultado da deleção no Supabase:", { error });
+
+        if (error) {
+          console.error(
+            "❌ Erro ao deletar pacientes:",
+            JSON.stringify(
+              {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+              },
+              null,
+              2,
+            ),
+          );
+          throw error; // Forçar fallback
+        } else {
+          console.log("✅ Pacientes deletados no Supabase!");
+          return;
+        }
+      } catch (supabaseError) {
+        console.error(
+          "💥 Erro no Supabase deletePatients:",
+          JSON.stringify(
+            {
+              message:
+                supabaseError instanceof Error
+                  ? supabaseError.message
+                  : "Unknown error",
+              stack:
+                supabaseError instanceof Error
+                  ? supabaseError.stack
+                  : undefined,
+              error: supabaseError,
+            },
+            null,
+            2,
+          ),
+        );
+        // Continuar para fallback
+      }
+    } else {
+      console.log("⚠️ Supabase não ativo para deleção");
+    }
+
+    console.log("📁 Deletando pacientes do localStorage");
+    const patients = this.getStoredPatients();
+    const updatedPatients = patients.filter((p) => !ids.includes(p.id));
+    this.savePatients(updatedPatients);
   }
 }
 
