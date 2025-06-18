@@ -125,7 +125,10 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
           }
         })
         .catch((error) => {
-          console.warn("Erro ao carregar imagem de perfil:", error);
+          console.warn(
+            "⚠️ Erro ao carregar imagem de perfil (usando fallback localStorage):",
+            error?.message || error,
+          );
         });
     }
   }, [currentUser?.id]);
