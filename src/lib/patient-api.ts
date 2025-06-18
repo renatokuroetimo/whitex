@@ -184,6 +184,78 @@ class PatientAPI {
     }
   }
 
+  // Get patients who shared data with this doctor
+  private getSharedPatients(doctorId: string): Patient[] {
+    try {
+      const sharedData = localStorage.getItem("medical_app_shared_data");
+      const personalData = localStorage.getItem("medical_app_patient_personal");
+      const users = localStorage.getItem("medical_app_users");
+
+      if (!sharedData || !personalData || !users) return [];
+
+      const shares = JSON.parse(sharedData);
+      const patients = JSON.parse(personalData);
+      const userList = JSON.parse(users);
+
+      // Get active shares for this doctor
+      const activeShares = shares.filter(
+        (share: any) => share.doctorId === doctorId && share.isActive,
+      );
+
+      // Convert shared patients to Patient format
+      const sharedPatients = activeShares
+        .map((share: any) => {
+          const patientData = patients.find(
+            (p: any) => p.userId === share.patientId,
+          );
+          const userData = userList.find((u: any) => u.id === share.patientId);
+
+          if (!patientData && !userData) return null;
+
+          return {
+            id: share.patientId,
+            name:
+              patientData?.fullName ||
+              userData?.email?.split("@")[0] ||
+              "Paciente",
+            email: userData?.email || "",
+            age: patientData?.birthDate
+              ? this.calculateAge(patientData.birthDate)
+              : undefined,
+            city: patientData?.city || "",
+            state: patientData?.state || "",
+            weight: undefined,
+            status: "compartilhado" as const,
+            doctorId: doctorId,
+            createdAt: share.sharedAt,
+            notes: "Dados compartilhados pelo paciente",
+          };
+        })
+        .filter(Boolean);
+
+      return sharedPatients;
+    } catch (error) {
+      console.error("Error getting shared patients:", error);
+      return [];
+    }
+  }
+
+  private calculateAge(birthDate: string): number {
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birth.getDate())
+    ) {
+      age--;
+    }
+
+    return age;
+  }
+
   // Buscar pacientes com paginação e filtro
   async getPatients(
     doctorId: string,
@@ -197,13 +269,18 @@ class PatientAPI {
       (p) => p.doctorId === doctorId,
     );
 
+    // Add shared patients
+    const sharedPatients = this.getSharedPatients(doctorId);
+    patients = [...patients, ...sharedPatients];
+
     // Filtro de busca
     if (search && search.trim()) {
       const searchLower = search.toLowerCase().trim();
       patients = patients.filter(
         (patient) =>
           patient.name.toLowerCase().includes(searchLower) ||
-          patient.city.toLowerCase().includes(searchLower),
+          (patient.city && patient.city.toLowerCase().includes(searchLower)) ||
+          (patient.email && patient.email.toLowerCase().includes(searchLower)),
       );
     }
 

@@ -359,9 +359,15 @@ const Pacientes = () => {
                         <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                           <Badge
                             variant="secondary"
-                            className="bg-green-100 text-green-800"
+                            className={
+                              patient.status === "compartilhado"
+                                ? "bg-blue-100 text-blue-800"
+                                : "bg-green-100 text-green-800"
+                            }
                           >
-                            {patient.status.toUpperCase()}
+                            {patient.status === "compartilhado"
+                              ? "COMPARTILHADO"
+                              : patient.status.toUpperCase()}
                           </Badge>
                         </td>
                         <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
