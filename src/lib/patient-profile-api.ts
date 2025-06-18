@@ -131,6 +131,13 @@ class PatientProfileAPI {
 
     console.log("🔥 SALVANDO DADOS PESSOAIS:", { userId, formData });
 
+    // Verificações de debug
+    console.log(
+      "🔍 Feature Flag useSupabaseProfiles:",
+      isFeatureEnabled("useSupabaseProfiles"),
+    );
+    console.log("🔍 Supabase disponível:", !!supabase);
+
     const allData = this.getStoredPersonalData();
     const existingIndex = allData.findIndex((item) => item.userId === userId);
 
@@ -153,6 +160,8 @@ class PatientProfileAPI {
         updatedAt: new Date().toISOString(),
       };
     }
+
+    console.log("📝 Dados que serão salvos:", resultData);
 
     // Se Supabase estiver ativo, usar Supabase
     if (isFeatureEnabled("useSupabaseProfiles") && supabase) {
