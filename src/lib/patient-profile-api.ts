@@ -661,6 +661,102 @@ class PatientProfileAPI {
   ): Promise<SharedData> {
     await this.delay(300);
 
+    console.log("🤝 COMPARTILHANDO DADOS:", { patientId, doctorId });
+
+    // Se Supabase estiver ativo, usar Supabase
+    if (isFeatureEnabled("useSupabaseProfiles") && supabase) {
+      console.log("🚀 Criando compartilhamento no Supabase");
+
+      try {
+        // Verificar se já existe compartilhamento
+        const { data: existingShare, error: checkError } = await supabase
+          .from("doctor_patient_sharing")
+          .select("*")
+          .eq("doctor_id", doctorId)
+          .eq("patient_id", patientId)
+          .maybeSingle();
+
+        console.log("📊 Compartilhamento existente:", {
+          data: existingShare,
+          error: checkError,
+        });
+
+        if (existingShare) {
+          // Converter dados do Supabase para formato local
+          const sharedData: SharedData = {
+            id: existingShare.id,
+            patientId: existingShare.patient_id,
+            doctorId: existingShare.doctor_id,
+            sharedAt: existingShare.shared_at,
+            isActive: true,
+          };
+          console.log("✅ Compartilhamento já existe");
+          return sharedData;
+        }
+
+        // Criar novo compartilhamento
+        const newShare = {
+          doctor_id: doctorId,
+          patient_id: patientId,
+          shared_at: new Date().toISOString(),
+        };
+
+        const { data: supabaseData, error } = await supabase
+          .from("doctor_patient_sharing")
+          .insert([newShare])
+          .select()
+          .single();
+
+        console.log("📊 Resultado do compartilhamento:", {
+          data: supabaseData,
+          error,
+        });
+
+        if (error) {
+          console.error(
+            "❌ Erro ao criar compartilhamento:",
+            JSON.stringify(
+              {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+              },
+              null,
+              2,
+            ),
+          );
+          throw error; // Forçar fallback
+        } else {
+          console.log("✅ Compartilhamento criado no Supabase!");
+          const sharedData: SharedData = {
+            id: supabaseData.id,
+            patientId: supabaseData.patient_id,
+            doctorId: supabaseData.doctor_id,
+            sharedAt: supabaseData.shared_at,
+            isActive: true,
+          };
+          return sharedData;
+        }
+      } catch (supabaseError) {
+        console.error("💥 Erro no Supabase shareDataWithDoctor:", {
+          message:
+            supabaseError instanceof Error
+              ? supabaseError.message
+              : "Unknown error",
+          name: supabaseError instanceof Error ? supabaseError.name : "Unknown",
+          stack:
+            supabaseError instanceof Error
+              ? supabaseError.stack?.split("\n")[0]
+              : undefined,
+        });
+        // Continuar para fallback
+      }
+    } else {
+      console.log("⚠️ Supabase perfis não ativo");
+    }
+
+    console.log("📁 Usando localStorage para compartilhamento");
     const allShares = this.getStoredSharedData();
 
     // Verificar se já existe compartilhamento ativo
