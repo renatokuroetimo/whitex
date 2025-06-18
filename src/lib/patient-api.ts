@@ -655,6 +655,80 @@ class PatientAPI {
   // Buscar diagnósticos de um paciente
   async getPatientDiagnoses(patientId: string): Promise<Diagnosis[]> {
     await this.delay(200);
+
+    console.log("🔍 getPatientDiagnoses chamado para patientId:", patientId);
+
+    // Se Supabase estiver ativo, usar Supabase
+    if (isFeatureEnabled("useSupabasePatients") && supabase) {
+      console.log("🚀 Buscando diagnósticos no Supabase");
+
+      try {
+        const { data: supabaseDiagnoses, error } = await supabase
+          .from("patient_diagnoses")
+          .select("*")
+          .eq("patient_id", patientId)
+          .order("created_at", { ascending: false });
+
+        console.log("📊 Diagnósticos do Supabase:", {
+          data: supabaseDiagnoses,
+          error,
+        });
+
+        if (error) {
+          console.error(
+            "❌ Erro ao buscar diagnósticos:",
+            JSON.stringify(
+              {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+              },
+              null,
+              2,
+            ),
+          );
+          // Fallback para localStorage
+        } else {
+          // Converter dados do Supabase para formato local
+          const diagnoses = (supabaseDiagnoses || []).map(
+            (d: any): Diagnosis => ({
+              id: d.id,
+              patientId: d.patient_id,
+              date: d.date,
+              status: d.status,
+              code: d.code,
+              createdAt: d.created_at,
+            }),
+          );
+
+          console.log("✅ Diagnósticos convertidos:", diagnoses);
+          return diagnoses;
+        }
+      } catch (supabaseError) {
+        console.error(
+          "💥 Erro no Supabase getPatientDiagnoses:",
+          JSON.stringify(
+            {
+              message:
+                supabaseError instanceof Error
+                  ? supabaseError.message
+                  : "Unknown error",
+              stack:
+                supabaseError instanceof Error
+                  ? supabaseError.stack
+                  : undefined,
+              error: supabaseError,
+            },
+            null,
+            2,
+          ),
+        );
+        // Continuar para fallback localStorage
+      }
+    }
+
+    console.log("⚠️ Usando localStorage fallback para diagnósticos");
     const diagnoses = this.getStoredDiagnoses();
     return diagnoses.filter((d) => d.patientId === patientId);
   }
@@ -664,7 +738,7 @@ class PatientAPI {
     localStorage.removeItem(this.STORAGE_KEYS.PATIENTS);
     localStorage.removeItem(this.STORAGE_KEYS.DIAGNOSES);
   }
-  // Adicionar diagn��stico
+  // Adicionar diagnóstico
   async addDiagnosis(
     patientId: string,
     diagnosis: Omit<Diagnosis, "id" | "patientId" | "createdAt">,
