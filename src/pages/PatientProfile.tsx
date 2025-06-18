@@ -102,6 +102,12 @@ const PatientProfile = () => {
         patientProfileAPI.getSharedDoctors(user.id),
       ]);
 
+      console.log("PatientProfile data loaded:", {
+        personal,
+        medical,
+        doctors,
+      });
+
       if (personal) {
         setPersonalData({
           fullName: personal.fullName,
@@ -133,6 +139,7 @@ const PatientProfile = () => {
         setProfileImage(savedImage);
       }
     } catch (error) {
+      console.error("Error loading PatientProfile data:", error);
       toast({
         variant: "destructive",
         title: "Erro",
@@ -298,7 +305,18 @@ const PatientProfile = () => {
     }
   };
 
-  if (!user || user.profession !== "paciente") {
+  if (!user) {
+    return (
+      <div className="flex h-screen bg-gray-50 items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
+          <p className="text-gray-600">Carregando usuário...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (user.profession !== "paciente") {
     navigate("/dashboard");
     return null;
   }
