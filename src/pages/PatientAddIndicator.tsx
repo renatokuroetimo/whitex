@@ -58,9 +58,9 @@ const PatientAddIndicator = () => {
   const loadData = async () => {
     setIsLoading(true);
     try {
-      // Carregar apenas indicadores padrão visíveis para pacientes
-      const standardIndicators =
-        await indicatorAPI.getVisibleStandardIndicators();
+      // Para pacientes, carregar TODOS os indicadores padrão (não apenas os visíveis)
+      // Os pacientes devem ter acesso a todos os indicadores para registrar seus dados
+      const standardIndicators = await indicatorAPI.getStandardIndicators();
 
       const mappedIndicators = standardIndicators.map((ind) => ({
         ...ind,
@@ -68,8 +68,10 @@ const PatientAddIndicator = () => {
         displayName: `${ind.categoryName} - ${ind.subcategoryName} - ${ind.parameter} (${ind.unitSymbol})`,
       }));
 
+      console.log("📊 Indicadores carregados para paciente:", mappedIndicators);
       setIndicators(mappedIndicators);
     } catch (error) {
+      console.error("❌ Erro ao carregar indicadores:", error);
       toast({
         variant: "destructive",
         title: "Erro",
