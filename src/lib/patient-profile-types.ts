@@ -3,6 +3,7 @@ export interface PatientPersonalData {
   userId: string;
   profileImage?: string;
   fullName: string;
+  email: string;
   birthDate: string;
   gender: "masculino" | "feminino" | "outro";
   state: string;
@@ -47,6 +48,7 @@ export interface SharedData {
 
 export interface PatientPersonalFormData {
   fullName: string;
+  email: string;
   birthDate: string;
   gender: "masculino" | "feminino" | "outro";
   state: string;
