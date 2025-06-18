@@ -36,20 +36,34 @@ class ProfileImageAPI {
         );
 
         if (error) {
-          console.error(
-            "❌ Erro ao salvar imagem no Supabase:",
-            JSON.stringify(
-              {
-                message: error.message,
-                details: error.details,
-                hint: error.hint,
-                code: error.code,
-              },
-              null,
-              2,
-            ),
-          );
-          throw error;
+          if (error.code === "PGRST204") {
+            console.warn(
+              "⚠️ Tabela profile_images não existe no Supabase. Execute o script create_profile_images_table.sql",
+            );
+            console.log(
+              "📁 Salvando imagem apenas no localStorage como fallback",
+            );
+            localStorage.setItem(
+              `${this.STORAGE_KEY_PREFIX}${userId}`,
+              imageData,
+            );
+            return;
+          } else {
+            console.error(
+              "❌ Erro ao salvar imagem no Supabase:",
+              JSON.stringify(
+                {
+                  message: error.message,
+                  details: error.details,
+                  hint: error.hint,
+                  code: error.code,
+                },
+                null,
+                2,
+              ),
+            );
+            throw error;
+          }
         }
 
         console.log("✅ Imagem de perfil salva no Supabase");
