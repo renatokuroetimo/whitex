@@ -180,7 +180,7 @@ const Sidebar: React.FC = () => {
                   onClick={() => handleNavigation(item.path)}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                     active
-                      ? "bg-blue-600 text-white shadow-sm"
+                      ? "bg-blue-50 text-blue-700 border border-blue-200"
                       : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                   }`}
                 >

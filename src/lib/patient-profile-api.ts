@@ -149,13 +149,42 @@ class PatientProfileAPI {
     localStorage.setItem(this.STORAGE_KEYS.DOCTORS, JSON.stringify(doctors));
   }
 
+  // Get doctors from registered users instead of mock data
+  private getRegisteredDoctors(): Doctor[] {
+    try {
+      const users = localStorage.getItem("medical_app_users");
+      const parsedUsers = users ? JSON.parse(users) : [];
+
+      // Filter only users with profession "medico" and convert to Doctor format
+      const doctorUsers = parsedUsers.filter(
+        (user: any) => user.profession === "medico",
+      );
+
+      return doctorUsers.map((user: any) => ({
+        id: user.id,
+        name: user.email.split("@")[0], // Use email prefix as name
+        crm: user.crm || "000000",
+        state: user.state || "SP",
+        specialty: "Clínico Geral", // Default specialty
+        email: user.email,
+        city: user.city || "São Paulo",
+        createdAt: user.createdAt || new Date().toISOString(),
+      }));
+    } catch {
+      return [];
+    }
+  }
+
   async initializeMockDoctors(): Promise<void> {
+    // Get doctors from registered users first
+    const registeredDoctors = this.getRegisteredDoctors();
+
     const doctors = this.getStoredDoctors();
-    // Force reinitialize if we don't have Dr. Renato Kuroe
+    // Force reinitialize if we don't have Dr. Renato Kuroe or if we need to sync with registered users
     const hasRenato = doctors.some(
       (d) => d.name.includes("Renato Kuroe") || d.crm === "123333",
     );
-    if (doctors.length === 0 || !hasRenato) {
+    if (doctors.length === 0 || !hasRenato || registeredDoctors.length > 0) {
       const mockDoctors: Doctor[] = [
         {
           id: "doc1",
@@ -248,16 +277,33 @@ class PatientProfileAPI {
           createdAt: new Date().toISOString(),
         },
       ];
-      this.saveDoctors(mockDoctors);
+
+      // Merge with registered doctors (avoid duplicates)
+      const registeredDoctors = this.getRegisteredDoctors();
+      const allDoctors = [...mockDoctors];
+
+      registeredDoctors.forEach((regDoc) => {
+        const exists = allDoctors.some(
+          (doc) =>
+            doc.email === regDoc.email ||
+            (doc.crm === regDoc.crm && doc.state === regDoc.state),
+        );
+        if (!exists) {
+          allDoctors.push(regDoc);
+        }
+      });
+
+      this.saveDoctors(allDoctors);
     }
   }
 
   async searchDoctors(query: string): Promise<Doctor[]> {
     await this.delay(300);
+    // Always refresh with latest registered users
     await this.initializeMockDoctors();
 
     const doctors = this.getStoredDoctors();
-    console.log("Available doctors:", doctors);
+    console.log("Available doctors (including registered):", doctors);
 
     const searchTerm = query.toLowerCase().trim();
 
