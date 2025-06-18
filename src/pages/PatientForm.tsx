@@ -211,8 +211,15 @@ const PatientForm = () => {
 
     setIsLoading(true);
 
+    console.log("🔄 ===== HANDLESUBMIT INICIADO =====");
+    console.log("🔄 isEditing:", isEditing);
+    console.log("🔄 id:", id);
+    console.log("🔄 isSharedPatient:", isSharedPatient);
+    console.log("🔄 formData:", JSON.stringify(formData, null, 2));
+
     try {
       if (isEditing && id) {
+        console.log("🚀 Chamando patientAPI.updatePatient...");
         await patientAPI.updatePatient(id, formData);
         toast({
           title: "Sucesso",
