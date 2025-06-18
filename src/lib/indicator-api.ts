@@ -315,7 +315,9 @@ class IndicatorAPI {
 
         console.log("📝 Dados do indicador:", insertData);
 
-        const { data: supabaseData, error } = await supabase.from("indicators").insert([insertData]);
+        const { data: supabaseData, error } = await supabase
+          .from("indicators")
+          .insert([insertData]);
 
         console.log("📊 Resposta do Supabase:", { data: supabaseData, error });
 
@@ -343,8 +345,6 @@ class IndicatorAPI {
   }
 
   async deleteIndicator(id: string): Promise<void> {
-  async deleteIndicator(id: string): Promise<void> {
-    await this.delay(300);
     const indicators = this.getStoredIndicators();
     const filteredIndicators = indicators.filter((ind) => ind.id !== id);
     this.saveIndicators(filteredIndicators);
@@ -353,7 +353,9 @@ class IndicatorAPI {
   // === STANDARD INDICATORS ===
   private getStoredStandardIndicators(): any[] {
     try {
-      const indicators = localStorage.getItem(this.STORAGE_KEYS.STANDARD_INDICATORS);
+      const indicators = localStorage.getItem(
+        this.STORAGE_KEYS.STANDARD_INDICATORS,
+      );
       return indicators ? JSON.parse(indicators) : [];
     } catch {
       return [];
@@ -461,10 +463,13 @@ class IndicatorAPI {
     return indicators;
   }
 
-  async updateStandardIndicatorVisibility(id: string, visible: boolean): Promise<void> {
+  async updateStandardIndicatorVisibility(
+    id: string,
+    visible: boolean,
+  ): Promise<void> {
     await this.delay(200);
     const indicators = this.getStoredStandardIndicators();
-    const indicatorIndex = indicators.findIndex(ind => ind.id === id);
+    const indicatorIndex = indicators.findIndex((ind) => ind.id === id);
 
     if (indicatorIndex !== -1) {
       indicators[indicatorIndex].visible = visible;
@@ -474,7 +479,7 @@ class IndicatorAPI {
 
   async getVisibleStandardIndicators(): Promise<any[]> {
     const indicators = await this.getStandardIndicators();
-    return indicators.filter(ind => ind.visible);
+    return indicators.filter((ind) => ind.visible);
   }
 
   // Método para limpar todos os dados (útil para testes)
