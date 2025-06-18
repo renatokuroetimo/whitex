@@ -21,7 +21,17 @@ const MigrationPanel: React.FC = () => {
       setStatus(getMigrationStatus());
     }, 2000);
 
-    return () => clearInterval(interval);
+    // Listener para mudanças de migração
+    const handleMigrationChange = () => {
+      setStatus(getMigrationStatus());
+    };
+
+    window.addEventListener("migrationChanged", handleMigrationChange);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("migrationChanged", handleMigrationChange);
+    };
   }, []);
 
   // Temporariamente habilitado em produção para migração
@@ -125,7 +135,10 @@ const MigrationPanel: React.FC = () => {
           <Button
             onClick={() => {
               enableSupabaseMigration();
-              setTimeout(() => setStatus(getMigrationStatus()), 100);
+              // Forçar atualização imediata
+              setTimeout(() => {
+                setStatus(getMigrationStatus());
+              }, 50);
             }}
             size="sm"
             className="w-full bg-green-600 hover:bg-green-700 text-xs"
@@ -137,7 +150,10 @@ const MigrationPanel: React.FC = () => {
           <Button
             onClick={() => {
               disableSupabaseMigration();
-              setTimeout(() => setStatus(getMigrationStatus()), 100);
+              // Forçar atualização imediata
+              setTimeout(() => {
+                setStatus(getMigrationStatus());
+              }, 50);
             }}
             size="sm"
             variant="outline"

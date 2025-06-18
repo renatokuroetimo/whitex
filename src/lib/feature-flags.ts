@@ -76,12 +76,13 @@ export const enableSupabaseMigration = (): void => {
   setFeatureFlag("useSupabaseProfiles", true);
   setFeatureFlag("enableDataMigration", true);
 
-  console.log("✅ Migração ativada! Recarregue a página.");
+  console.log("✅ Migração ativada!");
 
-  // Forçar atualização da página após um delay
-  setTimeout(() => {
-    window.location.reload();
-  }, 1000);
+  // Notificar que precisa recarregar, mas não forçar
+  if (typeof window !== "undefined") {
+    // Disparar evento customizado para o painel reagir
+    window.dispatchEvent(new CustomEvent("migrationChanged"));
+  }
 };
 
 // Voltar para localStorage (rollback)
