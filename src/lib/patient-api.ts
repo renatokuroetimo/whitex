@@ -533,7 +533,13 @@ class PatientAPI {
           return newPatient;
         }
       } catch (supabaseError) {
-        console.error("💥 Erro no try/catch:", supabaseError);
+        console.error("💥 Erro no try/catch:", {
+          message:
+            supabaseError instanceof Error
+              ? supabaseError.message
+              : "Unknown error",
+          error: supabaseError,
+        });
         // Continuar para fallback
       }
     } else {
