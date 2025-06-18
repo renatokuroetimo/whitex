@@ -177,10 +177,15 @@ class PatientIndicatorAPI {
       try {
         const insertData = {
           id: newValue.id,
-          patient_id: newValue.patientId,
+          user_id: newValue.patientId,
           indicator_id: newValue.indicatorId,
+          category_name: newValue.categoryName,
+          subcategory_name: newValue.subcategoryName,
+          parameter: newValue.parameter,
+          unit_symbol: newValue.unitSymbol,
           value: newValue.value,
           date: newValue.date,
+          time: newValue.time,
           created_at: newValue.createdAt,
         };
 
