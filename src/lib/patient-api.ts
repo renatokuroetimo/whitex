@@ -475,9 +475,24 @@ class PatientAPI {
             console.log("ℹ️ Nenhum paciente compartilhado encontrado");
           }
 
+          console.log("✅ ===== RESULTADO FINAL =====");
           console.log(
-            "✅ Todos os pacientes (criados + compartilhados):",
-            allPatients,
+            "✅ Pacientes criados pelo médico:",
+            (supabasePatients || []).length,
+          );
+          console.log(
+            "✅ Pacientes compartilhados:",
+            allPatients.length - (supabasePatients || []).length,
+          );
+          console.log("✅ Total de pacientes:", allPatients.length);
+          console.log(
+            "✅ Lista completa:",
+            allPatients.map((p) => ({
+              id: p.id,
+              name: p.name,
+              status: p.status,
+              doctorId: p.doctorId,
+            })),
           );
 
           // Aplicar filtro de busca se necessário
