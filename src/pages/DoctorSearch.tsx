@@ -207,6 +207,16 @@ const DoctorSearch = () => {
                   )}
                   {!isSearching && <span className="ml-2">Buscar</span>}
                 </Button>
+                <Button
+                  onClick={() => {
+                    setSearchQuery("");
+                    handleSearch();
+                  }}
+                  variant="outline"
+                  disabled={isSearching}
+                >
+                  Ver Todos
+                </Button>
               </div>
             </div>
 
