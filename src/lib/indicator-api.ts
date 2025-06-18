@@ -8,7 +8,6 @@ import {
 } from "./indicator-types";
 import { supabase } from "./supabase";
 import { isFeatureEnabled } from "./feature-flags";
-import { isFeatureEnabled } from "./feature-flags";
 
 class IndicatorAPI {
   private readonly STORAGE_KEYS = {
