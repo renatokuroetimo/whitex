@@ -11,6 +11,8 @@ import MigrationPanel from "@/components/MigrationPanel";
 if (import.meta.env.DEV) {
   import("@/lib/supabase-test");
 }
+import Index from "./pages/Index";
+import Login from "./pages/Login";
 import SelectProfession from "./pages/SelectProfession";
 import AddCRM from "./pages/AddCRM";
 import Dashboard from "./pages/Dashboard";
