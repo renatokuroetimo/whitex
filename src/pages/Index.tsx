@@ -24,7 +24,7 @@ const Index = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header with WhiteX branding */}
       <div className="p-4 sm:p-6 text-center">
-        <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-8">
+        <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-14">
           WhiteX
         </h1>
       </div>
