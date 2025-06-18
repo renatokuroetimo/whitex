@@ -322,60 +322,21 @@ class PatientIndicatorAPI {
           return [];
         }
 
-        // Buscar indicadores padrão e customizados para fazer lookup
-        console.log("🔍 Buscando dados dos indicadores para lookup...");
-        const standardIndicators = await indicatorAPI.getStandardIndicators();
-        const customIndicators = await indicatorAPI.getIndicators(patientId); // Usar patientId como fallback
-
-        console.log("📊 Indicadores disponíveis:", {
-          standard: standardIndicators.length,
-          custom: customIndicators.length,
-        });
-
-        // Converter dados do Supabase para formato local com lookup de dados
+        // Converter dados do Supabase para formato local usando dados salvos
         const values: PatientIndicatorValue[] = (supabaseValues || []).map(
           (val: any): PatientIndicatorValue => {
-            console.log("🔍 Processando valor:", val);
-
-            // Buscar dados do indicador
-            let indicatorData = standardIndicators.find(
-              (ind) => ind.id === val.indicator_id,
-            );
-
-            if (!indicatorData) {
-              indicatorData = customIndicators.find(
-                (ind) => ind.id === val.indicator_id,
-              );
-            }
-
-            console.log("📋 Dados do indicador encontrados:", indicatorData);
+            console.log("🔍 Processando valor do Supabase:", val);
 
             const result: PatientIndicatorValue = {
               id: val.id,
               patientId: val.patient_id,
               indicatorId: val.indicator_id,
-              indicatorType: indicatorData
-                ? standardIndicators.find((ind) => ind.id === val.indicator_id)
-                  ? "standard"
-                  : "custom"
-                : "standard",
-              categoryName:
-                indicatorData?.categoryName ||
-                indicatorData?.category ||
-                "Categoria não encontrada",
+              indicatorType: "standard", // Assumir padrão por enquanto
+              categoryName: val.category_name || "Categoria não encontrada",
               subcategoryName:
-                indicatorData?.subcategoryName ||
-                indicatorData?.subcategory ||
-                "Subcategoria não encontrada",
-              parameter:
-                indicatorData?.parameter ||
-                indicatorData?.name ||
-                "Parâmetro não encontrado",
-              unitSymbol:
-                indicatorData?.unitSymbol ||
-                indicatorData?.unitOfMeasureSymbol ||
-                indicatorData?.unit ||
-                "",
+                val.subcategory_name || "Subcategoria não encontrada",
+              parameter: val.parameter || "Parâmetro não encontrado",
+              unitSymbol: val.unit_symbol || "",
               value: val.value,
               date: val.date,
               time: val.time,
