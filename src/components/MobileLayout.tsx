@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Home, Users, BarChart3, LogOut, User, Menu } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -11,26 +11,71 @@ interface SidebarItem {
   path: string;
 }
 
-const sidebarItems: SidebarItem[] = [
-  {
-    id: "inicio",
-    label: "Início",
-    icon: Home,
-    path: "/dashboard",
-  },
-  {
-    id: "pacientes",
-    label: "Pacientes",
-    icon: Users,
-    path: "/pacientes",
-  },
-  {
-    id: "indicadores",
-    label: "Indicadores",
-    icon: BarChart3,
-    path: "/indicadores",
-  },
-];
+const getSidebarItems = (userProfession?: string): SidebarItem[] => {
+  console.log("🚨 MOBILE LAYOUT - Getting items for:", userProfession);
+
+  if (userProfession === "paciente") {
+    const items = [
+      {
+        id: "inicio",
+        label: "Início",
+        icon: Home,
+        path: "/patient-dashboard",
+      },
+      {
+        id: "dados",
+        label: "Dados pessoais",
+        icon: Users,
+        path: "/patient-profile",
+      },
+      {
+        id: "indicadores",
+        label: "Indicadores",
+        icon: BarChart3,
+        path: "/patient/indicadores",
+      },
+    ];
+    console.log("🚨 MOBILE LAYOUT - Returning PACIENTE items:", items);
+    return items;
+  }
+
+  if (userProfession === "medico") {
+    const items = [
+      {
+        id: "inicio",
+        label: "Início",
+        icon: Home,
+        path: "/dashboard",
+      },
+      {
+        id: "pacientes",
+        label: "Pacientes",
+        icon: Users,
+        path: "/pacientes",
+      },
+      {
+        id: "indicadores",
+        label: "Indicadores",
+        icon: BarChart3,
+        path: "/indicadores",
+      },
+    ];
+    console.log("🚨 MOBILE LAYOUT - Returning MEDICO items:", items);
+    return items;
+  }
+
+  // Fallback
+  const fallback = [
+    {
+      id: "inicio",
+      label: "Início",
+      icon: Home,
+      path: "/",
+    },
+  ];
+  console.log("🚨 MOBILE LAYOUT - Returning FALLBACK items:", fallback);
+  return fallback;
+};
 
 interface MobileLayoutProps {
   children: React.ReactNode;
@@ -38,11 +83,49 @@ interface MobileLayoutProps {
 
 const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { logout, user } = useAuth();
 
+  // Obter dados do usuário com fallback
+  const getUserData = () => {
+    if (user?.profession) {
+      return user;
+    }
+
+    try {
+      const stored = localStorage.getItem("medical_app_current_user");
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch (e) {
+      console.error("🚨 MOBILE LAYOUT - Erro localStorage:", e);
+    }
+
+    return null;
+  };
+
+  const currentUser = getUserData();
+  const sidebarItems = getSidebarItems(currentUser?.profession);
+
+  console.log("🚨 MOBILE LAYOUT - Current user:", currentUser);
+  console.log("🚨 MOBILE LAYOUT - Sidebar items:", sidebarItems);
+
+  // Carregar imagem de perfil
+  useEffect(() => {
+    if (currentUser?.id) {
+      const savedImage = localStorage.getItem(
+        `profile_image_${currentUser.id}`,
+      );
+      if (savedImage && savedImage.startsWith("data:")) {
+        setProfileImage(savedImage);
+      }
+    }
+  }, [currentUser?.id]);
+
   const handleNavigation = (path: string) => {
+    console.log("🚨 MOBILE LAYOUT - Navigating to:", path);
     navigate(path);
     setIsMobileMenuOpen(false);
   };
@@ -54,8 +137,15 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
   };
 
   const isActive = (path: string) => {
-    return location.pathname === path;
+    const active = location.pathname === path;
+    console.log(
+      `🚨 MOBILE LAYOUT - isActive: ${path} === ${location.pathname} = ${active}`,
+    );
+    return active;
   };
+
+  const profilePath =
+    currentUser?.profession === "paciente" ? "/patient-profile" : "/profile";
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -75,13 +165,22 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                <User className="w-4 h-4 text-gray-600" />
+              <div className="w-8 h-8 bg-gray-100 rounded-full overflow-hidden flex items-center justify-center border border-gray-200">
+                {profileImage ? (
+                  <img
+                    src={profileImage}
+                    alt="Foto de perfil"
+                    className="w-full h-full object-cover"
+                    onError={() => setProfileImage(null)}
+                  />
+                ) : (
+                  <User className="w-4 h-4 text-gray-600" />
+                )}
               </div>
               <span className="text-sm text-gray-600 truncate">Meu Perfil</span>
             </div>
             <button
-              onClick={() => navigate("/profile")}
+              onClick={() => navigate(profilePath)}
               className="text-xs text-blue-600 hover:text-blue-800"
             >
               ▼
@@ -95,6 +194,10 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
             {sidebarItems.map((item) => {
               const Icon = item.icon;
               const active = isActive(item.path);
+
+              console.log(
+                `🚨 MOBILE LAYOUT - Rendering: ${item.label} (${item.path}) - Active: ${active}`,
+              );
 
               return (
                 <li key={item.id}>
@@ -114,6 +217,25 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
             })}
           </ul>
         </nav>
+
+        {/* DEBUG INFO FORÇADO */}
+        <div className="p-2 bg-green-100 border-t border-green-300 text-xs text-green-800">
+          <div>
+            <strong>📱 MOBILE LAYOUT</strong>
+          </div>
+          <div>
+            <strong>👤 User:</strong> {currentUser?.email || "N/A"}
+          </div>
+          <div>
+            <strong>🏥 Prof:</strong> {currentUser?.profession || "N/A"}
+          </div>
+          <div>
+            <strong>📍 URL:</strong> {location.pathname}
+          </div>
+          <div>
+            <strong>📋 Items:</strong> {sidebarItems.length}
+          </div>
+        </div>
 
         {/* Logout */}
         <div className="p-4 border-t border-gray-200">
@@ -184,8 +306,17 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
               <div className="p-6 border-b border-gray-200">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                      <User className="w-4 h-4 text-gray-600" />
+                    <div className="w-8 h-8 bg-gray-100 rounded-full overflow-hidden flex items-center justify-center border border-gray-200">
+                      {profileImage ? (
+                        <img
+                          src={profileImage}
+                          alt="Foto de perfil"
+                          className="w-full h-full object-cover"
+                          onError={() => setProfileImage(null)}
+                        />
+                      ) : (
+                        <User className="w-4 h-4 text-gray-600" />
+                      )}
                     </div>
                     <span className="text-sm text-gray-600 truncate">
                       Meu Perfil
@@ -193,7 +324,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
                   </div>
                   <button
                     onClick={() => {
-                      navigate("/profile");
+                      navigate(profilePath);
                       setIsMobileMenuOpen(false);
                     }}
                     className="text-xs text-blue-600 hover:text-blue-800"
