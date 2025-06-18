@@ -215,7 +215,7 @@ class PatientAPI {
       );
 
       console.log(
-        "✅ Compartilhamentos ativos para este médico:",
+        "✅ Compartilhamentos ativos para este m��dico:",
         activeShares,
       );
 
@@ -1222,17 +1222,41 @@ class PatientAPI {
 
             let medicalNotes = "";
             if (currentUser?.id) {
+              console.log("🔍 Buscando observações médicas para:", {
+                patient_id: id,
+                doctor_id: currentUser.id,
+              });
+
               const { data: noteData, error: noteError } = await supabase
                 .from("medical_notes")
-                .select("notes")
+                .select("notes, updated_at")
                 .eq("patient_id", id)
                 .eq("doctor_id", currentUser.id)
+                .order("updated_at", { ascending: false })
                 .maybeSingle();
 
-              if (!noteError && noteData) {
+              console.log("📊 Resultado da busca de observações:", {
+                data: noteData,
+                error: noteError,
+              });
+
+              if (noteError && noteError.code !== "PGRST116") {
+                console.error(
+                  "❌ Erro ao buscar observações médicas:",
+                  noteError,
+                );
+              } else if (noteData) {
                 medicalNotes = noteData.notes;
                 console.log("📋 Observações médicas carregadas:", medicalNotes);
+              } else {
+                console.log(
+                  "ℹ️ Nenhuma observação médica encontrada para este paciente/médico",
+                );
               }
+            } else {
+              console.log(
+                "⚠️ Usuário atual não encontrado para buscar observações",
+              );
             }
 
             const sharedPatient: Patient = {
