@@ -267,6 +267,86 @@ class PatientAPI {
   ): Promise<{ patients: Patient[]; pagination: PaginationData }> {
     await this.delay(300);
 
+    console.log("🔍 getPatients chamado para doctorId:", doctorId);
+
+    // Se Supabase estiver ativo, usar Supabase
+    if (isFeatureEnabled("useSupabasePatients") && supabase) {
+      console.log("🚀 Buscando pacientes no Supabase");
+
+      try {
+        const { data: supabasePatients, error } = await supabase
+          .from("patients")
+          .select("*")
+          .eq("doctor_id", doctorId);
+
+        console.log("📊 Pacientes do Supabase:", {
+          data: supabasePatients,
+          error,
+        });
+
+        if (error) {
+          console.error("❌ Erro ao buscar pacientes:", error);
+          // Fallback para localStorage
+        } else {
+          // Converter dados do Supabase para formato local
+          const patients = (supabasePatients || []).map(
+            (p: any): Patient => ({
+              id: p.id,
+              name: p.name,
+              age: p.age,
+              city: p.city,
+              state: p.state,
+              weight: p.weight,
+              status: p.status,
+              notes: p.notes,
+              doctorId: p.doctor_id,
+              createdAt: p.created_at,
+              updatedAt: p.updated_at,
+            }),
+          );
+
+          console.log("✅ Pacientes convertidos:", patients);
+
+          // Aplicar filtro de busca se necessário
+          let filteredPatients = patients;
+          if (search && search.trim()) {
+            const searchLower = search.toLowerCase().trim();
+            filteredPatients = patients.filter(
+              (patient) =>
+                patient.name.toLowerCase().includes(searchLower) ||
+                (patient.city &&
+                  patient.city.toLowerCase().includes(searchLower)),
+            );
+          }
+
+          // Paginação
+          const totalItems = filteredPatients.length;
+          const totalPages = Math.ceil(totalItems / limit);
+          const startIndex = (page - 1) * limit;
+          const endIndex = startIndex + limit;
+          const paginatedPatients = filteredPatients.slice(
+            startIndex,
+            endIndex,
+          );
+
+          return {
+            patients: paginatedPatients,
+            pagination: {
+              currentPage: page,
+              totalPages,
+              totalItems,
+              itemsPerPage: limit,
+            },
+          };
+        }
+      } catch (supabaseError) {
+        console.error("💥 Erro no Supabase getPatients:", supabaseError);
+        // Continuar para fallback localStorage
+      }
+    }
+
+    console.log("⚠️ Usando localStorage fallback");
+
     let patients = this.getStoredPatients().filter(
       (p) => p.doctorId === doctorId,
     );
