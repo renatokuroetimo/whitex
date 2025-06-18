@@ -89,6 +89,71 @@ const DebugSharing = () => {
     }
   };
 
+  const testSharingQuery = async () => {
+    if (!doctorId) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Digite o ID do médico",
+      });
+      return;
+    }
+
+    try {
+      const { supabase } = await import("@/lib/supabase");
+
+      if (!supabase) {
+        toast({
+          variant: "destructive",
+          title: "Erro",
+          description: "Supabase não disponível",
+        });
+        return;
+      }
+
+      console.log(
+        "🧪 Testando query de compartilhamentos para doctorId:",
+        doctorId,
+      );
+
+      const { data, error } = await supabase
+        .from("doctor_patient_sharing")
+        .select("patient_id, shared_at")
+        .eq("doctor_id", doctorId);
+
+      console.log("🧪 Resultado da query:", { data, error });
+
+      if (error) {
+        console.error(
+          "🧪 Erro detalhado:",
+          JSON.stringify(
+            {
+              message: error.message,
+              details: error.details,
+              hint: error.hint,
+              code: error.code,
+            },
+            null,
+            2,
+          ),
+        );
+      }
+
+      toast({
+        title: "Query testada",
+        description: `${data?.length || 0} compartilhamentos encontrados. Veja o console.`,
+      });
+    } catch (error) {
+      console.error("🧪 Erro no teste:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description:
+          error instanceof Error ? error.message : "Erro desconhecido",
+      });
+    }
+  };
+
   const testCreateSharing = async () => {
     if (!doctorId || !patientId) {
       toast({
@@ -192,6 +257,9 @@ const DebugSharing = () => {
               onChange={(e) => setDoctorId(e.target.value)}
             />
             <Button onClick={testGetPatients}>Buscar Pacientes</Button>
+            <Button onClick={testSharingQuery} variant="outline">
+              Testar Query
+            </Button>
           </div>
 
           {results && (
