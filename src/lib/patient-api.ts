@@ -906,6 +906,35 @@ class PatientAPI {
             // Para pacientes compartilhados, salvar observações na tabela medical_notes
             if (data.notes !== undefined) {
               console.log("🚀 ===== INICIANDO SALVAMENTO DE OBSERVAÇÕES =====");
+
+              // Primeiro, verificar se a tabela medical_notes existe
+              try {
+                const { data: tableTest, error: tableError } = await supabase
+                  .from("medical_notes")
+                  .select("id")
+                  .limit(1);
+                console.log("🏥 Teste de conectividade com medical_notes:", {
+                  data: tableTest,
+                  error: tableError,
+                });
+
+                if (tableError) {
+                  console.error(
+                    "❌ Tabela medical_notes não encontrada ou sem permissão:",
+                    tableError,
+                  );
+                  throw new Error(
+                    `Tabela medical_notes não acessível: ${tableError.message}`,
+                  );
+                }
+              } catch (testError) {
+                console.error(
+                  "💥 Erro ao testar tabela medical_notes:",
+                  testError,
+                );
+                throw testError;
+              }
+
               // Obter o ID do médico atual (precisamos passar isso do contexto)
               // Por enquanto, vamos usar o localStorage para pegar o usuário atual
               const currentUserStr = localStorage.getItem(
