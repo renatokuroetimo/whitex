@@ -12,21 +12,19 @@ interface SidebarItem {
 }
 
 const getSidebarItems = (userProfession?: string): SidebarItem[] => {
-  const dashboardPath =
-    userProfession === "paciente" ? "/patient-dashboard" : "/dashboard";
+  // Garantir que o tipo de usuário seja válido
+  const profession = userProfession?.toLowerCase();
 
-  const baseItems = [
-    {
-      id: "inicio",
-      label: "Início",
-      icon: Home,
-      path: dashboardPath,
-    },
-  ];
+  console.log("🔍 Sidebar Debug - Profession:", profession);
 
-  if (userProfession === "medico") {
+  if (profession === "medico") {
     return [
-      ...baseItems,
+      {
+        id: "inicio",
+        label: "Início",
+        icon: Home,
+        path: "/dashboard",
+      },
       {
         id: "pacientes",
         label: "Pacientes",
@@ -40,9 +38,14 @@ const getSidebarItems = (userProfession?: string): SidebarItem[] => {
         path: "/indicadores",
       },
     ];
-  } else if (userProfession === "paciente") {
+  } else if (profession === "paciente") {
     return [
-      ...baseItems,
+      {
+        id: "inicio",
+        label: "Início",
+        icon: Home,
+        path: "/patient-dashboard",
+      },
       {
         id: "meus-dados",
         label: "Dados pessoais",
@@ -58,7 +61,15 @@ const getSidebarItems = (userProfession?: string): SidebarItem[] => {
     ];
   }
 
-  return baseItems;
+  // Fallback caso não haja profissão definida
+  return [
+    {
+      id: "inicio",
+      label: "Início",
+      icon: Home,
+      path: "/",
+    },
+  ];
 };
 
 const Sidebar: React.FC = () => {
@@ -66,6 +77,12 @@ const Sidebar: React.FC = () => {
   const location = useLocation();
   const { logout, user } = useAuth();
   const [profileImage, setProfileImage] = useState<string | null>(null);
+
+  // Debug do usuário atual
+  useEffect(() => {
+    console.log("🔍 Sidebar Debug - User:", user);
+    console.log("🔍 Sidebar Debug - Current path:", location.pathname);
+  }, [user, location.pathname]);
 
   // Carregar imagem de perfil do localStorage
   useEffect(() => {
@@ -135,6 +152,7 @@ const Sidebar: React.FC = () => {
   }, [user?.id]);
 
   const handleNavigation = (path: string) => {
+    console.log("🔍 Sidebar Debug - Navigating to:", path);
     navigate(path);
   };
 
@@ -144,12 +162,39 @@ const Sidebar: React.FC = () => {
   };
 
   const isActive = (path: string) => {
-    return location.pathname === path;
+    const isMatch = location.pathname === path;
+    console.log(
+      `🔍 Sidebar Debug - isActive check: ${path} === ${location.pathname} = ${isMatch}`,
+    );
+    return isMatch;
   };
 
-  const sidebarItems = getSidebarItems(user?.profession);
+  // Garantir que o usuário esteja carregado antes de renderizar os itens
+  if (!user) {
+    console.log("🔍 Sidebar Debug - No user found, showing loading...");
+    return (
+      <div className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col">
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-gray-900 rounded flex items-center justify-center">
+              <span className="text-white text-sm font-semibold">W</span>
+            </div>
+            <span className="font-semibold text-gray-900">WHITEX</span>
+          </div>
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full"></div>
+        </div>
+      </div>
+    );
+  }
+
+  const sidebarItems = getSidebarItems(user.profession);
   const profilePath =
-    user?.profession === "paciente" ? "/patient-profile" : "/profile";
+    user.profession === "paciente" ? "/patient-profile" : "/profile";
+
+  console.log("🔍 Sidebar Debug - Sidebar items:", sidebarItems);
+  console.log("🔍 Sidebar Debug - Profile path:", profilePath);
 
   return (
     <div className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col">
