@@ -666,7 +666,9 @@ const PatientForm = () => {
                         ? "Salvando..."
                         : "Criando..."
                       : isEditing
-                        ? "Salvar alterações"
+                        ? isSharedPatient
+                          ? "Salvar diagnósticos"
+                          : "Salvar alterações"
                         : "Criar paciente"}
                   </Button>
                 </div>
