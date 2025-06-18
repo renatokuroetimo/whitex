@@ -9,6 +9,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 // Import validation script for development testing
 if (process.env.NODE_ENV === "development") {
   import("@/utils/sidebarValidation");
+  import("@/utils/userDebug");
 }
 import Index from "./pages/Index";
 import Login from "./pages/Login";
