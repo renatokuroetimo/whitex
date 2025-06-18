@@ -69,14 +69,25 @@ const Sidebar: React.FC = () => {
 
   // Carregar imagem de perfil do localStorage
   useEffect(() => {
-    if (user?.id) {
-      const savedImage = localStorage.getItem(`profile_image_${user.id}`);
-      if (savedImage && savedImage !== "null" && savedImage !== "undefined") {
-        setProfileImage(savedImage);
+    const loadProfileImage = () => {
+      if (user?.id) {
+        const savedImage = localStorage.getItem(`profile_image_${user.id}`);
+        if (
+          savedImage &&
+          savedImage !== "null" &&
+          savedImage !== "undefined" &&
+          savedImage.startsWith("data:")
+        ) {
+          setProfileImage(savedImage);
+        } else {
+          setProfileImage(null);
+        }
       } else {
         setProfileImage(null);
       }
-    }
+    };
+
+    loadProfileImage();
   }, [user?.id]);
 
   // Escutar mudanças na imagem de perfil
@@ -84,7 +95,12 @@ const Sidebar: React.FC = () => {
     const handleStorageChange = () => {
       if (user?.id) {
         const savedImage = localStorage.getItem(`profile_image_${user.id}`);
-        if (savedImage && savedImage !== "null" && savedImage !== "undefined") {
+        if (
+          savedImage &&
+          savedImage !== "null" &&
+          savedImage !== "undefined" &&
+          savedImage.startsWith("data:")
+        ) {
           setProfileImage(savedImage);
         } else {
           setProfileImage(null);
@@ -92,13 +108,28 @@ const Sidebar: React.FC = () => {
       }
     };
 
+    // Listen for custom event when profile image is updated
+    const handleProfileImageUpdate = (event: CustomEvent) => {
+      if (event.detail.userId === user?.id) {
+        handleStorageChange();
+      }
+    };
+
     window.addEventListener("storage", handleStorageChange);
+    window.addEventListener(
+      "profileImageUpdated",
+      handleProfileImageUpdate as EventListener,
+    );
 
     // Também escutar mudanças locais
-    const interval = setInterval(handleStorageChange, 1000);
+    const interval = setInterval(handleStorageChange, 2000);
 
     return () => {
       window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener(
+        "profileImageUpdated",
+        handleProfileImageUpdate as EventListener,
+      );
       clearInterval(interval);
     };
   }, [user?.id]);
@@ -151,7 +182,16 @@ const Sidebar: React.FC = () => {
                   src={profileImage}
                   alt="Foto de perfil"
                   className="w-full h-full object-cover"
-                  onError={() => setProfileImage(null)}
+                  onError={() => {
+                    console.log("Profile image failed to load, clearing...");
+                    setProfileImage(null);
+                    if (user?.id) {
+                      localStorage.removeItem(`profile_image_${user.id}`);
+                    }
+                  }}
+                  onLoad={() =>
+                    console.log("Profile image loaded successfully")
+                  }
                 />
               ) : (
                 <User
@@ -163,7 +203,7 @@ const Sidebar: React.FC = () => {
               <span
                 className={`text-sm font-medium ${isDashboardActive() ? "text-blue-700" : "text-gray-700"}`}
               >
-                {user?.email?.split("@")[0] || "Usuário"}
+                Meu Perfil
               </span>
               <span
                 className={`text-xs ${isDashboardActive() ? "text-blue-600" : "text-gray-500"}`}
