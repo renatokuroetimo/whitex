@@ -316,6 +316,7 @@ class PatientAPI {
     doctorId: string,
     data: PatientFormData,
   ): Promise<Patient> {
+    console.log("🔥 FUNÇÃO createPatient CHAMADA!", { doctorId, data });
     await this.delay(500);
 
     const newPatient: Patient = {
