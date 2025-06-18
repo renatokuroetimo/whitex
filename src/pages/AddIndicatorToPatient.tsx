@@ -69,7 +69,7 @@ const AddIndicatorToPatient = () => {
       const [patientData, standardIndicators, customIndicators] =
         await Promise.all([
           patientAPI.getPatientById(patientId),
-          indicatorAPI.getVisibleStandardIndicators(),
+          indicatorAPI.getStandardIndicators(), // Usar todos os indicadores padrão
           indicatorAPI.getIndicators(user.id),
         ]);
 
