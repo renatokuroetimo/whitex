@@ -136,11 +136,14 @@ const PatientProfile = () => {
 
       setSharedDoctors(doctors);
 
-      // TODO: Migrar imagens de perfil para Supabase Storage
-      // Por enquanto mantém localStorage apenas para imagens
-      const savedImage = localStorage.getItem(`profile_image_${user.id}`);
-      if (savedImage) {
-        setProfileImage(savedImage);
+      // Carregar imagem de perfil do Supabase
+      try {
+        const savedImage = await profileImageAPI.getProfileImage(user.id);
+        if (savedImage) {
+          setProfileImage(savedImage);
+        }
+      } catch (imageError) {
+        console.warn("Erro ao carregar imagem de perfil:", imageError);
       }
     } catch (error) {
       console.error("Error loading PatientProfile data:", error);
