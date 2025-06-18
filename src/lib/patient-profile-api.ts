@@ -45,6 +45,61 @@ class PatientProfileAPI {
     userId: string,
   ): Promise<PatientPersonalData | null> {
     await this.delay(200);
+
+    console.log("🔍 getPatientPersonalData chamado para userId:", userId);
+
+    // Se Supabase estiver ativo, usar Supabase
+    if (isFeatureEnabled("useSupabaseProfiles") && supabase) {
+      console.log("🚀 Buscando dados pessoais no Supabase");
+
+      try {
+        const { data: supabaseData, error } = await supabase
+          .from("patient_personal_data")
+          .select("*")
+          .eq("user_id", userId)
+          .single();
+
+        console.log("📊 Dados pessoais do Supabase:", {
+          data: supabaseData,
+          error,
+        });
+
+        if (error && error.code !== "PGRST116") {
+          // PGRST116 = no rows returned
+          console.error("❌ Erro ao buscar dados pessoais:", error);
+          // Fallback para localStorage
+        } else if (supabaseData) {
+          // Converter dados do Supabase para formato local
+          const personalData: PatientPersonalData = {
+            id: supabaseData.id,
+            userId: supabaseData.user_id,
+            fullName: supabaseData.full_name,
+            birthDate: supabaseData.birth_date,
+            gender: supabaseData.gender,
+            state: supabaseData.state,
+            city: supabaseData.city,
+            healthPlan: supabaseData.health_plan,
+            profileImage: supabaseData.profile_image,
+            createdAt: supabaseData.created_at,
+            updatedAt: supabaseData.updated_at,
+          };
+
+          console.log("✅ Dados pessoais convertidos:", personalData);
+          return personalData;
+        } else {
+          console.log("📝 Dados pessoais não encontrados no Supabase");
+          return null;
+        }
+      } catch (supabaseError) {
+        console.error(
+          "💥 Erro no Supabase getPatientPersonalData:",
+          supabaseError,
+        );
+        // Continuar para fallback localStorage
+      }
+    }
+
+    console.log("⚠️ Usando localStorage para dados pessoais");
     const data = this.getStoredPersonalData();
     return data.find((item) => item.userId === userId) || null;
   }
