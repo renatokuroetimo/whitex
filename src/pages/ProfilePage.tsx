@@ -173,37 +173,44 @@ const ProfilePage: React.FC = () => {
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      // Verificar tamanho do arquivo (máximo 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        toast({
-          variant: "destructive",
-          title: "Erro",
-          description: "A imagem deve ter no máximo 5MB",
-        });
-        return;
-      }
+    if (!file) return;
 
-      // Verificar tipo do arquivo
-      if (!file.type.startsWith("image/")) {
-        toast({
-          variant: "destructive",
-          title: "Erro",
-          description: "Por favor, selecione apenas arquivos de imagem",
-        });
-        return;
-      }
+    // Verificar tamanho do arquivo (máximo 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "A imagem deve ter no máximo 5MB",
+      });
+      // Limpar o input para permitir re-seleção do mesmo arquivo
+      event.target.value = "";
+      return;
+    }
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
+    // Verificar tipo do arquivo
+    if (!file.type.startsWith("image/")) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Por favor, selecione apenas arquivos de imagem",
+      });
+      // Limpar o input para permitir re-seleção do mesmo arquivo
+      event.target.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      if (result && user?.id) {
         setProfileImage(result);
-        localStorage.setItem(`profile_image_${user?.id}`, result);
+        localStorage.setItem(`profile_image_${user.id}`, result);
 
         // Dispatch custom event to notify sidebar
         window.dispatchEvent(
           new CustomEvent("profileImageUpdated", {
-            detail: { userId: user?.id },
+            detail: { userId: user.id },
           }),
         );
 
@@ -211,10 +218,22 @@ const ProfilePage: React.FC = () => {
           title: "Sucesso!",
           description: "Imagem de perfil atualizada",
         });
-      };
-      reader.readAsDataURL(file);
-      reader.readAsDataURL(file);
-    }
+      }
+    };
+
+    reader.onerror = () => {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Erro ao ler o arquivo de imagem",
+      });
+    };
+
+    // Só fazer uma chamada para readAsDataURL
+    reader.readAsDataURL(file);
+
+    // Limpar o input para permitir re-seleção do mesmo arquivo
+    event.target.value = "";
   };
 
   const handleImageClick = () => {
