@@ -69,6 +69,10 @@ const PatientIndicators = () => {
     try {
       const indicatorValues =
         await patientIndicatorAPI.getPatientIndicatorValues(targetPatientId);
+      console.log("🔍 ===== INDICADORES CARREGADOS =====");
+      console.log("📊 Quantidade:", indicatorValues.length);
+      console.log("📋 Primeiro indicador:", indicatorValues[0]);
+      console.log("📋 Estrutura completa:", indicatorValues);
       setIndicators(indicatorValues);
     } catch (error) {
       toast({
