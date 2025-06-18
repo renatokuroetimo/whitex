@@ -26,28 +26,28 @@ class IndicatorAPI {
   // Mapear ID de categoria para nome real
   private mapCategoryIdToName(categoryId: string): string {
     const categoryMap: { [key: string]: string } = {
-      'cat1': 'Sinais Vitais',
-      'cat2': 'Exames Laboratoriais',
-      'cat3': 'Medidas Antropométricas',
-      'cat4': 'Medicamentos',
-      'cat5': 'Sintomas',
+      cat1: "Sinais Vitais",
+      cat2: "Exames Laboratoriais",
+      cat3: "Medidas Antropométricas",
+      cat4: "Medicamentos",
+      cat5: "Sintomas",
     };
-    return categoryMap[categoryId] || categoryId || 'Categoria';
+    return categoryMap[categoryId] || categoryId || "Categoria";
   }
 
   // Mapear ID de subcategoria para nome real
   private mapSubcategoryIdToName(subcategoryId: string): string {
     const subcategoryMap: { [key: string]: string } = {
-      'sub1': 'Pressão Arterial',
-      'sub2': 'Frequência Cardíaca',
-      'sub3': 'Temperatura',
-      'sub4': 'Glicemia',
-      'sub5': 'Colesterol',
-      'sub6': 'Peso',
-      'sub7': 'Altura',
-      'sub8': 'IMC',
+      sub1: "Pressão Arterial",
+      sub2: "Frequência Cardíaca",
+      sub3: "Temperatura",
+      sub4: "Glicemia",
+      sub5: "Colesterol",
+      sub6: "Peso",
+      sub7: "Altura",
+      sub8: "IMC",
     };
-    return subcategoryMap[subcategoryId] || subcategoryId || 'Subcategoria';
+    return subcategoryMap[subcategoryId] || subcategoryId || "Subcategoria";
   }
 
   // Gera ID único
@@ -296,10 +296,15 @@ class IndicatorAPI {
         // Query específica com colunas que sabemos que existem + campos de obrigatoriedade
         const { data: supabaseIndicators, error } = await supabase
           .from("indicators")
-          .select("id, name, unit, type, category, subcategory, parameter, unit_symbol, requires_date, requires_time, doctor_id, is_standard, created_at")
+          .select(
+            "id, name, unit, type, category, subcategory, parameter, unit_symbol, requires_date, requires_time, doctor_id, is_standard, created_at",
+          )
           .eq("doctor_id", doctorId);
 
-        console.log("📊 Indicadores do Supabase:", { data: supabaseIndicators, error });
+        console.log("📊 Indicadores do Supabase:", {
+          data: supabaseIndicators,
+          error,
+        });
 
         if (error) {
           console.error("❌ Erro detalhado ao buscar indicadores:", {
@@ -307,39 +312,50 @@ class IndicatorAPI {
             details: error.details,
             hint: error.hint,
             code: error.code,
-            fullError: error
+            fullError: error,
           });
           // Fallback para localStorage
         } else {
           // Retornar dados do Supabase diretamente como IndicatorWithDetails
-          const indicatorsWithDetails: IndicatorWithDetails[] = (supabaseIndicators || []).map((ind: any): IndicatorWithDetails => ({
-            id: ind.id,
-            categoryId: ind.categoryId || ind.category || "",
-            subcategoryId: ind.subcategory || "",
-            parameter: ind.parameter || ind.name || "",
-            unitOfMeasureId: ind.unit_symbol || ind.unit || "",
-            requiresTime: Boolean(ind.requires_time),
-            requiresDate: Boolean(ind.requires_date),
-            visible: true,
-            visibleToMedics: true,
-            doctorId: ind.doctor_id,
-            createdAt: ind.created_at,
-            updatedAt: ind.updated_at || ind.created_at,
-            // Campos específicos de IndicatorWithDetails - mapear IDs para nomes reais
-            categoryName: this.mapCategoryIdToName(ind.categoryId || ind.category || ""),
-            subcategoryName: this.mapSubcategoryIdToName(ind.subcategory || ""),
-            unitOfMeasureName: ind.unit_symbol || ind.unit || "Unidade",
-            unitOfMeasureSymbol: ind.unit_symbol || ind.unit || "",
-          }));
+          const indicatorsWithDetails: IndicatorWithDetails[] = (
+            supabaseIndicators || []
+          ).map(
+            (ind: any): IndicatorWithDetails => ({
+              id: ind.id,
+              categoryId: ind.categoryId || ind.category || "",
+              subcategoryId: ind.subcategory || "",
+              parameter: ind.parameter || ind.name || "",
+              unitOfMeasureId: ind.unit_symbol || ind.unit || "",
+              requiresTime: Boolean(ind.requires_time),
+              requiresDate: Boolean(ind.requires_date),
+              visible: true,
+              visibleToMedics: true,
+              doctorId: ind.doctor_id,
+              createdAt: ind.created_at,
+              updatedAt: ind.updated_at || ind.created_at,
+              // Campos específicos de IndicatorWithDetails - mapear IDs para nomes reais
+              categoryName: this.mapCategoryIdToName(
+                ind.categoryId || ind.category || "",
+              ),
+              subcategoryName: this.mapSubcategoryIdToName(
+                ind.subcategory || "",
+              ),
+              unitOfMeasureName: ind.unit_symbol || ind.unit || "Unidade",
+              unitOfMeasureSymbol: ind.unit_symbol || ind.unit || "",
+            }),
+          );
 
-          console.log("✅ Indicadores convertidos diretamente:", indicatorsWithDetails);
+          console.log(
+            "✅ Indicadores convertidos diretamente:",
+            indicatorsWithDetails,
+          );
           return indicatorsWithDetails; // Retornar diretamente sem processamento adicional
         }
       } catch (supabaseError: any) {
         console.error("💥 Erro no Supabase getIndicators:", {
           message: supabaseError?.message || "Erro desconhecido",
           stack: supabaseError?.stack,
-          fullError: supabaseError
+          fullError: supabaseError,
         });
         // Continuar para fallback localStorage
       }
@@ -369,35 +385,20 @@ class IndicatorAPI {
 
       const indicatorWithDetails: IndicatorWithDetails = {
         ...indicator,
-        categoryName: category?.name || this.mapCategoryIdToName(indicator.categoryId) || "Categoria",
-        subcategoryName: subcategory?.name || this.mapSubcategoryIdToName(indicator.subcategoryId) || "Subcategoria",
+        categoryName:
+          category?.name ||
+          this.mapCategoryIdToName(indicator.categoryId) ||
+          "Categoria",
+        subcategoryName:
+          subcategory?.name ||
+          this.mapSubcategoryIdToName(indicator.subcategoryId) ||
+          "Subcategoria",
         unitOfMeasureName: unit?.name || indicator.unitOfMeasureId || "Unidade",
         unitOfMeasureSymbol: unit?.symbol || indicator.unitOfMeasureId || "",
       };
 
       console.log("🔄 Mapeamento universal:", indicatorWithDetails);
       return indicatorWithDetails;
-      } else {
-        // Dados do localStorage - usar lookup nas tabelas
-        const category = categories.find(
-          (cat) => cat.id === indicator.categoryId,
-        );
-        const subcategory = subcategories.find(
-          (sub) => sub.id === indicator.subcategoryId,
-        );
-        const unit = units.find((u) => u.id === indicator.unitOfMeasureId);
-
-        const indicatorWithDetails: IndicatorWithDetails = {
-          ...indicator,
-          categoryName: category?.name || "Categoria não encontrada",
-          subcategoryName: subcategory?.name || "Subcategoria não encontrada",
-          unitOfMeasureName: unit?.name || "Unidade não encontrada",
-          unitOfMeasureSymbol: unit?.symbol || "",
-        };
-
-        console.log("🔄 Mapeamento localStorage:", indicatorWithDetails);
-        return indicatorWithDetails;
-      }
     });
   }
 
@@ -423,7 +424,10 @@ class IndicatorAPI {
     };
 
     console.log("🔥 CRIANDO INDICADOR:", newIndicator);
-    console.log("🔧 Feature flag useSupabaseIndicators:", isFeatureEnabled("useSupabaseIndicators"));
+    console.log(
+      "🔧 Feature flag useSupabaseIndicators:",
+      isFeatureEnabled("useSupabaseIndicators"),
+    );
     console.log("🔗 Supabase client:", !!supabase);
 
     // Se Supabase estiver ativo, usar Supabase
@@ -433,13 +437,13 @@ class IndicatorAPI {
       try {
         // Buscar detalhes da unidade para obter símbolo
         const units = await this.getUnitsOfMeasure();
-        const unit = units.find(u => u.id === newIndicator.unitOfMeasureId);
+        const unit = units.find((u) => u.id === newIndicator.unitOfMeasureId);
 
         const insertData = {
           id: newIndicator.id,
           name: newIndicator.parameter, // Mapear parameter -> name
-          unit: unit?.symbol || "un",   // Mapear unitOfMeasureId -> unit symbol
-          type: "numeric",              // Tipo padrão
+          unit: unit?.symbol || "un", // Mapear unitOfMeasureId -> unit symbol
+          type: "numeric", // Tipo padrão
           category: newIndicator.categoryId,
           subcategory: newIndicator.subcategoryId,
           parameter: newIndicator.parameter,
@@ -453,7 +457,9 @@ class IndicatorAPI {
 
         console.log("📝 Dados do indicador:", insertData);
 
-        const { data: supabaseData, error } = await supabase.from("indicators").insert([insertData]);
+        const { data: supabaseData, error } = await supabase
+          .from("indicators")
+          .insert([insertData]);
 
         console.log("📊 Resposta do Supabase:", { data: supabaseData, error });
 
@@ -462,7 +468,7 @@ class IndicatorAPI {
             message: error.message,
             details: error.details,
             hint: error.hint,
-            code: error.code
+            code: error.code,
           });
           throw error; // Forçar fallback
         } else {
@@ -470,11 +476,24 @@ class IndicatorAPI {
           return newIndicator;
         }
       } catch (supabaseError) {
-        console.error("💥 Erro no Supabase indicador:", JSON.stringify({
-          message: supabaseError instanceof Error ? supabaseError.message : 'Unknown error',
-          stack: supabaseError instanceof Error ? supabaseError.stack : undefined,
-          error: supabaseError
-        }, null, 2));
+        console.error(
+          "💥 Erro no Supabase indicador:",
+          JSON.stringify(
+            {
+              message:
+                supabaseError instanceof Error
+                  ? supabaseError.message
+                  : "Unknown error",
+              stack:
+                supabaseError instanceof Error
+                  ? supabaseError.stack
+                  : undefined,
+              error: supabaseError,
+            },
+            null,
+            2,
+          ),
+        );
         // Continuar para fallback
       }
     } else {
@@ -507,12 +526,19 @@ class IndicatorAPI {
         console.log("📊 Resultado da deleção no Supabase:", { error });
 
         if (error) {
-          console.error("❌ Erro ao deletar indicador:", JSON.stringify({
-            message: error.message,
-            details: error.details,
-            hint: error.hint,
-            code: error.code
-          }, null, 2));
+          console.error(
+            "❌ Erro ao deletar indicador:",
+            JSON.stringify(
+              {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+              },
+              null,
+              2,
+            ),
+          );
           throw error; // Forçar fallback
         } else {
           console.log("✅ Indicador deletado no Supabase!");
@@ -520,21 +546,39 @@ class IndicatorAPI {
           // Sincronizar com localStorage também
           try {
             const indicators = this.getStoredIndicators();
-            const filteredIndicators = indicators.filter((ind) => ind.id !== id);
+            const filteredIndicators = indicators.filter(
+              (ind) => ind.id !== id,
+            );
             this.saveIndicators(filteredIndicators);
             console.log("✅ Sincronizado remoção com localStorage");
           } catch (syncError) {
-            console.warn("⚠️ Erro ao sincronizar remoção com localStorage:", syncError);
+            console.warn(
+              "⚠️ Erro ao sincronizar remoção com localStorage:",
+              syncError,
+            );
           }
 
           return;
         }
       } catch (supabaseError) {
-        console.error("💥 Erro no Supabase deleteIndicator:", JSON.stringify({
-          message: supabaseError instanceof Error ? supabaseError.message : 'Unknown error',
-          stack: supabaseError instanceof Error ? supabaseError.stack : undefined,
-          error: supabaseError
-        }, null, 2));
+        console.error(
+          "💥 Erro no Supabase deleteIndicator:",
+          JSON.stringify(
+            {
+              message:
+                supabaseError instanceof Error
+                  ? supabaseError.message
+                  : "Unknown error",
+              stack:
+                supabaseError instanceof Error
+                  ? supabaseError.stack
+                  : undefined,
+              error: supabaseError,
+            },
+            null,
+            2,
+          ),
+        );
         // Continuar para fallback
       }
     } else {
@@ -551,7 +595,9 @@ class IndicatorAPI {
   // === STANDARD INDICATORS ===
   private getStoredStandardIndicators(): any[] {
     try {
-      const indicators = localStorage.getItem(this.STORAGE_KEYS.STANDARD_INDICATORS);
+      const indicators = localStorage.getItem(
+        this.STORAGE_KEYS.STANDARD_INDICATORS,
+      );
       return indicators ? JSON.parse(indicators) : [];
     } catch {
       return [];
@@ -659,10 +705,13 @@ class IndicatorAPI {
     return indicators;
   }
 
-  async updateStandardIndicatorVisibility(id: string, visible: boolean): Promise<void> {
+  async updateStandardIndicatorVisibility(
+    id: string,
+    visible: boolean,
+  ): Promise<void> {
     await this.delay(200);
     const indicators = this.getStoredStandardIndicators();
-    const indicatorIndex = indicators.findIndex(ind => ind.id === id);
+    const indicatorIndex = indicators.findIndex((ind) => ind.id === id);
 
     if (indicatorIndex !== -1) {
       indicators[indicatorIndex].visible = visible;
@@ -672,7 +721,7 @@ class IndicatorAPI {
 
   async getVisibleStandardIndicators(): Promise<any[]> {
     const indicators = await this.getStandardIndicators();
-    return indicators.filter(ind => ind.visible);
+    return indicators.filter((ind) => ind.visible);
   }
 
   // Garantir que indicadores padrão existam no Supabase
@@ -698,7 +747,9 @@ class IndicatorAPI {
         const indicatorExists = existing && !checkError;
 
         if (!indicatorExists) {
-          console.log(`📝 Inserindo indicador padrão ${indicator.id} no Supabase`);
+          console.log(
+            `📝 Inserindo indicador padrão ${indicator.id} no Supabase`,
+          );
 
           const insertData = {
             id: indicator.id,
@@ -711,12 +762,19 @@ class IndicatorAPI {
             created_at: new Date().toISOString(),
           };
 
-          const { error } = await supabase.from("indicators").insert([insertData]);
+          const { error } = await supabase
+            .from("indicators")
+            .insert([insertData]);
 
           if (error) {
-            console.error(`❌ Erro ao inserir indicador padrão ${indicator.id}:`, error);
+            console.error(
+              `❌ Erro ao inserir indicador padrão ${indicator.id}:`,
+              error,
+            );
           } else {
-            console.log(`✅ Indicador padrão ${indicator.id} inserido com sucesso`);
+            console.log(
+              `✅ Indicador padrão ${indicator.id} inserido com sucesso`,
+            );
           }
         }
       }
