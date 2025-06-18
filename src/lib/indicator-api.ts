@@ -306,9 +306,13 @@ class IndicatorAPI {
               doctorId: ind.doctor_id,
               createdAt: ind.created_at,
               updatedAt: ind.updated_at || ind.created_at,
-              // Campos específicos de IndicatorWithDetails
-              categoryName: ind.categoryId || ind.category || "Categoria",
-              subcategoryName: ind.subcategory || "Subcategoria não encontrada",
+              // Campos específicos de IndicatorWithDetails - mapear IDs para nomes reais
+              categoryName: this.mapCategoryIdToName(
+                ind.categoryId || ind.category || "",
+              ),
+              subcategoryName: this.mapSubcategoryIdToName(
+                ind.subcategory || "",
+              ),
               unitOfMeasureName: ind.unit_symbol || ind.unit || "Unidade",
               unitOfMeasureSymbol: ind.unit_symbol || ind.unit || "",
             }),
@@ -520,7 +524,7 @@ class IndicatorAPI {
           );
           throw error; // Forçar fallback
         } else {
-          console.log("��� Indicador deletado no Supabase!");
+          console.log("✅ Indicador deletado no Supabase!");
 
           // Sincronizar com localStorage também
           try {
