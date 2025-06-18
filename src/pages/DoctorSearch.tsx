@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextHybrid";
 import { patientProfileAPI } from "@/lib/patient-profile-api";
 import { Doctor } from "@/lib/patient-profile-types";
 import { toast } from "@/hooks/use-toast";

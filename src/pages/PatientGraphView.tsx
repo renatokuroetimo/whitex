@@ -27,7 +27,7 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from "recharts";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextHybrid";
 import { patientAPI } from "@/lib/patient-api";
 import { patientIndicatorAPI } from "@/lib/patient-indicator-api";
 import { Patient } from "@/lib/patient-types";

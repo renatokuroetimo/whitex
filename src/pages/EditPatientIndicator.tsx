@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextHybrid";
 import { patientAPI } from "@/lib/patient-api";
 import { patientIndicatorAPI } from "@/lib/patient-indicator-api";
 import { Patient } from "@/lib/patient-types";

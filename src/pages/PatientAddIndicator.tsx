@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextHybrid";
 import { indicatorAPI } from "@/lib/indicator-api";
 import { patientIndicatorAPI } from "@/lib/patient-indicator-api";
 import { PatientIndicatorFormData } from "@/lib/patient-indicator-types";

@@ -4,7 +4,7 @@ import { ArrowLeft, Plus, Activity, TrendingUp } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextHybrid";
 import { indicatorAPI } from "@/lib/indicator-api";
 import { patientIndicatorAPI } from "@/lib/patient-indicator-api";
 import { PatientIndicatorValue } from "@/lib/patient-indicator-types";
