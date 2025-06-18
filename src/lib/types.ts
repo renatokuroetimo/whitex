@@ -28,6 +28,10 @@ export interface RegisterData {
   password: string;
   profession: "medico" | "paciente";
   crm?: string;
+  fullName?: string;
+  city?: string;
+  state?: string;
+  specialty?: string;
 }
 
 export interface ApiResponse<T = any> {
