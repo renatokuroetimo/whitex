@@ -71,7 +71,7 @@ const PatientForm = () => {
         setAvailableCities(getCitiesByState(patient.state));
 
         // Detectar se é paciente compartilhado
-        setIsSharedPatient(patient.status === 'compartilhado');
+        setIsSharedPatient(patient.status === "compartilhado");
       }
     } catch (error) {
       toast({
@@ -270,9 +270,10 @@ const PatientForm = () => {
               </button>
               <h1 className="text-2xl font-semibold text-gray-900">
                 {isEditing
-                  ? (isSharedPatient ? "Adicionar Diagnósticos" : "Editar Paciente")
-                  : "Novo Paciente"
-                }
+                  ? isSharedPatient
+                    ? "Adicionar Diagnósticos"
+                    : "Editar Paciente"
+                  : "Novo Paciente"}
               </h1>
             </div>
             <button
@@ -287,19 +288,21 @@ const PatientForm = () => {
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <div className="mb-6">
                 <h2 className="text-lg font-medium text-gray-900 mb-1">
-                  {isSharedPatient ? "Diagnósticos e Observações" : "Dados do paciente"}
+                  {isSharedPatient
+                    ? "Diagnósticos e Observações"
+                    : "Dados do paciente"}
                 </h2>
                 <p className="text-sm text-gray-600">
                   {isSharedPatient
                     ? "Adicione diagnósticos e observações para este paciente compartilhado"
-                    : "Preencha as informações básicas do paciente"
-                  }
+                    : "Preencha as informações básicas do paciente"}
                 </p>
                 {isSharedPatient && (
                   <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                     <p className="text-sm text-blue-800">
-                      <strong>Paciente Compartilhado:</strong> Você pode apenas adicionar diagnósticos e observações.
-                      Os dados pessoais são gerenciados pelo paciente.
+                      <strong>Paciente Compartilhado:</strong> Você pode apenas
+                      adicionar diagnósticos e observações. Os dados pessoais
+                      são gerenciados pelo paciente.
                     </p>
                   </div>
                 )}
@@ -308,223 +311,340 @@ const PatientForm = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 {!isSharedPatient && (
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
-                  {/* Nome */}
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Nome completo *
-                    </label>
-                    <Input
-                      value={formData.name}
-                      onChange={(e) =>
-                        handleInputChange("name", e.target.value)
-                      }
-                      placeholder="Digite o nome completo"
-                      className="w-full"
-                      required
-                    />
-                  </div>
-
-                  {/* Idade */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Idade *
-                    </label>
-                    <Input
-                      type="number"
-                      value={formData.age || ""}
-                      onChange={(e) =>
-                        handleInputChange("age", parseInt(e.target.value) || 0)
-                      }
-                      placeholder="Idade"
-                      className="w-full"
-                      min="1"
-                      max="120"
-                      required
-                    />
-                  </div>
-
-                  {/* Peso */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Peso (kg) *
-                    </label>
-                    <Input
-                      type="number"
-                      step="0.1"
-                      value={formData.weight || ""}
-                      onChange={(e) =>
-                        handleInputChange(
-                          "weight",
-                          parseFloat(e.target.value) || 0,
-                        )
-                      }
-                      placeholder="Peso em kg"
-                      className="w-full"
-                      min="1"
-                      max="500"
-                      required
-                    />
-                  </div>
-
-                  {/* Estado */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Estado *
-                    </label>
-                    <Select
-                      value={formData.state}
-                      onValueChange={handleStateChange}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o estado" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {brazilStates.map((state) => (
-                          <SelectItem key={state.id} value={state.id}>
-                            {state.name} ({state.abbreviation})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Cidade */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Cidade *
-                    </label>
-                    <Select
-                      value={formData.city}
-                      onValueChange={(value) =>
-                        handleInputChange("city", value)
-                      }
-                      disabled={!selectedState}
-                    >
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={
-                            selectedState
-                              ? "Selecione a cidade"
-                              : "Primeiro selecione o estado"
-                          }
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableCities.map((city) => (
-                          <SelectItem key={city} value={city}>
-                            {city}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Diagnóstico */}
-                  {isEditing && (
+                    {/* Nome */}
                     <div className="md:col-span-2">
-                      <div className="flex items-center justify-between mb-3">
-                        <label className="block text-sm font-medium text-gray-700">
-                          Adicionar Diagnóstico
-                        </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Nome completo *
+                      </label>
+                      <Input
+                        value={formData.name}
+                        onChange={(e) =>
+                          handleInputChange("name", e.target.value)
+                        }
+                        placeholder="Digite o nome completo"
+                        className="w-full"
+                        required
+                      />
+                    </div>
+
+                    {/* Idade */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Idade *
+                      </label>
+                      <Input
+                        type="number"
+                        value={formData.age || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "age",
+                            parseInt(e.target.value) || 0,
+                          )
+                        }
+                        placeholder="Idade"
+                        className="w-full"
+                        min="1"
+                        max="120"
+                        required
+                      />
+                    </div>
+
+                    {/* Peso */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Peso (kg) *
+                      </label>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={formData.weight || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "weight",
+                            parseFloat(e.target.value) || 0,
+                          )
+                        }
+                        placeholder="Peso em kg"
+                        className="w-full"
+                        min="1"
+                        max="500"
+                        required
+                      />
+                    </div>
+
+                    {/* Estado */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Estado *
+                      </label>
+                      <Select
+                        value={formData.state}
+                        onValueChange={handleStateChange}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o estado" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {brazilStates.map((state) => (
+                            <SelectItem key={state.id} value={state.id}>
+                              {state.name} ({state.abbreviation})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Cidade */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Cidade *
+                      </label>
+                      <Select
+                        value={formData.city}
+                        onValueChange={(value) =>
+                          handleInputChange("city", value)
+                        }
+                        disabled={!selectedState}
+                      >
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={
+                              selectedState
+                                ? "Selecione a cidade"
+                                : "Primeiro selecione o estado"
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableCities.map((city) => (
+                            <SelectItem key={city} value={city}>
+                              {city}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Diagnóstico */}
+                    {isEditing && (
+                      <div className="md:col-span-2">
+                        <div className="flex items-center justify-between mb-3">
+                          <label className="block text-sm font-medium text-gray-700">
+                            Adicionar Diagnóstico
+                          </label>
+                          {!isAddingDiagnosis && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setIsAddingDiagnosis(true)}
+                              className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                            >
+                              <Plus className="h-4 w-4 mr-1" />
+                              Novo diagnóstico
+                            </Button>
+                          )}
+                        </div>
+
+                        {isAddingDiagnosis && (
+                          <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                {/* CID */}
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    CID *
+                                  </label>
+                                  <Input
+                                    value={diagnosisForm.cid}
+                                    onChange={(e) =>
+                                      handleDiagnosisInputChange(
+                                        "cid",
+                                        e.target.value,
+                                      )
+                                    }
+                                    placeholder="Ex: I10.9"
+                                    className="w-full"
+                                  />
+                                </div>
+
+                                {/* Diagnóstico */}
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Diagnóstico *
+                                  </label>
+                                  <Input
+                                    value={diagnosisForm.diagnosis}
+                                    onChange={(e) =>
+                                      handleDiagnosisInputChange(
+                                        "diagnosis",
+                                        e.target.value,
+                                      )
+                                    }
+                                    placeholder="Ex: Hipertensão arterial"
+                                    className="w-full"
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Botões do diagnóstico */}
+                              <div className="flex justify-end gap-2">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={cancelAddDiagnosis}
+                                >
+                                  <X className="h-4 w-4 mr-1" />
+                                  Cancelar
+                                </Button>
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  onClick={handleAddDiagnosis}
+                                  disabled={isLoading}
+                                  className="bg-green-600 hover:bg-green-700"
+                                >
+                                  <Plus className="h-4 w-4 mr-1" />
+                                  Adicionar
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
                         {!isAddingDiagnosis && (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setIsAddingDiagnosis(true)}
-                            className="text-blue-600 border-blue-200 hover:bg-blue-50"
-                          >
-                            <Plus className="h-4 w-4 mr-1" />
-                            Novo diagnóstico
-                          </Button>
+                          <p className="text-sm text-gray-500">
+                            Os diagnósticos são exibidos no histórico do
+                            paciente após serem adicionados.
+                          </p>
                         )}
                       </div>
+                    )}
 
-                      {isAddingDiagnosis && (
-                        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                          <div className="space-y-4">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                              {/* CID */}
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  CID *
-                                </label>
-                                <Input
-                                  value={diagnosisForm.cid}
-                                  onChange={(e) =>
-                                    handleDiagnosisInputChange("cid", e.target.value)
-                                  }
-                                  placeholder="Ex: I10.9"
-                                  className="w-full"
-                                />
-                              </div>
+                    {/* Observações */}
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Observações
+                      </label>
+                      <Textarea
+                        value={formData.notes || ""}
+                        onChange={(e) =>
+                          handleInputChange("notes", e.target.value)
+                        }
+                        placeholder="Adicione observações sobre o paciente (ex: precisa ficar em repouso)"
+                        className="w-full"
+                        rows={3}
+                      />
+                    </div>
+                  </div>
+                )}
 
-                              {/* Diagnóstico */}
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Diagnóstico *
-                                </label>
-                                <Input
-                                  value={diagnosisForm.diagnosis}
-                                  onChange={(e) =>
-                                    handleDiagnosisInputChange("diagnosis", e.target.value)
-                                  }
-                                  placeholder="Ex: Hipertensão arterial"
-                                  className="w-full"
-                                />
-                              </div>
+                {/* Seção especial para pacientes compartilhados */}
+                {isSharedPatient && (
+                  <div className="space-y-6">
+                    {/* Diagnósticos */}
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Adicionar Diagnóstico
+                      </label>
+                      {!isAddingDiagnosis ? (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => setIsAddingDiagnosis(true)}
+                          className="w-full"
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
+                          Adicionar novo diagnóstico
+                        </Button>
+                      ) : (
+                        <div className="space-y-4 p-4 border border-gray-200 rounded-lg">
+                          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Código CID
+                              </label>
+                              <Input
+                                value={diagnosisForm.cid}
+                                onChange={(e) =>
+                                  setDiagnosisForm((prev) => ({
+                                    ...prev,
+                                    cid: e.target.value,
+                                  }))
+                                }
+                                placeholder="Ex: I10"
+                                className="w-full"
+                              />
                             </div>
-
-                            {/* Botões do diagnóstico */}
-                            <div className="flex justify-end gap-2">
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={cancelAddDiagnosis}
-                              >
-                                <X className="h-4 w-4 mr-1" />
-                                Cancelar
-                              </Button>
-                              <Button
-                                type="button"
-                                size="sm"
-                                onClick={handleAddDiagnosis}
-                                disabled={isLoading}
-                                className="bg-green-600 hover:bg-green-700"
-                              >
-                                <Plus className="h-4 w-4 mr-1" />
-                                Adicionar
-                              </Button>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Diagnóstico
+                              </label>
+                              <Input
+                                value={diagnosisForm.diagnosis}
+                                onChange={(e) =>
+                                  setDiagnosisForm((prev) => ({
+                                    ...prev,
+                                    diagnosis: e.target.value,
+                                  }))
+                                }
+                                placeholder="Ex: Hipertensão arterial"
+                                className="w-full"
+                              />
                             </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              type="button"
+                              size="sm"
+                              onClick={handleAddDiagnosis}
+                              disabled={
+                                !diagnosisForm.cid || !diagnosisForm.diagnosis
+                              }
+                            >
+                              Adicionar
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setIsAddingDiagnosis(false);
+                                setDiagnosisForm({ cid: "", diagnosis: "" });
+                              }}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
                           </div>
                         </div>
                       )}
 
                       {!isAddingDiagnosis && (
-                        <p className="text-sm text-gray-500">
-                          Os diagnósticos são exibidos no histórico do paciente após serem adicionados.
+                        <p className="text-sm text-gray-500 mt-2">
+                          Os diagnósticos são exibidos no histórico do paciente
+                          após serem adicionados.
                         </p>
                       )}
                     </div>
-                  )}
 
-                  {/* Observações */}
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Observações
-                    </label>
-                    <Textarea
-                      value={formData.notes || ""}
-                      onChange={(e) =>
-                        handleInputChange("notes", e.target.value)
-                      }
-                      placeholder="Adicione observações sobre o paciente (ex: precisa ficar em repouso)"
-                      className="w-full"
-                      rows={3}
-                    />
+                    {/* Observações */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Observações Médicas
+                      </label>
+                      <Textarea
+                        value={formData.notes || ""}
+                        onChange={(e) =>
+                          handleInputChange("notes", e.target.value)
+                        }
+                        placeholder="Adicione observações médicas sobre o paciente..."
+                        className="w-full"
+                        rows={4}
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Buttons */}
                 <div className="flex justify-end gap-3 pt-6">
@@ -546,7 +666,7 @@ const PatientForm = () => {
                         ? "Salvando..."
                         : "Criando..."
                       : isEditing
-                        ? "Salvar alteraç��es"
+                        ? "Salvar alterações"
                         : "Criar paciente"}
                   </Button>
                 </div>
