@@ -71,7 +71,11 @@ const Sidebar: React.FC = () => {
   useEffect(() => {
     if (user?.id) {
       const savedImage = localStorage.getItem(`profile_image_${user.id}`);
-      setProfileImage(savedImage);
+      if (savedImage && savedImage !== "null" && savedImage !== "undefined") {
+        setProfileImage(savedImage);
+      } else {
+        setProfileImage(null);
+      }
     }
   }, [user?.id]);
 
@@ -80,7 +84,11 @@ const Sidebar: React.FC = () => {
     const handleStorageChange = () => {
       if (user?.id) {
         const savedImage = localStorage.getItem(`profile_image_${user.id}`);
-        setProfileImage(savedImage);
+        if (savedImage && savedImage !== "null" && savedImage !== "undefined") {
+          setProfileImage(savedImage);
+        } else {
+          setProfileImage(null);
+        }
       }
     };
 
@@ -127,23 +135,32 @@ const Sidebar: React.FC = () => {
       {/* User Profile */}
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gray-100 rounded-full overflow-hidden flex items-center justify-center">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-gray-100 rounded-full overflow-hidden flex items-center justify-center border border-gray-200">
               {profileImage ? (
                 <img
                   src={profileImage}
                   alt="Foto de perfil"
                   className="w-full h-full object-cover"
+                  onError={() => setProfileImage(null)}
                 />
               ) : (
                 <User className="w-4 h-4 text-gray-600" />
               )}
             </div>
-            <span className="text-sm text-gray-600">Meu Perfil</span>
+            <div className="flex flex-col">
+              <span className="text-sm font-medium text-gray-700">
+                {user?.email?.split("@")[0] || "Usuário"}
+              </span>
+              <span className="text-xs text-gray-500">
+                {user?.profession === "medico" ? "Médico" : "Paciente"}
+              </span>
+            </div>
           </div>
           <button
             onClick={() => navigate(profilePath)}
-            className="text-xs text-blue-600 hover:text-blue-800"
+            className="text-xs text-blue-600 hover:text-blue-800 p-1 hover:bg-blue-50 rounded"
+            title="Ver perfil"
           >
             ▼
           </button>
@@ -152,7 +169,7 @@ const Sidebar: React.FC = () => {
 
       {/* Navigation */}
       <nav className="flex-1 p-4">
-        <ul className="space-y-2">
+        <ul className="space-y-1">
           {sidebarItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
@@ -161,10 +178,10 @@ const Sidebar: React.FC = () => {
               <li key={item.id}>
                 <button
                   onClick={() => handleNavigation(item.path)}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                     active
-                      ? "bg-blue-50 text-blue-700"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      ? "bg-blue-600 text-white shadow-sm"
+                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                   }`}
                 >
                   <Icon className="w-4 h-4" />
