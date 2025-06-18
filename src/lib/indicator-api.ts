@@ -602,9 +602,9 @@ class IndicatorAPI {
     localStorage.setItem(storageKey, JSON.stringify(indicators));
   }
 
-  async getStandardIndicators(): Promise<any[]> {
+  async getStandardIndicators(doctorId?: string): Promise<any[]> {
     await this.delay(200);
-    let indicators = this.getStoredStandardIndicators();
+    let indicators = this.getStoredStandardIndicators(doctorId);
 
     // Inicializar com indicadores padrão se não existir
     if (indicators.length === 0) {
