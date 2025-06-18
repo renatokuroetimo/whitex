@@ -387,8 +387,64 @@ class PatientAPI {
   // Buscar paciente por ID
   async getPatientById(id: string): Promise<Patient | null> {
     await this.delay(200);
+
+    console.log("🔍 getPatientById chamado para ID:", id);
+
+    // Se Supabase estiver ativo, buscar no Supabase primeiro
+    if (isFeatureEnabled("useSupabasePatients") && supabase) {
+      console.log("🚀 Buscando paciente por ID no Supabase");
+
+      try {
+        const { data: supabasePatient, error } = await supabase
+          .from("patients")
+          .select("*")
+          .eq("id", id)
+          .single();
+
+        console.log("📊 Resultado do Supabase:", {
+          data: supabasePatient,
+          error,
+        });
+
+        if (error) {
+          console.error("❌ Erro ao buscar paciente no Supabase:", error);
+          // Se erro for "PGRST116", significa que não encontrou - continuar para localStorage
+          if (error.code !== "PGRST116") {
+            throw error; // Outros erros devem ser tratados
+          }
+        } else if (supabasePatient) {
+          // Converter dados do Supabase para formato local
+          const patient: Patient = {
+            id: supabasePatient.id,
+            name: supabasePatient.name,
+            age: supabasePatient.age,
+            city: supabasePatient.city,
+            state: supabasePatient.state,
+            weight: supabasePatient.weight,
+            status: supabasePatient.status,
+            notes: supabasePatient.notes,
+            doctorId: supabasePatient.doctor_id,
+            createdAt: supabasePatient.created_at,
+            updatedAt: supabasePatient.updated_at,
+          };
+
+          console.log("✅ Paciente encontrado no Supabase:", patient);
+          return patient;
+        }
+      } catch (supabaseError) {
+        console.error("💥 Erro no Supabase getPatientById:", supabaseError);
+        // Continuar para fallback localStorage
+      }
+    }
+
+    console.log("⚠️ Buscando no localStorage fallback");
+
+    // Fallback para localStorage
     const patients = this.getStoredPatients();
-    return patients.find((p) => p.id === id) || null;
+    const found = patients.find((p) => p.id === id) || null;
+
+    console.log("📋 Resultado localStorage:", found);
+    return found;
   }
 
   // Criar paciente
