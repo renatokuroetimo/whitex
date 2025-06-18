@@ -175,7 +175,12 @@ class PatientProfileAPI {
         });
 
         if (error) {
-          console.error("❌ Erro ao salvar dados pessoais:", error);
+          console.error("❌ Erro ao salvar dados pessoais:", {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code,
+          });
           throw error; // Forçar fallback
         } else {
           console.log("✅ Dados pessoais salvos no Supabase!");
