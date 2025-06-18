@@ -345,25 +345,17 @@ class PatientAPI {
           .select("patient_id, shared_at")
           .eq("doctor_id", doctorId);
 
-        console.log("🤝 ===== DEBUG COMPARTILHAMENTOS =====");
-        console.log("🤝 Query executada para doctorId:", doctorId);
-        console.log("🤝 Resultado da query:", {
-          data: sharedData,
-          error: sharedError,
-          hasData: !!sharedData,
-          dataLength: sharedData?.length || 0,
-        });
+        console.log("🤝 Buscando compartilhamentos para doctorId:", doctorId);
 
         if (sharedError) {
           console.error(
-            "🚨 Erro na query de compartilhamentos:",
+            "❌ Erro na query de compartilhamentos:",
             JSON.stringify(
               {
                 message: sharedError.message,
                 details: sharedError.details,
                 hint: sharedError.hint,
                 code: sharedError.code,
-                errorName: sharedError.name,
               },
               null,
               2,
@@ -371,21 +363,8 @@ class PatientAPI {
           );
         }
 
-        if (sharedData) {
-          console.log(
-            "📋 Número de compartilhamentos encontrados:",
-            sharedData.length,
-          );
-          sharedData.forEach((share, index) => {
-            console.log(`📋 Compartilhamento ${index + 1}:`, {
-              patient_id: share.patient_id,
-              shared_at: share.shared_at,
-              user_data: share.users,
-              hasUserData: !!share.users,
-            });
-          });
-        } else {
-          console.log("❌ Nenhum dado de compartilhamento retornado");
+        if (sharedData && sharedData.length > 0) {
+          console.log("📋 Compartilhamentos encontrados:", sharedData.length);
         }
 
         if (patientsError) {
@@ -428,8 +407,6 @@ class PatientAPI {
             const sharedPatients = [];
 
             for (const share of sharedData) {
-              console.log(`🔍 Processando compartilhamento:`, share);
-
               // Buscar dados do usuário
               const { data: userData, error: userError } = await supabase
                 .from("users")
@@ -455,11 +432,6 @@ class PatientAPI {
 
               const personalData = personalDataArray?.[0];
 
-              console.log(`👤 Dados do paciente ${share.patient_id}:`, {
-                userData,
-                personalData,
-              });
-
               const sharedPatient: Patient = {
                 id: share.patient_id,
                 name:
@@ -480,10 +452,6 @@ class PatientAPI {
                 notes: "Dados compartilhados pelo paciente",
               };
 
-              console.log(
-                "✅ Paciente compartilhado convertido:",
-                sharedPatient,
-              );
               sharedPatients.push(sharedPatient);
             }
 
