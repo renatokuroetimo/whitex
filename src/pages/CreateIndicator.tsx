@@ -33,6 +33,13 @@ import { toast } from "@/hooks/use-toast";
 const CreateIndicator = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  // Redirect patients to their indicators page
+  useEffect(() => {
+    if (user?.profession === "paciente") {
+      navigate("/patient/indicadores", { replace: true });
+    }
+  }, [user, navigate]);
   const [isLoading, setIsLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);

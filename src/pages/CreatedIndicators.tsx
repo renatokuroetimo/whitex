@@ -22,9 +22,14 @@ const CreatedIndicators = () => {
 
   useEffect(() => {
     if (user?.id) {
+      // Redirect patients to their indicators page
+      if (user.profession === "paciente") {
+        navigate("/patient/indicadores", { replace: true });
+        return;
+      }
       loadIndicators();
     }
-  }, [user?.id]);
+  }, [user?.id, user?.profession, navigate]);
 
   const loadIndicators = async () => {
     if (!user?.id) return;
