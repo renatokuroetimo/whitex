@@ -951,23 +951,51 @@ class PatientAPI {
                   .eq("id", existingNote.id);
 
                 if (updateNoteError) {
+                  console.error(
+                    "❌ Erro ao atualizar observação:",
+                    JSON.stringify(updateNoteError, null, 2),
+                  );
                   throw updateNoteError;
+                } else {
+                  console.log("✅ Observação atualizada com sucesso!");
                 }
               } else {
                 // Criar nova observação
                 console.log("➕ Criando nova observação");
-                const { error: insertNoteError } = await supabase
-                  .from("medical_notes")
-                  .insert([
-                    {
-                      patient_id: id,
-                      doctor_id: currentUser.id,
-                      notes: data.notes,
-                    },
-                  ]);
+                console.log("📝 Dados para inserir:", {
+                  patient_id: id,
+                  doctor_id: currentUser.id,
+                  notes: data.notes,
+                });
+
+                const { data: insertedData, error: insertNoteError } =
+                  await supabase
+                    .from("medical_notes")
+                    .insert([
+                      {
+                        patient_id: id,
+                        doctor_id: currentUser.id,
+                        notes: data.notes,
+                      },
+                    ])
+                    .select();
+
+                console.log("📊 Resultado da inserção:", {
+                  data: insertedData,
+                  error: insertNoteError,
+                });
 
                 if (insertNoteError) {
+                  console.error(
+                    "❌ Erro ao inserir observação:",
+                    JSON.stringify(insertNoteError, null, 2),
+                  );
                   throw insertNoteError;
+                } else {
+                  console.log(
+                    "✅ Nova observação criada com sucesso!",
+                    insertedData,
+                  );
                 }
               }
 
