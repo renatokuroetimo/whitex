@@ -309,7 +309,7 @@ class PatientIndicatorAPI {
           const values = (supabaseValues || []).map(
             (val: any): PatientIndicatorValue => ({
               id: val.id,
-              patientId: val.user_id,
+              patientId: val.patient_id,
               indicatorId: val.indicator_id,
               indicatorType: val.indicator_id.startsWith("std")
                 ? "standard"
