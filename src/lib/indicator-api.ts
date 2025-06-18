@@ -416,7 +416,13 @@ class IndicatorAPI {
           return newIndicator;
         }
       } catch (supabaseError) {
-        console.error("💥 Erro no Supabase indicador:", supabaseError);
+        console.error("💥 Erro no Supabase indicador:", {
+          message:
+            supabaseError instanceof Error
+              ? supabaseError.message
+              : "Unknown error",
+          error: supabaseError,
+        });
         // Continuar para fallback
       }
     } else {
