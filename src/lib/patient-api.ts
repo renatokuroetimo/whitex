@@ -1145,6 +1145,29 @@ class PatientAPI {
           const personalData = personalDataArray?.[0];
 
           if (userData || personalData) {
+            // Buscar observações médicas deste médico para este paciente
+            const currentUserStr = localStorage.getItem(
+              "medical_app_current_user",
+            );
+            const currentUser = currentUserStr
+              ? JSON.parse(currentUserStr)
+              : null;
+
+            let medicalNotes = "";
+            if (currentUser?.id) {
+              const { data: noteData, error: noteError } = await supabase
+                .from("medical_notes")
+                .select("notes")
+                .eq("patient_id", id)
+                .eq("doctor_id", currentUser.id)
+                .maybeSingle();
+
+              if (!noteError && noteData) {
+                medicalNotes = noteData.notes;
+                console.log("📋 Observações médicas carregadas:", medicalNotes);
+              }
+            }
+
             const sharedPatient: Patient = {
               id: id,
               name:
@@ -1162,7 +1185,7 @@ class PatientAPI {
               status: "compartilhado" as const,
               doctorId: "", // Paciente compartilhado não tem doctor específico
               createdAt: sharedData.shared_at,
-              notes: "Dados compartilhados pelo paciente",
+              notes: medicalNotes || "Dados compartilhados pelo paciente",
             };
 
             console.log("✅ Paciente compartilhado encontrado:", sharedPatient);
