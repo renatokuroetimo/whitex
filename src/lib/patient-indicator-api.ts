@@ -143,13 +143,72 @@ class PatientIndicatorAPI {
       );
   }
 
-  // Buscar um valor de indicador específico por ID
-  async getPatientIndicatorValueById(
-    id: string,
-  ): Promise<PatientIndicatorValue | null> {
-    await this.delay(200);
-    const values = this.getStoredIndicatorValues();
-    return values.find((value) => value.id === id) || null;
+  // Buscar valores de indicadores de um paciente
+  async getPatientIndicatorValues(
+    patientId: string,
+  ): Promise<PatientIndicatorValue[]> {
+    await this.delay(300);
+
+    console.log(
+      "🔍 getPatientIndicatorValues chamado para patientId:",
+      patientId,
+    );
+
+    // Se Supabase estiver ativo, usar Supabase
+    if (isFeatureEnabled("useSupabaseIndicators") && supabase) {
+      console.log("🚀 Buscando valores indicadores no Supabase");
+
+      try {
+        const { data: supabaseValues, error } = await supabase
+          .from("patient_indicator_values")
+          .select("*")
+          .eq("patient_id", patientId);
+
+        console.log("📊 Valores indicadores do Supabase:", {
+          data: supabaseValues,
+          error,
+        });
+
+        if (error) {
+          console.error("❌ Erro ao buscar valores indicadores:", error);
+          // Fallback para localStorage
+        } else {
+          // Converter dados do Supabase para formato local
+          const values = (supabaseValues || []).map(
+            (val: any): PatientIndicatorValue => ({
+              id: val.id,
+              patientId: val.patient_id,
+              indicatorId: val.indicator_id,
+              indicatorType: "custom", // Default, será melhorado depois
+              categoryName: "Categoria", // Default, será melhorado depois
+              subcategoryName: "Subcategoria", // Default, será melhorado depois
+              parameter: "Parâmetro", // Default, será melhorado depois
+              unitSymbol: "un", // Default, será melhorado depois
+              value: val.value,
+              date: val.date,
+              time: "00:00", // Default
+              visibleToMedics: true, // Default
+              doctorId: "", // Será melhorado depois
+              createdAt: val.created_at,
+              updatedAt: val.updated_at || val.created_at,
+            }),
+          );
+
+          console.log("✅ Valores indicadores convertidos:", values);
+          return values;
+        }
+      } catch (supabaseError) {
+        console.error(
+          "💥 Erro no Supabase getPatientIndicatorValues:",
+          supabaseError,
+        );
+        // Continuar para fallback localStorage
+      }
+    }
+
+    console.log("⚠️ Usando localStorage para valores indicadores");
+    const allValues = this.getStoredIndicatorValues();
+    return allValues.filter((value) => value.patientId === patientId);
   }
 
   // Buscar valores de indicadores de um paciente por categoria
