@@ -6,6 +6,8 @@ import {
   PatientPersonalFormData,
   PatientMedicalFormData,
 } from "./patient-profile-types";
+import { supabase } from "./supabase";
+import { isFeatureEnabled } from "./feature-flags";
 
 class PatientProfileAPI {
   private readonly STORAGE_KEYS = {
