@@ -711,8 +711,8 @@ class IndicatorAPI {
     }
   }
 
-  async getVisibleStandardIndicators(): Promise<any[]> {
-    const indicators = await this.getStandardIndicators();
+  async getVisibleStandardIndicators(doctorId?: string): Promise<any[]> {
+    const indicators = await this.getStandardIndicators(doctorId);
     return indicators.filter((ind) => ind.visible);
   }
 
