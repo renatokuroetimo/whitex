@@ -175,19 +175,24 @@ class PatientIndicatorAPI {
       }
 
       try {
-        const insertData = {
+        // Criar insert data apenas com campos essenciais
+        const insertData: any = {
           id: newValue.id,
-          user_id: newValue.patientId, // Correto conforme schema
+          user_id: newValue.patientId,
           indicator_id: newValue.indicatorId,
-          category_name: newValue.categoryName,
-          subcategory_name: newValue.subcategoryName,
-          parameter: newValue.parameter,
-          unit_symbol: newValue.unitSymbol,
           value: newValue.value,
-          date: newValue.date,
-          time: newValue.time,
           created_at: newValue.createdAt,
         };
+
+        // Adicionar campos opcionais apenas se tiverem valor
+        if (newValue.categoryName)
+          insertData.category_name = newValue.categoryName;
+        if (newValue.subcategoryName)
+          insertData.subcategory_name = newValue.subcategoryName;
+        if (newValue.parameter) insertData.parameter = newValue.parameter;
+        if (newValue.unitSymbol) insertData.unit_symbol = newValue.unitSymbol;
+        if (newValue.date) insertData.date = newValue.date;
+        if (newValue.time) insertData.time = newValue.time;
 
         console.log("📝 Dados do valor indicador:", insertData);
 
