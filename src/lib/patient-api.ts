@@ -409,12 +409,27 @@ class PatientAPI {
           );
 
           // Converter pacientes compartilhados
-          if (!sharedError && sharedData) {
-            const sharedPatients = sharedData.map((share: any): Patient => {
-              const personalData = share.patient_personal_data?.[0];
+          if (!sharedError && sharedData && sharedData.length > 0) {
+            console.log("🔄 Processando pacientes compartilhados...");
+
+            const sharedPatients = [];
+
+            for (const share of sharedData) {
               const userData = share.users;
 
-              return {
+              // Buscar dados pessoais do paciente separadamente
+              const { data: personalData } = await supabase
+                .from("patient_personal_data")
+                .select("*")
+                .eq("user_id", share.patient_id)
+                .maybeSingle();
+
+              console.log(`👤 Dados do paciente ${share.patient_id}:`, {
+                userData,
+                personalData,
+              });
+
+              const sharedPatient: Patient = {
                 id: share.patient_id,
                 name:
                   personalData?.full_name ||
@@ -433,13 +448,21 @@ class PatientAPI {
                 createdAt: share.shared_at,
                 notes: "Dados compartilhados pelo paciente",
               };
-            });
+
+              console.log(
+                "✅ Paciente compartilhado convertido:",
+                sharedPatient,
+              );
+              sharedPatients.push(sharedPatient);
+            }
 
             console.log(
-              "✅ Pacientes compartilhados convertidos:",
-              sharedPatients,
+              "✅ Total de pacientes compartilhados:",
+              sharedPatients.length,
             );
             allPatients = [...allPatients, ...sharedPatients];
+          } else {
+            console.log("ℹ️ Nenhum paciente compartilhado encontrado");
           }
 
           console.log(
@@ -963,7 +986,7 @@ class PatientAPI {
           .delete()
           .in("id", ids);
 
-        console.log("📊 Resultado da deleção no Supabase:", { error });
+        console.log("�� Resultado da deleção no Supabase:", { error });
 
         if (error) {
           console.error(
