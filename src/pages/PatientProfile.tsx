@@ -102,12 +102,6 @@ const PatientProfile = () => {
         patientProfileAPI.getSharedDoctors(user.id),
       ]);
 
-      console.log("PatientProfile data loaded:", {
-        personal,
-        medical,
-        doctors,
-      });
-
       if (personal) {
         setPersonalData({
           fullName: personal.fullName,
