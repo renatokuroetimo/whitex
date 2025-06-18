@@ -383,6 +383,42 @@ class PatientProfileAPI {
     }
   }
 
+  // Helper function to map user data to doctor format
+  private mapUserToDoctor(user: any, source: "supabase" | "localStorage"): any {
+    // Use existing name or show "Sem nome cadastrado"
+    // Support both fullName and full_name (localStorage vs Supabase format)
+    let doctorName = user.fullName || user.full_name || user.name;
+
+    if (!doctorName || doctorName.trim() === "") {
+      doctorName = "Sem nome cadastrado";
+    }
+
+    console.log(`🔍 Dados originais do usuário médico (${source}):`, {
+      id: user.id,
+      name: user.name,
+      fullName: user.fullName || user.full_name,
+      crm: user.crm,
+      state: user.state,
+      email: user.email,
+      city: user.city,
+      specialty: user.specialty,
+    });
+
+    const doctor = {
+      id: user.id,
+      name: doctorName,
+      crm: user.crm || "123456",
+      state: user.state || "",
+      specialty: user.specialty || "",
+      email: user.email,
+      city: user.city || "",
+      createdAt: user.createdAt || user.created_at || new Date().toISOString(),
+    };
+
+    console.log(`👨‍⚕️ Médico mapeado (${source}):`, doctor);
+    return doctor;
+  }
+
   async loadRegisteredDoctors(): Promise<void> {
     // Get only doctors from registered users - no mocks
     const registeredDoctors = this.getRegisteredDoctors();
