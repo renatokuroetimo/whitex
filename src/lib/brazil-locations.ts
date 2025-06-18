@@ -352,5 +352,14 @@ export const brazilCities: Record<string, string[]> = {
 };
 
 export const getCitiesByState = (stateId: string): string[] => {
-  return brazilCities[stateId] || [];
+  if (!stateId || stateId.trim() === "") {
+    return [];
+  }
+
+  const cities = brazilCities[stateId.toUpperCase()];
+  console.log(
+    `Getting cities for state: ${stateId}, found: ${cities?.length || 0} cities`,
+  );
+
+  return cities ? [...cities].sort() : [];
 };
