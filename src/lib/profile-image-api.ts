@@ -100,19 +100,26 @@ class ProfileImageAPI {
 
         if (error && error.code !== "PGRST116") {
           // PGRST116 = não encontrado
-          console.error(
-            "❌ Erro ao carregar imagem do Supabase:",
-            JSON.stringify(
-              {
-                message: error.message,
-                details: error.details,
-                hint: error.hint,
-                code: error.code,
-              },
-              null,
-              2,
-            ),
-          );
+          // PGRST204 = tabela não existe
+          if (error.code === "PGRST204") {
+            console.warn(
+              "⚠️ Tabela profile_images não existe no Supabase. Execute o script create_profile_images_table.sql",
+            );
+          } else {
+            console.error(
+              "❌ Erro ao carregar imagem do Supabase:",
+              JSON.stringify(
+                {
+                  message: error.message,
+                  details: error.details,
+                  hint: error.hint,
+                  code: error.code,
+                },
+                null,
+                2,
+              ),
+            );
+          }
           // Se der erro, tentar localStorage como fallback
           return localStorage.getItem(`${this.STORAGE_KEY_PREFIX}${userId}`);
         }
