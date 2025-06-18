@@ -88,6 +88,25 @@ const PatientDetailView = () => {
     }
   };
 
+  const handleRemoveSharing = async () => {
+    if (!patientId || !user?.id) return;
+
+    try {
+      await patientAPI.removePatientSharing(patientId, user.id);
+      toast({
+        title: "Sucesso",
+        description: "Compartilhamento removido com sucesso",
+      });
+      navigate("/pacientes");
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Erro ao remover compartilhamento",
+      });
+    }
+  };
+
   const getPatientAge = () => {
     // Try personal data first, then fall back to patient age
     if (personalData?.birthDate) {
