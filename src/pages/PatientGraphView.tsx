@@ -208,7 +208,11 @@ const PatientGraphView = () => {
   };
 
   const handleBack = () => {
-    navigate(`/pacientes/${patientId}/graficos`);
+    if (patientId) {
+      navigate(`/pacientes/${patientId}/graficos`);
+    } else {
+      navigate("/patient/graficos");
+    }
   };
 
   const trend = calculateTrend();
@@ -230,7 +234,8 @@ const PatientGraphView = () => {
     );
   }
 
-  if (!patient) {
+  // Só verificar paciente se esperávamos carregá-lo
+  if (patientId && !patient) {
     return null;
   }
 
