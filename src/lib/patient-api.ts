@@ -357,10 +357,29 @@ class PatientAPI {
           )
           .eq("doctor_id", doctorId);
 
-        console.log("🤝 Pacientes compartilhados:", {
+        console.log(
+          "🤝 Query de pacientes compartilhados para doctorId:",
+          doctorId,
+        );
+        console.log("🤝 Resultado completo:", {
           data: sharedData,
           error: sharedError,
         });
+
+        if (sharedData) {
+          console.log(
+            "📋 Número de compartilhamentos encontrados:",
+            sharedData.length,
+          );
+          sharedData.forEach((share, index) => {
+            console.log(`📋 Compartilhamento ${index + 1}:`, {
+              patient_id: share.patient_id,
+              shared_at: share.shared_at,
+              user_data: share.users,
+              personal_data: share.patient_personal_data,
+            });
+          });
+        }
 
         if (patientsError) {
           console.error(
@@ -782,7 +801,7 @@ class PatientAPI {
 
         if (error) {
           console.error(
-            "❌ Erro ao buscar diagn��sticos:",
+            "❌ Erro ao buscar diagnósticos:",
             JSON.stringify(
               {
                 message: error.message,
