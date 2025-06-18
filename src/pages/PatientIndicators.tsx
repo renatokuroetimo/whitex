@@ -221,11 +221,92 @@ const PatientIndicators = () => {
             /* Indicators List */
             <div className="bg-white rounded-lg border border-gray-200">
               <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-6">
                   <h2 className="text-lg font-semibold text-gray-900">
-                    Registros de Indicadores ({indicators.length})
+                    Registros de Indicadores ({filteredIndicators.length})
                   </h2>
                 </div>
+
+                {/* Filters */}
+                {indicators.length > 0 && (
+                  <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Filter className="h-4 w-4 text-gray-600" />
+                      <span className="text-sm font-medium text-gray-700">
+                        Filtros
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Category Filter */}
+                      <div>
+                        <label className="block text-sm text-gray-600 mb-1">
+                          Categoria
+                        </label>
+                        <Select
+                          value={selectedCategory}
+                          onValueChange={handleCategoryChange}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Todas as categorias" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">
+                              Todas as categorias
+                            </SelectItem>
+                            {uniqueCategories.map((category) => (
+                              <SelectItem key={category} value={category}>
+                                {category}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Subcategory Filter */}
+                      <div>
+                        <label className="block text-sm text-gray-600 mb-1">
+                          Subcategoria
+                        </label>
+                        <Select
+                          value={selectedSubcategory}
+                          onValueChange={setSelectedSubcategory}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Todas as subcategorias" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">
+                              Todas as subcategorias
+                            </SelectItem>
+                            {uniqueSubcategories.map((subcategory) => (
+                              <SelectItem key={subcategory} value={subcategory}>
+                                {subcategory}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    {/* Clear Filters */}
+                    {(selectedCategory !== "all" ||
+                      selectedSubcategory !== "all") && (
+                      <div className="mt-3">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedCategory("all");
+                            setSelectedSubcategory("all");
+                          }}
+                          className="text-gray-600 border-gray-300"
+                        >
+                          Limpar filtros
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div className="overflow-x-auto">
                   <table className="w-full">
