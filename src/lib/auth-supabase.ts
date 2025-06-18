@@ -46,6 +46,7 @@ class AuthSupabaseAPI {
       city: data.city,
       state: data.state,
       specialty: data.specialty,
+      phone: data.phone,
       createdAt: new Date().toISOString(),
     };
 
@@ -59,6 +60,7 @@ class AuthSupabaseAPI {
       city: newUser.city,
       state: newUser.state,
       specialty: newUser.specialty,
+      phone: newUser.phone,
       created_at: newUser.createdAt,
     });
 
@@ -72,6 +74,7 @@ class AuthSupabaseAPI {
         city: newUser.city,
         state: newUser.state,
         specialty: newUser.specialty,
+        phone: newUser.phone,
         created_at: newUser.createdAt,
       },
     ]);
