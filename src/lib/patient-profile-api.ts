@@ -207,24 +207,17 @@ class PatientProfileAPI {
           return resultData;
         }
       } catch (supabaseError) {
-        console.error(
-          "💥 Erro no Supabase dados pessoais:",
-          JSON.stringify(
-            {
-              message:
-                supabaseError instanceof Error
-                  ? supabaseError.message
-                  : "Unknown error",
-              stack:
-                supabaseError instanceof Error
-                  ? supabaseError.stack
-                  : undefined,
-              error: supabaseError,
-            },
-            null,
-            2,
-          ),
-        );
+        console.error("💥 Erro no Supabase dados pessoais:", {
+          message:
+            supabaseError instanceof Error
+              ? supabaseError.message
+              : "Unknown error",
+          name: supabaseError instanceof Error ? supabaseError.name : "Unknown",
+          stack:
+            supabaseError instanceof Error
+              ? supabaseError.stack?.split("\n")[0]
+              : undefined,
+        });
         // Continuar para fallback
       }
     } else {
@@ -354,7 +347,7 @@ class PatientProfileAPI {
           createdAt: user.createdAt || new Date().toISOString(),
         };
 
-        console.log("👨���⚕️ Médico mapeado:", doctor);
+        console.log("👨‍⚕️ Médico mapeado:", doctor);
         return doctor;
       });
     } catch (error) {
