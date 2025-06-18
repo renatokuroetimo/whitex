@@ -428,14 +428,32 @@ class PatientAPI {
             const sharedPatients = [];
 
             for (const share of sharedData) {
-              const userData = share.users;
+              console.log(`🔍 Processando compartilhamento:`, share);
 
-              // Buscar dados pessoais do paciente separadamente
-              const { data: personalData } = await supabase
+              // Buscar dados do usuário
+              const { data: userData, error: userError } = await supabase
+                .from("users")
+                .select("id, email, full_name")
+                .eq("id", share.patient_id)
+                .single();
+
+              if (userError) {
+                console.error(
+                  `❌ Erro ao buscar usuário ${share.patient_id}:`,
+                  userError,
+                );
+                continue;
+              }
+
+              // Buscar dados pessoais do paciente
+              const { data: personalDataArray } = await supabase
                 .from("patient_personal_data")
                 .select("*")
                 .eq("user_id", share.patient_id)
-                .maybeSingle();
+                .order("updated_at", { ascending: false })
+                .limit(1);
+
+              const personalData = personalDataArray?.[0];
 
               console.log(`👤 Dados do paciente ${share.patient_id}:`, {
                 userData,
