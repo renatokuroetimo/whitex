@@ -230,18 +230,18 @@ const PatientIndicators = () => {
                 </h3>
                 <p className="text-gray-600 mb-6">
                   {isViewingOtherPatient
-                    ? "Este paciente ainda não registrou nenhum indicador."
+                    ? "Este paciente ainda não registrou nenhum indicador de saúde."
                     : "Comece a registrar seus indicadores de saúde para acompanhar sua evolução e compartilhar com seus médicos."}
                 </p>
-                {!isViewingOtherPatient && (
-                  <Button
-                    onClick={handleAddIndicator}
-                    className="bg-green-600 hover:bg-green-700 text-white"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Registrar Primeiro Indicador
-                  </Button>
-                )}
+                <Button
+                  onClick={handleAddIndicator}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  {isViewingOtherPatient
+                    ? "Adicionar Indicador"
+                    : "Registrar Primeiro Indicador"}
+                </Button>
               </div>
             </div>
           ) : (
