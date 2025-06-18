@@ -266,11 +266,11 @@ class IndicatorAPI {
       console.log("🚀 Buscando indicadores no Supabase");
 
       try {
-        // Query específica com colunas que sabemos que existem
+        // Query específica com colunas que sabemos que existem + campos de obrigatoriedade
         const { data: supabaseIndicators, error } = await supabase
           .from("indicators")
           .select(
-            "id, name, unit, type, category, doctor_id, is_standard, created_at",
+            "id, name, unit, type, category, subcategory, parameter, unit_symbol, requires_date, requires_time, doctor_id, is_standard, created_at",
           )
           .eq("doctor_id", doctorId);
 
