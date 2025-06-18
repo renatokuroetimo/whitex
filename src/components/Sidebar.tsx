@@ -12,7 +12,8 @@ interface SidebarItem {
 }
 
 const getSidebarItems = (userProfession?: string): SidebarItem[] => {
-  const dashboardPath = userProfession === "paciente" ? "/patient-dashboard" : "/dashboard";
+  const dashboardPath =
+    userProfession === "paciente" ? "/patient-dashboard" : "/dashboard";
 
   const baseItems = [
     {
@@ -71,7 +72,12 @@ const Sidebar: React.FC = () => {
     const loadProfileImage = () => {
       if (user?.id) {
         const savedImage = localStorage.getItem(`profile_image_${user.id}`);
-        if (savedImage && savedImage !== "null" && savedImage !== "undefined" && savedImage.startsWith('data:')) {
+        if (
+          savedImage &&
+          savedImage !== "null" &&
+          savedImage !== "undefined" &&
+          savedImage.startsWith("data:")
+        ) {
           setProfileImage(savedImage);
         } else {
           setProfileImage(null);
@@ -89,7 +95,12 @@ const Sidebar: React.FC = () => {
     const handleStorageChange = () => {
       if (user?.id) {
         const savedImage = localStorage.getItem(`profile_image_${user.id}`);
-        if (savedImage && savedImage !== "null" && savedImage !== "undefined" && savedImage.startsWith('data:')) {
+        if (
+          savedImage &&
+          savedImage !== "null" &&
+          savedImage !== "undefined" &&
+          savedImage.startsWith("data:")
+        ) {
           setProfileImage(savedImage);
         } else {
           setProfileImage(null);
@@ -104,15 +115,21 @@ const Sidebar: React.FC = () => {
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('profileImageUpdated', handleProfileImageUpdate as EventListener);
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener(
+      "profileImageUpdated",
+      handleProfileImageUpdate as EventListener,
+    );
 
     // Também escutar mudanças locais
     const interval = setInterval(handleStorageChange, 2000);
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('profileImageUpdated', handleProfileImageUpdate as EventListener);
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener(
+        "profileImageUpdated",
+        handleProfileImageUpdate as EventListener,
+      );
       clearInterval(interval);
     };
   }, [user?.id]);
@@ -131,7 +148,8 @@ const Sidebar: React.FC = () => {
   };
 
   const sidebarItems = getSidebarItems(user?.profession);
-  const profilePath = user?.profession === "paciente" ? "/patient-profile" : "/profile";
+  const profilePath =
+    user?.profession === "paciente" ? "/patient-profile" : "/profile";
 
   return (
     <div className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col">
@@ -176,11 +194,22 @@ const Sidebar: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 p-4">
+        <ul className="space-y-2">
+          {sidebarItems.map((item) => {
+            const Icon = item.icon;
+            const active = isActive(item.path);
+
+            return (
+              <li key={item.id}>
+                <button
                   onClick={() => handleNavigation(item.path)}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
                     active
                       ? "bg-blue-50 text-blue-700 border border-blue-200"
-                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                   }`}
                 >
                   <Icon className="w-4 h-4" />
