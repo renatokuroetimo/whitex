@@ -673,6 +673,7 @@ const PatientProfile = () => {
                                 highBloodPressure: checked,
                               }))
                             }
+                            disabled={isViewingOtherPatient}
                           />
                         </div>
                       </div>
@@ -705,6 +706,7 @@ const PatientProfile = () => {
                                     : undefined,
                                 }))
                               }
+                              disabled={isViewingOtherPatient}
                             />
                           </div>
 
