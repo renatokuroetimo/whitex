@@ -265,7 +265,13 @@ const ProfilePage: React.FC = () => {
       const result = e.target?.result as string;
       if (result && user?.id) {
         setProfileImage(result);
-        localStorage.setItem(`profile_image_${user.id}`, result);
+
+        // Salvar no Supabase
+        try {
+          await profileImageAPI.saveProfileImage(user.id, result);
+        } catch (saveError) {
+          console.warn("Erro ao salvar imagem no Supabase:", saveError);
+        }
 
         // Dispatch custom event to notify sidebar
         window.dispatchEvent(
