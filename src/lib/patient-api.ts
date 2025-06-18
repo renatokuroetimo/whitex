@@ -803,10 +803,124 @@ class PatientAPI {
   ): Promise<Patient | null> {
     await this.delay(500);
 
+    console.log("🔄 updatePatient chamado para ID:", id);
+    console.log("🔄 Dados para atualizar:", data);
+
+    // Se Supabase estiver ativo, usar Supabase
+    if (isFeatureEnabled("useSupabasePatients") && supabase) {
+      console.log("🚀 Atualizando paciente no Supabase");
+
+      try {
+        // Converter dados para formato Supabase
+        const updateData: any = {
+          updated_at: new Date().toISOString(),
+        };
+
+        if (data.name !== undefined) updateData.name = data.name;
+        if (data.age !== undefined) updateData.age = data.age;
+        if (data.city !== undefined) updateData.city = data.city;
+        if (data.state !== undefined) updateData.state = data.state;
+        if (data.weight !== undefined) updateData.weight = data.weight;
+        if (data.status !== undefined) updateData.status = data.status;
+        if (data.notes !== undefined) updateData.notes = data.notes;
+
+        console.log("📝 Dados convertidos para Supabase:", updateData);
+
+        const { data: updatedPatient, error } = await supabase
+          .from("patients")
+          .update(updateData)
+          .eq("id", id)
+          .select()
+          .single();
+
+        console.log("📊 Resposta do Supabase update:", {
+          data: updatedPatient,
+          error,
+        });
+
+        if (error) {
+          console.error(
+            "❌ Erro ao atualizar paciente no Supabase:",
+            JSON.stringify(
+              {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+              },
+              null,
+              2,
+            ),
+          );
+          throw error; // Forçar fallback
+        }
+
+        if (updatedPatient) {
+          // Converter dados do Supabase para formato local
+          const patient: Patient = {
+            id: updatedPatient.id,
+            name: updatedPatient.name,
+            age: updatedPatient.age,
+            city: updatedPatient.city,
+            state: updatedPatient.state,
+            weight: updatedPatient.weight,
+            status: updatedPatient.status || "ativo",
+            notes: updatedPatient.notes,
+            doctorId: updatedPatient.doctor_id,
+            createdAt: updatedPatient.created_at,
+            updatedAt: updatedPatient.updated_at,
+          };
+
+          console.log("✅ Paciente atualizado no Supabase:", patient);
+
+          // Sincronizar com localStorage também
+          try {
+            const patients = this.getStoredPatients();
+            const index = patients.findIndex((p) => p.id === id);
+            if (index !== -1) {
+              patients[index] = patient;
+              this.savePatients(patients);
+              console.log("✅ Sincronizado com localStorage");
+            }
+          } catch (syncError) {
+            console.warn("⚠️ Erro ao sincronizar com localStorage:", syncError);
+          }
+
+          return patient;
+        }
+      } catch (supabaseError) {
+        console.error(
+          "💥 Erro no Supabase updatePatient:",
+          JSON.stringify(
+            {
+              message:
+                supabaseError instanceof Error
+                  ? supabaseError.message
+                  : "Unknown error",
+              stack:
+                supabaseError instanceof Error
+                  ? supabaseError.stack
+                  : undefined,
+              error: supabaseError,
+            },
+            null,
+            2,
+          ),
+        );
+        // Continuar para fallback localStorage
+      }
+    }
+
+    console.log("⚠️ Usando localStorage fallback para updatePatient");
+
+    // Fallback para localStorage
     const patients = this.getStoredPatients();
     const index = patients.findIndex((p) => p.id === id);
 
-    if (index === -1) return null;
+    if (index === -1) {
+      console.log("❌ Paciente não encontrado no localStorage");
+      return null;
+    }
 
     patients[index] = {
       ...patients[index],
@@ -815,6 +929,7 @@ class PatientAPI {
     };
 
     this.savePatients(patients);
+    console.log("✅ Paciente atualizado no localStorage:", patients[index]);
     return patients[index];
   }
 
