@@ -32,6 +32,19 @@ const PatientIndicators = () => {
     }
   }, [user, patientId]);
 
+  // Recarregar quando a página ganha foco (útil para quando volta de outras páginas)
+  useEffect(() => {
+    const handleFocus = () => {
+      if (user?.id) {
+        console.log("🔄 Página ganhou foco - recarregando indicadores");
+        loadIndicators();
+      }
+    };
+
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, [user?.id]);
+
   const loadIndicators = async () => {
     if (!user?.id) return;
 
