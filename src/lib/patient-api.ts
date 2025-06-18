@@ -1114,30 +1114,13 @@ class PatientAPI {
             2,
           ),
         );
-        // Continuar para fallback localStorage
+        throw supabaseError; // Falhar sem fallback
       }
     }
 
-    console.log("⚠️ Usando localStorage fallback para updatePatient");
-
-    // Fallback para localStorage
-    const patients = this.getStoredPatients();
-    const index = patients.findIndex((p) => p.id === id);
-
-    if (index === -1) {
-      console.log("❌ Paciente não encontrado no localStorage");
-      return null;
-    }
-
-    patients[index] = {
-      ...patients[index],
-      ...data,
-      updatedAt: new Date().toISOString(),
-    };
-
-    this.savePatients(patients);
-    console.log("✅ Paciente atualizado no localStorage:", patients[index]);
-    return patients[index];
+    throw new Error(
+      "Não foi possível atualizar paciente - Supabase não disponível",
+    );
   }
 
   // Buscar paciente por ID
