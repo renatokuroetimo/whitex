@@ -417,8 +417,7 @@ const DoctorSearch = () => {
                   {selectedDoctor.name}
                 </h4>
                 <p className="text-sm text-gray-600">
-                  {selectedDoctor.specialty} • CRM:{" "}
-                  {formatCRM(selectedDoctor.crm, selectedDoctor.state)}
+                  CRM: {formatCRM(selectedDoctor.crm, selectedDoctor.state)}
                 </p>
               </div>
             )}
