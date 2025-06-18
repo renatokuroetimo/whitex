@@ -341,8 +341,8 @@ class IndicatorAPI {
 
     return newIndicator;
   }
-  }
 
+  async deleteIndicator(id: string): Promise<void> {
   async deleteIndicator(id: string): Promise<void> {
     await this.delay(300);
     const indicators = this.getStoredIndicators();
