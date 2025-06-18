@@ -8,6 +8,7 @@ export interface User {
   city?: string;
   state?: string;
   specialty?: string;
+  phone?: string;
   profileImage?: string;
   createdAt: string;
 }
@@ -32,6 +33,7 @@ export interface RegisterData {
   city?: string;
   state?: string;
   specialty?: string;
+  phone?: string;
 }
 
 export interface ApiResponse<T = any> {
