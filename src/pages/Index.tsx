@@ -20,11 +20,25 @@ const Index = () => {
     }
   };
 
+  const handleBack = () => {
+    navigate("/login");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Header with back arrow */}
+      <div className="p-4">
+        <button
+          onClick={handleBack}
+          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+        >
+          <ArrowLeft className="h-5 w-5 text-gray-600" />
+        </button>
+      </div>
+
       {/* Header with WhiteX branding */}
       <div className="p-4 sm:p-6 text-center">
-        <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-14">
+        <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-8">
           WhiteX
         </h1>
       </div>
