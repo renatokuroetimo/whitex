@@ -21,6 +21,7 @@ const PatientIndicators = () => {
   const navigate = useNavigate();
   const { patientId } = useParams();
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [indicators, setIndicators] = useState<PatientIndicatorValue[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
