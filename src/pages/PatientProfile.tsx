@@ -729,6 +729,7 @@ const PatientProfile = () => {
                                     exerciseFrequency: value,
                                   }))
                                 }
+                                disabled={isViewingOtherPatient}
                               >
                                 <SelectTrigger className="mt-1">
                                   <SelectValue placeholder="Selecione a frequência" />
@@ -766,6 +767,7 @@ const PatientProfile = () => {
                                 healthyDiet: checked,
                               }))
                             }
+                            disabled={isViewingOtherPatient}
                           />
                         </div>
                       </div>
@@ -966,7 +968,7 @@ const PatientProfile = () => {
               <div className="p-3 bg-gray-50 rounded-lg">
                 <p className="font-medium">{selectedDoctor.name}</p>
                 <p className="text-sm text-gray-600">
-                  {selectedDoctor.specialty} • CRM: {selectedDoctor.crm}-
+                  {selectedDoctor.specialty} �� CRM: {selectedDoctor.crm}-
                   {selectedDoctor.state}
                 </p>
               </div>
