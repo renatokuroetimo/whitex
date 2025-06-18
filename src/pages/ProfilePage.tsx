@@ -52,7 +52,7 @@ const ProfilePage: React.FC = () => {
         crm: user.crm || "",
         state: user.state || "",
         city: user.city || "",
-        phone: "", // Will be loaded from Supabase
+        phone: user.phone || "", // Carregar telefone do contexto
         email: user.email || "",
       });
 
@@ -202,7 +202,7 @@ const ProfilePage: React.FC = () => {
         crm: user.crm || "",
         state: user.state || "",
         city: user.city || "",
-        phone: "", // Will be loaded from Supabase
+        phone: user.phone || "",
         email: user.email || "",
       });
 
