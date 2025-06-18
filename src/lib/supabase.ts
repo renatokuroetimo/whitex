@@ -15,23 +15,9 @@ if (!import.meta.env.VITE_SUPABASE_URL) {
 // Cliente Supabase (sempre disponível agora)
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Verificar se Supabase está disponível com teste de conectividade
-export const isSupabaseAvailable = async (): Promise<boolean> => {
-  try {
-    if (!supabase || !supabaseUrl || !supabaseAnonKey) {
-      return false;
-    }
-
-    // Teste básico de conectividade usando uma tabela que sabemos que existe
-    const { error } = await supabase.from("users").select("id").limit(0);
-
-    // Se não houve erro de conectividade/auth, consideramos disponível
-    // Erros de tabela são normais se não existir, mas conexão está OK
-    return !error || error.code !== "PGRST301"; // PGRST301 = connection failed
-  } catch (error) {
-    console.warn("Supabase connection test failed:", error);
-    return false;
-  }
+// Verificar se Supabase está disponível (sem teste de rede)
+export const isSupabaseAvailable = (): boolean => {
+  return !!supabase && !!supabaseUrl && !!supabaseAnonKey;
 };
 
 // Versão síncrona para uso imediato (sem teste de rede)
