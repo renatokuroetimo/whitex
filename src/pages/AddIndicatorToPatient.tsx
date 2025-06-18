@@ -174,12 +174,8 @@ const AddIndicatorToPatient = () => {
         description: "Indicador adicionado com sucesso",
       });
 
-      // Redirecionar para a lista de indicadores do paciente e forçar recarregamento
-      navigate(`/pacientes/${patientId}/indicadores`, { replace: true });
-      // Pequeno delay para garantir que a navegação aconteceu
-      setTimeout(() => {
-        window.location.reload();
-      }, 100);
+      // Redirecionar para a lista de indicadores do paciente
+      navigate(`/pacientes/${patientId}/indicadores`);
     } catch (error) {
       toast({
         variant: "destructive",
