@@ -548,6 +548,7 @@ const PatientProfile = () => {
                           }))
                         }
                         placeholder="Nome do plano de saúde (opcional)"
+                        disabled={isViewingOtherPatient}
                       />
                     </div>
                   </div>
