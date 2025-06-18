@@ -586,6 +586,62 @@ class IndicatorAPI {
     return indicators.filter((ind) => ind.visible);
   }
 
+  // Garantir que indicadores padrão existam no Supabase
+  private async ensureStandardIndicatorsInSupabase(): Promise<void> {
+    if (!isFeatureEnabled("useSupabaseIndicators") || !supabase) {
+      return;
+    }
+
+    console.log("🔄 Verificando indicadores padrão no Supabase...");
+
+    try {
+      const standardIndicators = await this.getStandardIndicators();
+
+      for (const indicator of standardIndicators) {
+        // Verificar se o indicador já existe
+        const { data: existing } = await supabase
+          .from("indicators")
+          .select("id")
+          .eq("id", indicator.id)
+          .single();
+
+        if (!existing) {
+          console.log(
+            `📝 Inserindo indicador padrão ${indicator.id} no Supabase`,
+          );
+
+          const insertData = {
+            id: indicator.id,
+            name: indicator.parameter,
+            unit: indicator.unitSymbol,
+            type: "numeric",
+            category: indicator.categoryName,
+            doctor_id: null, // Indicadores padrão não pertencem a um médico específico
+            is_standard: true,
+            created_at: new Date().toISOString(),
+          };
+
+          const { error } = await supabase
+            .from("indicators")
+            .insert([insertData]);
+
+          if (error) {
+            console.error(
+              `❌ Erro ao inserir indicador padrão ${indicator.id}:`,
+              error,
+            );
+          } else {
+            console.log(
+              `✅ Indicador padrão ${indicator.id} inserido com sucesso`,
+            );
+          }
+        }
+      }
+    } catch (error) {
+      console.error("💥 Erro ao verificar indicadores padrão:", error);
+    }
+  }
+
   // Método para limpar todos os dados (útil para testes)
   clearAllData(): void {
     localStorage.removeItem(this.STORAGE_KEYS.CATEGORIES);
