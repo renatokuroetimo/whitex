@@ -325,7 +325,13 @@ const PatientProfile = () => {
       const result = e.target?.result as string;
       if (result) {
         setProfileImage(result);
-        localStorage.setItem(`profile_image_${user.id}`, result);
+
+        // Salvar no Supabase
+        try {
+          await profileImageAPI.saveProfileImage(user.id, result);
+        } catch (saveError) {
+          console.warn("Erro ao salvar imagem no Supabase:", saveError);
+        }
 
         // Dispatch custom event to notify other components
         window.dispatchEvent(
