@@ -83,26 +83,42 @@ const PatientDetailView = () => {
   };
 
   const getPatientAge = () => {
-    if (!personalData?.birthDate) return "N/A";
+    // Try personal data first, then fall back to patient age
+    if (personalData?.birthDate) {
+      const today = new Date();
+      const birthDate = new Date(personalData.birthDate);
+      const age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
 
-    const today = new Date();
-    const birthDate = new Date(personalData.birthDate);
-    const age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < birthDate.getDate())
-    ) {
-      return age - 1;
+      if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < birthDate.getDate())
+      ) {
+        return age - 1;
+      }
+      return age;
     }
 
-    return age;
+    // Fall back to patient.age if available
+    if (patient?.age) {
+      return patient.age;
+    }
+
+    return "N/A";
   };
 
   const getPatientLocation = () => {
-    if (!personalData?.city || !personalData?.state) return "N/A";
-    return `${personalData.city}-${personalData.state}`;
+    // Try personal data first, then fall back to patient city/state
+    if (personalData?.city && personalData?.state) {
+      return `${personalData.city}-${personalData.state}`;
+    }
+
+    // Fall back to patient location
+    if (patient?.city && patient?.state) {
+      return `${patient.city}-${patient.state}`;
+    }
+
+    return "N/A";
   };
 
   const getPatientInitial = () => {
