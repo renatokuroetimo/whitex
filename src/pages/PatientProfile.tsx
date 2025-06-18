@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Camera, User, Plus, Search, Share2, X } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,6 @@ import { toast } from "@/hooks/use-toast";
 const PatientProfile = () => {
   const { user, deleteAccount } = useAuth();
   const navigate = useNavigate();
-  const { id: patientId } = useParams();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Estados gerais
@@ -324,17 +323,8 @@ const PatientProfile = () => {
     );
   }
 
-  // Determinar se é visualização de médico ou do próprio paciente
-  const isViewingOtherPatient = patientId && user?.profession === "medico";
-  const isOwnProfile = !patientId && user?.profession === "paciente";
-
-  // Redirecionar se acesso inválido
-  if (!isViewingOtherPatient && !isOwnProfile) {
-    if (user?.profession === "medico") {
-      navigate("/pacientes");
-    } else {
-      navigate("/patient-dashboard");
-    }
+  if (user.profession !== "paciente") {
+    navigate("/dashboard");
     return null;
   }
 
