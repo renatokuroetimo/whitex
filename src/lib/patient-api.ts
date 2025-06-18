@@ -895,12 +895,17 @@ class PatientAPI {
           }
 
           if (sharedCheck) {
+            console.log("📝 ===== PACIENTE COMPARTILHADO DETECTADO =====");
+            console.log("📝 Dados do sharedCheck:", sharedCheck);
+            console.log("📝 data.notes valor:", data.notes);
             console.log(
-              "📝 Paciente compartilhado - salvando observações médicas",
+              "📝 data.notes !== undefined:",
+              data.notes !== undefined,
             );
 
             // Para pacientes compartilhados, salvar observações na tabela medical_notes
             if (data.notes !== undefined) {
+              console.log("🚀 ===== INICIANDO SALVAMENTO DE OBSERVAÇÕES =====");
               // Obter o ID do médico atual (precisamos passar isso do contexto)
               // Por enquanto, vamos usar o localStorage para pegar o usuário atual
               const currentUserStr = localStorage.getItem(
