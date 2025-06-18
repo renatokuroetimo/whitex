@@ -45,6 +45,7 @@ const PatientProfile = () => {
   // Estados dos dados pessoais
   const [personalData, setPersonalData] = useState<PatientPersonalFormData>({
     fullName: "",
+    email: "",
     birthDate: "",
     gender: "masculino",
     state: "",
@@ -105,12 +106,19 @@ const PatientProfile = () => {
       if (personal) {
         setPersonalData({
           fullName: personal.fullName,
+          email: personal.email || user?.email || "",
           birthDate: personal.birthDate,
           gender: personal.gender,
           state: personal.state,
           city: personal.city,
           healthPlan: personal.healthPlan || "",
         });
+      } else if (user?.email) {
+        // Se não há dados pessoais salvos, usar email do usuário atual
+        setPersonalData((prev) => ({
+          ...prev,
+          email: user.email,
+        }));
       }
 
       if (medical) {
