@@ -3,10 +3,10 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import Sidebar from "../Sidebar";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextHybrid";
 
 // Mock do useAuth
-vi.mock("@/contexts/AuthContext", () => ({
+vi.mock("@/contexts/AuthContextHybrid", () => ({
   useAuth: vi.fn(),
 }));
 
