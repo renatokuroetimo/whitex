@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS patient_personal_data (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
   full_name TEXT,
+  email TEXT,
   birth_date DATE,
   gender TEXT CHECK (gender IN ('masculino', 'feminino', 'outro')),
   state TEXT,
