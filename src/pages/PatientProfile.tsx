@@ -302,7 +302,7 @@ const PatientProfile = () => {
     if (!user?.id) return;
 
     try {
-      await patientProfileAPI.removeDoctorSharing(user.id, doctorId);
+      await patientProfileAPI.stopSharingWithDoctor(user.id, doctorId);
       setSharedDoctors((prev) => prev.filter((d) => d.id !== doctorId));
       toast({
         title: "Sucesso",
