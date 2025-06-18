@@ -11,84 +11,122 @@ interface SidebarItem {
   path: string;
 }
 
-const getSidebarItems = (userProfession?: string): SidebarItem[] => {
-  // Garantir que o tipo de usuário seja válido
-  const profession = userProfession?.toLowerCase();
-
-  console.log("🔍 Sidebar Debug - Profession:", profession);
-
-  if (profession === "medico") {
-    return [
-      {
-        id: "inicio",
-        label: "Início",
-        icon: Home,
-        path: "/dashboard",
-      },
-      {
-        id: "pacientes",
-        label: "Pacientes",
-        icon: Users,
-        path: "/pacientes",
-      },
-      {
-        id: "indicadores",
-        label: "Indicadores",
-        icon: BarChart3,
-        path: "/indicadores",
-      },
-    ];
-  } else if (profession === "paciente") {
-    return [
-      {
-        id: "inicio",
-        label: "Início",
-        icon: Home,
-        path: "/patient-dashboard",
-      },
-      {
-        id: "meus-dados",
-        label: "Dados pessoais",
-        icon: Users,
-        path: "/patient-profile",
-      },
-      {
-        id: "meus-indicadores",
-        label: "Indicadores",
-        icon: BarChart3,
-        path: "/patient/indicadores",
-      },
-    ];
-  }
-
-  // Fallback caso não haja profissão definida
-  return [
-    {
-      id: "inicio",
-      label: "Início",
-      icon: Home,
-      path: "/",
-    },
-  ];
-};
-
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { logout, user } = useAuth();
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [forceRefresh, setForceRefresh] = useState(0);
 
-  // Debug do usuário atual
+  // Função para obter dados do usuário diretamente do localStorage como fallback
+  const getUserFromStorage = () => {
+    try {
+      const stored = localStorage.getItem("medical_app_current_user");
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  };
+
+  // Usar dados do contexto ou fallback para localStorage
+  const currentUser = user || getUserFromStorage();
+
+  // Debug detalhado
   useEffect(() => {
-    console.log("🔍 Sidebar Debug - User:", user);
-    console.log("🔍 Sidebar Debug - Current path:", location.pathname);
-  }, [user, location.pathname]);
+    console.log("🔍 === SIDEBAR DEBUG COMPLETO ===");
+    console.log("🔍 User from context:", user);
+    console.log("🔍 User from storage:", getUserFromStorage());
+    console.log("🔍 Current user used:", currentUser);
+    console.log("🔍 Current path:", location.pathname);
+    console.log("🔍 Force refresh counter:", forceRefresh);
+    console.log("🔍 ================================");
+  }, [user, currentUser, location.pathname, forceRefresh]);
+
+  // Força refresh se houver inconsistência
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setForceRefresh((prev) => prev + 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Função para obter itens da sidebar baseado na profissão
+  const getSidebarItems = (userProfession?: string): SidebarItem[] => {
+    const profession = userProfession?.toLowerCase().trim();
+
+    console.log("🔍 Getting sidebar items for profession:", profession);
+
+    if (profession === "medico") {
+      const items = [
+        {
+          id: "inicio",
+          label: "Início",
+          icon: Home,
+          path: "/dashboard",
+        },
+        {
+          id: "pacientes",
+          label: "Pacientes",
+          icon: Users,
+          path: "/pacientes",
+        },
+        {
+          id: "indicadores",
+          label: "Indicadores",
+          icon: BarChart3,
+          path: "/indicadores",
+        },
+      ];
+      console.log("🔍 Returning MEDICO items:", items);
+      return items;
+    }
+
+    if (profession === "paciente") {
+      const items = [
+        {
+          id: "inicio",
+          label: "Início",
+          icon: Home,
+          path: "/patient-dashboard",
+        },
+        {
+          id: "meus-dados",
+          label: "Dados pessoais",
+          icon: Users,
+          path: "/patient-profile",
+        },
+        {
+          id: "meus-indicadores",
+          label: "Indicadores",
+          icon: BarChart3,
+          path: "/patient/indicadores",
+        },
+      ];
+      console.log("🔍 Returning PACIENTE items:", items);
+      return items;
+    }
+
+    // Fallback
+    const fallbackItems = [
+      {
+        id: "inicio",
+        label: "Início",
+        icon: Home,
+        path: "/",
+      },
+    ];
+    console.log("🔍 Returning FALLBACK items:", fallbackItems);
+    return fallbackItems;
+  };
 
   // Carregar imagem de perfil do localStorage
   useEffect(() => {
     const loadProfileImage = () => {
-      if (user?.id) {
-        const savedImage = localStorage.getItem(`profile_image_${user.id}`);
+      if (currentUser?.id) {
+        const savedImage = localStorage.getItem(
+          `profile_image_${currentUser.id}`,
+        );
         if (
           savedImage &&
           savedImage !== "null" &&
@@ -105,13 +143,15 @@ const Sidebar: React.FC = () => {
     };
 
     loadProfileImage();
-  }, [user?.id]);
+  }, [currentUser?.id]);
 
   // Escutar mudanças na imagem de perfil
   useEffect(() => {
     const handleStorageChange = () => {
-      if (user?.id) {
-        const savedImage = localStorage.getItem(`profile_image_${user.id}`);
+      if (currentUser?.id) {
+        const savedImage = localStorage.getItem(
+          `profile_image_${currentUser.id}`,
+        );
         if (
           savedImage &&
           savedImage !== "null" &&
@@ -125,9 +165,8 @@ const Sidebar: React.FC = () => {
       }
     };
 
-    // Listen for custom event when profile image is updated
     const handleProfileImageUpdate = (event: CustomEvent) => {
-      if (event.detail.userId === user?.id) {
+      if (event.detail.userId === currentUser?.id) {
         handleStorageChange();
       }
     };
@@ -138,7 +177,6 @@ const Sidebar: React.FC = () => {
       handleProfileImageUpdate as EventListener,
     );
 
-    // Também escutar mudanças locais
     const interval = setInterval(handleStorageChange, 2000);
 
     return () => {
@@ -149,10 +187,10 @@ const Sidebar: React.FC = () => {
       );
       clearInterval(interval);
     };
-  }, [user?.id]);
+  }, [currentUser?.id]);
 
   const handleNavigation = (path: string) => {
-    console.log("🔍 Sidebar Debug - Navigating to:", path);
+    console.log("🔍 Navigating to:", path);
     navigate(path);
   };
 
@@ -163,15 +201,13 @@ const Sidebar: React.FC = () => {
 
   const isActive = (path: string) => {
     const isMatch = location.pathname === path;
-    console.log(
-      `🔍 Sidebar Debug - isActive check: ${path} === ${location.pathname} = ${isMatch}`,
-    );
+    console.log(`🔍 isActive: ${path} === ${location.pathname} = ${isMatch}`);
     return isMatch;
   };
 
-  // Garantir que o usuário esteja carregado antes de renderizar os itens
-  if (!user) {
-    console.log("🔍 Sidebar Debug - No user found, showing loading...");
+  // Se não há usuário, mostrar loading
+  if (!currentUser) {
+    console.log("🔍 No user found, showing loading...");
     return (
       <div className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col">
         <div className="p-6 border-b border-gray-200">
@@ -189,12 +225,12 @@ const Sidebar: React.FC = () => {
     );
   }
 
-  const sidebarItems = getSidebarItems(user.profession);
+  const sidebarItems = getSidebarItems(currentUser.profession);
   const profilePath =
-    user.profession === "paciente" ? "/patient-profile" : "/profile";
+    currentUser.profession === "paciente" ? "/patient-profile" : "/profile";
 
-  console.log("🔍 Sidebar Debug - Sidebar items:", sidebarItems);
-  console.log("🔍 Sidebar Debug - Profile path:", profilePath);
+  console.log("🔍 Final sidebar items:", sidebarItems);
+  console.log("🔍 Profile path:", profilePath);
 
   return (
     <div className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col">
@@ -220,8 +256,10 @@ const Sidebar: React.FC = () => {
                   className="w-full h-full object-cover"
                   onError={() => {
                     setProfileImage(null);
-                    if (user?.id) {
-                      localStorage.removeItem(`profile_image_${user.id}`);
+                    if (currentUser?.id) {
+                      localStorage.removeItem(
+                        `profile_image_${currentUser.id}`,
+                      );
                     }
                   }}
                 />
@@ -247,6 +285,10 @@ const Sidebar: React.FC = () => {
             const Icon = item.icon;
             const active = isActive(item.path);
 
+            console.log(
+              `🔍 Rendering item: ${item.label} (${item.path}) - Active: ${active}`,
+            );
+
             return (
               <li key={item.id}>
                 <button
@@ -265,6 +307,16 @@ const Sidebar: React.FC = () => {
           })}
         </ul>
       </nav>
+
+      {/* Debug info (only in development) */}
+      {process.env.NODE_ENV === "development" && (
+        <div className="p-2 border-t border-red-200 bg-red-50 text-xs text-red-600">
+          <div>User: {currentUser.email}</div>
+          <div>Profession: {currentUser.profession}</div>
+          <div>Path: {location.pathname}</div>
+          <div>Items: {sidebarItems.length}</div>
+        </div>
+      )}
 
       {/* Logout */}
       <div className="p-4 border-t border-gray-200">
