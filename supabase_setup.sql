@@ -13,6 +13,10 @@ CREATE TABLE IF NOT EXISTS users (
   email TEXT UNIQUE NOT NULL,
   profession TEXT NOT NULL CHECK (profession IN ('medico', 'paciente')),
   crm TEXT, -- Apenas para médicos
+  full_name TEXT, -- Nome completo do usuário
+  city TEXT, -- Cidade do usuário
+  state TEXT, -- Estado do usuário (UF)
+  specialty TEXT, -- Especialidade médica (apenas para médicos)
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
