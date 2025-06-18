@@ -113,7 +113,11 @@ const Sidebar: React.FC = () => {
   };
 
   const isActive = (path: string) => {
-    return location.pathname === path;
+    const isPathActive = location.pathname === path;
+    console.log(
+      `Checking if ${path} is active. Current: ${location.pathname}, Active: ${isPathActive}`,
+    );
+    return isPathActive;
   };
 
   const sidebarItems = getSidebarItems(user?.profession);
