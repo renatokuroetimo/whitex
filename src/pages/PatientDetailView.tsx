@@ -323,7 +323,8 @@ const PatientDetailView = () => {
                         cm
                       </p>
                       <p>
-                        <strong>Peso:</strong> {personalData?.weight || "N/A"}kg
+                        <strong>Peso:</strong>{" "}
+                        {patient?.weight || personalData?.weight || "N/A"}kg
                       </p>
                     </div>
                   </div>
@@ -337,14 +338,16 @@ const PatientDetailView = () => {
                     </p>
                   </div>
 
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-900 mb-1">
-                      Nota
-                    </h4>
-                    <p className="text-sm text-gray-600">
-                      Paciente precisa ficar em repouso.
-                    </p>
-                  </div>
+                  {(patient?.notes || personalData?.notes) && (
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-900 mb-1">
+                        Nota
+                      </h4>
+                      <p className="text-sm text-gray-600">
+                        {patient?.notes || personalData?.notes}
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <Button
