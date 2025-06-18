@@ -206,6 +206,10 @@ const CreateIndicator = () => {
     setIsLoading(true);
 
     try {
+      console.log("🎯 === CRIANDO INDICADOR ===");
+      console.log("🔍 FormData enviado:", formData);
+      console.log("🔍 User ID:", user.id);
+
       await indicatorAPI.createIndicator(user.id, formData);
       toast({
         title: "Sucesso",
