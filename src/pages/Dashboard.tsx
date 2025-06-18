@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextHybrid";
 import { useNavigate } from "react-router-dom";
 import MobileLayout from "@/components/MobileLayout";
 

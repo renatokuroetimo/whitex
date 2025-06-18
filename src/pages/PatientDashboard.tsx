@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Plus, Activity, TrendingUp, Calendar, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextHybrid";
 import { patientIndicatorAPI } from "@/lib/patient-indicator-api";
 import { PatientIndicatorValue } from "@/lib/patient-indicator-types";
 import MobileLayout from "@/components/MobileLayout";
