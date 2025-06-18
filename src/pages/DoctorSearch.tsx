@@ -29,7 +29,8 @@ const DoctorSearch = () => {
 
   useEffect(() => {
     if (user?.id && user.profession === "paciente") {
-      // Load registered doctors and shared doctors
+      // Clear any existing mock data and load only registered doctors
+      patientProfileAPI.clearDoctorsData();
       patientProfileAPI.loadRegisteredDoctors().then(() => {
         loadSharedDoctors();
       });
@@ -374,22 +375,31 @@ const DoctorSearch = () => {
                   <Search className="w-8 h-8 text-blue-600" />
                 </div>
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  Busque por Médicos
+                  Busque por Médicos Cadastrados
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  Use o campo de busca acima para encontrar médicos pelo nome ou
-                  CRM-UF
+                  Apenas médicos que se cadastraram no sistema aparecerão na
+                  busca. Use o campo acima para encontrar médicos pelo nome ou
+                  CRM-UF.
                 </p>
-                <div className="max-w-md mx-auto text-left">
-                  <h4 className="text-sm font-medium text-gray-900 mb-2">
-                    Exemplos de busca:
-                  </h4>
-                  <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• João Silva</li>
-                    <li>• Dr. Maria Santos</li>
-                    <li>• 123456-SP</li>
-                    <li>• 987654-RJ</li>
-                  </ul>
+                <div className="max-w-md mx-auto">
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                    <p className="text-sm text-yellow-800">
+                      <strong>Importante:</strong> Médicos precisam se cadastrar
+                      primeiro no sistema para aparecerem na busca.
+                    </p>
+                  </div>
+                  <div className="text-left">
+                    <h4 className="text-sm font-medium text-gray-900 mb-2">
+                      Como buscar:
+                    </h4>
+                    <ul className="text-sm text-gray-600 space-y-1">
+                      <li>• Nome completo ou parcial</li>
+                      <li>• Número do CRM</li>
+                      <li>• CRM com estado (ex: 123456-SP)</li>
+                      <li>• Especialidade médica</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             )}
