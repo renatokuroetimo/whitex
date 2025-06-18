@@ -322,7 +322,7 @@ const PatientProfile = () => {
     );
   }
 
-  // Determinar se é visualização de médico ou do próprio paciente
+  // Determinar se �� visualização de médico ou do próprio paciente
   const isViewingOtherPatient = patientId && user?.profession === "medico";
   const isOwnProfile = !patientId && user?.profession === "paciente";
 
@@ -550,13 +550,15 @@ const PatientProfile = () => {
 
                   <div className="flex justify-end gap-3 mt-8">
                     <Button variant="outline">Cancelar</Button>
-                    <Button
-                      onClick={handlePersonalDataSave}
-                      disabled={isLoading}
-                      className="bg-blue-600 hover:bg-blue-700"
-                    >
-                      {isLoading ? "Salvando..." : "Salvar"}
-                    </Button>
+                    {!isViewingOtherPatient && (
+                      <Button
+                        onClick={handlePersonalDataSave}
+                        disabled={isLoading}
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        {isLoading ? "Salvando..." : "Salvar"}
+                      </Button>
+                    )}
                   </div>
                 </div>
               </TabsContent>
@@ -762,13 +764,15 @@ const PatientProfile = () => {
 
                   <div className="flex justify-end gap-3 mt-8">
                     <Button variant="outline">Cancelar</Button>
-                    <Button
-                      onClick={handleMedicalDataSave}
-                      disabled={isLoading}
-                      className="bg-blue-600 hover:bg-blue-700"
-                    >
-                      {isLoading ? "Salvando..." : "Salvar"}
-                    </Button>
+                    {!isViewingOtherPatient && (
+                      <Button
+                        onClick={handleMedicalDataSave}
+                        disabled={isLoading}
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        {isLoading ? "Salvando..." : "Salvar"}
+                      </Button>
+                    )}
                   </div>
                 </div>
               </TabsContent>
