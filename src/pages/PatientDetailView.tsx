@@ -33,11 +33,12 @@ const PatientDetailView = () => {
 
     setIsLoading(true);
     try {
-      // Carregar dados básicos do paciente
-      const patients = await patientAPI.getPatients(user.id);
-      const foundPatient = patients.patients.find((p) => p.id === patientId);
+      // Carregar dados básicos do paciente (usando getPatientById para incluir observações médicas)
+      console.log("🔍 Carregando dados do paciente ID:", patientId);
+      const foundPatient = await patientAPI.getPatientById(patientId);
 
       if (foundPatient) {
+        console.log("✅ Paciente carregado com observações:", foundPatient);
         setPatient(foundPatient);
 
         // Carregar dados pessoais detalhados
