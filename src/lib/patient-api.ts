@@ -1234,36 +1234,56 @@ class PatientAPI {
 
             let medicalNotes = "";
             if (currentUser?.id) {
-              console.log("🔍 Buscando observações médicas para:", {
-                patient_id: id,
-                doctor_id: currentUser.id,
+              console.log("🔍 ===== BUSCANDO OBSERVAÇÕES MÉDICAS =====");
+              console.log("🔍 Patient ID:", id, typeof id);
+              console.log(
+                "🔍 Doctor ID:",
+                currentUser.id,
+                typeof currentUser.id,
+              );
+
+              // Primeiro, verificar se há dados na tabela
+              const { data: allNotes, error: allNotesError } = await supabase
+                .from("medical_notes")
+                .select("*")
+                .limit(5);
+
+              console.log("📋 Todas as observações na tabela (amostra):", {
+                data: allNotes,
+                error: allNotesError,
               });
 
+              // Agora buscar especificamente para este paciente/médico
               const { data: noteData, error: noteError } = await supabase
                 .from("medical_notes")
-                .select("notes, updated_at")
+                .select("notes, updated_at, patient_id, doctor_id")
                 .eq("patient_id", id)
                 .eq("doctor_id", currentUser.id)
                 .order("updated_at", { ascending: false })
-                .maybeSingle();
+                .limit(1);
 
-              console.log("📊 Resultado da busca de observações:", {
+              console.log("📊 Resultado da busca específica:", {
                 data: noteData,
                 error: noteError,
               });
 
-              if (noteError && noteError.code !== "PGRST116") {
+              if (noteError) {
                 console.error(
                   "❌ Erro ao buscar observações médicas:",
                   noteError,
                 );
-              } else if (noteData) {
-                medicalNotes = noteData.notes;
-                console.log("📋 Observações médicas carregadas:", medicalNotes);
+              } else if (noteData && noteData.length > 0) {
+                medicalNotes = noteData[0].notes;
+                console.log(
+                  "📋 ✅ Observações médicas encontradas:",
+                  medicalNotes,
+                );
               } else {
                 console.log(
-                  "ℹ️ Nenhuma observação médica encontrada para este paciente/médico",
+                  "ℹ️ Nenhuma observação médica encontrada - verificar IDs:",
                 );
+                console.log("   - Patient ID buscado:", id);
+                console.log("   - Doctor ID buscado:", currentUser.id);
               }
             } else {
               console.log(
