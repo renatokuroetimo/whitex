@@ -99,34 +99,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-/* Force sidebar profile section to always be white */
-.sidebar-profile-section {
-  background-color: white !important;
-  background: white !important;
-}
-
-/* Force entire sidebar to have white background */
-.sidebar-container,
-.sidebar-container * {
-  background-color: white !important;
-  background: white !important;
-}
-
-/* Override any hover or active states that might change background */
-.sidebar-container > *:hover,
-.sidebar-container > *:focus,
-.sidebar-container > *:active {
-  background-color: white !important;
-}
-
-/* Specific override for navigation items */
-.sidebar-container nav button {
-  background-color: transparent !important;
-}
-
-.sidebar-container nav button.active {
-  background-color: rgb(
-    239 246 255
-  ) !important; /* Keep blue for active nav items */
-}

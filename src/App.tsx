@@ -5,6 +5,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
+
+// Import validation script for development testing
+if (process.env.NODE_ENV === "development") {
+  import("@/utils/sidebarValidation");
+}
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import SelectProfession from "./pages/SelectProfession";
