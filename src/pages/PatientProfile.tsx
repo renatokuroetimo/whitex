@@ -150,16 +150,28 @@ const PatientProfile = () => {
 
     setIsLoading(true);
     try {
-      await patientProfileAPI.savePatientPersonalData(user.id, personalData);
+      console.log("🔥 INICIANDO SALVAMENTO - Dados pessoais:", {
+        userId: user.id,
+        personalData,
+      });
+
+      const result = await patientProfileAPI.savePatientPersonalData(
+        user.id,
+        personalData,
+      );
+
+      console.log("✅ RESULTADO DO SALVAMENTO:", result);
+
       toast({
         title: "Sucesso",
         description: "Dados pessoais salvos com sucesso",
       });
     } catch (error) {
+      console.error("❌ ERRO AO SALVAR DADOS PESSOAIS:", error);
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Erro ao salvar dados pessoais",
+        description: `Erro ao salvar dados pessoais: ${error instanceof Error ? error.message : "Erro desconhecido"}`,
       });
     } finally {
       setIsLoading(false);
@@ -171,16 +183,28 @@ const PatientProfile = () => {
 
     setIsLoading(true);
     try {
-      await patientProfileAPI.savePatientMedicalData(user.id, medicalData);
+      console.log("🔥 INICIANDO SALVAMENTO - Dados médicos:", {
+        userId: user.id,
+        medicalData,
+      });
+
+      const result = await patientProfileAPI.savePatientMedicalData(
+        user.id,
+        medicalData,
+      );
+
+      console.log("✅ RESULTADO DO SALVAMENTO MÉDICO:", result);
+
       toast({
         title: "Sucesso",
         description: "Dados médicos salvos com sucesso",
       });
     } catch (error) {
+      console.error("❌ ERRO AO SALVAR DADOS MÉDICOS:", error);
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Erro ao salvar dados médicos",
+        description: `Erro ao salvar dados médicos: ${error instanceof Error ? error.message : "Erro desconhecido"}`,
       });
     } finally {
       setIsLoading(false);
