@@ -365,7 +365,20 @@ class PatientAPI {
         });
 
         if (sharedError) {
-          console.error("🚨 Erro na query de compartilhamentos:", sharedError);
+          console.error(
+            "🚨 Erro na query de compartilhamentos:",
+            JSON.stringify(
+              {
+                message: sharedError.message,
+                details: sharedError.details,
+                hint: sharedError.hint,
+                code: sharedError.code,
+                errorName: sharedError.name,
+              },
+              null,
+              2,
+            ),
+          );
         }
 
         if (sharedData) {
