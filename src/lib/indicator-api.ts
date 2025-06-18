@@ -449,9 +449,87 @@ class IndicatorAPI {
   }
 
   async deleteIndicator(id: string): Promise<void> {
+    await this.delay(300);
+
+    console.log("🗑️ DELETANDO INDICADOR:", id);
+
+    // Se Supabase estiver ativo, usar Supabase
+    if (isFeatureEnabled("useSupabaseIndicators") && supabase) {
+      console.log("🚀 Deletando indicador no Supabase");
+
+      try {
+        const { error } = await supabase
+          .from("indicators")
+          .delete()
+          .eq("id", id);
+
+        console.log("📊 Resultado da deleção no Supabase:", { error });
+
+        if (error) {
+          console.error(
+            "❌ Erro ao deletar indicador:",
+            JSON.stringify(
+              {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+              },
+              null,
+              2,
+            ),
+          );
+          throw error; // Forçar fallback
+        } else {
+          console.log("✅ Indicador deletado no Supabase!");
+
+          // Sincronizar com localStorage também
+          try {
+            const indicators = this.getStoredIndicators();
+            const filteredIndicators = indicators.filter(
+              (ind) => ind.id !== id,
+            );
+            this.saveIndicators(filteredIndicators);
+            console.log("✅ Sincronizado remoção com localStorage");
+          } catch (syncError) {
+            console.warn(
+              "⚠️ Erro ao sincronizar remoção com localStorage:",
+              syncError,
+            );
+          }
+
+          return;
+        }
+      } catch (supabaseError) {
+        console.error(
+          "💥 Erro no Supabase deleteIndicator:",
+          JSON.stringify(
+            {
+              message:
+                supabaseError instanceof Error
+                  ? supabaseError.message
+                  : "Unknown error",
+              stack:
+                supabaseError instanceof Error
+                  ? supabaseError.stack
+                  : undefined,
+              error: supabaseError,
+            },
+            null,
+            2,
+          ),
+        );
+        // Continuar para fallback
+      }
+    } else {
+      console.log("⚠️ Supabase não ativo para deleção de indicadores");
+    }
+
+    console.log("📁 Deletando indicador do localStorage");
     const indicators = this.getStoredIndicators();
     const filteredIndicators = indicators.filter((ind) => ind.id !== id);
     this.saveIndicators(filteredIndicators);
+    console.log("✅ Indicador deletado do localStorage");
   }
 
   // === STANDARD INDICATORS ===
