@@ -355,14 +355,18 @@ class PatientAPI {
           )
           .eq("doctor_id", doctorId);
 
-        console.log(
-          "🤝 Query de pacientes compartilhados para doctorId:",
-          doctorId,
-        );
-        console.log("🤝 Resultado completo:", {
+        console.log("🤝 ===== DEBUG COMPARTILHAMENTOS =====");
+        console.log("🤝 Query executada para doctorId:", doctorId);
+        console.log("🤝 Resultado da query:", {
           data: sharedData,
           error: sharedError,
+          hasData: !!sharedData,
+          dataLength: sharedData?.length || 0,
         });
+
+        if (sharedError) {
+          console.error("🚨 Erro na query de compartilhamentos:", sharedError);
+        }
 
         if (sharedData) {
           console.log(
@@ -374,9 +378,11 @@ class PatientAPI {
               patient_id: share.patient_id,
               shared_at: share.shared_at,
               user_data: share.users,
-              personal_data: share.patient_personal_data,
+              hasUserData: !!share.users,
             });
           });
+        } else {
+          console.log("❌ Nenhum dado de compartilhamento retornado");
         }
 
         if (patientsError) {
