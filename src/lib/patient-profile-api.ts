@@ -278,15 +278,18 @@ class PatientProfileAPI {
       console.log("🚀 Buscando dados médicos no Supabase");
 
       try {
-        const { data: supabaseData, error } = await supabase
+        // Buscar múltiplos registros e pegar o mais recente
+        const { data: supabaseDataArray, error } = await supabase
           .from("patient_medical_data")
           .select("*")
           .eq("user_id", userId)
-          .maybeSingle(); // Use maybeSingle instead of single to avoid PGRST116
+          .order("updated_at", { ascending: false })
+          .limit(1);
 
         console.log("📊 Dados médicos do Supabase:", {
-          data: supabaseData,
+          data: supabaseDataArray,
           error,
+          count: supabaseDataArray?.length,
         });
 
         if (error) {
@@ -304,7 +307,11 @@ class PatientProfileAPI {
             ),
           );
           // Fallback para localStorage
-        } else if (supabaseData) {
+        } else if (supabaseDataArray && supabaseDataArray.length > 0) {
+          // Pegar o primeiro registro (mais recente)
+          const supabaseData = supabaseDataArray[0];
+
+          console.log("✅ Usando registro médico mais recente:", supabaseData);
           // Converter dados do Supabase para formato local
           const medicalData: PatientMedicalData = {
             id: supabaseData.id,
