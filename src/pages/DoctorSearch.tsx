@@ -212,8 +212,11 @@ const DoctorSearch = () => {
                     setSearchQuery("");
                     setIsSearching(true);
                     try {
+                      // Clear and reinitialize doctors data
+                      patientProfileAPI.clearDoctorsData();
                       await patientProfileAPI.initializeMockDoctors();
                       const results = await patientProfileAPI.searchDoctors("");
+                      console.log("All doctors:", results);
                       const sharedDoctorIds = sharedDoctors.map((d) => d.id);
                       const availableDoctors = results.filter(
                         (doctor) => !sharedDoctorIds.includes(doctor.id),
@@ -224,6 +227,7 @@ const DoctorSearch = () => {
                         description: `${availableDoctors.length} médico(s) disponível(is)`,
                       });
                     } catch (error) {
+                      console.error("Error loading doctors:", error);
                       toast({
                         variant: "destructive",
                         title: "Erro",

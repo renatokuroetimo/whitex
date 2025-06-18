@@ -151,7 +151,11 @@ class PatientProfileAPI {
 
   async initializeMockDoctors(): Promise<void> {
     const doctors = this.getStoredDoctors();
-    if (doctors.length === 0) {
+    // Force reinitialize if we don't have Dr. Renato Kuroe
+    const hasRenato = doctors.some(
+      (d) => d.name.includes("Renato Kuroe") || d.crm === "123333",
+    );
+    if (doctors.length === 0 || !hasRenato) {
       const mockDoctors: Doctor[] = [
         {
           id: "doc1",
@@ -233,6 +237,16 @@ class PatientProfileAPI {
           city: "Fortaleza",
           createdAt: new Date().toISOString(),
         },
+        {
+          id: "doc9",
+          name: "Dr. Renato Kuroe",
+          crm: "123333",
+          state: "SP",
+          specialty: "Clínico Geral",
+          email: "renato.kuroe@email.com",
+          city: "São Paulo",
+          createdAt: new Date().toISOString(),
+        },
       ];
       this.saveDoctors(mockDoctors);
     }
@@ -243,15 +257,15 @@ class PatientProfileAPI {
     await this.initializeMockDoctors();
 
     const doctors = this.getStoredDoctors();
+    console.log("Available doctors:", doctors);
+
     const searchTerm = query.toLowerCase().trim();
 
     if (!searchTerm) return doctors;
 
-    return doctors.filter((doctor) => {
+    const filteredDoctors = doctors.filter((doctor) => {
       const nameMatch = doctor.name.toLowerCase().includes(searchTerm);
-      const crmMatch = doctor.crm
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+      const crmMatch = doctor.crm.includes(searchTerm);
       const crmStateMatch = `${doctor.crm}-${doctor.state}`
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
@@ -263,15 +277,25 @@ class PatientProfileAPI {
         .includes(searchTerm.toLowerCase());
       const cityMatch = doctor.city?.toLowerCase().includes(searchTerm);
 
+      // Split search term by spaces to match individual words
+      const searchWords = searchTerm.split(" ");
+      const nameWordsMatch = searchWords.every((word) =>
+        doctor.name.toLowerCase().includes(word),
+      );
+
       return (
         nameMatch ||
         crmMatch ||
         crmStateMatch ||
         specialtyMatch ||
         stateMatch ||
-        cityMatch
+        cityMatch ||
+        nameWordsMatch
       );
     });
+
+    console.log(`Search for "${query}" returned:`, filteredDoctors);
+    return filteredDoctors;
   }
 
   // === COMPARTILHAMENTO ===
@@ -350,6 +374,11 @@ class PatientProfileAPI {
     return doctors.filter((doctor) =>
       activeShares.some((share) => share.doctorId === doctor.id),
     );
+  }
+
+  // Limpar dados dos médicos
+  clearDoctorsData(): void {
+    localStorage.removeItem(this.STORAGE_KEYS.DOCTORS);
   }
 
   // Limpar todos os dados
