@@ -519,139 +519,199 @@ const PatientProfile = () => {
               {/* Tab Dados Médicos */}
               <TabsContent value="dados-medicos" className="space-y-6">
                 <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <div className="mb-6">
+                  <div className="mb-8">
                     <h2 className="text-lg font-medium text-gray-900 mb-1">
                       Preencha sua informação
                     </h2>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                    {/* Altura */}
+                  <div className="space-y-8">
+                    {/* Seção de Medidas Físicas */}
                     <div>
-                      <Label>Altura</Label>
-                      <Input
-                        type="number"
-                        value={medicalData.height || ""}
-                        onChange={(e) =>
-                          setMedicalData((prev) => ({
-                            ...prev,
-                            height: e.target.value
-                              ? parseInt(e.target.value)
-                              : undefined,
-                          }))
-                        }
-                        placeholder="160cm"
-                      />
+                      <h3 className="text-base font-medium text-gray-900 mb-4">
+                        Medidas Físicas
+                      </h3>
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700">
+                            Altura (cm)
+                          </Label>
+                          <Input
+                            type="number"
+                            value={medicalData.height || ""}
+                            onChange={(e) =>
+                              setMedicalData((prev) => ({
+                                ...prev,
+                                height: e.target.value
+                                  ? parseInt(e.target.value)
+                                  : undefined,
+                              }))
+                            }
+                            placeholder="Ex: 170"
+                            className="mt-1"
+                          />
+                        </div>
+
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700">
+                            Peso (kg)
+                          </Label>
+                          <Input
+                            type="number"
+                            step="0.1"
+                            value={medicalData.weight || ""}
+                            onChange={(e) =>
+                              setMedicalData((prev) => ({
+                                ...prev,
+                                weight: e.target.value
+                                  ? parseFloat(e.target.value)
+                                  : undefined,
+                              }))
+                            }
+                            placeholder="Ex: 70.5"
+                            className="mt-1"
+                          />
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Peso */}
+                    {/* Seção de Condições de Saúde */}
                     <div>
-                      <Label>Peso</Label>
-                      <Input
-                        type="number"
-                        step="0.1"
-                        value={medicalData.weight || ""}
-                        onChange={(e) =>
-                          setMedicalData((prev) => ({
-                            ...prev,
-                            weight: e.target.value
-                              ? parseFloat(e.target.value)
-                              : undefined,
-                          }))
-                        }
-                        placeholder="60KG"
-                      />
+                      <h3 className="text-base font-medium text-gray-900 mb-4">
+                        Condições de Saúde
+                      </h3>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                          <div>
+                            <Label className="text-sm font-medium text-gray-700">
+                              Fumante
+                            </Label>
+                            <p className="text-xs text-gray-500 mt-1">
+                              Você fuma cigarros regularmente?
+                            </p>
+                          </div>
+                          <Switch
+                            checked={medicalData.smoker}
+                            onCheckedChange={(checked) =>
+                              setMedicalData((prev) => ({
+                                ...prev,
+                                smoker: checked,
+                              }))
+                            }
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                          <div>
+                            <Label className="text-sm font-medium text-gray-700">
+                              Pressão alta
+                            </Label>
+                            <p className="text-xs text-gray-500 mt-1">
+                              Você tem hipertensão arterial?
+                            </p>
+                          </div>
+                          <Switch
+                            checked={medicalData.highBloodPressure}
+                            onCheckedChange={(checked) =>
+                              setMedicalData((prev) => ({
+                                ...prev,
+                                highBloodPressure: checked,
+                              }))
+                            }
+                          />
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Fumante */}
-                    <div className="flex items-center justify-between">
-                      <Label>Fumante</Label>
-                      <Switch
-                        checked={medicalData.smoker}
-                        onCheckedChange={(checked) =>
-                          setMedicalData((prev) => ({
-                            ...prev,
-                            smoker: checked,
-                          }))
-                        }
-                      />
-                    </div>
-
-                    {/* Pressão alta */}
-                    <div className="flex items-center justify-between">
-                      <Label>Pressão alta</Label>
-                      <Switch
-                        checked={medicalData.highBloodPressure}
-                        onCheckedChange={(checked) =>
-                          setMedicalData((prev) => ({
-                            ...prev,
-                            highBloodPressure: checked,
-                          }))
-                        }
-                      />
-                    </div>
-
-                    {/* Faz atividade física */}
-                    <div className="flex items-center justify-between">
-                      <Label>Faz atividade física</Label>
-                      <Switch
-                        checked={medicalData.physicalActivity}
-                        onCheckedChange={(checked) =>
-                          setMedicalData((prev) => ({
-                            ...prev,
-                            physicalActivity: checked,
-                          }))
-                        }
-                      />
-                    </div>
-
-                    {/* Com qual frequência */}
+                    {/* Seção de Estilo de Vida */}
                     <div>
-                      <Label>Com qual frequência?</Label>
-                      <Select
-                        value={medicalData.exerciseFrequency || ""}
-                        onValueChange={(
-                          value:
-                            | "nunca"
-                            | "raramente"
-                            | "semanalmente"
-                            | "diariamente",
-                        ) =>
-                          setMedicalData((prev) => ({
-                            ...prev,
-                            exerciseFrequency: value,
-                          }))
-                        }
-                        disabled={!medicalData.physicalActivity}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecionar" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="nunca">Nunca</SelectItem>
-                          <SelectItem value="raramente">Raramente</SelectItem>
-                          <SelectItem value="semanalmente">
-                            Semanalmente
-                          </SelectItem>
-                          <SelectItem value="diariamente">
-                            Diariamente
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                      <h3 className="text-base font-medium text-gray-900 mb-4">
+                        Estilo de Vida
+                      </h3>
+                      <div className="space-y-4">
+                        <div className="p-4 bg-gray-50 rounded-lg">
+                          <div className="flex items-center justify-between mb-4">
+                            <div>
+                              <Label className="text-sm font-medium text-gray-700">
+                                Faz atividade física
+                              </Label>
+                              <p className="text-xs text-gray-500 mt-1">
+                                Você pratica exercícios físicos?
+                              </p>
+                            </div>
+                            <Switch
+                              checked={medicalData.physicalActivity}
+                              onCheckedChange={(checked) =>
+                                setMedicalData((prev) => ({
+                                  ...prev,
+                                  physicalActivity: checked,
+                                  exerciseFrequency: checked
+                                    ? prev.exerciseFrequency
+                                    : undefined,
+                                }))
+                              }
+                            />
+                          </div>
 
-                    {/* Dieta saudável */}
-                    <div className="flex items-center justify-between sm:col-span-2">
-                      <Label>Dieta saudável</Label>
-                      <Switch
-                        checked={medicalData.healthyDiet}
-                        onCheckedChange={(checked) =>
-                          setMedicalData((prev) => ({
-                            ...prev,
-                            healthyDiet: checked,
-                          }))
-                        }
-                      />
+                          {medicalData.physicalActivity && (
+                            <div className="mt-4 pt-4 border-t border-gray-200">
+                              <Label className="text-sm font-medium text-gray-700">
+                                Com qual frequência?
+                              </Label>
+                              <Select
+                                value={medicalData.exerciseFrequency || ""}
+                                onValueChange={(
+                                  value:
+                                    | "nunca"
+                                    | "raramente"
+                                    | "semanalmente"
+                                    | "diariamente",
+                                ) =>
+                                  setMedicalData((prev) => ({
+                                    ...prev,
+                                    exerciseFrequency: value,
+                                  }))
+                                }
+                              >
+                                <SelectTrigger className="mt-1">
+                                  <SelectValue placeholder="Selecione a frequência" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="raramente">
+                                    Raramente (1-2x por mês)
+                                  </SelectItem>
+                                  <SelectItem value="semanalmente">
+                                    Semanalmente (1-3x por semana)
+                                  </SelectItem>
+                                  <SelectItem value="diariamente">
+                                    Diariamente (4-7x por semana)
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                          <div>
+                            <Label className="text-sm font-medium text-gray-700">
+                              Dieta saudável
+                            </Label>
+                            <p className="text-xs text-gray-500 mt-1">
+                              Você mantém uma alimentação equilibrada?
+                            </p>
+                          </div>
+                          <Switch
+                            checked={medicalData.healthyDiet}
+                            onCheckedChange={(checked) =>
+                              setMedicalData((prev) => ({
+                                ...prev,
+                                healthyDiet: checked,
+                              }))
+                            }
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
 
