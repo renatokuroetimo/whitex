@@ -57,7 +57,24 @@ class ProfileImageAPI {
         // Também salvar no localStorage como cache local
         localStorage.setItem(`${this.STORAGE_KEY_PREFIX}${userId}`, imageData);
       } catch (supabaseError) {
-        console.error("💥 Erro no Supabase saveProfileImage:", supabaseError);
+        console.error(
+          "💥 Erro no Supabase saveProfileImage:",
+          JSON.stringify(
+            {
+              message:
+                supabaseError instanceof Error
+                  ? supabaseError.message
+                  : "Unknown error",
+              stack:
+                supabaseError instanceof Error
+                  ? supabaseError.stack
+                  : undefined,
+              error: supabaseError,
+            },
+            null,
+            2,
+          ),
+        );
         // Fallback para localStorage
         localStorage.setItem(`${this.STORAGE_KEY_PREFIX}${userId}`, imageData);
       }
