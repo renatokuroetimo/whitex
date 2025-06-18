@@ -34,19 +34,27 @@ const PatientGraphSelector = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (patientId) {
+    if (patientId || (user?.profession === "paciente" && user?.id)) {
       loadData();
     }
-  }, [patientId]);
+  }, [patientId, user]);
 
   const loadData = async () => {
-    if (!patientId) return;
+    // Determinar qual ID usar - patientId da URL ou ID do usuário logado
+    const targetPatientId = patientId || user?.id;
+    if (!targetPatientId) return;
 
     setIsLoading(true);
     try {
+      // Se é paciente próprio, não precisa carregar dados do paciente
+      const shouldLoadPatientData =
+        !!patientId && user?.profession === "medico";
+
       const [patientData, indicatorValues] = await Promise.all([
-        patientAPI.getPatientById(patientId),
-        patientIndicatorAPI.getPatientIndicatorValues(patientId),
+        shouldLoadPatientData
+          ? patientAPI.getPatientById(targetPatientId)
+          : Promise.resolve(null),
+        patientIndicatorAPI.getPatientIndicatorValues(targetPatientId),
       ]);
 
       if (!patientData) {
