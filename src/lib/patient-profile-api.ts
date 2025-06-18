@@ -65,20 +65,28 @@ class PatientProfileAPI {
         });
 
         if (error) {
-          // PGRST116 = no rows returned
-          console.error(
-            "❌ Erro ao buscar dados pessoais:",
-            JSON.stringify(
-              {
-                message: error.message,
-                details: error.details,
-                hint: error.hint,
-                code: error.code,
-              },
-              null,
-              2,
-            ),
-          );
+          // PGRST116 = no rows returned (normal case - user has no personal data yet)
+          if (error.code === "PGRST116") {
+            console.log(
+              "ℹ️ Nenhum dado pessoal encontrado no Supabase para usuário:",
+              userId,
+            );
+          } else {
+            // Log other errors as actual errors
+            console.error(
+              "❌ Erro ao buscar dados pessoais:",
+              JSON.stringify(
+                {
+                  message: error.message,
+                  details: error.details,
+                  hint: error.hint,
+                  code: error.code,
+                },
+                null,
+                2,
+              ),
+            );
+          }
           // Fallback para localStorage
         } else if (supabaseData) {
           // Converter dados do Supabase para formato local
