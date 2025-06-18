@@ -166,7 +166,7 @@ class PatientProfileAPI {
           updated_at: resultData.updatedAt,
         };
 
-        console.log("📝 Dados pessoais para Supabase:", insertData);
+        console.log("��� Dados pessoais para Supabase:", insertData);
 
         const { data: supabaseData, error } =
           existingIndex >= 0
@@ -182,12 +182,19 @@ class PatientProfileAPI {
         });
 
         if (error) {
-          console.error("❌ Erro ao salvar dados pessoais:", {
-            message: error.message,
-            details: error.details,
-            hint: error.hint,
-            code: error.code,
-          });
+          console.error(
+            "❌ Erro ao salvar dados pessoais:",
+            JSON.stringify(
+              {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+              },
+              null,
+              2,
+            ),
+          );
           throw error; // Forçar fallback
         } else {
           console.log("✅ Dados pessoais salvos no Supabase!");
