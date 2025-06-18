@@ -365,6 +365,7 @@ const PatientForm = () => {
                       min="1"
                       max="500"
                       required
+                      disabled={isSharedPatient}
                     />
                   </div>
 
@@ -376,6 +377,7 @@ const PatientForm = () => {
                     <Select
                       value={formData.state}
                       onValueChange={handleStateChange}
+                      disabled={isSharedPatient}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione o estado" />
