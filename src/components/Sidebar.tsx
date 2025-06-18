@@ -183,15 +183,11 @@ const Sidebar: React.FC = () => {
                   alt="Foto de perfil"
                   className="w-full h-full object-cover"
                   onError={() => {
-                    console.log("Profile image failed to load, clearing...");
                     setProfileImage(null);
                     if (user?.id) {
                       localStorage.removeItem(`profile_image_${user.id}`);
                     }
                   }}
-                  onLoad={() =>
-                    console.log("Profile image loaded successfully")
-                  }
                 />
               ) : (
                 <User
