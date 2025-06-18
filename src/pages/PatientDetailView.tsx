@@ -37,13 +37,11 @@ const PatientDetailView = () => {
       const foundPatient = patients.patients.find((p) => p.id === patientId);
 
       if (foundPatient) {
-        console.log("Found patient data:", foundPatient);
         setPatient(foundPatient);
 
         // Carregar dados pessoais detalhados
         const personal =
           await patientProfileAPI.getPatientPersonalData(patientId);
-        console.log("Personal data:", personal);
         setPersonalData(personal);
       } else {
         toast({
