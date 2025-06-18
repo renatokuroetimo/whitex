@@ -324,16 +324,26 @@ const Pacientes = () => {
                           className="px-4 sm:px-6 py-4"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <Checkbox
-                            checked={selectedPatients.includes(patient.id)}
-                            onCheckedChange={(checked) =>
-                              handleSelectPatient(
-                                patient.id,
-                                checked as boolean,
-                              )
-                            }
-                            disabled={patient.status === "compartilhado"}
-                          />
+                          <div className="flex items-center">
+                            <Checkbox
+                              checked={selectedPatients.includes(patient.id)}
+                              onCheckedChange={(checked) =>
+                                handleSelectPatient(
+                                  patient.id,
+                                  checked as boolean,
+                                )
+                              }
+                              disabled={patient.status === "compartilhado"}
+                            />
+                            {patient.status === "compartilhado" && (
+                              <span
+                                className="ml-2 text-xs text-gray-400"
+                                title="Pacientes compartilhados não podem ser editados ou deletados"
+                              >
+                                🔒
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">
