@@ -599,13 +599,16 @@ class IndicatorAPI {
 
       for (const indicator of standardIndicators) {
         // Verificar se o indicador já existe
-        const { data: existing } = await supabase
+        const { data: existing, error: checkError } = await supabase
           .from("indicators")
           .select("id")
           .eq("id", indicator.id)
           .single();
 
-        if (!existing) {
+        // PGRST116 means no rows found, which is expected when indicator doesn't exist
+        const indicatorExists = existing && !checkError;
+
+        if (!indicatorExists) {
           console.log(
             `📝 Inserindo indicador padrão ${indicator.id} no Supabase`,
           );
