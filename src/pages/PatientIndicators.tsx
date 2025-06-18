@@ -1,9 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Plus, Activity, TrendingUp } from "lucide-react";
+import { ArrowLeft, Plus, Activity, TrendingUp, Filter } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContextHybrid";
 import { indicatorAPI } from "@/lib/indicator-api";
 import { patientIndicatorAPI } from "@/lib/patient-indicator-api";
