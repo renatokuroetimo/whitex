@@ -165,7 +165,7 @@ const Sidebar: React.FC = () => {
       {/* User Profile */}
       <div
         className="p-6 border-b border-gray-200"
-        style={{ backgroundColor: "#ffffff" }}
+        style={{ backgroundColor: "#ffffff !important" }}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
