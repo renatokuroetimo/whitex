@@ -5,10 +5,6 @@ import { useAuth } from "@/contexts/AuthContextHybrid";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { profileImageAPI } from "@/lib/profile-image-api";
-import { useNavigate, useLocation } from "react-router-dom";
-import { Home, Users, BarChart3, LogOut, User, Menu } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContextHybrid";
-import { Button } from "@/components/ui/button";
 
 interface SidebarItem {
   id: string;
