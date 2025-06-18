@@ -177,7 +177,7 @@ class PatientIndicatorAPI {
       try {
         const insertData = {
           id: newValue.id,
-          user_id: newValue.patientId,
+          patient_id: newValue.patientId,
           indicator_id: newValue.indicatorId,
           category_name: newValue.categoryName,
           subcategory_name: newValue.subcategoryName,
