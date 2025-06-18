@@ -4,67 +4,73 @@ import { Home, Users, BarChart3, LogOut, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 
-interface SidebarItem {
-  id: string;
-  label: string;
-  icon: React.ComponentType<any>;
-  path: string;
-}
-
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { logout, user } = useAuth();
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [forceRefresh, setForceRefresh] = useState(0);
+  const [userProfession, setUserProfession] = useState<string>("");
 
-  // Função para obter dados do usuário diretamente do localStorage como fallback
-  const getUserFromStorage = () => {
-    try {
-      const stored = localStorage.getItem("medical_app_current_user");
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  };
-
-  // Usar dados do contexto ou fallback para localStorage
-  const currentUser = user || getUserFromStorage();
-
-  // Debug detalhado
+  // Função para detectar a profissão do usuário de forma mais robusta
   useEffect(() => {
-    console.log("🔍 === SIDEBAR DEBUG COMPLETO ===");
-    console.log("🔍 User from context:", user);
-    console.log("🔍 User from storage:", getUserFromStorage());
-    console.log("🔍 Current user used:", currentUser);
-    console.log("🔍 Current path:", location.pathname);
-    console.log("🔍 Force refresh counter:", forceRefresh);
-    console.log("🔍 ================================");
-  }, [user, currentUser, location.pathname, forceRefresh]);
+    const detectUserProfession = () => {
+      // Primeiro, tentar pelo contexto
+      if (user?.profession) {
+        console.log("✅ Profissão detectada pelo contexto:", user.profession);
+        setUserProfession(user.profession);
+        return;
+      }
 
-  // Força refresh se houver inconsistência
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setForceRefresh((prev) => prev + 1);
-    }, 1000);
+      // Segundo, tentar pelo localStorage
+      try {
+        const storedUser = localStorage.getItem("medical_app_current_user");
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser);
+          if (parsedUser?.profession) {
+            console.log(
+              "✅ Profissão detectada pelo localStorage:",
+              parsedUser.profession,
+            );
+            setUserProfession(parsedUser.profession);
+            return;
+          }
+        }
+      } catch (error) {
+        console.error("❌ Erro ao ler localStorage:", error);
+      }
 
-    return () => clearTimeout(timer);
-  }, []);
+      // Terceiro, tentar detectar pela URL atual
+      const path = location.pathname;
+      if (path.includes("/patient")) {
+        console.log("✅ Profissão detectada pela URL (paciente):", path);
+        setUserProfession("paciente");
+        return;
+      }
 
-  // Função para obter itens da sidebar baseado na profissão
-  const getSidebarItems = (userProfession?: string): SidebarItem[] => {
-    const profession = userProfession?.toLowerCase().trim();
+      if (path.includes("/dashboard") && !path.includes("patient")) {
+        console.log("✅ Profissão detectada pela URL (médico):", path);
+        setUserProfession("medico");
+        return;
+      }
 
-    console.log("🔍 Getting sidebar items for profession:", profession);
+      console.log("❌ Não foi possível detectar a profissão");
+    };
 
-    if (profession === "medico") {
-      const items = [
-        {
-          id: "inicio",
-          label: "Início",
-          icon: Home,
-          path: "/dashboard",
-        },
+    detectUserProfession();
+
+    // Verificar novamente a cada segundo
+    const interval = setInterval(detectUserProfession, 1000);
+
+    return () => clearInterval(interval);
+  }, [user, location.pathname]);
+
+  // Função para obter itens da sidebar
+  const getSidebarItems = () => {
+    console.log("🔍 Gerando itens para profissão:", userProfession);
+
+    if (userProfession === "medico") {
+      return [
+        { id: "inicio", label: "Início", icon: Home, path: "/dashboard" },
         {
           id: "pacientes",
           label: "Pacientes",
@@ -78,12 +84,10 @@ const Sidebar: React.FC = () => {
           path: "/indicadores",
         },
       ];
-      console.log("🔍 Returning MEDICO items:", items);
-      return items;
     }
 
-    if (profession === "paciente") {
-      const items = [
+    if (userProfession === "paciente") {
+      return [
         {
           id: "inicio",
           label: "Início",
@@ -91,106 +95,45 @@ const Sidebar: React.FC = () => {
           path: "/patient-dashboard",
         },
         {
-          id: "meus-dados",
+          id: "dados",
           label: "Dados pessoais",
           icon: Users,
           path: "/patient-profile",
         },
         {
-          id: "meus-indicadores",
+          id: "indicadores",
           label: "Indicadores",
           icon: BarChart3,
           path: "/patient/indicadores",
         },
       ];
-      console.log("🔍 Returning PACIENTE items:", items);
-      return items;
     }
 
     // Fallback
-    const fallbackItems = [
-      {
-        id: "inicio",
-        label: "Início",
-        icon: Home,
-        path: "/",
-      },
-    ];
-    console.log("🔍 Returning FALLBACK items:", fallbackItems);
-    return fallbackItems;
+    return [{ id: "inicio", label: "Início", icon: Home, path: "/" }];
   };
 
-  // Carregar imagem de perfil do localStorage
+  // Carregar imagem de perfil
   useEffect(() => {
     const loadProfileImage = () => {
-      if (currentUser?.id) {
-        const savedImage = localStorage.getItem(
-          `profile_image_${currentUser.id}`,
-        );
-        if (
-          savedImage &&
-          savedImage !== "null" &&
-          savedImage !== "undefined" &&
-          savedImage.startsWith("data:")
-        ) {
+      const userId = user?.id;
+      if (userId) {
+        const savedImage = localStorage.getItem(`profile_image_${userId}`);
+        if (savedImage && savedImage.startsWith("data:")) {
           setProfileImage(savedImage);
         } else {
           setProfileImage(null);
         }
-      } else {
-        setProfileImage(null);
       }
     };
 
     loadProfileImage();
-  }, [currentUser?.id]);
-
-  // Escutar mudanças na imagem de perfil
-  useEffect(() => {
-    const handleStorageChange = () => {
-      if (currentUser?.id) {
-        const savedImage = localStorage.getItem(
-          `profile_image_${currentUser.id}`,
-        );
-        if (
-          savedImage &&
-          savedImage !== "null" &&
-          savedImage !== "undefined" &&
-          savedImage.startsWith("data:")
-        ) {
-          setProfileImage(savedImage);
-        } else {
-          setProfileImage(null);
-        }
-      }
-    };
-
-    const handleProfileImageUpdate = (event: CustomEvent) => {
-      if (event.detail.userId === currentUser?.id) {
-        handleStorageChange();
-      }
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    window.addEventListener(
-      "profileImageUpdated",
-      handleProfileImageUpdate as EventListener,
-    );
-
-    const interval = setInterval(handleStorageChange, 2000);
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-      window.removeEventListener(
-        "profileImageUpdated",
-        handleProfileImageUpdate as EventListener,
-      );
-      clearInterval(interval);
-    };
-  }, [currentUser?.id]);
+    const interval = setInterval(loadProfileImage, 2000);
+    return () => clearInterval(interval);
+  }, [user?.id]);
 
   const handleNavigation = (path: string) => {
-    console.log("🔍 Navigating to:", path);
+    console.log("🔍 Navegando para:", path);
     navigate(path);
   };
 
@@ -201,36 +144,18 @@ const Sidebar: React.FC = () => {
 
   const isActive = (path: string) => {
     const isMatch = location.pathname === path;
-    console.log(`🔍 isActive: ${path} === ${location.pathname} = ${isMatch}`);
+    console.log(
+      `🔍 Verificando ativo: ${path} === ${location.pathname} = ${isMatch}`,
+    );
     return isMatch;
   };
 
-  // Se não há usuário, mostrar loading
-  if (!currentUser) {
-    console.log("🔍 No user found, showing loading...");
-    return (
-      <div className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col">
-        <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gray-900 rounded flex items-center justify-center">
-              <span className="text-white text-sm font-semibold">W</span>
-            </div>
-            <span className="font-semibold text-gray-900">WHITEX</span>
-          </div>
-        </div>
-        <div className="flex-1 flex items-center justify-center">
-          <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full"></div>
-        </div>
-      </div>
-    );
-  }
-
-  const sidebarItems = getSidebarItems(currentUser.profession);
+  const sidebarItems = getSidebarItems();
   const profilePath =
-    currentUser.profession === "paciente" ? "/patient-profile" : "/profile";
+    userProfession === "paciente" ? "/patient-profile" : "/profile";
 
-  console.log("🔍 Final sidebar items:", sidebarItems);
-  console.log("🔍 Profile path:", profilePath);
+  console.log("🔍 Itens finais da sidebar:", sidebarItems);
+  console.log("🔍 Caminho do perfil:", profilePath);
 
   return (
     <div className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col">
@@ -244,7 +169,7 @@ const Sidebar: React.FC = () => {
         </div>
       </div>
 
-      {/* User Profile - ALWAYS THE SAME */}
+      {/* User Profile */}
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -254,14 +179,7 @@ const Sidebar: React.FC = () => {
                   src={profileImage}
                   alt="Foto de perfil"
                   className="w-full h-full object-cover"
-                  onError={() => {
-                    setProfileImage(null);
-                    if (currentUser?.id) {
-                      localStorage.removeItem(
-                        `profile_image_${currentUser.id}`,
-                      );
-                    }
-                  }}
+                  onError={() => setProfileImage(null)}
                 />
               ) : (
                 <User className="w-4 h-4 text-gray-600" />
@@ -285,10 +203,6 @@ const Sidebar: React.FC = () => {
             const Icon = item.icon;
             const active = isActive(item.path);
 
-            console.log(
-              `🔍 Rendering item: ${item.label} (${item.path}) - Active: ${active}`,
-            );
-
             return (
               <li key={item.id}>
                 <button
@@ -308,13 +222,32 @@ const Sidebar: React.FC = () => {
         </ul>
       </nav>
 
-      {/* Debug info (only in development) */}
+      {/* Debug Info */}
       {process.env.NODE_ENV === "development" && (
-        <div className="p-2 border-t border-red-200 bg-red-50 text-xs text-red-600">
-          <div>User: {currentUser.email}</div>
-          <div>Profession: {currentUser.profession}</div>
-          <div>Path: {location.pathname}</div>
-          <div>Items: {sidebarItems.length}</div>
+        <div className="p-3 border-t border-red-200 bg-red-50 text-xs">
+          <div className="text-red-700">
+            <div>
+              <strong>Email:</strong> {user?.email || "N/A"}
+            </div>
+            <div>
+              <strong>Profissão:</strong> {userProfession || "N/A"}
+            </div>
+            <div>
+              <strong>URL:</strong> {location.pathname}
+            </div>
+            <div>
+              <strong>Itens:</strong> {sidebarItems.length}
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              localStorage.clear();
+              window.location.reload();
+            }}
+            className="mt-2 px-2 py-1 bg-red-200 text-red-800 rounded text-xs"
+          >
+            🧹 Limpar Cache
+          </button>
         </div>
       )}
 
