@@ -201,10 +201,35 @@ const PatientProfile = () => {
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file && user?.id) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
+    if (!file || !user?.id) return;
+
+    // Verificar tamanho do arquivo (máximo 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "A imagem deve ter no máximo 5MB",
+      });
+      event.target.value = "";
+      return;
+    }
+
+    // Verificar tipo do arquivo
+    if (!file.type.startsWith("image/")) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Por favor, selecione apenas arquivos de imagem",
+      });
+      event.target.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      if (result) {
         setProfileImage(result);
         localStorage.setItem(`profile_image_${user.id}`, result);
 
@@ -214,9 +239,24 @@ const PatientProfile = () => {
             detail: { userId: user.id },
           }),
         );
-      };
-      reader.readAsDataURL(file);
-    }
+
+        toast({
+          title: "Sucesso!",
+          description: "Imagem de perfil atualizada",
+        });
+      }
+    };
+
+    reader.onerror = () => {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Erro ao ler o arquivo de imagem",
+      });
+    };
+
+    reader.readAsDataURL(file);
+    event.target.value = "";
   };
 
   const handleImageClick = () => {
