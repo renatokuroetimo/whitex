@@ -349,6 +349,9 @@ const PatientIndicators = () => {
                           Data
                         </th>
                         <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm">
+                          Horário
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm">
                           Registrado em
                         </th>
                       </tr>
