@@ -321,6 +321,7 @@ const PatientForm = () => {
                       placeholder="Digite o nome completo"
                       className="w-full"
                       required
+                      disabled={isSharedPatient}
                     />
                   </div>
 
@@ -340,6 +341,7 @@ const PatientForm = () => {
                       min="1"
                       max="120"
                       required
+                      disabled={isSharedPatient}
                     />
                   </div>
 
