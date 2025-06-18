@@ -71,7 +71,7 @@ const PatientForm = () => {
         setAvailableCities(getCitiesByState(patient.state));
 
         // Detectar se é paciente compartilhado
-        setIsSharedPatient(patient.status === 'compartilhado');
+        setIsSharedPatient(patient.status === "compartilhado");
       }
     } catch (error) {
       toast({
@@ -268,9 +268,10 @@ const PatientForm = () => {
               </button>
               <h1 className="text-2xl font-semibold text-gray-900">
                 {isEditing
-                  ? (isSharedPatient ? "Adicionar Diagnósticos" : "Editar Paciente")
-                  : "Novo Paciente"
-                }
+                  ? isSharedPatient
+                    ? "Adicionar Diagnósticos"
+                    : "Editar Paciente"
+                  : "Novo Paciente"}
               </h1>
             </div>
             <button
@@ -285,19 +286,21 @@ const PatientForm = () => {
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <div className="mb-6">
                 <h2 className="text-lg font-medium text-gray-900 mb-1">
-                  {isSharedPatient ? "Diagnósticos e Observações" : "Dados do paciente"}
+                  {isSharedPatient
+                    ? "Diagnósticos e Observações"
+                    : "Dados do paciente"}
                 </h2>
                 <p className="text-sm text-gray-600">
                   {isSharedPatient
                     ? "Adicione diagnósticos e observações para este paciente compartilhado"
-                    : "Preencha as informações básicas do paciente"
-                  }
+                    : "Preencha as informações básicas do paciente"}
                 </p>
                 {isSharedPatient && (
                   <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                     <p className="text-sm text-blue-800">
-                      <strong>Paciente Compartilhado:</strong> Você pode apenas adicionar diagnósticos e observações.
-                      Os dados pessoais são gerenciados pelo paciente.
+                      <strong>Paciente Compartilhado:</strong> Você pode apenas
+                      adicionar diagnósticos e observações. Os dados pessoais
+                      são gerenciados pelo paciente.
                     </p>
                   </div>
                 )}
@@ -449,7 +452,10 @@ const PatientForm = () => {
                                 <Input
                                   value={diagnosisForm.cid}
                                   onChange={(e) =>
-                                    handleDiagnosisInputChange("cid", e.target.value)
+                                    handleDiagnosisInputChange(
+                                      "cid",
+                                      e.target.value,
+                                    )
                                   }
                                   placeholder="Ex: I10.9"
                                   className="w-full"
@@ -464,7 +470,10 @@ const PatientForm = () => {
                                 <Input
                                   value={diagnosisForm.diagnosis}
                                   onChange={(e) =>
-                                    handleDiagnosisInputChange("diagnosis", e.target.value)
+                                    handleDiagnosisInputChange(
+                                      "diagnosis",
+                                      e.target.value,
+                                    )
                                   }
                                   placeholder="Ex: Hipertensão arterial"
                                   className="w-full"
@@ -500,7 +509,8 @@ const PatientForm = () => {
 
                       {!isAddingDiagnosis && (
                         <p className="text-sm text-gray-500">
-                          Os diagnósticos são exibidos no histórico do paciente após serem adicionados.
+                          Os diagnósticos são exibidos no histórico do paciente
+                          após serem adicionados.
                         </p>
                       )}
                     </div>
@@ -522,7 +532,6 @@ const PatientForm = () => {
                     />
                   </div>
                 </div>
-                )}
 
                 {/* Seção especial para pacientes compartilhados */}
                 {isSharedPatient && (
@@ -583,7 +592,9 @@ const PatientForm = () => {
                               type="button"
                               size="sm"
                               onClick={handleAddDiagnosis}
-                              disabled={!diagnosisForm.cid || !diagnosisForm.diagnosis}
+                              disabled={
+                                !diagnosisForm.cid || !diagnosisForm.diagnosis
+                              }
                             >
                               Adicionar
                             </Button>
@@ -604,7 +615,8 @@ const PatientForm = () => {
 
                       {!isAddingDiagnosis && (
                         <p className="text-sm text-gray-500 mt-2">
-                          Os diagnósticos são exibidos no histórico do paciente após serem adicionados.
+                          Os diagnósticos são exibidos no histórico do paciente
+                          após serem adicionados.
                         </p>
                       )}
                     </div>
@@ -647,7 +659,9 @@ const PatientForm = () => {
                         ? "Salvando..."
                         : "Criando..."
                       : isEditing
-                        ? (isSharedPatient ? "Salvar diagnósticos" : "Salvar alterações")
+                        ? isSharedPatient
+                          ? "Salvar diagnósticos"
+                          : "Salvar alterações"
                         : "Criar paciente"}
                   </Button>
                 </div>
