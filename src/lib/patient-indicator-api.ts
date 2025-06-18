@@ -263,18 +263,11 @@ class PatientIndicatorAPI {
             2,
           ),
         );
-        // Continuar para fallback
+        throw supabaseError; // Falhar sem fallback
       }
     } else {
-      console.log("⚠️ Supabase indicadores não ativo para valores");
+      throw new Error("Supabase não está ativo para indicadores");
     }
-
-    console.log("📁 Salvando valor indicador no localStorage");
-    const values = this.getStoredIndicatorValues();
-    values.push(newValue);
-    this.saveIndicatorValues(values);
-
-    return newValue;
   }
 
   // Buscar valores de indicadores de um paciente
