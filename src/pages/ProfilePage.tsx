@@ -306,9 +306,18 @@ const ProfilePage: React.FC = () => {
     fileInputRef.current?.click();
   };
 
-  const removeProfileImage = () => {
+  const removeProfileImage = async () => {
     setProfileImage(null);
-    localStorage.removeItem(`profile_image_${user?.id}`);
+
+    if (user?.id) {
+      // Remover do Supabase
+      try {
+        await profileImageAPI.removeProfileImage(user.id);
+      } catch (removeError) {
+        console.warn("Erro ao remover imagem do Supabase:", removeError);
+      }
+    }
+
     toast({
       title: "Sucesso!",
       description: "Imagem de perfil removida",
