@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContextHybrid";
 import { patientAPI } from "@/lib/patient-api";
 import { patientProfileAPI } from "@/lib/patient-profile-api";
-import { Patient } from "@/lib/patient-types";
+import { Patient, Diagnosis } from "@/lib/patient-types";
 import { PatientPersonalData } from "@/lib/patient-profile-types";
 import { toast } from "@/hooks/use-toast";
 
