@@ -68,6 +68,10 @@ const Pacientes = () => {
 
   // Seleção de pacientes
   const handleSelectPatient = (patientId: string, checked: boolean) => {
+    // Não permitir seleção de pacientes compartilhados
+    const patient = patients.find((p) => p.id === patientId);
+    if (patient?.status === "compartilhado") return;
+
     if (checked) {
       setSelectedPatients((prev) => [...prev, patientId]);
     } else {
@@ -77,7 +81,11 @@ const Pacientes = () => {
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedPatients(patients.map((p) => p.id));
+      // Selecionar apenas pacientes que não são compartilhados
+      const selectablePatients = patients.filter(
+        (p) => p.status !== "compartilhado",
+      );
+      setSelectedPatients(selectablePatients.map((p) => p.id));
     } else {
       setSelectedPatients([]);
     }
