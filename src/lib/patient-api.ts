@@ -778,22 +778,6 @@ class PatientAPI {
     return patients[index];
   }
 
-  // Deletar pacientes
-  async deletePatients(ids: string[]): Promise<void> {
-    await this.delay(300);
-
-    const patients = this.getStoredPatients();
-    const filteredPatients = patients.filter((p) => !ids.includes(p.id));
-    this.savePatients(filteredPatients);
-
-    // Também deletar diagnósticos relacionados
-    const diagnoses = this.getStoredDiagnoses();
-    const filteredDiagnoses = diagnoses.filter(
-      (d) => !ids.includes(d.patientId),
-    );
-    this.saveDiagnoses(filteredDiagnoses);
-  }
-
   // Buscar diagnósticos de um paciente
   async getPatientDiagnoses(patientId: string): Promise<Diagnosis[]> {
     await this.delay(200);
@@ -986,7 +970,7 @@ class PatientAPI {
           .delete()
           .in("id", ids);
 
-        console.log("�� Resultado da deleção no Supabase:", { error });
+        console.log("📊 Resultado da deleção no Supabase:", { error });
 
         if (error) {
           console.error(
