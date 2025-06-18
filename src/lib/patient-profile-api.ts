@@ -192,13 +192,20 @@ class PatientProfileAPI {
 
         console.log("📝 Dados pessoais para Supabase:", insertData);
 
-        const { data: supabaseData, error } =
-          existingIndex >= 0
-            ? await supabase
-                .from("patient_personal_data")
-                .update(insertData)
-                .eq("user_id", userId)
-            : await supabase.from("patient_personal_data").insert([insertData]);
+        // Primeiro, deletar registros existentes para evitar duplicações
+        await supabase
+          .from("patient_personal_data")
+          .delete()
+          .eq("user_id", userId);
+
+        console.log("🗑️ Registros antigos removidos");
+
+        // Inserir novo registro
+        const { data: supabaseData, error } = await supabase
+          .from("patient_personal_data")
+          .insert([insertData])
+          .select()
+          .single();
 
         console.log("📊 Resposta Supabase dados pessoais:", {
           data: supabaseData,
