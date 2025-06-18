@@ -374,41 +374,9 @@ class PatientProfileAPI {
         doctorUsers,
       );
 
-      return doctorUsers.map((user: any) => {
-        // Use existing name or show "Sem nome cadastrado"
-        // Support both fullName and full_name (localStorage vs Supabase format)
-        let doctorName = user.fullName || user.full_name || user.name;
-
-        if (!doctorName || doctorName.trim() === "") {
-          doctorName = "Sem nome cadastrado";
-        }
-
-        console.log("🔍 Dados originais do usuário médico:", {
-          id: user.id,
-          name: user.name,
-          fullName: user.fullName || user.full_name, // Support both formats
-          crm: user.crm,
-          state: user.state,
-          email: user.email,
-          city: user.city,
-          specialty: user.specialty,
-        });
-
-        const doctor = {
-          id: user.id,
-          name: doctorName,
-          crm: user.crm || "123456", // Use provided CRM or default
-          state: user.state || "", // No default, use empty if not provided
-          specialty: user.specialty || "", // Use actual specialty from database
-          email: user.email,
-          city: user.city || "", // No default, use empty if not provided
-          createdAt:
-            user.createdAt || user.created_at || new Date().toISOString(),
-        };
-
-        console.log("👨‍⚕️ Médico mapeado:", doctor);
-        return doctor;
-      });
+      return doctorUsers.map((user: any) =>
+        this.mapUserToDoctor(user, "localStorage"),
+      );
     } catch (error) {
       console.error("❌ Erro ao buscar médicos registrados:", error);
       return [];
