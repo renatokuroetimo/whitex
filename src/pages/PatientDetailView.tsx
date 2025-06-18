@@ -302,15 +302,19 @@ const PatientDetailView = () => {
                   <h3 className="text-lg font-semibold text-gray-900">
                     Perfil
                   </h3>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => navigate(`/pacientes/${patient.id}/editar`)}
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    <Edit className="h-4 w-4 mr-1" />
-                    Editar
-                  </Button>
+                  {patient.status !== "compartilhado" && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        navigate(`/pacientes/${patient.id}/editar`)
+                      }
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      <Edit className="h-4 w-4 mr-1" />
+                      Editar
+                    </Button>
+                  )}
                 </div>
 
                 <div className="space-y-3">
