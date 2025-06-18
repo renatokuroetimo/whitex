@@ -34,8 +34,8 @@ const MigrationPanel: React.FC = () => {
     };
   }, []);
 
-  // Temporariamente habilitado em produção para migração
-  // if (!import.meta.env.DEV) return null;
+  // Migração concluída - componente desabilitado
+  return null;
 
   if (!isVisible) {
     return (
