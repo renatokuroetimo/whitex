@@ -290,9 +290,15 @@ const DoctorSearch = () => {
                           </div>
                           <div className="flex items-center gap-4 text-sm text-gray-600">
                             <span>
-                              CRM: {formatCRM(doctor.crm, doctor.state)}
+                              CRM: {doctor.crm}
+                              {doctor.state ? `-${doctor.state}` : ""}
                             </span>
-                            {doctor.city && <span>• {doctor.city}</span>}
+                            <span>
+                              •{" "}
+                              {doctor.city && doctor.state
+                                ? `${doctor.city}`
+                                : "Sem cidade e estado cadastrado"}
+                            </span>
                           </div>
                         </div>
                         <Button
