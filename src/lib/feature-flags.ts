@@ -49,6 +49,11 @@ export const setFeatureFlag = (
   saveFlags(newFlags);
 
   console.log(`🏁 Feature flag atualizada: ${flag} = ${value}`);
+  console.log(`📊 Todas as flags:`, newFlags);
+
+  // Verificar se foi salvo corretamente
+  const verificacao = getFeatureFlags();
+  console.log(`✅ Verificação após salvar:`, verificacao);
 };
 
 // Verificar se uma feature está habilitada
