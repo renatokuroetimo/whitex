@@ -336,16 +336,10 @@ const PatientProfile = () => {
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-between mb-8">
               <h1 className="text-2xl font-semibold text-gray-900">
-                {isViewingOtherPatient
-                  ? "Perfil do Paciente"
-                  : "Dados pessoais"}
+                Dados pessoais
               </h1>
               <button
-                onClick={() =>
-                  navigate(
-                    isViewingOtherPatient ? "/pacientes" : "/patient-dashboard",
-                  )
-                }
+                onClick={() => navigate("/patient-dashboard")}
                 className="text-sm text-blue-600 hover:text-blue-800"
               >
                 ← Voltar
@@ -357,14 +351,10 @@ const PatientProfile = () => {
               onValueChange={setActiveTab}
               className="space-y-6"
             >
-              <TabsList
-                className={`grid w-full ${isViewingOtherPatient ? "grid-cols-2" : "grid-cols-3"}`}
-              >
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="perfil">Perfil</TabsTrigger>
                 <TabsTrigger value="dados-medicos">Dados médicos</TabsTrigger>
-                {!isViewingOtherPatient && (
-                  <TabsTrigger value="medicos">Médicos</TabsTrigger>
-                )}
+                <TabsTrigger value="medicos">Médicos</TabsTrigger>
               </TabsList>
 
               {/* Tab Perfil */}
