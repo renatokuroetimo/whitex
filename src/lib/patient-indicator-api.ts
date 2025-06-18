@@ -82,6 +82,46 @@ class PatientIndicatorAPI {
       updatedAt: new Date().toISOString(),
     };
 
+    console.log("🔥 CRIANDO VALOR INDICADOR:", newValue);
+
+    // Se Supabase estiver ativo, usar Supabase
+    if (isFeatureEnabled("useSupabaseIndicators") && supabase) {
+      console.log("🚀 Criando valor indicador no Supabase");
+
+      try {
+        const insertData = {
+          id: newValue.id,
+          patient_id: newValue.patientId,
+          indicator_id: newValue.indicatorId,
+          value: newValue.value,
+          date: newValue.date,
+          created_at: newValue.createdAt,
+        };
+
+        console.log("📝 Dados do valor indicador:", insertData);
+
+        const { data: supabaseData, error } = await supabase
+          .from("patient_indicator_values")
+          .insert([insertData]);
+
+        console.log("📊 Resposta do Supabase:", { data: supabaseData, error });
+
+        if (error) {
+          console.error("❌ Erro ao criar valor indicador:", error);
+          throw error; // Forçar fallback
+        } else {
+          console.log("✅ Valor indicador criado no Supabase!");
+          return newValue;
+        }
+      } catch (supabaseError) {
+        console.error("💥 Erro no Supabase valor indicador:", supabaseError);
+        // Continuar para fallback
+      }
+    } else {
+      console.log("⚠️ Supabase indicadores não ativo para valores");
+    }
+
+    console.log("📁 Salvando valor indicador no localStorage");
     const values = this.getStoredIndicatorValues();
     values.push(newValue);
     this.saveIndicatorValues(values);
