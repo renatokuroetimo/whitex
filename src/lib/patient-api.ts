@@ -237,7 +237,10 @@ class PatientAPI {
 
       return sharedPatients;
     } catch (error) {
-      console.error("Error getting shared patients:", error);
+      console.error("Error getting shared patients:", {
+        message: error instanceof Error ? error.message : "Unknown error",
+        error: error,
+      });
       return [];
     }
   }
