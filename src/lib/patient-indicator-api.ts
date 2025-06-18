@@ -3,6 +3,8 @@ import {
   PatientIndicatorFormData,
 } from "./patient-indicator-types";
 import { indicatorAPI } from "./indicator-api";
+import { supabase } from "./supabase";
+import { isFeatureEnabled } from "./feature-flags";
 
 class PatientIndicatorAPI {
   private readonly STORAGE_KEY = "medical_app_patient_indicators";
