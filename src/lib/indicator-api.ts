@@ -6,6 +6,8 @@ import {
   IndicatorFormData,
   IndicatorWithDetails,
 } from "./indicator-types";
+import { supabase } from "./supabase";
+import { isFeatureEnabled } from "./feature-flags";
 
 class IndicatorAPI {
   private readonly STORAGE_KEYS = {
