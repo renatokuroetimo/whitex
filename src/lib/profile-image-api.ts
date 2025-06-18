@@ -9,6 +9,22 @@ class ProfileImageAPI {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
+  // Verificar se a tabela profile_images existe
+  async checkTableExists(): Promise<boolean> {
+    if (!supabase) return false;
+
+    try {
+      const { error } = await supabase
+        .from("profile_images")
+        .select("id")
+        .limit(1);
+
+      return !error || error.code !== "PGRST204";
+    } catch {
+      return false;
+    }
+  }
+
   // Salvar imagem de perfil
   async saveProfileImage(userId: string, imageData: string): Promise<void> {
     await this.delay(300);
