@@ -243,9 +243,7 @@ const PatientProfile = () => {
   };
 
   const handleImageClick = () => {
-    if (!isViewingOtherPatient) {
-      fileInputRef.current?.click();
-    }
+    fileInputRef.current?.click();
   };
 
   const searchForDoctors = async () => {
@@ -426,7 +424,6 @@ const PatientProfile = () => {
                           }))
                         }
                         placeholder="Digite seu nome completo"
-                        disabled={isViewingOtherPatient}
                       />
                     </div>
 
