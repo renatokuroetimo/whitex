@@ -39,12 +39,6 @@ const Pacientes = () => {
 
     setIsLoading(true);
     try {
-      // Inicializar com dados mock para desenvolvimento
-      const storedPatients = localStorage.getItem("medical_app_patients");
-      if (!storedPatients || JSON.parse(storedPatients).length === 0) {
-        patientAPI.initializeMockData(user.id);
-      }
-
       const result = await patientAPI.getPatients(user.id, page, 10, search);
       setPatients(result.patients);
       setPagination(result.pagination);
