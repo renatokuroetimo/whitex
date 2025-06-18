@@ -304,19 +304,75 @@ class PatientProfileAPI {
   }
 
   // Get doctors from registered users instead of mock data
-  private getRegisteredDoctors(): Doctor[] {
+  private async getRegisteredDoctors(): Promise<Doctor[]> {
+    console.log("🔍 Buscando médicos registrados...");
+
+    // Try Supabase first if feature is enabled
+    if (isFeatureEnabled("useSupabaseProfiles") && supabase) {
+      console.log("🚀 Buscando médicos no Supabase");
+
+      try {
+        const { data: supabaseUsers, error } = await supabase
+          .from("users")
+          .select("*")
+          .eq("profession", "medico");
+
+        console.log("📊 Médicos do Supabase:", { data: supabaseUsers, error });
+
+        if (error) {
+          console.error(
+            "❌ Erro ao buscar médicos no Supabase:",
+            JSON.stringify(
+              {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+              },
+              null,
+              2,
+            ),
+          );
+          // Continue to localStorage fallback
+        } else {
+          const doctors = (supabaseUsers || []).map((user: any) =>
+            this.mapUserToDoctor(user, "supabase"),
+          );
+          console.log("✅ Médicos convertidos do Supabase:", doctors);
+          return doctors;
+        }
+      } catch (supabaseError) {
+        console.error("💥 Erro no Supabase getRegisteredDoctors:", {
+          message:
+            supabaseError instanceof Error
+              ? supabaseError.message
+              : "Unknown error",
+          name: supabaseError instanceof Error ? supabaseError.name : "Unknown",
+        });
+        // Continue to localStorage fallback
+      }
+    }
+
+    console.log("⚠️ Usando localStorage fallback para médicos");
+
     try {
       const users = localStorage.getItem("medical_app_users");
       const parsedUsers = users ? JSON.parse(users) : [];
 
-      console.log("📋 Todos os usuários registrados:", parsedUsers);
+      console.log(
+        "📋 Todos os usuários registrados (localStorage):",
+        parsedUsers,
+      );
 
       // Filter only users with profession "medico" and convert to Doctor format
       const doctorUsers = parsedUsers.filter(
         (user: any) => user.profession === "medico",
       );
 
-      console.log("👨‍⚕️ Usuários médicos encontrados:", doctorUsers);
+      console.log(
+        "👨‍⚕️ Usuários médicos encontrados (localStorage):",
+        doctorUsers,
+      );
 
       return doctorUsers.map((user: any) => {
         // Use existing name or show "Sem nome cadastrado"
