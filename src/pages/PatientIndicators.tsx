@@ -139,13 +139,15 @@ const PatientIndicators = () => {
                   Ver Gráficos
                 </Button>
               )}
-              <Button
-                onClick={handleAddIndicator}
-                className="bg-green-600 hover:bg-green-700 text-white"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Adicionar Registro
-              </Button>
+              {!isViewingOtherPatient && (
+                <Button
+                  onClick={handleAddIndicator}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Adicionar Registro
+                </Button>
+              )}
             </div>
           </div>
 
@@ -161,16 +163,19 @@ const PatientIndicators = () => {
                   Nenhum indicador registrado
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  Comece a registrar seus indicadores de saúde para acompanhar
-                  sua evolução e compartilhar com seus médicos.
+                  {isViewingOtherPatient
+                    ? "Este paciente ainda não registrou nenhum indicador."
+                    : "Comece a registrar seus indicadores de saúde para acompanhar sua evolução e compartilhar com seus médicos."}
                 </p>
-                <Button
-                  onClick={handleAddIndicator}
-                  className="bg-green-600 hover:bg-green-700 text-white"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Registrar Primeiro Indicador
-                </Button>
+                {!isViewingOtherPatient && (
+                  <Button
+                    onClick={handleAddIndicator}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Registrar Primeiro Indicador
+                  </Button>
+                )}
               </div>
             </div>
           ) : (
