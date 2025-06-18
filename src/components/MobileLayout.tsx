@@ -121,12 +121,16 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
   // Carregar imagem de perfil
   useEffect(() => {
     if (currentUser?.id) {
-      const savedImage = localStorage.getItem(
-        `profile_image_${currentUser.id}`,
-      );
-      if (savedImage && savedImage.startsWith("data:")) {
-        setProfileImage(savedImage);
-      }
+      profileImageAPI
+        .getProfileImage(currentUser.id)
+        .then((image) => {
+          if (image && image.startsWith("data:")) {
+            setProfileImage(image);
+          }
+        })
+        .catch((error) => {
+          console.warn("Erro ao carregar imagem de perfil:", error);
+        });
     }
   }, [currentUser?.id]);
 
