@@ -23,6 +23,33 @@ class IndicatorAPI {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
+  // Mapear ID de categoria para nome real
+  private mapCategoryIdToName(categoryId: string): string {
+    const categoryMap: { [key: string]: string } = {
+      cat1: "Sinais Vitais",
+      cat2: "Exames Laboratoriais",
+      cat3: "Medidas Antropométricas",
+      cat4: "Medicamentos",
+      cat5: "Sintomas",
+    };
+    return categoryMap[categoryId] || categoryId || "Categoria";
+  }
+
+  // Mapear ID de subcategoria para nome real
+  private mapSubcategoryIdToName(subcategoryId: string): string {
+    const subcategoryMap: { [key: string]: string } = {
+      sub1: "Pressão Arterial",
+      sub2: "Frequência Cardíaca",
+      sub3: "Temperatura",
+      sub4: "Glicemia",
+      sub5: "Colesterol",
+      sub6: "Peso",
+      sub7: "Altura",
+      sub8: "IMC",
+    };
+    return subcategoryMap[subcategoryId] || subcategoryId || "Subcategoria";
+  }
+
   // Gera ID único
   private generateId(): string {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
