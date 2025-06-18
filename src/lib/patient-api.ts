@@ -237,10 +237,18 @@ class PatientAPI {
 
       return sharedPatients;
     } catch (error) {
-      console.error("Error getting shared patients:", {
-        message: error instanceof Error ? error.message : "Unknown error",
-        error: error,
-      });
+      console.error(
+        "Error getting shared patients:",
+        JSON.stringify(
+          {
+            message: error instanceof Error ? error.message : "Unknown error",
+            stack: error instanceof Error ? error.stack : undefined,
+            error: error,
+          },
+          null,
+          2,
+        ),
+      );
       return [];
     }
   }
@@ -656,7 +664,7 @@ class PatientAPI {
     localStorage.removeItem(this.STORAGE_KEYS.PATIENTS);
     localStorage.removeItem(this.STORAGE_KEYS.DIAGNOSES);
   }
-  // Adicionar diagnóstico
+  // Adicionar diagn��stico
   async addDiagnosis(
     patientId: string,
     diagnosis: Omit<Diagnosis, "id" | "patientId" | "createdAt">,
