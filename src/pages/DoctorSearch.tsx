@@ -29,8 +29,8 @@ const DoctorSearch = () => {
 
   useEffect(() => {
     if (user?.id && user.profession === "paciente") {
-      // Initialize mock doctors and load shared doctors
-      patientProfileAPI.initializeMockDoctors().then(() => {
+      // Load registered doctors and shared doctors
+      patientProfileAPI.loadRegisteredDoctors().then(() => {
         loadSharedDoctors();
       });
     }
@@ -63,8 +63,8 @@ const DoctorSearch = () => {
 
     setIsSearching(true);
     try {
-      // Ensure mock doctors are initialized
-      await patientProfileAPI.initializeMockDoctors();
+      // Ensure registered doctors are loaded
+      await patientProfileAPI.loadRegisteredDoctors();
 
       const results = await patientProfileAPI.searchDoctors(searchQuery);
       console.log("Search results:", results);
@@ -212,9 +212,9 @@ const DoctorSearch = () => {
                     setSearchQuery("");
                     setIsSearching(true);
                     try {
-                      // Clear and reinitialize doctors data
+                      // Clear and load registered doctors only
                       patientProfileAPI.clearDoctorsData();
-                      await patientProfileAPI.initializeMockDoctors();
+                      await patientProfileAPI.loadRegisteredDoctors();
                       const results = await patientProfileAPI.searchDoctors("");
                       console.log("All doctors:", results);
                       const sharedDoctorIds = sharedDoctors.map((d) => d.id);
@@ -244,48 +244,16 @@ const DoctorSearch = () => {
                 </Button>
                 <Button
                   onClick={() => {
-                    // Create sample registered doctor user for testing
-                    const sampleDoctor = {
-                      id: "doc_test_" + Date.now(),
-                      email: "renato.kuroe@clinica.com",
-                      profession: "medico",
-                      name: "Dr. Renato Kuroe",
-                      crm: "123333",
-                      state: "SP",
-                      city: "São Paulo",
-                      specialty: "Cardiologia",
-                      createdAt: new Date().toISOString(),
-                    };
-
-                    const users = JSON.parse(
-                      localStorage.getItem("medical_app_users") || "[]",
-                    );
-                    const existingDoctor = users.find(
-                      (u: any) => u.crm === "123333",
-                    );
-                    if (!existingDoctor) {
-                      users.push(sampleDoctor);
-                      localStorage.setItem(
-                        "medical_app_users",
-                        JSON.stringify(users),
-                      );
-                      toast({
-                        title: "Dr. Renato Kuroe criado",
-                        description:
-                          "Agora você pode buscar por 'Renato' ou '123333'",
-                      });
-                    } else {
-                      toast({
-                        title: "Dr. Renato Kuroe já existe",
-                        description:
-                          "Use 'Ver Todos' para visualizar todos os médicos",
-                      });
-                    }
+                    toast({
+                      title: "Como encontrar médicos",
+                      description:
+                        "Apenas médicos que se cadastraram no sistema aparecerão na busca. Para criar uma conta de médico, use a tela de registro.",
+                    });
                   }}
                   variant="secondary"
                   size="sm"
                 >
-                  Criar Dr. Renato
+                  Como Funciona
                 </Button>
               </div>
             </div>

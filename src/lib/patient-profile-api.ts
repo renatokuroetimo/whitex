@@ -162,10 +162,10 @@ class PatientProfileAPI {
 
       return doctorUsers.map((user: any) => ({
         id: user.id,
-        name: user.name || user.email.split("@")[0], // Use name if available, otherwise email prefix
-        crm: user.crm || Math.floor(Math.random() * 900000 + 100000).toString(), // Generate random CRM if not provided
+        name: user.name || `Dr. ${user.email.split("@")[0]}`, // Add Dr. prefix if name not available
+        crm: user.crm || "000000", // Use provided CRM or default
         state: user.state || "SP",
-        specialty: user.specialty || "Clínico Geral", // Default specialty
+        specialty: user.specialty || "Clínico Geral",
         email: user.email,
         city: user.city || "São Paulo",
         createdAt: user.createdAt || new Date().toISOString(),
@@ -175,135 +175,23 @@ class PatientProfileAPI {
     }
   }
 
-  async initializeMockDoctors(): Promise<void> {
-    // Get doctors from registered users first
+  async loadRegisteredDoctors(): Promise<void> {
+    // Get only doctors from registered users - no mocks
     const registeredDoctors = this.getRegisteredDoctors();
 
-    const doctors = this.getStoredDoctors();
-    // Force reinitialize if we don't have Dr. Renato Kuroe or if we need to sync with registered users
-    const hasRenato = doctors.some(
-      (d) => d.name.includes("Renato Kuroe") || d.crm === "123333",
-    );
-    if (doctors.length === 0 || !hasRenato || registeredDoctors.length > 0) {
-      const mockDoctors: Doctor[] = [
-        {
-          id: "doc1",
-          name: "Dr. João Silva",
-          crm: "123456",
-          state: "SP",
-          specialty: "Cardiologia",
-          email: "joao.silva@email.com",
-          city: "São Paulo",
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: "doc2",
-          name: "Dra. Maria Santos",
-          crm: "789012",
-          state: "RJ",
-          specialty: "Clínico Geral",
-          email: "maria.santos@email.com",
-          city: "Rio de Janeiro",
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: "doc3",
-          name: "Dr. Pedro Costa",
-          crm: "345678",
-          state: "MG",
-          specialty: "Endocrinologia",
-          email: "pedro.costa@email.com",
-          city: "Belo Horizonte",
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: "doc4",
-          name: "Dra. Ana Oliveira",
-          crm: "111222",
-          state: "SP",
-          specialty: "Ginecologia",
-          email: "ana.oliveira@email.com",
-          city: "São Paulo",
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: "doc5",
-          name: "Dr. Carlos Mendes",
-          crm: "333444",
-          state: "RS",
-          specialty: "Ortopedia",
-          email: "carlos.mendes@email.com",
-          city: "Porto Alegre",
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: "doc6",
-          name: "Dr. Fernando Rodrigues",
-          crm: "555666",
-          state: "PR",
-          specialty: "Neurologia",
-          email: "fernando.rodrigues@email.com",
-          city: "Curitiba",
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: "doc7",
-          name: "Dra. Beatriz Lima",
-          crm: "777888",
-          state: "BA",
-          specialty: "Pediatria",
-          email: "beatriz.lima@email.com",
-          city: "Salvador",
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: "doc8",
-          name: "Dr. Ricardo Almeida",
-          crm: "999000",
-          state: "CE",
-          specialty: "Dermatologia",
-          email: "ricardo.almeida@email.com",
-          city: "Fortaleza",
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: "doc9",
-          name: "Dr. Renato Kuroe",
-          crm: "123333",
-          state: "SP",
-          specialty: "Clínico Geral",
-          email: "renato.kuroe@email.com",
-          city: "São Paulo",
-          createdAt: new Date().toISOString(),
-        },
-      ];
+    // Always update with latest registered doctors
+    this.saveDoctors(registeredDoctors);
 
-      // Merge with registered doctors (avoid duplicates)
-      const registeredDoctors = this.getRegisteredDoctors();
-      const allDoctors = [...mockDoctors];
-
-      registeredDoctors.forEach((regDoc) => {
-        const exists = allDoctors.some(
-          (doc) =>
-            doc.email === regDoc.email ||
-            (doc.crm === regDoc.crm && doc.state === regDoc.state),
-        );
-        if (!exists) {
-          allDoctors.push(regDoc);
-        }
-      });
-
-      this.saveDoctors(allDoctors);
-    }
+    console.log("Loaded registered doctors:", registeredDoctors);
   }
 
   async searchDoctors(query: string): Promise<Doctor[]> {
     await this.delay(300);
-    // Always refresh with latest registered users
-    await this.initializeMockDoctors();
+    // Always refresh with latest registered users only
+    await this.loadRegisteredDoctors();
 
     const doctors = this.getStoredDoctors();
-    console.log("Available doctors (including registered):", doctors);
+    console.log("Available registered doctors:", doctors);
 
     const searchTerm = query.toLowerCase().trim();
 
