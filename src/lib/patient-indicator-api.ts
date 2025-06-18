@@ -292,7 +292,10 @@ class PatientIndicatorAPI {
           .eq("patient_id", patientId)
           .order("created_at", { ascending: false });
 
-        console.log("📊 Valores do Supabase:", { data: supabaseValues, error });
+        console.log("📊 Valores brutos do Supabase:", {
+          data: supabaseValues,
+          error,
+        });
 
         if (error) {
           console.error(
@@ -311,26 +314,79 @@ class PatientIndicatorAPI {
           throw error;
         }
 
-        // Converter dados do Supabase para formato local
+        if (!supabaseValues || supabaseValues.length === 0) {
+          console.log("📭 Nenhum valor encontrado");
+          return [];
+        }
+
+        // Buscar indicadores padrão e customizados para fazer lookup
+        console.log("🔍 Buscando dados dos indicadores para lookup...");
+        const standardIndicators = await indicatorAPI.getStandardIndicators();
+        const customIndicators = await indicatorAPI.getIndicators(patientId); // Usar patientId como fallback
+
+        console.log("📊 Indicadores disponíveis:", {
+          standard: standardIndicators.length,
+          custom: customIndicators.length,
+        });
+
+        // Converter dados do Supabase para formato local com lookup de dados
         const values: PatientIndicatorValue[] = (supabaseValues || []).map(
-          (val: any): PatientIndicatorValue => ({
-            id: val.id,
-            patientId: val.patient_id,
-            indicatorId: val.indicator_id,
-            categoryName: val.category_name || "Categoria",
-            subcategoryName: val.subcategory_name || "Subcategoria",
-            parameter: val.parameter || "Parâmetro",
-            unitSymbol: val.unit_symbol || "",
-            value: val.value,
-            date: val.date,
-            time: val.time,
-            visibleToMedics: true,
-            createdAt: val.created_at,
-            updatedAt: val.updated_at || val.created_at,
-          }),
+          (val: any): PatientIndicatorValue => {
+            console.log("🔍 Processando valor:", val);
+
+            // Buscar dados do indicador
+            let indicatorData = standardIndicators.find(
+              (ind) => ind.id === val.indicator_id,
+            );
+
+            if (!indicatorData) {
+              indicatorData = customIndicators.find(
+                (ind) => ind.id === val.indicator_id,
+              );
+            }
+
+            console.log("📋 Dados do indicador encontrados:", indicatorData);
+
+            const result: PatientIndicatorValue = {
+              id: val.id,
+              patientId: val.patient_id,
+              indicatorId: val.indicator_id,
+              indicatorType: indicatorData
+                ? standardIndicators.find((ind) => ind.id === val.indicator_id)
+                  ? "standard"
+                  : "custom"
+                : "standard",
+              categoryName:
+                indicatorData?.categoryName ||
+                indicatorData?.category ||
+                "Categoria não encontrada",
+              subcategoryName:
+                indicatorData?.subcategoryName ||
+                indicatorData?.subcategory ||
+                "Subcategoria não encontrada",
+              parameter:
+                indicatorData?.parameter ||
+                indicatorData?.name ||
+                "Parâmetro não encontrado",
+              unitSymbol:
+                indicatorData?.unitSymbol ||
+                indicatorData?.unitOfMeasureSymbol ||
+                indicatorData?.unit ||
+                "",
+              value: val.value,
+              date: val.date,
+              time: val.time,
+              visibleToMedics: true,
+              createdAt: val.created_at,
+              updatedAt: val.updated_at || val.created_at,
+            };
+
+            console.log("✅ Valor processado:", result);
+            return result;
+          },
         );
 
-        console.log("✅ Valores convertidos:", values);
+        console.log("✅ Todos os valores convertidos:", values);
         return values;
       } catch (supabaseError) {
         console.error(
