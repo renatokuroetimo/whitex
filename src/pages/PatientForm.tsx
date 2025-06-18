@@ -27,6 +27,7 @@ const PatientForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedState, setSelectedState] = useState("");
   const [availableCities, setAvailableCities] = useState<string[]>([]);
+  const [isSharedPatient, setIsSharedPatient] = useState(false);
   const [formData, setFormData] = useState<PatientFormData>({
     name: "",
     age: 0,
@@ -68,6 +69,9 @@ const PatientForm = () => {
         });
         setSelectedState(patient.state);
         setAvailableCities(getCitiesByState(patient.state));
+
+        // Detectar se é paciente compartilhado
+        setIsSharedPatient(patient.status === "compartilhado");
       }
     } catch (error) {
       toast({
