@@ -225,7 +225,9 @@ const PatientForm = () => {
           title: "Sucesso",
           description: "Paciente atualizado com sucesso",
         });
-        navigate(`/pacientes/${id}`);
+        // Forçar recarregamento completo da página de detalhes para atualizar observações
+        navigate(`/pacientes/${id}`, { replace: true });
+        window.location.reload();
       } else {
         if (!user?.id) return;
         const newPatient = await patientAPI.createPatient(user.id, formData);
