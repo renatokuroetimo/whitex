@@ -61,10 +61,16 @@ const PatientGraphView = () => {
   const unit = searchParams.get("unit") || "";
 
   useEffect(() => {
-    if (patientId && category && subcategory && parameter) {
+    if (
+      (patientId || (user?.profession === "paciente" && user?.id)) &&
+      category &&
+      subcategory &&
+      parameter &&
+      unit
+    ) {
       loadData();
     }
-  }, [patientId, category, subcategory, parameter]);
+  }, [patientId, user, category, subcategory, parameter, unit]);
 
   useEffect(() => {
     if (indicators.length > 0) {
@@ -73,16 +79,22 @@ const PatientGraphView = () => {
   }, [indicators, timeRange]);
 
   const loadData = async () => {
-    if (!patientId) return;
+    const targetPatientId = patientId || user?.id;
+    if (!targetPatientId) return;
 
     setIsLoading(true);
     try {
+      const shouldLoadPatientData =
+        !!patientId && user?.profession === "medico";
+
       const [patientData, indicatorValues] = await Promise.all([
-        patientAPI.getPatientById(patientId),
-        patientIndicatorAPI.getPatientIndicatorValues(patientId),
+        shouldLoadPatientData
+          ? patientAPI.getPatientById(targetPatientId)
+          : Promise.resolve(null),
+        patientIndicatorAPI.getPatientIndicatorValues(targetPatientId),
       ]);
 
-      if (!patientData) {
+      if (shouldLoadPatientData && !patientData) {
         toast({
           variant: "destructive",
           title: "Erro",
@@ -92,7 +104,9 @@ const PatientGraphView = () => {
         return;
       }
 
-      setPatient(patientData);
+      if (shouldLoadPatientData) {
+        setPatient(patientData);
+      }
 
       // Filtrar indicadores pelo tipo selecionado
       const filteredIndicators = indicatorValues.filter(
