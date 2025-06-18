@@ -342,10 +342,10 @@ class PatientProfileAPI {
           id: user.id,
           name: doctorName,
           crm: user.crm || "123456", // Use provided CRM or default
-          state: user.state || "SP", // Default to SP if no state provided
+          state: user.state || "", // No default, use empty if not provided
           specialty: user.specialty || "", // Use actual specialty from database
           email: user.email,
-          city: user.city || "São Paulo",
+          city: user.city || "", // No default, use empty if not provided
           createdAt:
             user.createdAt || user.created_at || new Date().toISOString(),
         };
