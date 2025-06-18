@@ -263,7 +263,9 @@ const PatientGraphView = () => {
                   {subcategory} - {parameter}
                 </h1>
                 <p className="text-sm text-gray-600">
-                  {patient.name} • {category}
+                  {patientId
+                    ? `${patient?.name || "Paciente"} • ${category}`
+                    : `Seus dados • ${category}`}
                 </p>
               </div>
             </div>
