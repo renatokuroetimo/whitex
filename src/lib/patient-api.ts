@@ -684,6 +684,24 @@ class PatientAPI {
             2,
           ),
         );
+
+        // Identificar tipo de erro para melhor feedback
+        if (
+          supabaseError instanceof Error &&
+          supabaseError.message.includes("Failed to fetch")
+        ) {
+          console.log(
+            "🌐 Problema de conectividade com Supabase - usando localStorage",
+          );
+        } else if (
+          supabaseError instanceof Error &&
+          supabaseError.message === "NETWORK_ERROR"
+        ) {
+          console.log("🌐 Erro de rede sinalizado - usando localStorage");
+        } else {
+          console.log("⚠️ Erro desconhecido do Supabase - usando localStorage");
+        }
+
         // Continuar para fallback localStorage
       }
     }
