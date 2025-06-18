@@ -287,7 +287,7 @@ const PatientForm = () => {
               <div className="mb-6">
                 <h2 className="text-lg font-medium text-gray-900 mb-1">
                   {isSharedPatient
-                    ? "Diagnósticos e Observaç��es"
+                    ? "Diagnósticos e Observações"
                     : "Dados do paciente"}
                 </h2>
                 <p className="text-sm text-gray-600">
@@ -545,9 +545,13 @@ const PatientForm = () => {
                       onChange={(e) =>
                         handleInputChange("notes", e.target.value)
                       }
-                      placeholder="Adicione observações sobre o paciente (ex: precisa ficar em repouso)"
+                      placeholder={
+                        isSharedPatient
+                          ? "Adicione observações médicas sobre o paciente..."
+                          : "Adicione observações sobre o paciente (ex: precisa ficar em repouso)"
+                      }
                       className="w-full"
-                      rows={3}
+                      rows={isSharedPatient ? 4 : 3}
                     />
                   </div>
                 </div>
