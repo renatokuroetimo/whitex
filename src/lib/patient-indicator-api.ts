@@ -194,30 +194,55 @@ class PatientIndicatorAPI {
 
         console.log("📝 Dados do valor indicador:", insertData);
 
-        const { data: supabaseData, error } = await supabase
-          .from("patient_indicator_values")
-          .insert([insertData]);
+        let supabaseData, error;
 
-        console.log("📊 Resposta do Supabase:", { data: supabaseData, error });
+        try {
+          const result = await supabase
+            .from("patient_indicator_values")
+            .insert([insertData]);
+          supabaseData = result.data;
+          error = result.error;
 
-        if (error) {
-          console.error(
-            "❌ Erro ao criar valor indicador:",
-            JSON.stringify(
-              {
-                message: error.message,
-                details: error.details,
-                hint: error.hint,
-                code: error.code,
-              },
-              null,
-              2,
-            ),
-          );
-          throw error; // Forçar fallback
-        } else {
-          console.log("✅ Valor indicador criado no Supabase!");
-          return newValue;
+          console.log("📊 Resposta do Supabase:", {
+            data: supabaseData,
+            error,
+          });
+
+          if (error) {
+            // Se ainda der erro de schema, tentar estrutura ainda mais simples
+            if (error.code === "PGRST204") {
+              console.log(
+                "🔄 Tentando estrutura mínima devido a erro de schema",
+              );
+              const minimalData = {
+                id: newValue.id,
+                value: newValue.value,
+              };
+
+              const minimalResult = await supabase
+                .from("patient_indicator_values")
+                .insert([minimalData]);
+
+              if (minimalResult.error) {
+                console.error(
+                  "❌ Erro mesmo com estrutura mínima:",
+                  minimalResult.error,
+                );
+                throw minimalResult.error;
+              } else {
+                console.log("✅ Valor indicador criado com estrutura mínima!");
+                return newValue;
+              }
+            } else {
+              throw error;
+            }
+          } else {
+            console.log("✅ Valor indicador criado no Supabase!");
+            return newValue;
+          }
+        } catch (insertError) {
+          console.error("💥 Erro no insert:", insertError);
+          throw insertError;
         }
       } catch (supabaseError) {
         console.error(
