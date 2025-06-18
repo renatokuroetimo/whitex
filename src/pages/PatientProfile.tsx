@@ -225,6 +225,14 @@ const PatientProfile = () => {
         const result = e.target?.result as string;
         setProfileImage(result);
         localStorage.setItem(`profile_image_${user?.id}`, result);
+
+        // Dispatch custom event to notify sidebar
+        window.dispatchEvent(
+          new CustomEvent("profileImageUpdated", {
+            detail: { userId: user?.id },
+          }),
+        );
+
         toast({
           title: "Sucesso!",
           description: "Imagem de perfil atualizada",
