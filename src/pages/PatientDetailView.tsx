@@ -253,40 +253,41 @@ const PatientDetailView = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      <tr className="border-b border-gray-100">
-                        <td className="py-3">
-                          <Badge
-                            variant="secondary"
-                            className="bg-green-100 text-green-800"
+                      {diagnoses.length === 0 ? (
+                        <tr>
+                          <td
+                            colSpan={4}
+                            className="py-8 text-center text-gray-500"
                           >
-                            Atualizado
-                          </Badge>
-                        </td>
-                        <td className="py-3 text-sm text-gray-600">
-                          01/08/2024
-                        </td>
-                        <td className="py-3 text-sm text-gray-600">
-                          Hipertensão
-                        </td>
-                        <td className="py-3 text-sm text-gray-600">I10.9</td>
-                      </tr>
-                      <tr className="border-b border-gray-100">
-                        <td className="py-3">
-                          <Badge
-                            variant="secondary"
-                            className="bg-green-100 text-green-800"
+                            Nenhum diagnóstico registrado
+                          </td>
+                        </tr>
+                      ) : (
+                        diagnoses.map((diagnosis) => (
+                          <tr
+                            key={diagnosis.id}
+                            className="border-b border-gray-100"
                           >
-                            Atualizado
-                          </Badge>
-                        </td>
-                        <td className="py-3 text-sm text-gray-600">
-                          05/03/2022
-                        </td>
-                        <td className="py-3 text-sm text-gray-600">
-                          Pré-diabetes
-                        </td>
-                        <td className="py-3 text-sm text-gray-600">R73.0</td>
-                      </tr>
+                            <td className="py-3">
+                              <Badge
+                                variant="secondary"
+                                className="bg-green-100 text-green-800"
+                              >
+                                Atualizado
+                              </Badge>
+                            </td>
+                            <td className="py-3 text-sm text-gray-600">
+                              {diagnosis.date}
+                            </td>
+                            <td className="py-3 text-sm text-gray-600">
+                              {diagnosis.status}
+                            </td>
+                            <td className="py-3 text-sm text-gray-600">
+                              {diagnosis.code}
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
