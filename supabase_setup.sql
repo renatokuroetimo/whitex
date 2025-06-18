@@ -109,6 +109,19 @@ CREATE TABLE IF NOT EXISTS doctor_patient_sharing (
 );
 
 -- ================================================================
+-- 8. DIAGNÓSTICOS DOS PACIENTES
+-- ================================================================
+CREATE TABLE IF NOT EXISTS patient_diagnoses (
+  id TEXT PRIMARY KEY, -- Using TEXT to match application ID generation
+  patient_id TEXT NOT NULL, -- Reference to patient
+  date TEXT NOT NULL, -- Date as string (DD/MM/YYYY format)
+  status TEXT NOT NULL, -- Diagnosis description
+  code TEXT NOT NULL, -- CID code
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ================================================================
 -- 8. ÍNDICES PARA PERFORMANCE
 -- ================================================================
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
