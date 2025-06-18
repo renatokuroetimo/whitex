@@ -470,6 +470,22 @@ const PatientProfile = () => {
                       />
                     </div>
 
+                    {/* E-mail */}
+                    <div className="sm:col-span-2">
+                      <Label>E-mail</Label>
+                      <Input
+                        type="email"
+                        value={personalData.email}
+                        onChange={(e) =>
+                          setPersonalData((prev) => ({
+                            ...prev,
+                            email: e.target.value,
+                          }))
+                        }
+                        placeholder="Digite seu e-mail"
+                      />
+                    </div>
+
                     {/* Data de nascimento */}
                     <div>
                       <Label>Data de Nascimento</Label>
