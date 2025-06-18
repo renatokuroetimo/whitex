@@ -47,13 +47,10 @@ const PatientGraphSelector = () => {
     setIsLoading(true);
     try {
       // Se é paciente próprio, não precisa carregar dados do paciente
-      const shouldLoadPatientData =
-        !!patientId && user?.profession === "medico";
+      const shouldLoadPatientData = !!patientId && user?.profession === "medico";
 
       const [patientData, indicatorValues] = await Promise.all([
-        shouldLoadPatientData
-          ? patientAPI.getPatientById(targetPatientId)
-          : Promise.resolve(null),
+        shouldLoadPatientData ? patientAPI.getPatientById(targetPatientId) : Promise.resolve(null),
         patientIndicatorAPI.getPatientIndicatorValues(targetPatientId),
       ]);
 
@@ -156,7 +153,9 @@ const PatientGraphSelector = () => {
       );
     } else {
       // Paciente visualizando próprio gráfico
-      navigate(`/patient/graficos/visualizar?${params.toString()}`);
+      navigate(
+        `/patient/graficos/visualizar?${params.toString()}`,
+      );
     }
   };
 
@@ -217,7 +216,7 @@ const PatientGraphSelector = () => {
               </button>
               <div>
                 <h1 className="text-2xl font-semibold text-gray-900">
-                  Gráficos de {patient.name}
+                  {patientId ? `Gráficos de ${patient?.name || "Paciente"}` : "Meus Gráficos"}
                 </h1>
                 <p className="text-sm text-gray-600">
                   Selecione um tipo de indicador para visualizar a progressão
@@ -238,15 +237,24 @@ const PatientGraphSelector = () => {
                   Nenhum gráfico disponível
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  {patient.name} precisa ter pelo menos um indicador registrado
-                  para visualizar gráficos de progressão.
-                </p>
-                <Button
-                  onClick={() =>
-                    navigate(`/pacientes/${patientId}/adicionar-indicador`)
+                  {patientId
+                    ? `${patient?.name || "Este paciente"} precisa ter pelo menos um indicador registrado para visualizar gráficos de progressão.`
+                    : "Você precisa ter pelo menos um indicador registrado para visualizar gráficos de progressão."
                   }
-                  className="bg-green-600 hover:bg-green-700 text-white"
-                >
+                </p>
+                {patientId ? (
+                  <Button
+                    onClick={() =>
+                      navigate(`/pacientes/${patientId}/adicionar-indicador`)
+                    }
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                ) : (
+                  <Button
+                    onClick={() => navigate("/patient/adicionar-indicador")}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                )}
                   <Plus className="h-4 w-4 mr-2" />
                   Adicionar Primeiro Indicador
                 </Button>
