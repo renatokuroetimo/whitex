@@ -282,7 +282,7 @@ class PatientIndicatorAPI {
         const { data: supabaseValues, error } = await supabase
           .from("patient_indicator_values")
           .select("*")
-          .eq("user_id", patientId);
+          .eq("patient_id", patientId);
 
         console.log("📊 Valores indicadores do Supabase:", {
           data: supabaseValues,
