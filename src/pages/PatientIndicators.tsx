@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Plus, Activity, TrendingUp } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
@@ -12,23 +12,27 @@ import { toast } from "@/hooks/use-toast";
 
 const PatientIndicators = () => {
   const navigate = useNavigate();
+  const { patientId } = useParams();
   const { user } = useAuth();
   const [indicators, setIndicators] = useState<PatientIndicatorValue[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (user?.id && user.profession === "paciente") {
+    if (user?.id) {
       loadIndicators();
     }
-  }, [user]);
+  }, [user, patientId]);
 
   const loadIndicators = async () => {
     if (!user?.id) return;
 
+    // Determinar qual ID de paciente usar
+    const targetPatientId = patientId || user.id;
+
     setIsLoading(true);
     try {
       const indicatorValues =
-        await patientIndicatorAPI.getPatientIndicatorValues(user.id);
+        await patientIndicatorAPI.getPatientIndicatorValues(targetPatientId);
       setIndicators(indicatorValues);
     } catch (error) {
       toast({
@@ -42,19 +46,38 @@ const PatientIndicators = () => {
   };
 
   const handleAddIndicator = () => {
-    navigate("/patient/adicionar-indicador");
+    if (isViewingOtherPatient) {
+      navigate(`/pacientes/${patientId}/adicionar-indicador`);
+    } else {
+      navigate("/patient/adicionar-indicador");
+    }
   };
 
   const handleViewGraphs = () => {
-    navigate("/patient/graficos");
+    if (isViewingOtherPatient) {
+      navigate(`/pacientes/${patientId}/graficos`);
+    } else {
+      navigate("/patient/graficos");
+    }
   };
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString("pt-BR");
   };
 
-  if (!user || user.profession !== "paciente") {
-    navigate("/dashboard");
+  // Determinar contexto de visualização
+  const isViewingOtherPatient = patientId && user?.profession === "medico";
+  const isOwnIndicators = !patientId && user?.profession === "paciente";
+
+  // Redirecionar se acesso inválido
+  if (!isViewingOtherPatient && !isOwnIndicators) {
+    if (user?.profession === "medico") {
+      navigate("/pacientes");
+    } else if (user?.profession === "paciente") {
+      navigate("/patient-dashboard");
+    } else {
+      navigate("/dashboard");
+    }
     return null;
   }
 
@@ -88,13 +111,21 @@ const PatientIndicators = () => {
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
               <button
-                onClick={() => navigate("/patient-dashboard")}
+                onClick={() =>
+                  navigate(
+                    isViewingOtherPatient
+                      ? `/pacientes/${patientId}`
+                      : "/patient-dashboard",
+                  )
+                }
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               >
                 <ArrowLeft className="h-5 w-5 text-gray-600" />
               </button>
               <h1 className="text-2xl font-semibold text-gray-900">
-                Meus Indicadores
+                {isViewingOtherPatient
+                  ? "Indicadores do Paciente"
+                  : "Meus Indicadores"}
               </h1>
             </div>
             <div className="flex gap-3">
