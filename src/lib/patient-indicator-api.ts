@@ -88,6 +88,11 @@ class PatientIndicatorAPI {
     if (isFeatureEnabled("useSupabaseIndicators") && supabase) {
       console.log("🚀 Criando valor indicador no Supabase");
 
+      // Garantir que indicadores padrão existam no Supabase
+      if (data.indicatorType === "standard") {
+        await this.ensureStandardIndicatorExists(data.indicatorId);
+      }
+
       try {
         const insertData = {
           id: newValue.id,
