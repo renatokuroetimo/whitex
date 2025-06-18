@@ -101,7 +101,24 @@ class ProfileImageAPI {
         // Se não encontrou no Supabase, tentar localStorage
         return localStorage.getItem(`${this.STORAGE_KEY_PREFIX}${userId}`);
       } catch (supabaseError) {
-        console.error("💥 Erro no Supabase getProfileImage:", supabaseError);
+        console.error(
+          "💥 Erro no Supabase getProfileImage:",
+          JSON.stringify(
+            {
+              message:
+                supabaseError instanceof Error
+                  ? supabaseError.message
+                  : "Unknown error",
+              stack:
+                supabaseError instanceof Error
+                  ? supabaseError.stack
+                  : undefined,
+              error: supabaseError,
+            },
+            null,
+            2,
+          ),
+        );
         // Fallback para localStorage
         return localStorage.getItem(`${this.STORAGE_KEY_PREFIX}${userId}`);
       }
