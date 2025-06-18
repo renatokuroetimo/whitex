@@ -287,12 +287,6 @@ const DoctorSearch = () => {
                             <h4 className="text-lg font-medium text-gray-900">
                               {doctor.name}
                             </h4>
-                            <Badge
-                              variant="outline"
-                              className="text-blue-600 border-blue-600"
-                            >
-                              {doctor.specialty}
-                            </Badge>
                           </div>
                           <div className="flex items-center gap-4 text-sm text-gray-600">
                             <span>
