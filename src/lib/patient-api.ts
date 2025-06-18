@@ -215,7 +215,7 @@ class PatientAPI {
       );
 
       console.log(
-        "✅ Compartilhamentos ativos para este m��dico:",
+        "✅ Compartilhamentos ativos para este médico:",
         activeShares,
       );
 
@@ -948,11 +948,13 @@ class PatientAPI {
                 throw new Error("Usuário atual não encontrado");
               }
 
+              console.log("💾 ===== SALVANDO OBSERVAÇÃO MÉDICA =====");
               console.log(
-                "💾 Salvando observação médica para paciente compartilhado",
+                "👨‍⚕️ Médico ID (SALVAMENTO):",
+                currentUser.id,
+                typeof currentUser.id,
               );
-              console.log("👨‍⚕️ Médico:", currentUser.id);
-              console.log("🤒 Paciente:", id);
+              console.log("🤒 Paciente ID (SALVAMENTO):", id, typeof id);
               console.log("📝 Observação:", data.notes);
 
               // Verificar se já existe uma observação deste médico para este paciente
