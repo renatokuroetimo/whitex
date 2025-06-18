@@ -183,17 +183,6 @@ const Sidebar: React.FC = () => {
                       ? "bg-blue-50 text-blue-700 border border-blue-200"
                       : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                   }`}
-                  style={
-                    active
-                      ? {
-                          backgroundColor: "rgb(239 246 255)",
-                          color: "rgb(29 78 216)",
-                          borderColor: "rgb(147 197 253)",
-                          borderWidth: "1px",
-                          borderStyle: "solid",
-                        }
-                      : {}
-                  }
                 >
                   <Icon className="w-4 h-4" />
                   {item.label}
