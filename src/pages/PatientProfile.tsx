@@ -115,9 +115,9 @@ const PatientProfile = () => {
         });
       } else if (user?.email) {
         // Se não há dados pessoais salvos, usar email do usuário atual
-        setPersonalData(prev => ({
+        setPersonalData((prev) => ({
           ...prev,
-          email: user.email
+          email: user.email,
         }));
       }
 
@@ -217,10 +217,13 @@ const PatientProfile = () => {
     try {
       console.log("🔥 INICIANDO SALVAMENTO - Dados pessoais:", {
         userId: user.id,
-        personalData
+        personalData,
       });
 
-      const result = await patientProfileAPI.savePatientPersonalData(user.id, personalData);
+      const result = await patientProfileAPI.savePatientPersonalData(
+        user.id,
+        personalData,
+      );
 
       console.log("✅ RESULTADO DO SALVAMENTO:", result);
 
@@ -233,7 +236,7 @@ const PatientProfile = () => {
       toast({
         variant: "destructive",
         title: "Erro",
-        description: `Erro ao salvar dados pessoais: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+        description: `Erro ao salvar dados pessoais: ${error instanceof Error ? error.message : "Erro desconhecido"}`,
       });
     } finally {
       setIsLoading(false);
@@ -247,10 +250,13 @@ const PatientProfile = () => {
     try {
       console.log("🔥 INICIANDO SALVAMENTO - Dados médicos:", {
         userId: user.id,
-        medicalData
+        medicalData,
       });
 
-      const result = await patientProfileAPI.savePatientMedicalData(user.id, medicalData);
+      const result = await patientProfileAPI.savePatientMedicalData(
+        user.id,
+        medicalData,
+      );
 
       console.log("✅ RESULTADO DO SALVAMENTO MÉDICO:", result);
 
@@ -263,7 +269,7 @@ const PatientProfile = () => {
       toast({
         variant: "destructive",
         title: "Erro",
-        description: `Erro ao salvar dados médicos: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+        description: `Erro ao salvar dados médicos: ${error instanceof Error ? error.message : "Erro desconhecido"}`,
       });
     } finally {
       setIsLoading(false);
@@ -294,18 +300,18 @@ const PatientProfile = () => {
         title: "Erro",
         description: "A imagem deve ter no máximo 5MB",
       });
-      event.target.value = '';
+      event.target.value = "";
       return;
     }
 
     // Verificar tipo do arquivo
-    if (!file.type.startsWith('image/')) {
+    if (!file.type.startsWith("image/")) {
       toast({
         variant: "destructive",
         title: "Erro",
         description: "Por favor, selecione apenas arquivos de imagem",
       });
-      event.target.value = '';
+      event.target.value = "";
       return;
     }
 
@@ -340,7 +346,7 @@ const PatientProfile = () => {
     };
 
     reader.readAsDataURL(file);
-    event.target.value = '';
+    event.target.value = "";
   };
 
   const handleImageClick = () => {
@@ -435,12 +441,14 @@ const PatientProfile = () => {
       <div className="flex-1 overflow-auto">
         <div className="p-4 sm:p-6 lg:p-8">
           <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-4">
-              <h1 className="text-2xl font-semibold text-gray-900">
-                Dados pessoais
-              </h1>
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-4">
+                <h1 className="text-2xl font-semibold text-gray-900">
+                  Dados pessoais
+                </h1>
+              </div>
             </div>
+
             <Tabs
               value={activeTab}
               onValueChange={setActiveTab}
