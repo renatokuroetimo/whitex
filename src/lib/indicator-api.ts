@@ -577,22 +577,29 @@ class IndicatorAPI {
   }
 
   // === STANDARD INDICATORS ===
-  private getStoredStandardIndicators(): any[] {
+  private getStoredStandardIndicators(doctorId?: string): any[] {
     try {
-      const indicators = localStorage.getItem(
-        this.STORAGE_KEYS.STANDARD_INDICATORS,
-      );
+      // Se é médico, usar configuração específica do médico
+      // Se não tem doctorId, usar configuração global (padrão)
+      const storageKey = doctorId
+        ? `${this.STORAGE_KEYS.STANDARD_INDICATORS}_doctor_${doctorId}`
+        : this.STORAGE_KEYS.STANDARD_INDICATORS;
+
+      const indicators = localStorage.getItem(storageKey);
       return indicators ? JSON.parse(indicators) : [];
     } catch {
       return [];
     }
   }
 
-  private saveStandardIndicators(indicators: any[]): void {
-    localStorage.setItem(
-      this.STORAGE_KEYS.STANDARD_INDICATORS,
-      JSON.stringify(indicators),
-    );
+  private saveStandardIndicators(indicators: any[], doctorId?: string): void {
+    // Se é médico, salvar configuração específica do médico
+    // Se não tem doctorId, salvar configuração global (padrão)
+    const storageKey = doctorId
+      ? `${this.STORAGE_KEYS.STANDARD_INDICATORS}_doctor_${doctorId}`
+      : this.STORAGE_KEYS.STANDARD_INDICATORS;
+
+    localStorage.setItem(storageKey, JSON.stringify(indicators));
   }
 
   async getStandardIndicators(): Promise<any[]> {
