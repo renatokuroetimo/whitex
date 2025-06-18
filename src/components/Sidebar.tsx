@@ -193,9 +193,6 @@ const Sidebar: React.FC = () => {
               <span className="text-sm font-medium text-gray-700">
                 Meu Perfil
               </span>
-              <span className="text-xs text-gray-500">
-                {user?.profession === "medico" ? "Médico" : "Paciente"}
-              </span>
             </div>
           </div>
           <button
