@@ -327,41 +327,53 @@ const PatientIndicators = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {indicators.map((indicator) => (
-                        <tr
-                          key={indicator.id}
-                          className="border-b border-gray-100 hover:bg-gray-50"
-                        >
-                          <td className="py-3 px-4">
-                            <div>
-                              <span className="text-sm font-medium text-gray-900">
-                                {indicator.categoryName} -{" "}
-                                {indicator.subcategoryName}
-                              </span>
-                              <p className="text-xs text-gray-600">
-                                {indicator.parameter}
-                              </p>
-                            </div>
-                          </td>
-                          <td className="py-3 px-4">
-                            <span className="text-sm font-medium text-gray-900">
-                              {indicator.value} {indicator.unitSymbol}
-                            </span>
-                          </td>
-                          <td className="py-3 px-4">
-                            <span className="text-sm text-gray-600">
-                              {indicator.date
-                                ? formatDate(indicator.date)
-                                : "Não informado"}
-                            </span>
-                          </td>
-                          <td className="py-3 px-4">
-                            <span className="text-sm text-gray-600">
-                              {formatDate(indicator.createdAt)}
-                            </span>
+                      {filteredIndicators.length === 0 ? (
+                        <tr>
+                          <td
+                            colSpan={4}
+                            className="py-8 text-center text-gray-500"
+                          >
+                            Nenhum indicador encontrado com os filtros
+                            selecionados
                           </td>
                         </tr>
-                      ))}
+                      ) : (
+                        filteredIndicators.map((indicator) => (
+                          <tr
+                            key={indicator.id}
+                            className="border-b border-gray-100 hover:bg-gray-50"
+                          >
+                            <td className="py-3 px-4">
+                              <div>
+                                <span className="text-sm font-medium text-gray-900">
+                                  {indicator.categoryName} -{" "}
+                                  {indicator.subcategoryName}
+                                </span>
+                                <p className="text-xs text-gray-600">
+                                  {indicator.parameter}
+                                </p>
+                              </div>
+                            </td>
+                            <td className="py-3 px-4">
+                              <span className="text-sm font-medium text-gray-900">
+                                {indicator.value} {indicator.unitSymbol}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4">
+                              <span className="text-sm text-gray-600">
+                                {indicator.date
+                                  ? formatDate(indicator.date)
+                                  : "Não informado"}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4">
+                              <span className="text-sm text-gray-600">
+                                {formatDate(indicator.createdAt)}
+                              </span>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
