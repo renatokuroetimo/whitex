@@ -891,13 +891,77 @@ class PatientAPI {
 
           if (sharedCheck) {
             console.log(
-              "📝 Paciente compartilhado - salvando apenas observações",
+              "📝 Paciente compartilhado - salvando observações médicas",
             );
 
-            // Para pacientes compartilhados, salvar apenas observações em uma tabela de observações médicas
+            // Para pacientes compartilhados, salvar observações na tabela medical_notes
             if (data.notes !== undefined) {
-              // Criar ou atualizar observações médicas para este paciente compartilhado
-              // Por enquanto, vamos simular que foi salvo e retornar o paciente atual
+              // Obter o ID do médico atual (precisamos passar isso do contexto)
+              // Por enquanto, vamos usar o localStorage para pegar o usuário atual
+              const currentUserStr = localStorage.getItem(
+                "medical_app_current_user",
+              );
+              const currentUser = currentUserStr
+                ? JSON.parse(currentUserStr)
+                : null;
+
+              if (!currentUser?.id) {
+                throw new Error("Usuário atual não encontrado");
+              }
+
+              console.log(
+                "💾 Salvando observação médica para paciente compartilhado",
+              );
+              console.log("👨‍⚕️ Médico:", currentUser.id);
+              console.log("🤒 Paciente:", id);
+              console.log("📝 Observação:", data.notes);
+
+              // Verificar se já existe uma observação deste médico para este paciente
+              const { data: existingNote, error: checkNoteError } =
+                await supabase
+                  .from("medical_notes")
+                  .select("id")
+                  .eq("patient_id", id)
+                  .eq("doctor_id", currentUser.id)
+                  .maybeSingle();
+
+              if (checkNoteError && checkNoteError.code !== "PGRST116") {
+                throw checkNoteError;
+              }
+
+              if (existingNote) {
+                // Atualizar observação existente
+                console.log("🔄 Atualizando observação existente");
+                const { error: updateNoteError } = await supabase
+                  .from("medical_notes")
+                  .update({
+                    notes: data.notes,
+                    updated_at: new Date().toISOString(),
+                  })
+                  .eq("id", existingNote.id);
+
+                if (updateNoteError) {
+                  throw updateNoteError;
+                }
+              } else {
+                // Criar nova observação
+                console.log("➕ Criando nova observação");
+                const { error: insertNoteError } = await supabase
+                  .from("medical_notes")
+                  .insert([
+                    {
+                      patient_id: id,
+                      doctor_id: currentUser.id,
+                      notes: data.notes,
+                    },
+                  ]);
+
+                if (insertNoteError) {
+                  throw insertNoteError;
+                }
+              }
+
+              // Retornar o paciente atualizado com as novas observações
               const currentPatient = await this.getPatientById(id);
               if (currentPatient) {
                 const updatedPatient: Patient = {
@@ -906,7 +970,7 @@ class PatientAPI {
                   updatedAt: new Date().toISOString(),
                 };
                 console.log(
-                  "✅ Observações do paciente compartilhado 'atualizadas':",
+                  "✅ Observações do paciente compartilhado salvas no Supabase:",
                   updatedPatient,
                 );
                 return updatedPatient;
