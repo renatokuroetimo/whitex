@@ -348,9 +348,6 @@ const DoctorSearch = () => {
                           <h5 className="font-medium text-gray-900">
                             {doctor.name}
                           </h5>
-                          <Badge variant="secondary" className="text-xs">
-                            {doctor.specialty}
-                          </Badge>
                         </div>
                         <p className="text-sm text-gray-600">
                           CRM: {formatCRM(doctor.crm, doctor.state)}
