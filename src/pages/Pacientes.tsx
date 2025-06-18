@@ -320,6 +320,7 @@ const Pacientes = () => {
                                 checked as boolean,
                               )
                             }
+                            disabled={patient.status === "compartilhado"}
                           />
                         </td>
                         <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
@@ -355,26 +356,30 @@ const Pacientes = () => {
                             >
                               Ver Perfil
                             </Button>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="h-8 w-8 p-0"
-                                >
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem
-                                  onClick={() =>
-                                    navigate(`/pacientes/${patient.id}/editar`)
-                                  }
-                                >
-                                  Editar perfil
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                            {patient.status !== "compartilhado" && (
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 w-8 p-0"
+                                  >
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem
+                                    onClick={() =>
+                                      navigate(
+                                        `/pacientes/${patient.id}/editar`,
+                                      )
+                                    }
+                                  >
+                                    Editar perfil
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            )}
                           </div>
                         </td>
                       </tr>
