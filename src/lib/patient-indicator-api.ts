@@ -175,24 +175,22 @@ class PatientIndicatorAPI {
       }
 
       try {
-        // Criar insert data apenas com campos essenciais
+        // Usar estrutura mínima - apenas campos que sabemos que existem
         const insertData: any = {
           id: newValue.id,
-          user_id: newValue.patientId,
+          patient_id: newValue.patientId, // Tentar com patient_id em vez de user_id
           indicator_id: newValue.indicatorId,
           value: newValue.value,
-          created_at: newValue.createdAt,
         };
 
-        // Adicionar campos opcionais apenas se tiverem valor
-        if (newValue.categoryName)
-          insertData.category_name = newValue.categoryName;
-        if (newValue.subcategoryName)
-          insertData.subcategory_name = newValue.subcategoryName;
-        if (newValue.parameter) insertData.parameter = newValue.parameter;
-        if (newValue.unitSymbol) insertData.unit_symbol = newValue.unitSymbol;
-        if (newValue.date) insertData.date = newValue.date;
-        if (newValue.time) insertData.time = newValue.time;
+        // Tentar adicionar campos básicos de data se possível
+        if (newValue.date) {
+          try {
+            insertData.date = newValue.date;
+          } catch (e) {
+            console.warn("⚠️ Campo date não suportado");
+          }
+        }
 
         console.log("📝 Dados do valor indicador:", insertData);
 
