@@ -427,7 +427,13 @@ const DoctorSearch = () => {
                   {selectedDoctor.name}
                 </h4>
                 <p className="text-sm text-gray-600">
-                  CRM: {formatCRM(selectedDoctor.crm, selectedDoctor.state)}
+                  CRM: {selectedDoctor.crm}
+                  {selectedDoctor.state
+                    ? `-${selectedDoctor.state}`
+                    : ""} •{" "}
+                  {selectedDoctor.city && selectedDoctor.state
+                    ? `${selectedDoctor.city}`
+                    : "Sem cidade e estado cadastrado"}
                 </p>
               </div>
             )}
