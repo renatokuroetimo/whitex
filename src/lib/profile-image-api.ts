@@ -171,7 +171,19 @@ class ProfileImageAPI {
           .eq("user_id", userId);
 
         if (error) {
-          console.error("❌ Erro ao remover imagem do Supabase:", error);
+          console.error(
+            "❌ Erro ao remover imagem do Supabase:",
+            JSON.stringify(
+              {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+              },
+              null,
+              2,
+            ),
+          );
         } else {
           console.log("✅ Imagem removida do Supabase");
         }
