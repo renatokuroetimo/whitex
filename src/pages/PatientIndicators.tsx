@@ -33,6 +33,19 @@ const PatientIndicators = () => {
     }
   }, [user, patientId]);
 
+  // Detectar parâmetro refresh e recarregar dados
+  useEffect(() => {
+    const refreshParam = searchParams.get("refresh");
+    if (refreshParam && user?.id) {
+      console.log("🔄 Parâmetro refresh detectado - recarregando indicadores");
+      loadIndicators();
+      // Limpar o parâmetro da URL
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete("refresh");
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [searchParams, user?.id]);
+
   // Recarregar quando a página ganha foco (útil para quando volta de outras páginas)
   useEffect(() => {
     const handleFocus = () => {
