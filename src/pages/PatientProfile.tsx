@@ -22,6 +22,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContextHybrid";
 import { patientProfileAPI } from "@/lib/patient-profile-api";
+import { profileImageAPI } from "@/lib/profile-image-api";
 import { brazilStates, getCitiesByState } from "@/lib/brazil-locations";
 import {
   PatientPersonalData,
