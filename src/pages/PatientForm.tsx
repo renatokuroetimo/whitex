@@ -37,6 +37,13 @@ const PatientForm = () => {
     notes: "",
   });
 
+  // Diagnosis form state
+  const [diagnosisForm, setDiagnosisForm] = useState({
+    cid: "",
+    diagnosis: "",
+  });
+  const [isAddingDiagnosis, setIsAddingDiagnosis] = useState(false);
+
   useEffect(() => {
     if (isEditing && id) {
       loadPatientData();
