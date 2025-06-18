@@ -191,7 +191,24 @@ class ProfileImageAPI {
         // Remover do localStorage também
         localStorage.removeItem(`${this.STORAGE_KEY_PREFIX}${userId}`);
       } catch (supabaseError) {
-        console.error("💥 Erro no Supabase removeProfileImage:", supabaseError);
+        console.error(
+          "💥 Erro no Supabase removeProfileImage:",
+          JSON.stringify(
+            {
+              message:
+                supabaseError instanceof Error
+                  ? supabaseError.message
+                  : "Unknown error",
+              stack:
+                supabaseError instanceof Error
+                  ? supabaseError.stack
+                  : undefined,
+              error: supabaseError,
+            },
+            null,
+            2,
+          ),
+        );
         // Mesmo com erro, remover do localStorage
         localStorage.removeItem(`${this.STORAGE_KEY_PREFIX}${userId}`);
       }
