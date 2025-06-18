@@ -18,6 +18,7 @@ ALTER TABLE patients DISABLE ROW LEVEL SECURITY;
 ALTER TABLE indicators DISABLE ROW LEVEL SECURITY;
 ALTER TABLE patient_indicator_values DISABLE ROW LEVEL SECURITY;
 ALTER TABLE doctor_patient_sharing DISABLE ROW LEVEL SECURITY;
+ALTER TABLE patient_diagnoses DISABLE ROW LEVEL SECURITY;
 
 -- ================================================================
 -- 2. CONFIGURAÇÃO ALTERNATIVA - RLS COM POLÍTICAS ABERTAS
@@ -84,7 +85,7 @@ CREATE POLICY "Allow delete for doctor_patient_sharing" ON doctor_patient_sharin
 -- ================================================================
 
 -- Execute esta query para verificar se todas as tabelas existem:
-SELECT table_name 
-FROM information_schema.tables 
-WHERE table_schema = 'public' 
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = 'public'
 AND table_name IN ('users', 'patient_personal_data', 'patient_medical_data', 'patients', 'indicators', 'patient_indicator_values', 'doctor_patient_sharing');
