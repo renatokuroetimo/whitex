@@ -225,24 +225,6 @@ const Pacientes = () => {
                     </Button>
                   )}
 
-                  {/* Clear test data button */}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      patientAPI.clearAllData();
-                      loadPatients();
-                      toast({
-                        title: "Dados limpos",
-                        description:
-                          "Todos os pacientes de teste foram removidos",
-                      });
-                    }}
-                    className="text-red-600 border-red-200 hover:bg-red-50"
-                  >
-                    🗑️ Limpar Dados Teste
-                  </Button>
-
                   <Button
                     size="sm"
                     onClick={() => navigate("/pacientes/novo")}
