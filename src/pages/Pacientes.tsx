@@ -254,7 +254,11 @@ const Pacientes = () => {
                       <Checkbox
                         checked={
                           patients.length > 0 &&
-                          selectedPatients.length === patients.length
+                          selectedPatients.length ===
+                            patients.filter((p) => p.status !== "compartilhado")
+                              .length &&
+                          patients.filter((p) => p.status !== "compartilhado")
+                            .length > 0
                         }
                         onCheckedChange={handleSelectAll}
                       />
