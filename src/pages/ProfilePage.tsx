@@ -120,12 +120,51 @@ const ProfilePage: React.FC = () => {
         return;
       }
 
-      // Salvar dados no localStorage (simular API)
+      // Salvar dados no Supabase primeiro, fallback para localStorage
+      const updateData = {
+        full_name: formData.name,
+        city: formData.city,
+        state: formData.state,
+        crm: formData.crm,
+        // Note: phone não está na tabela users, seria necessário adicionar
+      };
+
+      // Tentar salvar no Supabase
+      const { supabase } = await import("@/lib/supabase");
+      let supabaseSuccess = false;
+
+      if (supabase && user?.id) {
+        console.log("🚀 Atualizando perfil no Supabase:", updateData);
+
+        const { data, error } = await supabase
+          .from("users")
+          .update(updateData)
+          .eq("id", user.id);
+
+        console.log("📊 Resultado da atualização:", { data, error });
+
+        if (error) {
+          console.error("❌ Erro ao atualizar no Supabase:", error);
+          toast({
+            variant: "destructive",
+            title: "Aviso",
+            description:
+              "Dados salvos localmente. Erro na sincronização com servidor.",
+          });
+        } else {
+          console.log("✅ Perfil atualizado no Supabase com sucesso!");
+          supabaseSuccess = true;
+        }
+      }
+
+      // Salvar dados no localStorage (backup)
       localStorage.setItem(`profile_${user?.id}`, JSON.stringify(formData));
 
       toast({
         title: "Sucesso!",
-        description: "Dados salvos com sucesso",
+        description: supabaseSuccess
+          ? "Dados salvos e sincronizados com sucesso"
+          : "Dados salvos localmente",
       });
     } catch (error) {
       toast({
