@@ -489,6 +489,7 @@ const PatientProfile = () => {
                       <Select
                         value={personalData.state}
                         onValueChange={handleStateChange}
+                        disabled={isViewingOtherPatient}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione o estado" />
@@ -514,7 +515,7 @@ const PatientProfile = () => {
                             city: value,
                           }))
                         }
-                        disabled={!selectedState}
+                        disabled={!selectedState || isViewingOtherPatient}
                       >
                         <SelectTrigger>
                           <SelectValue
