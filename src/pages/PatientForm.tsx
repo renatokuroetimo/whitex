@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextHybrid";
 import { patientAPI } from "@/lib/patient-api";
 import { PatientFormData } from "@/lib/patient-types";
 import { brazilStates, getCitiesByState } from "@/lib/brazil-locations";

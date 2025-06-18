@@ -4,7 +4,7 @@ import { ArrowLeft, Plus, Edit, Trash2 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextHybrid";
 import { patientAPI } from "@/lib/patient-api";
 import { patientProfileAPI } from "@/lib/patient-profile-api";
 import { Patient } from "@/lib/patient-types";
