@@ -318,6 +318,10 @@ class PatientAPI {
     await this.delay(300);
 
     console.log("🔍 getPatients chamado para doctorId:", doctorId);
+    console.log("🔍 Feature flags:", {
+      useSupabasePatients: isFeatureEnabled("useSupabasePatients"),
+      supabaseAvailable: !!supabase,
+    });
 
     // Se Supabase estiver ativo, usar Supabase
     if (isFeatureEnabled("useSupabasePatients") && supabase) {
