@@ -1400,6 +1400,22 @@ class PatientAPI {
           const userData = userList.find((u: any) => u.id === id);
 
           if (patientData || userData) {
+            // Buscar observações médicas no localStorage também
+            let localNotes = "Dados compartilhados pelo paciente";
+            try {
+              const notesKey = `medical_notes_${id}_${localStorage.getItem("medical_app_current_user") ? JSON.parse(localStorage.getItem("medical_app_current_user")).id : ""}`;
+              const savedNotes = localStorage.getItem(notesKey);
+              if (savedNotes) {
+                localNotes = savedNotes;
+                console.log(
+                  "📋 Observações médicas encontradas no localStorage:",
+                  localNotes,
+                );
+              }
+            } catch (e) {
+              console.log("⚠️ Erro ao buscar observações no localStorage:", e);
+            }
+
             const sharedPatient: Patient = {
               id: id,
               name:
@@ -1416,7 +1432,7 @@ class PatientAPI {
               status: "compartilhado" as const,
               doctorId: "",
               createdAt: share.sharedAt,
-              notes: "Dados compartilhados pelo paciente",
+              notes: localNotes,
             };
 
             console.log(
@@ -1630,7 +1646,7 @@ class PatientAPI {
           .delete()
           .in("id", ids);
 
-        console.log("📊 Resultado da deleção no Supabase:", { error });
+        console.log("📊 Resultado da dele��ão no Supabase:", { error });
 
         if (error) {
           console.error(
