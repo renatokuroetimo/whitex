@@ -216,6 +216,8 @@ const EditPatientIndicator = () => {
                         Valor *
                       </Label>
                       <Input
+                        type="number"
+                        step="any"
                         value={value}
                         onChange={(e) => setValue(e.target.value)}
                         placeholder="Digite o valor"
