@@ -266,9 +266,12 @@ class IndicatorAPI {
       console.log("🚀 Buscando indicadores no Supabase");
 
       try {
+        // Query específica com colunas que sabemos que existem
         const { data: supabaseIndicators, error } = await supabase
           .from("indicators")
-          .select("*")
+          .select(
+            "id, name, unit, type, category, doctor_id, is_standard, created_at",
+          )
           .eq("doctor_id", doctorId);
 
         console.log("📊 Indicadores do Supabase:", {
