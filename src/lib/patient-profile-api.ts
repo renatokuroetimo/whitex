@@ -166,7 +166,7 @@ class PatientProfileAPI {
           updated_at: resultData.updatedAt,
         };
 
-        console.log("��� Dados pessoais para Supabase:", insertData);
+        console.log("📝 Dados pessoais para Supabase:", insertData);
 
         const { data: supabaseData, error } =
           existingIndex >= 0
@@ -201,13 +201,24 @@ class PatientProfileAPI {
           return resultData;
         }
       } catch (supabaseError) {
-        console.error("💥 Erro no Supabase dados pessoais:", {
-          message:
-            supabaseError instanceof Error
-              ? supabaseError.message
-              : "Unknown error",
-          error: supabaseError,
-        });
+        console.error(
+          "💥 Erro no Supabase dados pessoais:",
+          JSON.stringify(
+            {
+              message:
+                supabaseError instanceof Error
+                  ? supabaseError.message
+                  : "Unknown error",
+              stack:
+                supabaseError instanceof Error
+                  ? supabaseError.stack
+                  : undefined,
+              error: supabaseError,
+            },
+            null,
+            2,
+          ),
+        );
         // Continuar para fallback
       }
     } else {
