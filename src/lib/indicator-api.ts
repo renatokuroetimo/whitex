@@ -542,7 +542,6 @@ class IndicatorAPI {
 
     // Sempre inicializar com indicadores padrão básicos
     const defaultIndicators = [
-      indicators = [
         {
           id: "std1",
           categoryName: "Sinais Vitais",
