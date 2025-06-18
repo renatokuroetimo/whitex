@@ -45,9 +45,14 @@ const Indicadores = () => {
     navigate("/indicadores/criados");
   };
 
-  const handleViewStandardIndicators = () => {
+  const handleStandardIndicators = () => {
     navigate("/indicadores/padrao");
   };
+
+  // Only show doctor indicators for doctors
+  if (user?.profession !== "medico") {
+    return null;
+  }
 
   return (
     <div className="flex h-screen bg-gray-50">
