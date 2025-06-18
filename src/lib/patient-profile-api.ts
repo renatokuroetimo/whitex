@@ -328,20 +328,11 @@ class PatientProfileAPI {
       console.log("👨‍⚕️ Usuários médicos encontrados:", doctorUsers);
 
       return doctorUsers.map((user: any) => {
-        // Generate a more realistic name if not provided
-        const emailPrefix = user.email?.split("@")[0] || "medico";
+        // Use existing name or show "Sem nome cadastrado"
         let doctorName = user.name || user.fullName;
 
         if (!doctorName || doctorName.trim() === "") {
-          // Create a realistic name from email prefix
-          const capitalizedPrefix =
-            emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1);
-          doctorName = `Dr. ${capitalizedPrefix.replace(/[0-9]/g, "")}`;
-        }
-
-        // Ensure name starts with Dr. if not already
-        if (!doctorName.startsWith("Dr.") && !doctorName.startsWith("Dra.")) {
-          doctorName = `Dr. ${doctorName}`;
+          doctorName = "Sem nome cadastrado";
         }
 
         const doctor = {
@@ -349,7 +340,7 @@ class PatientProfileAPI {
           name: doctorName,
           crm: user.crm || "123456", // Use provided CRM or default
           state: user.state || "SP",
-          specialty: user.specialty || "Medicina Geral",
+          specialty: "", // Remove specialty completely
           email: user.email,
           city: user.city || "São Paulo",
           createdAt: user.createdAt || new Date().toISOString(),
