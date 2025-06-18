@@ -29,7 +29,10 @@ const DoctorSearch = () => {
 
   useEffect(() => {
     if (user?.id && user.profession === "paciente") {
-      loadSharedDoctors();
+      // Initialize mock doctors and load shared doctors
+      patientProfileAPI.initializeMockDoctors().then(() => {
+        loadSharedDoctors();
+      });
     }
   }, [user]);
 
@@ -60,7 +63,11 @@ const DoctorSearch = () => {
 
     setIsSearching(true);
     try {
+      // Ensure mock doctors are initialized
+      await patientProfileAPI.initializeMockDoctors();
+
       const results = await patientProfileAPI.searchDoctors(searchQuery);
+      console.log("Search results:", results);
 
       // Filtrar médicos que já estão compartilhados
       const sharedDoctorIds = sharedDoctors.map((d) => d.id);
@@ -79,10 +86,16 @@ const DoctorSearch = () => {
       } else if (availableDoctors.length === 0) {
         toast({
           title: "Nenhum resultado",
-          description: "Nenhum médico encontrado com esses critérios",
+          description: `Nenhum médico encontrado para "${searchQuery}". Tente buscar por: João, Silva, 123456, 123456-SP, Cardiologia`,
+        });
+      } else {
+        toast({
+          title: "Busca realizada",
+          description: `${availableDoctors.length} médico(s) encontrado(s)`,
         });
       }
     } catch (error) {
+      console.error("Search error:", error);
       toast({
         variant: "destructive",
         title: "Erro",
