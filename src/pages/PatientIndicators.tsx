@@ -74,6 +74,36 @@ const PatientIndicators = () => {
     return new Date(dateStr).toLocaleDateString("pt-BR");
   };
 
+  // Extrair categorias e subcategorias únicas
+  const uniqueCategories = useMemo(() => {
+    const categories = new Set(indicators.map((ind) => ind.categoryName));
+    return Array.from(categories).sort();
+  }, [indicators]);
+
+  const uniqueSubcategories = useMemo(() => {
+    const subcategories = new Set(indicators.map((ind) => ind.subcategoryName));
+    return Array.from(subcategories).sort();
+  }, [indicators]);
+
+  // Filtrar indicadores baseado nos filtros selecionados
+  const filteredIndicators = useMemo(() => {
+    return indicators.filter((indicator) => {
+      const categoryMatch =
+        selectedCategory === "all" ||
+        indicator.categoryName === selectedCategory;
+      const subcategoryMatch =
+        selectedSubcategory === "all" ||
+        indicator.subcategoryName === selectedSubcategory;
+      return categoryMatch && subcategoryMatch;
+    });
+  }, [indicators, selectedCategory, selectedSubcategory]);
+
+  // Reset subcategory when category changes
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategory(value);
+    setSelectedSubcategory("all");
+  };
+
   // Determinar contexto de visualização
   const isViewingOtherPatient = patientId && user?.profession === "medico";
   const isOwnIndicators = !patientId && user?.profession === "paciente";
