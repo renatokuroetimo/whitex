@@ -193,15 +193,30 @@ class PatientAPI {
       const personalData = localStorage.getItem("medical_app_patient_personal");
       const users = localStorage.getItem("medical_app_users");
 
+      console.log("🔍 getSharedPatients para doctorId:", doctorId);
+      console.log("📊 Dados encontrados:", {
+        hasSharedData: !!sharedData,
+        hasPersonalData: !!personalData,
+        hasUsers: !!users,
+      });
+
       if (!sharedData || !personalData || !users) return [];
 
       const shares = JSON.parse(sharedData);
       const patients = JSON.parse(personalData);
       const userList = JSON.parse(users);
 
+      console.log("📋 Todos os compartilhamentos:", shares);
+      console.log("👥 Todos os usuários:", userList);
+
       // Get active shares for this doctor
       const activeShares = shares.filter(
         (share: any) => share.doctorId === doctorId && share.isActive,
+      );
+
+      console.log(
+        "✅ Compartilhamentos ativos para este médico:",
+        activeShares,
       );
 
       // Convert shared patients to Patient format
