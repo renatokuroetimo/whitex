@@ -93,6 +93,9 @@ const PatientProfile = () => {
 
     setIsLoading(true);
     try {
+      // First ensure registered doctors are loaded
+      await patientProfileAPI.loadRegisteredDoctors();
+
       const [personal, medical, doctors] = await Promise.all([
         patientProfileAPI.getPatientPersonalData(user.id),
         patientProfileAPI.getPatientMedicalData(user.id),
