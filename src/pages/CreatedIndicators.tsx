@@ -37,6 +37,10 @@ const CreatedIndicators = () => {
     setIsLoading(true);
     try {
       const result = await indicatorAPI.getIndicators(user.id);
+      console.log("🔍 ===== INDICADORES CARREGADOS =====");
+      console.log("📊 Quantidade:", result.length);
+      console.log("📋 Primeiro indicador:", result[0]);
+      console.log("📋 Todos os indicadores:", result);
       setIndicators(result);
     } catch (error) {
       toast({
