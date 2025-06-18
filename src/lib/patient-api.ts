@@ -803,8 +803,13 @@ class PatientAPI {
   ): Promise<Patient | null> {
     await this.delay(500);
 
+    console.log("🔄 ===== INÍCIO UPDATE PATIENT =====");
     console.log("🔄 updatePatient chamado para ID:", id);
-    console.log("🔄 Dados para atualizar:", data);
+    console.log("🔄 Dados para atualizar:", JSON.stringify(data, null, 2));
+    console.log("🔄 Feature flags:", {
+      useSupabasePatients: isFeatureEnabled("useSupabasePatients"),
+      supabaseAvailable: !!supabase,
+    });
 
     // Se Supabase estiver ativo, usar Supabase
     if (isFeatureEnabled("useSupabasePatients") && supabase) {
