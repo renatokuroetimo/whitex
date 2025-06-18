@@ -424,6 +424,11 @@ class IndicatorAPI {
           unit: unit?.symbol || "un", // Mapear unitOfMeasureId -> unit symbol
           type: "numeric", // Tipo padrão
           category: newIndicator.categoryId,
+          subcategory: newIndicator.subcategoryId,
+          parameter: newIndicator.parameter,
+          unit_symbol: unit?.symbol || "un",
+          requires_date: newIndicator.requiresDate,
+          requires_time: newIndicator.requiresTime,
           doctor_id: newIndicator.doctorId,
           is_standard: false,
           created_at: newIndicator.createdAt,
