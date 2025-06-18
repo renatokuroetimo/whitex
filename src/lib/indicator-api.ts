@@ -348,6 +348,11 @@ class IndicatorAPI {
     };
 
     console.log("🔥 CRIANDO INDICADOR:", newIndicator);
+    console.log(
+      "🔧 Feature flag useSupabaseIndicators:",
+      isFeatureEnabled("useSupabaseIndicators"),
+    );
+    console.log("🔗 Supabase client:", !!supabase);
 
     // Se Supabase estiver ativo, usar Supabase
     if (isFeatureEnabled("useSupabaseIndicators") && supabase) {
@@ -374,7 +379,12 @@ class IndicatorAPI {
         console.log("📊 Resposta do Supabase:", { data: supabaseData, error });
 
         if (error) {
-          console.error("❌ Erro ao criar indicador:", error);
+          console.error("❌ Erro detalhado ao criar indicador:", {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code,
+          });
           throw error; // Forçar fallback
         } else {
           console.log("✅ Indicador criado no Supabase!");
