@@ -127,7 +127,8 @@ const PatientProfile = () => {
 
       setSharedDoctors(doctors);
 
-      // Carregar imagem de perfil
+      // TODO: Migrar imagens de perfil para Supabase Storage
+      // Por enquanto mantém localStorage apenas para imagens
       const savedImage = localStorage.getItem(`profile_image_${user.id}`);
       if (savedImage) {
         setProfileImage(savedImage);
