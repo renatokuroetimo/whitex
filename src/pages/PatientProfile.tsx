@@ -247,7 +247,9 @@ const PatientProfile = () => {
   };
 
   const handleImageClick = () => {
-    fileInputRef.current?.click();
+    if (!isViewingOtherPatient) {
+      fileInputRef.current?.click();
+    }
   };
 
   const searchForDoctors = async () => {
@@ -387,7 +389,11 @@ const PatientProfile = () => {
                   <div className="mb-8 text-center">
                     <div className="relative inline-block">
                       <div
-                        className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 border-2 border-gray-200 cursor-pointer hover:border-blue-400 transition-colors"
+                        className={`w-24 h-24 rounded-full overflow-hidden bg-gray-100 border-2 border-gray-200 transition-colors ${
+                          isViewingOtherPatient
+                            ? "cursor-default"
+                            : "cursor-pointer hover:border-blue-400"
+                        }`}
                         onClick={handleImageClick}
                       >
                         {profileImage ? (
@@ -402,12 +408,14 @@ const PatientProfile = () => {
                           </div>
                         )}
                       </div>
-                      <button
-                        onClick={handleImageClick}
-                        className="absolute -bottom-1 -right-1 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700 transition-colors"
-                      >
-                        <Camera className="w-4 h-4" />
-                      </button>
+                      {!isViewingOtherPatient && (
+                        <button
+                          onClick={handleImageClick}
+                          className="absolute -bottom-1 -right-1 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700 transition-colors"
+                        >
+                          <Camera className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                     <div className="mt-3">
                       <p className="text-sm text-gray-600">Adicionar arquivo</p>
@@ -968,7 +976,7 @@ const PatientProfile = () => {
               <div className="p-3 bg-gray-50 rounded-lg">
                 <p className="font-medium">{selectedDoctor.name}</p>
                 <p className="text-sm text-gray-600">
-                  {selectedDoctor.specialty} �� CRM: {selectedDoctor.crm}-
+                  {selectedDoctor.specialty} • CRM: {selectedDoctor.crm}-
                   {selectedDoctor.state}
                 </p>
               </div>
