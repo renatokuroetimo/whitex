@@ -42,6 +42,10 @@ class AuthSupabaseAPI {
       email: data.email.toLowerCase(),
       profession: data.profession,
       crm: data.crm,
+      fullName: data.fullName,
+      city: data.city,
+      state: data.state,
+      specialty: data.specialty,
       createdAt: new Date().toISOString(),
     };
 
@@ -51,6 +55,10 @@ class AuthSupabaseAPI {
       email: newUser.email,
       profession: newUser.profession,
       crm: newUser.crm,
+      full_name: newUser.fullName,
+      city: newUser.city,
+      state: newUser.state,
+      specialty: newUser.specialty,
       created_at: newUser.createdAt,
     });
 
@@ -60,6 +68,10 @@ class AuthSupabaseAPI {
         email: newUser.email,
         profession: newUser.profession,
         crm: newUser.crm,
+        full_name: newUser.fullName,
+        city: newUser.city,
+        state: newUser.state,
+        specialty: newUser.specialty,
         created_at: newUser.createdAt,
       },
     ]);
