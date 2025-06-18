@@ -11,6 +11,7 @@ const DebugSharing = () => {
   const [doctorId, setDoctorId] = useState("");
   const [patientId, setPatientId] = useState("");
   const [results, setResults] = useState<any>(null);
+  const [usersList, setUsersList] = useState<any[]>([]);
 
   const testGetPatients = async () => {
     if (!doctorId) {
@@ -39,6 +40,51 @@ const DebugSharing = () => {
         title: "Erro no teste",
         description:
           error instanceof Error ? error.message : "Erro desconhecido",
+      });
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const { supabase } = await import("@/lib/supabase");
+
+      if (!supabase) {
+        toast({
+          variant: "destructive",
+          title: "Erro",
+          description: "Supabase não disponível",
+        });
+        return;
+      }
+
+      const { data: users, error } = await supabase
+        .from("users")
+        .select("id, email, profession, full_name, crm")
+        .order("profession", { ascending: true });
+
+      if (error) {
+        console.error("Erro ao buscar usuários:", error);
+        toast({
+          variant: "destructive",
+          title: "Erro",
+          description: "Erro ao buscar usuários do Supabase",
+        });
+        return;
+      }
+
+      setUsersList(users || []);
+      console.log("👥 Usuários encontrados:", users);
+
+      toast({
+        title: "Usuários carregados",
+        description: `Encontrados ${users?.length || 0} usuários`,
+      });
+    } catch (error) {
+      console.error("Erro:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Erro ao conectar com Supabase",
       });
     }
   };
@@ -88,6 +134,53 @@ const DebugSharing = () => {
           <pre className="bg-gray-100 p-2 rounded text-sm overflow-auto">
             {JSON.stringify(user, null, 2)}
           </pre>
+        </div>
+
+        <div className="border p-4 rounded-lg">
+          <h2 className="font-semibold mb-4">Buscar Todos os Usuários</h2>
+          <Button onClick={fetchUsers} className="mb-4">
+            Carregar Usuários do Supabase
+          </Button>
+
+          {usersList.length > 0 && (
+            <div className="space-y-2">
+              <h3 className="font-medium">👥 Usuários Encontrados:</h3>
+              {usersList.map((user) => (
+                <div
+                  key={user.id}
+                  className={`p-2 rounded border ${
+                    user.profession === "medico" ? "bg-blue-50" : "bg-green-50"
+                  }`}
+                >
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <strong>{user.profession.toUpperCase()}</strong> -{" "}
+                      {user.full_name || user.email}
+                      {user.crm && ` (CRM: ${user.crm})`}
+                    </div>
+                    <div className="flex gap-2">
+                      <code className="bg-gray-200 px-2 py-1 rounded text-xs">
+                        ID: {user.id}
+                      </code>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          if (user.profession === "medico") {
+                            setDoctorId(user.id);
+                          } else {
+                            setPatientId(user.id);
+                          }
+                        }}
+                      >
+                        Usar ID
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="border p-4 rounded-lg">
