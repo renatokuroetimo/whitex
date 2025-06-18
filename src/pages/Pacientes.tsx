@@ -303,8 +303,15 @@ const Pacientes = () => {
                     </tr>
                   ) : (
                     patients.map((patient) => (
-                      <tr key={patient.id} className="hover:bg-gray-50">
-                        <td className="px-4 sm:px-6 py-4">
+                      <tr
+                        key={patient.id}
+                        className="hover:bg-gray-50 cursor-pointer transition-colors"
+                        onClick={() => navigate(`/pacientes/${patient.id}`)}
+                      >
+                        <td
+                          className="px-4 sm:px-6 py-4"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <Checkbox
                             checked={selectedPatients.includes(patient.id)}
                             onCheckedChange={(checked) =>
@@ -334,24 +341,40 @@ const Pacientes = () => {
                               : patient.status.toUpperCase()}
                           </Badge>
                         </td>
-                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <div className="flex flex-col sm:flex-row items-end sm:items-center justify-end gap-1 sm:gap-2">
-                            <button
+                        <td
+                          className="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <div className="flex flex-col sm:flex-row items-end sm:items-center justify-end gap-2">
+                            <Button
+                              size="sm"
                               onClick={() =>
                                 navigate(`/pacientes/${patient.id}`)
                               }
-                              className="text-blue-600 hover:text-blue-800 text-xs sm:text-sm whitespace-nowrap"
+                              className="bg-blue-600 hover:bg-blue-700 text-white"
                             >
-                              Ver perfil
-                            </button>
-                            <button
-                              onClick={() =>
-                                navigate(`/pacientes/${patient.id}/editar`)
-                              }
-                              className="text-blue-600 hover:text-blue-800 text-xs sm:text-sm whitespace-nowrap"
-                            >
-                              Editar perfil
-                            </button>
+                              Ver Perfil
+                            </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-8 w-8 p-0"
+                                >
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    navigate(`/pacientes/${patient.id}/editar`)
+                                  }
+                                >
+                                  Editar perfil
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         </td>
                       </tr>
