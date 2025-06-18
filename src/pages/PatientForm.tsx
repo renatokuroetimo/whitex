@@ -311,7 +311,10 @@ const PatientForm = () => {
                   {/* Nome */}
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Nome completo *
+                      Nome completo *{" "}
+                      {isSharedPatient && (
+                        <span className="text-gray-400">(Somente leitura)</span>
+                      )}
                     </label>
                     <Input
                       value={formData.name}
@@ -328,7 +331,10 @@ const PatientForm = () => {
                   {/* Idade */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Idade *
+                      Idade *{" "}
+                      {isSharedPatient && (
+                        <span className="text-gray-400">(Somente leitura)</span>
+                      )}
                     </label>
                     <Input
                       type="number"
@@ -348,7 +354,10 @@ const PatientForm = () => {
                   {/* Peso */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Peso (kg) *
+                      Peso (kg) *{" "}
+                      {isSharedPatient && (
+                        <span className="text-gray-400">(Somente leitura)</span>
+                      )}
                     </label>
                     <Input
                       type="number"
@@ -372,7 +381,10 @@ const PatientForm = () => {
                   {/* Estado */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Estado *
+                      Estado *{" "}
+                      {isSharedPatient && (
+                        <span className="text-gray-400">(Somente leitura)</span>
+                      )}
                     </label>
                     <Select
                       value={formData.state}
@@ -395,7 +407,10 @@ const PatientForm = () => {
                   {/* Cidade */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Cidade *
+                      Cidade *{" "}
+                      {isSharedPatient && (
+                        <span className="text-gray-400">(Somente leitura)</span>
+                      )}
                     </label>
                     <Select
                       value={formData.city}
