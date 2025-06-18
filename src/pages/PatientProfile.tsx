@@ -80,7 +80,7 @@ const PatientProfile = () => {
     if (user?.id) {
       loadData();
     }
-  }, [user?.id]);
+  }, [user?.id, patientId]);
 
   useEffect(() => {
     if (personalData.state) {
@@ -92,15 +92,18 @@ const PatientProfile = () => {
   const loadData = async () => {
     if (!user?.id) return;
 
+    // Determinar qual ID usar para carregar os dados
+    const targetUserId = patientId || user.id;
+
     setIsLoading(true);
     try {
       // First ensure registered doctors are loaded
       await patientProfileAPI.loadRegisteredDoctors();
 
       const [personal, medical, doctors] = await Promise.all([
-        patientProfileAPI.getPatientPersonalData(user.id),
-        patientProfileAPI.getPatientMedicalData(user.id),
-        patientProfileAPI.getSharedDoctors(user.id),
+        patientProfileAPI.getPatientPersonalData(targetUserId),
+        patientProfileAPI.getPatientMedicalData(targetUserId),
+        patientProfileAPI.getSharedDoctors(targetUserId),
       ]);
 
       if (personal) {
@@ -129,7 +132,7 @@ const PatientProfile = () => {
       setSharedDoctors(doctors);
 
       // Carregar imagem de perfil
-      const savedImage = localStorage.getItem(`profile_image_${user.id}`);
+      const savedImage = localStorage.getItem(`profile_image_${targetUserId}`);
       if (savedImage) {
         setProfileImage(savedImage);
       }
