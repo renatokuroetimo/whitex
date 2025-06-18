@@ -329,11 +329,12 @@ class PatientProfileAPI {
         console.log("🔍 Dados originais do usuário médico:", {
           id: user.id,
           name: user.name,
-          fullName: user.fullName,
+          fullName: user.fullName || user.full_name, // Support both formats
           crm: user.crm,
           state: user.state,
           email: user.email,
           city: user.city,
+          specialty: user.specialty,
         });
 
         const doctor = {
@@ -341,10 +342,11 @@ class PatientProfileAPI {
           name: doctorName,
           crm: user.crm || "123456", // Use provided CRM or default
           state: user.state || "SP", // Default to SP if no state provided
-          specialty: "", // Remove specialty completely
+          specialty: user.specialty || "", // Use actual specialty from database
           email: user.email,
           city: user.city || "São Paulo",
-          createdAt: user.createdAt || new Date().toISOString(),
+          createdAt:
+            user.createdAt || user.created_at || new Date().toISOString(),
         };
 
         console.log("👨‍⚕️ Médico mapeado:", doctor);
