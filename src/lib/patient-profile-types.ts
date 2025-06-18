@@ -33,6 +33,7 @@ export interface Doctor {
   state: string; // UF do CRM
   specialty: string;
   email: string;
+  city?: string;
   createdAt: string;
 }
 

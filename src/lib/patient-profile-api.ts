@@ -160,6 +160,7 @@ class PatientProfileAPI {
           state: "SP",
           specialty: "Cardiologia",
           email: "joao.silva@email.com",
+          city: "São Paulo",
           createdAt: new Date().toISOString(),
         },
         {
@@ -169,6 +170,7 @@ class PatientProfileAPI {
           state: "RJ",
           specialty: "Clínico Geral",
           email: "maria.santos@email.com",
+          city: "Rio de Janeiro",
           createdAt: new Date().toISOString(),
         },
         {
@@ -178,6 +180,57 @@ class PatientProfileAPI {
           state: "MG",
           specialty: "Endocrinologia",
           email: "pedro.costa@email.com",
+          city: "Belo Horizonte",
+          createdAt: new Date().toISOString(),
+        },
+        {
+          id: "doc4",
+          name: "Dra. Ana Oliveira",
+          crm: "111222",
+          state: "SP",
+          specialty: "Ginecologia",
+          email: "ana.oliveira@email.com",
+          city: "São Paulo",
+          createdAt: new Date().toISOString(),
+        },
+        {
+          id: "doc5",
+          name: "Dr. Carlos Mendes",
+          crm: "333444",
+          state: "RS",
+          specialty: "Ortopedia",
+          email: "carlos.mendes@email.com",
+          city: "Porto Alegre",
+          createdAt: new Date().toISOString(),
+        },
+        {
+          id: "doc6",
+          name: "Dr. Fernando Rodrigues",
+          crm: "555666",
+          state: "PR",
+          specialty: "Neurologia",
+          email: "fernando.rodrigues@email.com",
+          city: "Curitiba",
+          createdAt: new Date().toISOString(),
+        },
+        {
+          id: "doc7",
+          name: "Dra. Beatriz Lima",
+          crm: "777888",
+          state: "BA",
+          specialty: "Pediatria",
+          email: "beatriz.lima@email.com",
+          city: "Salvador",
+          createdAt: new Date().toISOString(),
+        },
+        {
+          id: "doc8",
+          name: "Dr. Ricardo Almeida",
+          crm: "999000",
+          state: "CE",
+          specialty: "Dermatologia",
+          email: "ricardo.almeida@email.com",
+          city: "Fortaleza",
           createdAt: new Date().toISOString(),
         },
       ];
@@ -194,12 +247,31 @@ class PatientProfileAPI {
 
     if (!searchTerm) return doctors;
 
-    return doctors.filter(
-      (doctor) =>
-        doctor.name.toLowerCase().includes(searchTerm) ||
-        doctor.crm.includes(searchTerm) ||
-        `${doctor.crm}-${doctor.state}`.includes(searchTerm.toUpperCase()),
-    );
+    return doctors.filter((doctor) => {
+      const nameMatch = doctor.name.toLowerCase().includes(searchTerm);
+      const crmMatch = doctor.crm
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const crmStateMatch = `${doctor.crm}-${doctor.state}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const specialtyMatch = doctor.specialty
+        .toLowerCase()
+        .includes(searchTerm);
+      const stateMatch = doctor.state
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const cityMatch = doctor.city?.toLowerCase().includes(searchTerm);
+
+      return (
+        nameMatch ||
+        crmMatch ||
+        crmStateMatch ||
+        specialtyMatch ||
+        stateMatch ||
+        cityMatch
+      );
+    });
   }
 
   // === COMPARTILHAMENTO ===
