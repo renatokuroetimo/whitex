@@ -320,7 +320,8 @@ class PatientProfileAPI {
 
       return doctorUsers.map((user: any) => {
         // Use existing name or show "Sem nome cadastrado"
-        let doctorName = user.name || user.fullName;
+        // Support both fullName and full_name (localStorage vs Supabase format)
+        let doctorName = user.fullName || user.full_name || user.name;
 
         if (!doctorName || doctorName.trim() === "") {
           doctorName = "Sem nome cadastrado";
