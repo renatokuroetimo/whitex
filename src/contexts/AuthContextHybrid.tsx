@@ -8,7 +8,7 @@ import React, {
 import { User, AuthState, LoginCredentials, RegisterData } from "@/lib/types";
 import { authAPI } from "@/lib/auth-api";
 import { authSupabaseAPI } from "@/lib/auth-supabase";
-import { isSupabaseAvailable } from "@/lib/supabase";
+import { isFeatureEnabled } from "@/lib/feature-flags";
 import { toast } from "@/hooks/use-toast";
 
 // Action types
@@ -80,9 +80,13 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  // Escolher qual API usar
+  // Escolher qual API usar baseado nas feature flags
   const getAuthAPI = () => {
-    return isSupabaseAvailable() ? authSupabaseAPI : authAPI;
+    const useSupabase = isFeatureEnabled("useSupabaseAuth");
+    console.log(
+      `🔍 Auth API escolhida: ${useSupabase ? "Supabase" : "localStorage"}`,
+    );
+    return useSupabase ? authSupabaseAPI : authAPI;
   };
 
   // Check if user is already logged in on mount
@@ -92,8 +96,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       dispatch({ type: "AUTH_SUCCESS", payload: currentUser });
     }
 
-    // Migrar dados existentes se Supabase estiver disponível
-    if (isSupabaseAvailable()) {
+    // Migrar dados existentes se Supabase estiver ativado
+    if (isFeatureEnabled("useSupabaseAuth")) {
       authSupabaseAPI.migrateExistingUsers().then(() => {
         console.log("🔄 Migração de usuários concluída");
       });
@@ -110,7 +114,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response.success && response.data) {
         dispatch({ type: "AUTH_SUCCESS", payload: response.data });
 
-        const apiType = isSupabaseAvailable() ? "Supabase" : "localStorage";
+        const apiType = isFeatureEnabled("useSupabaseAuth")
+          ? "Supabase"
+          : "localStorage";
         toast({
           title: "Login realizado com sucesso!",
           description: `Bem-vindo de volta, ${response.data.email} (${apiType})`,
