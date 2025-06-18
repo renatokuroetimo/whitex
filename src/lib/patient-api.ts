@@ -342,16 +342,10 @@ class PatientAPI {
             `
             patient_id,
             shared_at,
-            users!inner (
+            users!doctor_patient_sharing_patient_id_fkey (
               id,
               email,
               full_name
-            ),
-            patient_personal_data (
-              full_name,
-              birth_date,
-              city,
-              state
             )
           `,
           )
