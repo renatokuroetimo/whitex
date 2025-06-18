@@ -322,7 +322,7 @@ const PatientProfile = () => {
     );
   }
 
-  // Determinar se �� visualização de médico ou do próprio paciente
+  // Determinar se é visualização de médico ou do próprio paciente
   const isViewingOtherPatient = patientId && user?.profession === "medico";
   const isOwnProfile = !patientId && user?.profession === "paciente";
 
@@ -437,6 +437,7 @@ const PatientProfile = () => {
                           }))
                         }
                         placeholder="Digite seu nome completo"
+                        disabled={isViewingOtherPatient}
                       />
                     </div>
 
@@ -452,6 +453,7 @@ const PatientProfile = () => {
                             birthDate: e.target.value,
                           }))
                         }
+                        disabled={isViewingOtherPatient}
                       />
                     </div>
 
@@ -468,6 +470,7 @@ const PatientProfile = () => {
                             gender: value,
                           }))
                         }
+                        disabled={isViewingOtherPatient}
                       >
                         <SelectTrigger>
                           <SelectValue />
