@@ -19,6 +19,7 @@ const PatientDetailView = () => {
   const [personalData, setPersonalData] = useState<PatientPersonalData | null>(
     null,
   );
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
