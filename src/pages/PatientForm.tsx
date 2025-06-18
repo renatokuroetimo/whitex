@@ -308,135 +308,124 @@ const PatientForm = () => {
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
-                  {/* Nome */}
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Nome completo *{" "}
-                      {isSharedPatient && (
-                        <span className="text-gray-400">(Somente leitura)</span>
-                      )}
-                    </label>
-                    <Input
-                      value={formData.name}
-                      onChange={(e) =>
-                        handleInputChange("name", e.target.value)
-                      }
-                      placeholder="Digite o nome completo"
-                      className="w-full"
-                      required
-                      disabled={isSharedPatient}
-                    />
-                  </div>
-
-                  {/* Idade */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Idade *{" "}
-                      {isSharedPatient && (
-                        <span className="text-gray-400">(Somente leitura)</span>
-                      )}
-                    </label>
-                    <Input
-                      type="number"
-                      value={formData.age || ""}
-                      onChange={(e) =>
-                        handleInputChange("age", parseInt(e.target.value) || 0)
-                      }
-                      placeholder="Idade"
-                      className="w-full"
-                      min="1"
-                      max="120"
-                      required
-                      disabled={isSharedPatient}
-                    />
-                  </div>
-
-                  {/* Peso */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Peso (kg) *{" "}
-                      {isSharedPatient && (
-                        <span className="text-gray-400">(Somente leitura)</span>
-                      )}
-                    </label>
-                    <Input
-                      type="number"
-                      step="0.1"
-                      value={formData.weight || ""}
-                      onChange={(e) =>
-                        handleInputChange(
-                          "weight",
-                          parseFloat(e.target.value) || 0,
-                        )
-                      }
-                      placeholder="Peso em kg"
-                      className="w-full"
-                      min="1"
-                      max="500"
-                      required
-                      disabled={isSharedPatient}
-                    />
-                  </div>
-
-                  {/* Estado */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Estado *{" "}
-                      {isSharedPatient && (
-                        <span className="text-gray-400">(Somente leitura)</span>
-                      )}
-                    </label>
-                    <Select
-                      value={formData.state}
-                      onValueChange={handleStateChange}
-                      disabled={isSharedPatient}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o estado" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {brazilStates.map((state) => (
-                          <SelectItem key={state.id} value={state.id}>
-                            {state.name} ({state.abbreviation})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Cidade */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Cidade *{" "}
-                      {isSharedPatient && (
-                        <span className="text-gray-400">(Somente leitura)</span>
-                      )}
-                    </label>
-                    <Select
-                      value={formData.city}
-                      onValueChange={(value) =>
-                        handleInputChange("city", value)
-                      }
-                      disabled={!selectedState || isSharedPatient}
-                    >
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={
-                            selectedState
-                              ? "Selecione a cidade"
-                              : "Primeiro selecione o estado"
+                  {/* Dados pessoais - ocultos para pacientes compartilhados */}
+                  {!isSharedPatient && (
+                    <>
+                      {/* Nome */}
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Nome completo *
+                        </label>
+                        <Input
+                          value={formData.name}
+                          onChange={(e) =>
+                            handleInputChange("name", e.target.value)
                           }
+                          placeholder="Digite o nome completo"
+                          className="w-full"
+                          required
                         />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableCities.map((city) => (
-                          <SelectItem key={city} value={city}>
-                            {city}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                      </div>
+
+                      {/* Idade */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Idade *
+                        </label>
+                        <Input
+                          type="number"
+                          value={formData.age || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "age",
+                              parseInt(e.target.value) || 0,
+                            )
+                          }
+                          placeholder="Idade"
+                          className="w-full"
+                          min="1"
+                          max="120"
+                          required
+                        />
+                      </div>
+
+                      {/* Peso */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Peso (kg) *
+                        </label>
+                        <Input
+                          type="number"
+                          step="0.1"
+                          value={formData.weight || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "weight",
+                              parseFloat(e.target.value) || 0,
+                            )
+                          }
+                          placeholder="Peso em kg"
+                          className="w-full"
+                          min="1"
+                          max="500"
+                          required
+                        />
+                      </div>
+
+                      {/* Estado */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Estado *
+                        </label>
+                        <Select
+                          value={formData.state}
+                          onValueChange={handleStateChange}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o estado" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {brazilStates.map((state) => (
+                              <SelectItem key={state.id} value={state.id}>
+                                {state.name} ({state.abbreviation})
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Cidade */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Cidade *
+                        </label>
+                        <Select
+                          value={formData.city}
+                          onValueChange={(value) =>
+                            handleInputChange("city", value)
+                          }
+                          disabled={!selectedState}
+                        >
+                          <SelectTrigger>
+                            <SelectValue
+                              placeholder={
+                                selectedState
+                                  ? "Selecione a cidade"
+                                  : "Primeiro selecione o estado"
+                              }
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {availableCities.map((city) => (
+                              <SelectItem key={city} value={city}>
+                                {city}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </>
+                  )}
 
                   {/* Diagnóstico */}
                   {isEditing && (
