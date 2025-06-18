@@ -57,7 +57,8 @@ const PatientGraphSelector = () => {
         patientIndicatorAPI.getPatientIndicatorValues(targetPatientId),
       ]);
 
-      if (!patientData) {
+      // Só verificar se paciente não foi encontrado quando estamos carregando dados de outro paciente
+      if (shouldLoadPatientData && !patientData) {
         toast({
           variant: "destructive",
           title: "Erro",
@@ -67,7 +68,9 @@ const PatientGraphSelector = () => {
         return;
       }
 
-      setPatient(patientData);
+      if (shouldLoadPatientData) {
+        setPatient(patientData);
+      }
       setIndicators(indicatorValues);
 
       // Agrupar indicadores por tipo
