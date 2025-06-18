@@ -22,14 +22,12 @@ export const isSupabaseAvailable = async (): Promise<boolean> => {
       return false;
     }
 
-    // Teste básico de conectividade sem fazer query nas tabelas
-    const { error } = await supabase
-      .from("_supabase_internal")
-      .select("*")
-      .limit(0);
+    // Teste básico de conectividade usando uma tabela que sabemos que existe
+    const { error } = await supabase.from("users").select("id").limit(0);
 
-    // Se chegou até aqui (mesmo com erro), significa que a conexão está OK
-    return true;
+    // Se não houve erro de conectividade/auth, consideramos disponível
+    // Erros de tabela são normais se não existir, mas conexão está OK
+    return !error || error.code !== "PGRST301"; // PGRST301 = connection failed
   } catch (error) {
     console.warn("Supabase connection test failed:", error);
     return false;
