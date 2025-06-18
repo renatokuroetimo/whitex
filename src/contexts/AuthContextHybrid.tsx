@@ -156,10 +156,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response.success && response.data) {
         dispatch({ type: "AUTH_SUCCESS", payload: response.data });
 
-        const apiType = isSupabaseAvailable() ? "Supabase" : "localStorage";
+        const apiType = isFeatureEnabled("useSupabaseAuth")
+          ? "Supabase"
+          : "localStorage";
         toast({
           title: "Conta criada com sucesso!",
-          description: `Bem-vindo, ${response.data.email} (${apiType})`,
+          description: `Bem-vindo, ${response.data.email}! (${apiType})`,
         });
         return true;
       } else {
