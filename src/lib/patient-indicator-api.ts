@@ -181,7 +181,12 @@ class PatientIndicatorAPI {
         });
 
         if (error) {
-          console.error("❌ Erro ao buscar valores indicadores:", error);
+          console.error("❌ Erro ao buscar valores indicadores:", {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code,
+          });
           // Fallback para localStorage
         } else {
           // Converter dados do Supabase para formato local
