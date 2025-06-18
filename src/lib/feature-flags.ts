@@ -71,9 +71,17 @@ export const enableSupabaseMigration = (): void => {
   console.log("🚀 Ativando migração para Supabase...");
 
   setFeatureFlag("useSupabaseAuth", true);
+  setFeatureFlag("useSupabasePatients", true);
+  setFeatureFlag("useSupabaseIndicators", true);
+  setFeatureFlag("useSupabaseProfiles", true);
   setFeatureFlag("enableDataMigration", true);
 
   console.log("✅ Migração ativada! Recarregue a página.");
+
+  // Forçar atualização da página após um delay
+  setTimeout(() => {
+    window.location.reload();
+  }, 1000);
 };
 
 // Voltar para localStorage (rollback)
@@ -118,7 +126,7 @@ if (import.meta.env.DEV && typeof window !== "undefined") {
   console.log(`
 🔧 COMANDOS DE MIGRAÇÃO DISPONÍVEIS:
 - enableSupabaseMigration() - Ativar Supabase
-- disableSupabaseMigration() - Voltar para localStorage  
+- disableSupabaseMigration() - Voltar para localStorage
 - getMigrationStatus() - Ver status da migração
 - setFeatureFlag('flagName', true/false) - Ativar flag específica
   `);

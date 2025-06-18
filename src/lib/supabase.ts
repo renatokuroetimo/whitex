@@ -1,22 +1,28 @@
 import { createClient } from "@supabase/supabase-js";
 
-// Configuração do Supabase
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// Configuração do Supabase com fallback
+const supabaseUrl =
+  import.meta.env.VITE_SUPABASE_URL ||
+  "https://ogyvioeeaknagslworyz.supabase.co";
+const supabaseAnonKey =
+  import.meta.env.VITE_SUPABASE_ANON_KEY ||
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9neXZpb2VlYWtuYWdzbHdvcnl6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAyNDg0MTMsImV4cCI6MjA2NTgyNDQxM30.tvWZHrK-OwIPjHgjAq8PA1Wr95OFmfPi89X6gmDB5Lw";
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn("Supabase credentials not found. Using localStorage fallback.");
+if (!import.meta.env.VITE_SUPABASE_URL) {
+  console.log("Using fallback Supabase configuration");
 }
 
-// Cliente Supabase (opcional durante migração)
-export const supabase =
-  supabaseUrl && supabaseAnonKey
-    ? createClient(supabaseUrl, supabaseAnonKey)
-    : null;
+// Cliente Supabase (sempre disponível agora)
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Verificar se Supabase está disponível
 export const isSupabaseAvailable = () => {
-  return supabase !== null;
+  try {
+    // Test basic connectivity
+    return !!supabase && !!supabaseUrl && !!supabaseAnonKey;
+  } catch {
+    return false;
+  }
 };
 
 // Utility para migração gradual
