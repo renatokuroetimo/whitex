@@ -601,6 +601,7 @@ const PatientProfile = () => {
                             }
                             placeholder="Ex: 170"
                             className="mt-1"
+                            disabled={isViewingOtherPatient}
                           />
                         </div>
 
@@ -622,6 +623,7 @@ const PatientProfile = () => {
                             }
                             placeholder="Ex: 70.5"
                             className="mt-1"
+                            disabled={isViewingOtherPatient}
                           />
                         </div>
                       </div>
@@ -650,6 +652,7 @@ const PatientProfile = () => {
                                 smoker: checked,
                               }))
                             }
+                            disabled={isViewingOtherPatient}
                           />
                         </div>
 
