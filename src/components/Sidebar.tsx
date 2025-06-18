@@ -164,8 +164,11 @@ const Sidebar: React.FC = () => {
 
       {/* User Profile */}
       <div
-        className="p-6 border-b border-gray-200"
-        style={{ backgroundColor: "#ffffff !important" }}
+        className="p-6 border-b border-gray-200 sidebar-profile-section"
+        style={{
+          backgroundColor: "white",
+          background: "white",
+        }}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">

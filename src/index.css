@@ -99,3 +99,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Force sidebar profile section to always be white */
+.sidebar-profile-section {
+  background-color: white !important;
+  background: white !important;
+}
