@@ -63,12 +63,18 @@ const ProfilePage: React.FC = () => {
       }
     }
 
-    // Carregar imagem de perfil do localStorage (temporário)
+    // Carregar imagem de perfil do Supabase
     if (user?.id) {
-      const savedImage = localStorage.getItem(`profile_image_${user.id}`);
-      if (savedImage) {
-        setProfileImage(savedImage);
-      }
+      profileImageAPI
+        .getProfileImage(user.id)
+        .then((image) => {
+          if (image && image.startsWith("data:")) {
+            setProfileImage(image);
+          }
+        })
+        .catch((error) => {
+          console.warn("Erro ao carregar imagem de perfil:", error);
+        });
     }
   }, [user]);
 
