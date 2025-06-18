@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS users (
   city TEXT, -- Cidade do usuário
   state TEXT, -- Estado do usuário (UF)
   specialty TEXT, -- Especialidade médica (apenas para médicos)
+  phone TEXT, -- Telefone do usuário
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
