@@ -30,6 +30,7 @@ import EditPatientIndicator from "./pages/EditPatientIndicator";
 import PatientDashboard from "./pages/PatientDashboard";
 import PatientAddIndicator from "./pages/PatientAddIndicator";
 import DoctorSearch from "./pages/DoctorSearch";
+import DebugSharing from "./pages/DebugSharing";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
