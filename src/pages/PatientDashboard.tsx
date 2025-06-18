@@ -75,7 +75,7 @@ const PatientDashboard = () => {
           Dashboard - Paciente
         </h1>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           {/* Informações da Conta */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <h3 className="font-medium text-gray-900 mb-4">
@@ -101,25 +101,6 @@ const PatientDashboard = () => {
               <Eye className="h-4 w-4 mr-2" />
               Ver Perfil Completo
             </Button>
-          </div>
-
-          {/* Adicionar Indicador */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="font-medium text-gray-900 mb-4">Registros</h3>
-            <div className="text-center py-4">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Plus className="w-6 h-6 text-green-600" />
-              </div>
-              <p className="text-gray-500 text-sm mb-4">
-                Adicione novos registros de saúde
-              </p>
-              <Button
-                onClick={handleAddIndicator}
-                className="w-full bg-green-600 hover:bg-green-700"
-              >
-                Adicionar Registro
-              </Button>
-            </div>
           </div>
 
           {/* Ver Todos os Indicadores */}
