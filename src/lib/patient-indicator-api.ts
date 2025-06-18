@@ -19,6 +19,84 @@ class PatientIndicatorAPI {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
   }
 
+  // Garantir que indicador padrão existe no Supabase
+  private async ensureStandardIndicatorExists(
+    indicatorId: string,
+  ): Promise<void> {
+    if (!supabase) return;
+
+    console.log(
+      `🔍 Verificando se indicador padrão ${indicatorId} existe no Supabase`,
+    );
+
+    try {
+      // Verificar se o indicador já existe
+      const { data: existing } = await supabase
+        .from("indicators")
+        .select("id")
+        .eq("id", indicatorId)
+        .single();
+
+      if (!existing) {
+        console.log(`📝 Indicador ${indicatorId} não existe, criando...`);
+
+        // Buscar dados do indicador padrão no localStorage
+        const standardIndicators = await indicatorAPI.getStandardIndicators();
+        const indicator = standardIndicators.find(
+          (ind) => ind.id === indicatorId,
+        );
+
+        if (indicator) {
+          const insertData = {
+            id: indicator.id,
+            name: indicator.parameter,
+            unit: indicator.unitSymbol,
+            type: "numeric",
+            category: indicator.categoryName,
+            doctor_id: null, // Indicadores padrão não pertencem a um médico específico
+            is_standard: true,
+            created_at: new Date().toISOString(),
+          };
+
+          const { error } = await supabase
+            .from("indicators")
+            .insert([insertData]);
+
+          if (error) {
+            console.error(
+              `❌ Erro ao inserir indicador padrão ${indicatorId}:`,
+              JSON.stringify(
+                {
+                  message: error.message,
+                  details: error.details,
+                  hint: error.hint,
+                  code: error.code,
+                },
+                null,
+                2,
+              ),
+            );
+            throw error;
+          } else {
+            console.log(
+              `✅ Indicador padrão ${indicatorId} criado com sucesso`,
+            );
+          }
+        } else {
+          throw new Error(`Indicador padrão ${indicatorId} não encontrado`);
+        }
+      } else {
+        console.log(`✅ Indicador padrão ${indicatorId} já existe no Supabase`);
+      }
+    } catch (error) {
+      console.error(
+        `💥 Erro ao verificar/criar indicador padrão ${indicatorId}:`,
+        error,
+      );
+      throw error;
+    }
+  }
+
   // Pega todos os valores de indicadores salvos
   private getStoredIndicatorValues(): PatientIndicatorValue[] {
     try {
