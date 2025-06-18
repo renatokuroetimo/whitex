@@ -93,6 +93,10 @@ const PatientForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Limpar console para focar nos logs importantes
+    console.clear();
+    console.log("🎯 === INICIANDO CRIAÇÃO DE PACIENTE ===");
+
     // Validações
     if (!formData.name.trim()) {
       toast({
