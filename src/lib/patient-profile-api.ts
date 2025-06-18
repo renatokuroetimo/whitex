@@ -335,11 +335,21 @@ class PatientProfileAPI {
           doctorName = "Sem nome cadastrado";
         }
 
+        console.log("🔍 Dados originais do usuário médico:", {
+          id: user.id,
+          name: user.name,
+          fullName: user.fullName,
+          crm: user.crm,
+          state: user.state,
+          email: user.email,
+          city: user.city,
+        });
+
         const doctor = {
           id: user.id,
           name: doctorName,
           crm: user.crm || "123456", // Use provided CRM or default
-          state: user.state || "SP",
+          state: user.state || "SP", // Default to SP if no state provided
           specialty: "", // Remove specialty completely
           email: user.email,
           city: user.city || "São Paulo",
