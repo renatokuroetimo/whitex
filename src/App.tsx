@@ -6,11 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
-// Import validation script for development testing
+// Import Supabase test for development
 if (import.meta.env.DEV) {
-  import("@/utils/sidebarValidation");
-  import("@/utils/userDebug");
-  import("@/utils/emergencyReset");
   import("@/lib/supabase-test");
 }
 import SelectProfession from "./pages/SelectProfession";
