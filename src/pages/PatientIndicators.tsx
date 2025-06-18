@@ -360,7 +360,7 @@ const PatientIndicators = () => {
                       {filteredIndicators.length === 0 ? (
                         <tr>
                           <td
-                            colSpan={4}
+                            colSpan={5}
                             className="py-8 text-center text-gray-500"
                           >
                             Nenhum indicador encontrado com os filtros
@@ -376,11 +376,11 @@ const PatientIndicators = () => {
                             <td className="py-3 px-4">
                               <div>
                                 <span className="text-sm font-medium text-gray-900">
-                                  {indicator.categoryName} -{" "}
-                                  {indicator.subcategoryName}
+                                  {indicator.categoryName || "Categoria"} -{" "}
+                                  {indicator.subcategoryName || "Subcategoria"}
                                 </span>
                                 <p className="text-xs text-gray-600">
-                                  {indicator.parameter}
+                                  {indicator.parameter || "Parâmetro"}
                                 </p>
                               </div>
                             </td>
@@ -394,6 +394,11 @@ const PatientIndicators = () => {
                                 {indicator.date
                                   ? formatDate(indicator.date)
                                   : "Não informado"}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4">
+                              <span className="text-sm text-gray-600">
+                                {indicator.time || "Não informado"}
                               </span>
                             </td>
                             <td className="py-3 px-4">
