@@ -71,23 +71,22 @@ const SidebarContent: React.FC<SidebarContentProps> = ({ onItemClick }) => {
 
       {/* User Profile */}
       <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-              <User className="w-4 h-4 text-gray-600" />
-            </div>
-            <span className="text-sm text-gray-600 truncate">Meu Perfil</span>
+        <button
+          onClick={() => {
+            navigate("/profile");
+            onItemClick?.();
+          }}
+          className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
+            isActive("/profile")
+              ? "bg-blue-50 text-blue-700 border border-blue-200"
+              : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+          }`}
+        >
+          <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+            <User className="w-4 h-4 text-gray-600" />
           </div>
-          <button
-            onClick={() => {
-              navigate("/profile");
-              onItemClick?.();
-            }}
-            className="text-xs text-blue-600 hover:text-blue-800"
-          >
-            ��
-          </button>
-        </div>
+          <span className="text-sm truncate">Meu Perfil</span>
+        </button>
       </div>
 
       {/* Navigation */}
