@@ -1056,21 +1056,32 @@ class PatientAPI {
                   "✅ Nova observação criada com sucesso!",
                   insertResult.data,
                 );
-              }
 
-              // Retornar o paciente atualizado com as novas observações
-              const currentPatient = await this.getPatientById(id);
-              if (currentPatient) {
-                const updatedPatient: Patient = {
-                  ...currentPatient,
-                  notes: data.notes,
-                  updatedAt: new Date().toISOString(),
-                };
-                console.log(
-                  "✅ Observações do paciente compartilhado salvas no Supabase:",
-                  updatedPatient,
-                );
-                return updatedPatient;
+                // Também salvar no localStorage como backup
+                try {
+                  const notesKey = `medical_notes_${id}_${currentUser.id}`;
+                  localStorage.setItem(notesKey, data.notes);
+                  console.log(
+                    "💾 Observações também salvas no localStorage como backup",
+                  );
+                } catch (e) {
+                  console.warn("⚠️ Erro ao salvar backup no localStorage:", e);
+                }
+
+                // Retornar o paciente atualizado com as novas observações
+                const currentPatient = await this.getPatientById(id);
+                if (currentPatient) {
+                  const updatedPatient: Patient = {
+                    ...currentPatient,
+                    notes: data.notes,
+                    updatedAt: new Date().toISOString(),
+                  };
+                  console.log(
+                    "✅ Observações do paciente compartilhado salvas no Supabase:",
+                    updatedPatient,
+                  );
+                  return updatedPatient;
+                }
               }
             } else {
               // Para pacientes compartilhados, apenas observações podem ser editadas
@@ -1646,7 +1657,7 @@ class PatientAPI {
           .delete()
           .in("id", ids);
 
-        console.log("📊 Resultado da dele��ão no Supabase:", { error });
+        console.log("📊 Resultado da deleção no Supabase:", { error });
 
         if (error) {
           console.error(
