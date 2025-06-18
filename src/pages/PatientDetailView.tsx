@@ -319,10 +319,6 @@ const PatientDetailView = () => {
                         <strong>Idade:</strong> {getPatientAge()} anos
                       </p>
                       <p>
-                        <strong>Altura:</strong> {personalData?.height || "N/A"}
-                        cm
-                      </p>
-                      <p>
                         <strong>Peso:</strong>{" "}
                         {patient?.weight || personalData?.weight || "N/A"}kg
                       </p>
