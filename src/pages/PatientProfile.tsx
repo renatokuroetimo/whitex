@@ -195,48 +195,25 @@ const PatientProfile = () => {
     setPersonalData((prev) => ({
       ...prev,
       state: stateId,
-      city: "", // Reset cidade quando muda estado
+      city: "", // Reset city when state changes
     }));
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast({
-          variant: "destructive",
-          title: "Erro",
-          description: "A imagem deve ter no máximo 5MB",
-        });
-        return;
-      }
-
-      if (!file.type.startsWith("image/")) {
-        toast({
-          variant: "destructive",
-          title: "Erro",
-          description: "Por favor, selecione apenas arquivos de imagem",
-        });
-        return;
-      }
-
+    if (file && user?.id) {
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
         setProfileImage(result);
-        localStorage.setItem(`profile_image_${user?.id}`, result);
+        localStorage.setItem(`profile_image_${user.id}`, result);
 
-        // Dispatch custom event to notify sidebar
+        // Dispatch custom event to notify other components
         window.dispatchEvent(
           new CustomEvent("profileImageUpdated", {
-            detail: { userId: user?.id },
+            detail: { userId: user.id },
           }),
         );
-
-        toast({
-          title: "Sucesso!",
-          description: "Imagem de perfil atualizada",
-        });
       };
       reader.readAsDataURL(file);
     }
@@ -248,8 +225,9 @@ const PatientProfile = () => {
 
   const searchForDoctors = async () => {
     try {
-      const results = await patientProfileAPI.searchDoctors(searchQuery);
+      const results = await patientProfileAPI.getRegisteredDoctors();
       setSearchDoctors(results);
+      setShowAddDoctorDialog(true);
     } catch (error) {
       toast({
         variant: "destructive",
@@ -259,23 +237,18 @@ const PatientProfile = () => {
     }
   };
 
-  const handleShareWithDoctor = async () => {
+  const handleShareData = async () => {
     if (!selectedDoctor || !user?.id) return;
 
     try {
       await patientProfileAPI.shareDataWithDoctor(user.id, selectedDoctor.id);
+      setSharedDoctors((prev) => [...prev, selectedDoctor]);
+      setShowShareDialog(false);
+      setSelectedDoctor(null);
       toast({
         title: "Sucesso",
-        description: `Dados compartilhados com ${selectedDoctor.name}`,
+        description: `Dados compartilhados com Dr. ${selectedDoctor.name}`,
       });
-
-      // Recarregar lista de médicos compartilhados
-      const updatedDoctors = await patientProfileAPI.getSharedDoctors(user.id);
-      setSharedDoctors(updatedDoctors);
-
-      setShowShareDialog(false);
-      setShowAddDoctorDialog(false);
-      setSelectedDoctor(null);
     } catch (error) {
       toast({
         variant: "destructive",
@@ -285,33 +258,39 @@ const PatientProfile = () => {
     }
   };
 
-  const handleStopSharing = async (doctor: Doctor) => {
+  const handleRemoveDoctor = async (doctorId: string) => {
     if (!user?.id) return;
 
     try {
-      await patientProfileAPI.stopSharingWithDoctor(user.id, doctor.id);
+      await patientProfileAPI.removeDoctorSharing(user.id, doctorId);
+      setSharedDoctors((prev) => prev.filter((d) => d.id !== doctorId));
       toast({
         title: "Sucesso",
-        description: `Compartilhamento com ${doctor.name} interrompido`,
+        description: "Compartilhamento removido",
       });
-
-      // Recarregar lista
-      const updatedDoctors = await patientProfileAPI.getSharedDoctors(user.id);
-      setSharedDoctors(updatedDoctors);
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Erro ao parar compartilhamento",
+        description: "Erro ao remover compartilhamento",
       });
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    const success = await deleteAccount();
+    if (success) {
+      navigate("/login");
     }
   };
 
   if (!user) {
     return (
-      <div className="flex h-screen bg-gray-50 items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
+      <div className="flex h-screen bg-gray-50">
+        <div className="hidden lg:block">
+          <Sidebar />
+        </div>
+        <div className="flex-1 flex items-center justify-center">
           <p className="text-gray-600">Carregando usuário...</p>
         </div>
       </div>
@@ -368,11 +347,7 @@ const PatientProfile = () => {
                   <div className="mb-8 text-center">
                     <div className="relative inline-block">
                       <div
-                        className={`w-24 h-24 rounded-full overflow-hidden bg-gray-100 border-2 border-gray-200 transition-colors ${
-                          isViewingOtherPatient
-                            ? "cursor-default"
-                            : "cursor-pointer hover:border-blue-400"
-                        }`}
+                        className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 border-2 border-gray-200 cursor-pointer hover:border-blue-400 transition-colors"
                         onClick={handleImageClick}
                       >
                         {profileImage ? (
@@ -387,21 +362,16 @@ const PatientProfile = () => {
                           </div>
                         )}
                       </div>
-                      {!isViewingOtherPatient && (
-                        <button
-                          onClick={handleImageClick}
-                          className="absolute -bottom-1 -right-1 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700 transition-colors"
-                        >
-                          <Camera className="w-4 h-4" />
-                        </button>
-                      )}
+                      <button
+                        onClick={handleImageClick}
+                        className="absolute -bottom-1 -right-1 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700 transition-colors"
+                      >
+                        <Camera className="w-4 h-4" />
+                      </button>
                     </div>
-                    <div className="mt-3">
-                      <p className="text-sm text-gray-600">Adicionar arquivo</p>
-                      <p className="text-xs text-gray-500">
-                        Ou arraste o arquivo aqui
-                      </p>
-                    </div>
+                    <p className="text-sm text-gray-600 mt-2">
+                      Clique para alterar sua foto
+                    </p>
                     <input
                       ref={fileInputRef}
                       type="file"
@@ -439,7 +409,6 @@ const PatientProfile = () => {
                             birthDate: e.target.value,
                           }))
                         }
-                        disabled={isViewingOtherPatient}
                       />
                     </div>
 
@@ -456,7 +425,6 @@ const PatientProfile = () => {
                             gender: value,
                           }))
                         }
-                        disabled={isViewingOtherPatient}
                       >
                         <SelectTrigger>
                           <SelectValue />
@@ -475,7 +443,6 @@ const PatientProfile = () => {
                       <Select
                         value={personalData.state}
                         onValueChange={handleStateChange}
-                        disabled={isViewingOtherPatient}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione o estado" />
@@ -501,7 +468,7 @@ const PatientProfile = () => {
                             city: value,
                           }))
                         }
-                        disabled={!selectedState || isViewingOtherPatient}
+                        disabled={!selectedState}
                       >
                         <SelectTrigger>
                           <SelectValue
@@ -534,22 +501,19 @@ const PatientProfile = () => {
                           }))
                         }
                         placeholder="Nome do plano de saúde (opcional)"
-                        disabled={isViewingOtherPatient}
                       />
                     </div>
                   </div>
 
                   <div className="flex justify-end gap-3 mt-8">
                     <Button variant="outline">Cancelar</Button>
-                    {!isViewingOtherPatient && (
-                      <Button
-                        onClick={handlePersonalDataSave}
-                        disabled={isLoading}
-                        className="bg-blue-600 hover:bg-blue-700"
-                      >
-                        {isLoading ? "Salvando..." : "Salvar"}
-                      </Button>
-                    )}
+                    <Button
+                      onClick={handlePersonalDataSave}
+                      disabled={isLoading}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      {isLoading ? "Salvando..." : "Salvar"}
+                    </Button>
                   </div>
                 </div>
               </TabsContent>
@@ -587,7 +551,6 @@ const PatientProfile = () => {
                             }
                             placeholder="Ex: 170"
                             className="mt-1"
-                            disabled={isViewingOtherPatient}
                           />
                         </div>
 
@@ -609,7 +572,6 @@ const PatientProfile = () => {
                             }
                             placeholder="Ex: 70.5"
                             className="mt-1"
-                            disabled={isViewingOtherPatient}
                           />
                         </div>
                       </div>
@@ -638,7 +600,6 @@ const PatientProfile = () => {
                                 smoker: checked,
                               }))
                             }
-                            disabled={isViewingOtherPatient}
                           />
                         </div>
 
@@ -659,7 +620,6 @@ const PatientProfile = () => {
                                 highBloodPressure: checked,
                               }))
                             }
-                            disabled={isViewingOtherPatient}
                           />
                         </div>
                       </div>
@@ -692,7 +652,6 @@ const PatientProfile = () => {
                                     : undefined,
                                 }))
                               }
-                              disabled={isViewingOtherPatient}
                             />
                           </div>
 
@@ -715,7 +674,6 @@ const PatientProfile = () => {
                                     exerciseFrequency: value,
                                   }))
                                 }
-                                disabled={isViewingOtherPatient}
                               >
                                 <SelectTrigger className="mt-1">
                                   <SelectValue placeholder="Selecione a frequência" />
@@ -753,7 +711,6 @@ const PatientProfile = () => {
                                 healthyDiet: checked,
                               }))
                             }
-                            disabled={isViewingOtherPatient}
                           />
                         </div>
                       </div>
@@ -762,15 +719,13 @@ const PatientProfile = () => {
 
                   <div className="flex justify-end gap-3 mt-8">
                     <Button variant="outline">Cancelar</Button>
-                    {!isViewingOtherPatient && (
-                      <Button
-                        onClick={handleMedicalDataSave}
-                        disabled={isLoading}
-                        className="bg-blue-600 hover:bg-blue-700"
-                      >
-                        {isLoading ? "Salvando..." : "Salvar"}
-                      </Button>
-                    )}
+                    <Button
+                      onClick={handleMedicalDataSave}
+                      disabled={isLoading}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      {isLoading ? "Salvando..." : "Salvar"}
+                    </Button>
                   </div>
                 </div>
               </TabsContent>
@@ -793,96 +748,84 @@ const PatientProfile = () => {
                         className="bg-blue-600 hover:bg-blue-700"
                       >
                         <Plus className="h-4 w-4 mr-2" />
-                        Buscar médicos
+                        Buscar médico
                       </Button>
                     </div>
                   </div>
 
-                  {sharedDoctors.length === 0 ? (
-                    <div className="p-8 text-center">
-                      <Share2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">
-                        Nenhum médico compartilhado
-                      </h3>
-                      <p className="text-gray-600 mb-6">
-                        Compartilhe seus dados médicos com profissionais de
-                        saúde de sua confiança.
-                      </p>
-                      <Button
-                        onClick={() => navigate("/patient/buscar-medicos")}
-                        className="bg-blue-600 hover:bg-blue-700"
-                      >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Buscar primeiro médico
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Médico
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Especialidade
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              CRM
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Ações
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                          {sharedDoctors.map((doctor) => (
-                            <tr key={doctor.id}>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <input
-                                  type="checkbox"
-                                  checked
-                                  readOnly
-                                  className="rounded"
-                                />
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <span className="font-medium text-gray-900">
-                                  {doctor.name}
+                  <div className="p-6">
+                    {sharedDoctors.length === 0 ? (
+                      <div className="text-center py-8">
+                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <User className="w-8 h-8 text-gray-400" />
+                        </div>
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">
+                          Nenhum médico compartilhado
+                        </h3>
+                        <p className="text-gray-600 mb-6">
+                          Você ainda não compartilhou seus dados com nenhum
+                          médico.
+                        </p>
+                        <Button
+                          onClick={() => navigate("/patient/buscar-medicos")}
+                          className="bg-blue-600 hover:bg-blue-700"
+                        >
+                          <Search className="h-4 w-4 mr-2" />
+                          Buscar médico
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {sharedDoctors.map((doctor) => (
+                          <div
+                            key={doctor.id}
+                            className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                <span className="text-sm font-medium text-blue-600">
+                                  Dr
                                 </span>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-gray-600">
-                                {doctor.specialty}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-gray-600">
-                                {doctor.crm}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="flex items-center gap-2">
-                                  <button className="text-blue-600 hover:text-blue-800 text-sm">
-                                    Compartilhar dados
-                                  </button>
-                                  <button
-                                    onClick={() => handleStopSharing(doctor)}
-                                    className="text-red-600 hover:text-red-800 p-1"
-                                    title="Parar compartilhamento"
-                                  >
-                                    <X className="h-4 w-4" />
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
+                              </div>
+                              <div>
+                                <h4 className="font-medium text-gray-900">
+                                  Dr. {doctor.name}
+                                </h4>
+                                <p className="text-sm text-gray-600">
+                                  {doctor.specialty} • CRM {doctor.crm}
+                                </p>
+                              </div>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleRemoveDoctor(doctor.id)}
+                              className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
 
-                  <div className="flex justify-end gap-3 p-6">
-                    <Button variant="outline">Cancelar</Button>
-                    <Button className="bg-blue-600 hover:bg-blue-700">
-                      Salvar
+                {/* Danger Zone */}
+                <div className="bg-white rounded-lg border border-red-200">
+                  <div className="p-6">
+                    <h3 className="text-lg font-medium text-red-900 mb-2">
+                      Zona de Perigo
+                    </h3>
+                    <p className="text-sm text-red-600 mb-4">
+                      Estas ações são irreversíveis. Tenha cuidado.
+                    </p>
+                    <Button
+                      variant="destructive"
+                      onClick={handleDeleteAccount}
+                      className="bg-red-600 hover:bg-red-700"
+                    >
+                      Deletar conta permanentemente
                     </Button>
                   </div>
                 </div>
@@ -900,37 +843,67 @@ const PatientProfile = () => {
           </DialogHeader>
 
           <div className="space-y-4">
-            <div className="flex gap-2">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
+                placeholder="Digite o nome ou CRM do médico"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Digite o nome do médico ou CRM-UF (ex: 123456-SP)"
-                className="flex-1"
+                className="pl-10"
               />
-              <Button onClick={searchForDoctors}>
-                <Search className="h-4 w-4" />
-              </Button>
             </div>
 
-            {searchDoctors.length > 0 && (
-              <div className="max-h-64 overflow-y-auto border rounded-lg">
-                {searchDoctors.map((doctor) => (
+            <div className="max-h-96 overflow-y-auto">
+              {searchDoctors
+                .filter(
+                  (doctor) =>
+                    doctor.name
+                      .toLowerCase()
+                      .includes(searchQuery.toLowerCase()) ||
+                    doctor.crm.includes(searchQuery),
+                )
+                .map((doctor) => (
                   <div
                     key={doctor.id}
-                    className="p-4 border-b last:border-b-0 hover:bg-gray-50 cursor-pointer"
-                    onClick={() => {
-                      setSelectedDoctor(doctor);
-                      setShowShareDialog(true);
-                    }}
+                    className="flex items-center justify-between p-3 border border-gray-200 rounded-lg mb-2"
                   >
-                    <div className="font-medium">{doctor.name}</div>
-                    <div className="text-sm text-gray-600">
-                      {doctor.specialty} • CRM: {doctor.crm}-{doctor.state}
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span className="text-xs font-medium text-blue-600">
+                          Dr
+                        </span>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900">
+                          Dr. {doctor.name}
+                        </h4>
+                        <p className="text-sm text-gray-600">
+                          {doctor.specialty} • CRM {doctor.crm}
+                        </p>
+                      </div>
                     </div>
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setSelectedDoctor(doctor);
+                        setShowShareDialog(true);
+                        setShowAddDoctorDialog(false);
+                      }}
+                      disabled={sharedDoctors.some((d) => d.id === doctor.id)}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      {sharedDoctors.some((d) => d.id === doctor.id) ? (
+                        "Já compartilhado"
+                      ) : (
+                        <>
+                          <Share2 className="h-3 w-3 mr-1" />
+                          Compartilhar
+                        </>
+                      )}
+                    </Button>
                   </div>
                 ))}
-              </div>
-            )}
+            </div>
           </div>
         </DialogContent>
       </Dialog>
@@ -939,38 +912,46 @@ const PatientProfile = () => {
       <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Compartilhar seus dados com o médico?</DialogTitle>
+            <DialogTitle>Confirmar compartilhamento</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
-            <p className="text-sm text-gray-600">
-              Ao clicar em "Compartilhar", você autoriza o envio de suas
-              informações médicas ao(à) médico(a) responsável. Isso inclui dados
-              como resultados de exames, diagnósticos, tratamentos em andamento
-              e histórico de saúde.
+            <p className="text-gray-600">
+              Você está prestes a compartilhar seus dados pessoais e médicos
+              com:
             </p>
 
             {selectedDoctor && (
-              <div className="p-3 bg-gray-50 rounded-lg">
-                <p className="font-medium">{selectedDoctor.name}</p>
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <h4 className="font-medium text-gray-900">
+                  Dr. {selectedDoctor.name}
+                </h4>
                 <p className="text-sm text-gray-600">
-                  {selectedDoctor.specialty} • CRM: {selectedDoctor.crm}-
-                  {selectedDoctor.state}
+                  {selectedDoctor.specialty} • CRM {selectedDoctor.crm}
                 </p>
               </div>
             )}
-          </div>
 
-          <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => setShowShareDialog(false)}>
-              Voltar
-            </Button>
-            <Button
-              onClick={handleShareWithDoctor}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              Compartilhar
-            </Button>
+            <p className="text-sm text-gray-500">
+              O médico poderá visualizar suas informações pessoais, dados
+              médicos e histórico de indicadores. Você pode revogar este acesso
+              a qualquer momento.
+            </p>
+
+            <div className="flex justify-end gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setShowShareDialog(false)}
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleShareData}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                Confirmar compartilhamento
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
