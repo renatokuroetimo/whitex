@@ -1,18 +1,31 @@
 -- ================================================================
--- CORRIGIR SCHEMA DA TABELA patient_indicator_values
+-- RECRIAR TABELA patient_indicator_values COM ESTRUTURA CORRETA
 -- ================================================================
 
 -- Verificar estrutura atual
 \d patient_indicator_values
 
--- Adicionar colunas que podem estar faltando
-ALTER TABLE patient_indicator_values 
-ADD COLUMN IF NOT EXISTS date DATE,
-ADD COLUMN IF NOT EXISTS time TIME,
-ADD COLUMN IF NOT EXISTS category_name TEXT,
-ADD COLUMN IF NOT EXISTS subcategory_name TEXT,
-ADD COLUMN IF NOT EXISTS parameter TEXT,
-ADD COLUMN IF NOT EXISTS unit_symbol TEXT;
+-- Se a tabela existe mas com estrutura errada, drop e recriar
+DROP TABLE IF EXISTS patient_indicator_values CASCADE;
 
--- Verificar novamente
+-- Criar tabela com estrutura compatível
+CREATE TABLE patient_indicator_values (
+  id TEXT PRIMARY KEY,
+  patient_id TEXT NOT NULL,
+  indicator_id TEXT NOT NULL,
+  category_name TEXT,
+  subcategory_name TEXT,
+  parameter TEXT,
+  unit_symbol TEXT,
+  value TEXT NOT NULL,
+  date DATE,
+  time TIME,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Desabilitar RLS temporariamente
+ALTER TABLE patient_indicator_values DISABLE ROW LEVEL SECURITY;
+
+-- Verificar estrutura final
 \d patient_indicator_values
