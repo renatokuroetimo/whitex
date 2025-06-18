@@ -428,12 +428,19 @@ class PatientAPI {
         });
 
         if (error) {
-          console.error("❌ Erro ao buscar paciente no Supabase:", {
-            message: error.message,
-            details: error.details,
-            hint: error.hint,
-            code: error.code,
-          });
+          console.error(
+            "❌ Erro ao buscar paciente no Supabase:",
+            JSON.stringify(
+              {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+              },
+              null,
+              2,
+            ),
+          );
           // Se erro for "PGRST116", significa que não encontrou - continuar para localStorage
           if (error.code !== "PGRST116") {
             throw error; // Outros erros devem ser tratados
