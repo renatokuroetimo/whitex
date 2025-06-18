@@ -24,8 +24,8 @@ const MigrationPanel: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Mostrar apenas em desenvolvimento
-  if (!import.meta.env.DEV) return null;
+  // Temporariamente habilitado em produção para migração
+  // if (!import.meta.env.DEV) return null;
 
   if (!isVisible) {
     return (
