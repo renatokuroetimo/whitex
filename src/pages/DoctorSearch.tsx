@@ -208,9 +208,30 @@ const DoctorSearch = () => {
                   {!isSearching && <span className="ml-2">Buscar</span>}
                 </Button>
                 <Button
-                  onClick={() => {
+                  onClick={async () => {
                     setSearchQuery("");
-                    handleSearch();
+                    setIsSearching(true);
+                    try {
+                      await patientProfileAPI.initializeMockDoctors();
+                      const results = await patientProfileAPI.searchDoctors("");
+                      const sharedDoctorIds = sharedDoctors.map((d) => d.id);
+                      const availableDoctors = results.filter(
+                        (doctor) => !sharedDoctorIds.includes(doctor.id),
+                      );
+                      setSearchResults(availableDoctors);
+                      toast({
+                        title: "Médicos carregados",
+                        description: `${availableDoctors.length} médico(s) disponível(is)`,
+                      });
+                    } catch (error) {
+                      toast({
+                        variant: "destructive",
+                        title: "Erro",
+                        description: "Erro ao carregar médicos",
+                      });
+                    } finally {
+                      setIsSearching(false);
+                    }
                   }}
                   variant="outline"
                   disabled={isSearching}
