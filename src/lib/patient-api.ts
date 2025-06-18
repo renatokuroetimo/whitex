@@ -1197,6 +1197,18 @@ class PatientAPI {
               2,
             ),
           );
+
+          // Se é erro de rede (Failed to fetch), usar fallback localStorage
+          if (
+            sharedError.message &&
+            sharedError.message.includes("Failed to fetch")
+          ) {
+            console.log(
+              "🌐 Erro de rede detectado - usando fallback localStorage",
+            );
+            throw new Error("NETWORK_ERROR"); // Sinalizar para usar fallback
+          }
+
           throw sharedError;
         }
 
