@@ -370,10 +370,14 @@ const PatientProfile = () => {
               onValueChange={setActiveTab}
               className="space-y-6"
             >
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList
+                className={`grid w-full ${isViewingOtherPatient ? "grid-cols-2" : "grid-cols-3"}`}
+              >
                 <TabsTrigger value="perfil">Perfil</TabsTrigger>
                 <TabsTrigger value="dados-medicos">Dados médicos</TabsTrigger>
-                <TabsTrigger value="medicos">Médicos</TabsTrigger>
+                {!isViewingOtherPatient && (
+                  <TabsTrigger value="medicos">Médicos</TabsTrigger>
+                )}
               </TabsList>
 
               {/* Tab Perfil */}
