@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Camera, User, Plus, Search, Share2, X } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
@@ -35,6 +35,7 @@ import { toast } from "@/hooks/use-toast";
 const PatientProfile = () => {
   const { user, deleteAccount } = useAuth();
   const navigate = useNavigate();
+  const { id: patientId } = useParams();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Estados gerais
@@ -318,8 +319,17 @@ const PatientProfile = () => {
     );
   }
 
-  if (user.profession !== "paciente") {
-    navigate("/dashboard");
+  // Determinar se é visualização de médico ou do próprio paciente
+  const isViewingOtherPatient = patientId && user?.profession === "medico";
+  const isOwnProfile = !patientId && user?.profession === "paciente";
+
+  // Redirecionar se acesso inválido
+  if (!isViewingOtherPatient && !isOwnProfile) {
+    if (user?.profession === "medico") {
+      navigate("/pacientes");
+    } else {
+      navigate("/patient-dashboard");
+    }
     return null;
   }
 
@@ -334,10 +344,16 @@ const PatientProfile = () => {
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-between mb-8">
               <h1 className="text-2xl font-semibold text-gray-900">
-                Dados pessoais
+                {isViewingOtherPatient
+                  ? "Perfil do Paciente"
+                  : "Dados pessoais"}
               </h1>
               <button
-                onClick={() => navigate("/patient-dashboard")}
+                onClick={() =>
+                  navigate(
+                    isViewingOtherPatient ? "/pacientes" : "/patient-dashboard",
+                  )
+                }
                 className="text-sm text-blue-600 hover:text-blue-800"
               >
                 ← Voltar
