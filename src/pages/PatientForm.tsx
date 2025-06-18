@@ -402,7 +402,7 @@ const PatientForm = () => {
                       onValueChange={(value) =>
                         handleInputChange("city", value)
                       }
-                      disabled={!selectedState}
+                      disabled={!selectedState || isSharedPatient}
                     >
                       <SelectTrigger>
                         <SelectValue
