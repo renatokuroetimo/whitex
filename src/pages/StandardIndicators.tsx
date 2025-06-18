@@ -13,8 +13,13 @@ const StandardIndicators = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Redirect patients to their indicators page
+    if (user?.profession === "paciente") {
+      navigate("/patient/indicadores", { replace: true });
+      return;
+    }
     loadStandardIndicators();
-  }, []);
+  }, [user, navigate]);
 
   const loadStandardIndicators = async () => {
     setIsLoading(true);
