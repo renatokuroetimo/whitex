@@ -116,6 +116,11 @@ const Sidebar: React.FC = () => {
     return location.pathname === path;
   };
 
+  const isDashboardActive = () => {
+    const dashboardPaths = ["/dashboard", "/patient-dashboard"];
+    return dashboardPaths.includes(location.pathname);
+  };
+
   const sidebarItems = getSidebarItems(user?.profession);
   const profilePath =
     user?.profession === "paciente" ? "/patient-profile" : "/profile";
@@ -133,10 +138,14 @@ const Sidebar: React.FC = () => {
       </div>
 
       {/* User Profile */}
-      <div className="p-6 border-b border-gray-200">
+      <div
+        className={`p-6 border-b border-gray-200 ${isDashboardActive() ? "bg-blue-50" : ""}`}
+      >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gray-100 rounded-full overflow-hidden flex items-center justify-center border border-gray-200">
+            <div
+              className={`w-8 h-8 bg-gray-100 rounded-full overflow-hidden flex items-center justify-center border ${isDashboardActive() ? "border-blue-200" : "border-gray-200"}`}
+            >
               {profileImage ? (
                 <img
                   src={profileImage}
@@ -145,21 +154,31 @@ const Sidebar: React.FC = () => {
                   onError={() => setProfileImage(null)}
                 />
               ) : (
-                <User className="w-4 h-4 text-gray-600" />
+                <User
+                  className={`w-4 h-4 ${isDashboardActive() ? "text-blue-600" : "text-gray-600"}`}
+                />
               )}
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-medium text-gray-700">
+              <span
+                className={`text-sm font-medium ${isDashboardActive() ? "text-blue-700" : "text-gray-700"}`}
+              >
                 {user?.email?.split("@")[0] || "Usuário"}
               </span>
-              <span className="text-xs text-gray-500">
+              <span
+                className={`text-xs ${isDashboardActive() ? "text-blue-600" : "text-gray-500"}`}
+              >
                 {user?.profession === "medico" ? "Médico" : "Paciente"}
               </span>
             </div>
           </div>
           <button
             onClick={() => navigate(profilePath)}
-            className="text-xs text-blue-600 hover:text-blue-800 p-1 hover:bg-blue-50 rounded"
+            className={`text-xs p-1 rounded transition-colors ${
+              isDashboardActive()
+                ? "text-blue-700 hover:text-blue-800 hover:bg-blue-100"
+                : "text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+            }`}
             title="Ver perfil"
           >
             ▼
