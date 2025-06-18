@@ -569,17 +569,11 @@ class IndicatorAPI {
             2,
           ),
         );
-        // Continuar para fallback
+        throw supabaseError; // Falhar sem fallback
       }
     } else {
-      console.log("⚠️ Supabase não ativo para deleção de indicadores");
+      throw new Error("Supabase não está ativo para deleção de indicadores");
     }
-
-    console.log("📁 Deletando indicador do localStorage");
-    const indicators = this.getStoredIndicators();
-    const filteredIndicators = indicators.filter((ind) => ind.id !== id);
-    this.saveIndicators(filteredIndicators);
-    console.log("✅ Indicador deletado do localStorage");
   }
 
   // === STANDARD INDICATORS ===
