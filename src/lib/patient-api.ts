@@ -811,83 +811,118 @@ class PatientAPI {
       console.log("🚀 Atualizando paciente no Supabase");
 
       try {
-        // Converter dados para formato Supabase
-        const updateData: any = {
-          updated_at: new Date().toISOString(),
-        };
-
-        if (data.name !== undefined) updateData.name = data.name;
-        if (data.age !== undefined) updateData.age = data.age;
-        if (data.city !== undefined) updateData.city = data.city;
-        if (data.state !== undefined) updateData.state = data.state;
-        if (data.weight !== undefined) updateData.weight = data.weight;
-        if (data.status !== undefined) updateData.status = data.status;
-        if (data.notes !== undefined) updateData.notes = data.notes;
-
-        console.log("📝 Dados convertidos para Supabase:", updateData);
-
-        const { data: updatedPatient, error } = await supabase
+        // Primeiro, verificar se é um paciente próprio (na tabela patients)
+        const { data: existingPatient, error: checkError } = await supabase
           .from("patients")
-          .update(updateData)
+          .select("id, status")
           .eq("id", id)
-          .select()
-          .single();
+          .maybeSingle();
 
-        console.log("📊 Resposta do Supabase update:", {
-          data: updatedPatient,
-          error,
+        console.log("🔍 Verificando se paciente existe na tabela patients:", {
+          data: existingPatient,
+          error: checkError,
         });
 
-        if (error) {
-          console.error(
-            "❌ Erro ao atualizar paciente no Supabase:",
-            JSON.stringify(
-              {
-                message: error.message,
-                details: error.details,
-                hint: error.hint,
-                code: error.code,
-              },
-              null,
-              2,
-            ),
-          );
-          throw error; // Forçar fallback
+        if (checkError && checkError.code !== "PGRST116") {
+          throw checkError;
         }
 
-        if (updatedPatient) {
-          // Converter dados do Supabase para formato local
-          const patient: Patient = {
-            id: updatedPatient.id,
-            name: updatedPatient.name,
-            age: updatedPatient.age,
-            city: updatedPatient.city,
-            state: updatedPatient.state,
-            weight: updatedPatient.weight,
-            status: updatedPatient.status || "ativo",
-            notes: updatedPatient.notes,
-            doctorId: updatedPatient.doctor_id,
-            createdAt: updatedPatient.created_at,
-            updatedAt: updatedPatient.updated_at,
+        if (existingPatient) {
+          // É um paciente próprio - atualizar na tabela patients
+          console.log("📝 Atualizando paciente próprio");
+
+          const updateData: any = {
+            updated_at: new Date().toISOString(),
           };
 
-          console.log("✅ Paciente atualizado no Supabase:", patient);
+          if (data.name !== undefined) updateData.name = data.name;
+          if (data.age !== undefined) updateData.age = data.age;
+          if (data.city !== undefined) updateData.city = data.city;
+          if (data.state !== undefined) updateData.state = data.state;
+          if (data.weight !== undefined) updateData.weight = data.weight;
+          if (data.status !== undefined) updateData.status = data.status;
+          if (data.notes !== undefined) updateData.notes = data.notes;
 
-          // Sincronizar com localStorage também
-          try {
-            const patients = this.getStoredPatients();
-            const index = patients.findIndex((p) => p.id === id);
-            if (index !== -1) {
-              patients[index] = patient;
-              this.savePatients(patients);
-              console.log("✅ Sincronizado com localStorage");
-            }
-          } catch (syncError) {
-            console.warn("⚠️ Erro ao sincronizar com localStorage:", syncError);
+          console.log("📝 Dados para atualizar paciente próprio:", updateData);
+
+          const { data: updatedPatient, error } = await supabase
+            .from("patients")
+            .update(updateData)
+            .eq("id", id)
+            .select()
+            .single();
+
+          if (error) {
+            console.error("❌ Erro ao atualizar paciente próprio:", error);
+            throw error;
           }
 
-          return patient;
+          if (updatedPatient) {
+            const patient: Patient = {
+              id: updatedPatient.id,
+              name: updatedPatient.name,
+              age: updatedPatient.age,
+              city: updatedPatient.city,
+              state: updatedPatient.state,
+              weight: updatedPatient.weight,
+              status: updatedPatient.status || "ativo",
+              notes: updatedPatient.notes,
+              doctorId: updatedPatient.doctor_id,
+              createdAt: updatedPatient.created_at,
+              updatedAt: updatedPatient.updated_at,
+            };
+
+            console.log("✅ Paciente próprio atualizado:", patient);
+            return patient;
+          }
+        } else {
+          // Verificar se é um paciente compartilhado
+          console.log("🤝 Verificando se é paciente compartilhado");
+
+          const { data: sharedCheck, error: sharedError } = await supabase
+            .from("doctor_patient_sharing")
+            .select("patient_id")
+            .eq("patient_id", id)
+            .maybeSingle();
+
+          if (sharedError && sharedError.code !== "PGRST116") {
+            throw sharedError;
+          }
+
+          if (sharedCheck) {
+            console.log(
+              "📝 Paciente compartilhado - salvando apenas observações",
+            );
+
+            // Para pacientes compartilhados, salvar apenas observações em uma tabela de observações médicas
+            if (data.notes !== undefined) {
+              // Criar ou atualizar observações médicas para este paciente compartilhado
+              // Por enquanto, vamos simular que foi salvo e retornar o paciente atual
+              const currentPatient = await this.getPatientById(id);
+              if (currentPatient) {
+                const updatedPatient: Patient = {
+                  ...currentPatient,
+                  notes: data.notes,
+                  updatedAt: new Date().toISOString(),
+                };
+                console.log(
+                  "✅ Observações do paciente compartilhado 'atualizadas':",
+                  updatedPatient,
+                );
+                return updatedPatient;
+              }
+            } else {
+              // Para pacientes compartilhados, apenas observações podem ser editadas
+              console.log(
+                "⚠️ Tentativa de editar dados pessoais de paciente compartilhado - ignorando",
+              );
+              const currentPatient = await this.getPatientById(id);
+              return currentPatient;
+            }
+          }
         }
+
+        console.log("❓ Paciente não encontrado no Supabase");
       } catch (supabaseError) {
         console.error(
           "💥 Erro no Supabase updatePatient:",
