@@ -1,190 +1,40 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import {
-  ArrowLeft,
-  Plus,
-  Activity,
-  Filter,
-  TrendingUp,
-  Edit,
-  Trash2,
-} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft, Plus, Activity, TrendingUp } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import ConfirmDialog from "@/components/ConfirmDialog";
 import { useAuth } from "@/contexts/AuthContext";
-import { patientAPI } from "@/lib/patient-api";
+import { indicatorAPI } from "@/lib/indicator-api";
 import { patientIndicatorAPI } from "@/lib/patient-indicator-api";
-import { Patient } from "@/lib/patient-types";
 import { PatientIndicatorValue } from "@/lib/patient-indicator-types";
 import { toast } from "@/hooks/use-toast";
 
 const PatientIndicators = () => {
   const navigate = useNavigate();
-  const { patientId } = useParams<{ patientId: string }>();
   const { user } = useAuth();
-  const [patient, setPatient] = useState<Patient | null>(null);
   const [indicators, setIndicators] = useState<PatientIndicatorValue[]>([]);
-  const [filteredIndicators, setFilteredIndicators] = useState<
-    PatientIndicatorValue[]
-  >([]);
-  const [categories, setCategories] = useState<string[]>([]);
-  const [subcategories, setSubcategories] = useState<string[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string>("all");
   const [isLoading, setIsLoading] = useState(true);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [indicatorToDelete, setIndicatorToDelete] = useState<string | null>(
-    null,
-  );
 
   useEffect(() => {
-    if (patientId) {
-      loadData();
+    if (user?.id && user.profession === "paciente") {
+      loadIndicators();
     }
-  }, [patientId]);
+  }, [user]);
 
-  useEffect(() => {
-    const applyFilters = async () => {
-      await filterIndicators();
-    };
-    applyFilters();
-  }, [selectedCategory, selectedSubcategory, indicators]);
-
-  useEffect(() => {
-    const loadSubcategories = async () => {
-      await updateSubcategories();
-    };
-    loadSubcategories();
-  }, [selectedCategory, indicators]);
-
-  const filterIndicators = async () => {
-    if (!patientId) return;
-
-    try {
-      const filteredValues =
-        await patientIndicatorAPI.getPatientIndicatorValuesByFilters(
-          patientId,
-          selectedCategory,
-          selectedSubcategory,
-        );
-      setFilteredIndicators(filteredValues);
-    } catch (error) {
-      console.error("Error filtering indicators:", error);
-      setFilteredIndicators(indicators);
-    }
-  };
-
-  const updateSubcategories = async () => {
-    if (!patientId) return;
-
-    try {
-      const categorySubcategories =
-        await patientIndicatorAPI.getPatientIndicatorSubcategories(
-          patientId,
-          selectedCategory,
-        );
-      setSubcategories(categorySubcategories);
-
-      // Reset subcategory se não estiver na lista filtrada
-      if (
-        selectedSubcategory !== "all" &&
-        !categorySubcategories.includes(selectedSubcategory)
-      ) {
-        setSelectedSubcategory("all");
-      }
-    } catch (error) {
-      console.error("Error loading subcategories:", error);
-      setSubcategories([]);
-    }
-  };
-
-  const handleCategoryChange = (category: string) => {
-    setSelectedCategory(category);
-    setSelectedSubcategory("all"); // Reset subcategory quando categoria muda
-  };
-
-  const handleSubcategoryChange = (subcategory: string) => {
-    setSelectedSubcategory(subcategory);
-  };
-
-  const handleEditIndicator = (indicatorId: string) => {
-    navigate(`/pacientes/${patientId}/indicadores/${indicatorId}/editar`);
-  };
-
-  const handleDeleteConfirm = (indicatorId: string) => {
-    setIndicatorToDelete(indicatorId);
-    setShowDeleteDialog(true);
-  };
-
-  const handleDeleteIndicator = async () => {
-    if (!indicatorToDelete) return;
-
-    try {
-      await patientIndicatorAPI.deletePatientIndicatorValue(indicatorToDelete);
-      toast({
-        title: "Sucesso",
-        description: "Indicador removido com sucesso",
-      });
-      // Recarregar dados
-      loadData();
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Erro ao remover indicador",
-      });
-    } finally {
-      setShowDeleteDialog(false);
-      setIndicatorToDelete(null);
-    }
-  };
-
-  const loadData = async () => {
-    if (!patientId) return;
+  const loadIndicators = async () => {
+    if (!user?.id) return;
 
     setIsLoading(true);
     try {
-      const [
-        patientData,
-        indicatorValues,
-        indicatorCategories,
-        indicatorSubcategories,
-      ] = await Promise.all([
-        patientAPI.getPatientById(patientId),
-        patientIndicatorAPI.getPatientIndicatorValues(patientId),
-        patientIndicatorAPI.getPatientIndicatorCategories(patientId),
-        patientIndicatorAPI.getPatientIndicatorSubcategories(patientId),
-      ]);
-
-      if (!patientData) {
-        toast({
-          variant: "destructive",
-          title: "Erro",
-          description: "Paciente não encontrado",
-        });
-        navigate("/pacientes");
-        return;
-      }
-
-      setPatient(patientData);
+      const indicatorValues =
+        await patientIndicatorAPI.getPatientIndicatorValues(user.id);
       setIndicators(indicatorValues);
-      setFilteredIndicators(indicatorValues);
-      setCategories(indicatorCategories);
-      setSubcategories(indicatorSubcategories);
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Erro ao carregar dados do paciente",
+        description: "Erro ao carregar indicadores",
       });
     } finally {
       setIsLoading(false);
@@ -192,21 +42,21 @@ const PatientIndicators = () => {
   };
 
   const handleAddIndicator = () => {
-    navigate(`/pacientes/${patientId}/adicionar-indicador`);
+    navigate("/patient/adicionar-indicador");
   };
 
-  const handleBack = () => {
-    navigate(`/pacientes/${patientId}`);
+  const handleViewGraphs = () => {
+    navigate("/patient/graficos");
   };
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString("pt-BR");
   };
 
-  const formatDateTime = (dateStr: string, timeStr?: string) => {
-    const date = new Date(dateStr).toLocaleDateString("pt-BR");
-    return timeStr ? `${date} às ${timeStr}` : date;
-  };
+  if (!user || user.profession !== "paciente") {
+    navigate("/dashboard");
+    return null;
+  }
 
   if (isLoading) {
     return (
@@ -224,10 +74,6 @@ const PatientIndicators = () => {
     );
   }
 
-  if (!patient) {
-    return null;
-  }
-
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
@@ -242,110 +88,35 @@ const PatientIndicators = () => {
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
               <button
-                onClick={handleBack}
+                onClick={() => navigate("/dashboard")}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               >
                 <ArrowLeft className="h-5 w-5 text-gray-600" />
               </button>
-              <div>
-                <h1 className="text-2xl font-semibold text-gray-900">
-                  Indicadores de {patient.name}
-                </h1>
-                <p className="text-sm text-gray-600">
-                  {patient.age} anos • {patient.city}, {patient.state}
-                </p>
-              </div>
+              <h1 className="text-2xl font-semibold text-gray-900">
+                Meus Indicadores
+              </h1>
             </div>
             <div className="flex gap-3">
-              <Button
-                onClick={() => navigate(`/pacientes/${patientId}/graficos`)}
-                variant="outline"
-                className="border-blue-600 text-blue-600 hover:bg-blue-50"
-              >
-                <TrendingUp className="h-4 w-4 mr-2" />
-                Ver Gráficos
-              </Button>
+              {indicators.length > 0 && (
+                <Button
+                  onClick={handleViewGraphs}
+                  variant="outline"
+                  className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                >
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  Ver Gráficos
+                </Button>
+              )}
               <Button
                 onClick={handleAddIndicator}
                 className="bg-green-600 hover:bg-green-700 text-white"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Adicionar Indicador
+                Adicionar Registro
               </Button>
             </div>
           </div>
-
-          {/* Filtros */}
-          {indicators.length > 0 && (
-            <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                <div className="flex items-center gap-2">
-                  <Filter className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm font-medium text-gray-700">
-                    Filtros:
-                  </span>
-                </div>
-
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-                  {/* Filtro por Categoria */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600 min-w-max">
-                      Categoria:
-                    </span>
-                    <Select
-                      value={selectedCategory}
-                      onValueChange={handleCategoryChange}
-                    >
-                      <SelectTrigger className="w-48">
-                        <SelectValue placeholder="Selecione uma categoria" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Todas as categorias</SelectItem>
-                        {categories.map((category) => (
-                          <SelectItem key={category} value={category}>
-                            {category}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Filtro por Subcategoria */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600 min-w-max">
-                      Subcategoria:
-                    </span>
-                    <Select
-                      value={selectedSubcategory}
-                      onValueChange={handleSubcategoryChange}
-                      disabled={
-                        selectedCategory === "all" || subcategories.length === 0
-                      }
-                    >
-                      <SelectTrigger className="w-48">
-                        <SelectValue placeholder="Selecione uma subcategoria" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">
-                          Todas as subcategorias
-                        </SelectItem>
-                        {subcategories.map((subcategory) => (
-                          <SelectItem key={subcategory} value={subcategory}>
-                            {subcategory}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="text-sm text-gray-500 sm:ml-auto">
-                  Mostrando {filteredIndicators.length} de {indicators.length}{" "}
-                  indicadores
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* Content */}
           {indicators.length === 0 ? (
@@ -359,16 +130,15 @@ const PatientIndicators = () => {
                   Nenhum indicador registrado
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  {patient.name} ainda não possui indicadores registrados.
-                  Comece adicionando o primeiro indicador para acompanhar a
-                  saúde do paciente.
+                  Comece a registrar seus indicadores de saúde para acompanhar
+                  sua evolução e compartilhar com seus médicos.
                 </p>
                 <Button
                   onClick={handleAddIndicator}
                   className="bg-green-600 hover:bg-green-700 text-white"
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  Adicionar Primeiro Indicador
+                  Registrar Primeiro Indicador
                 </Button>
               </div>
             </div>
@@ -378,15 +148,7 @@ const PatientIndicators = () => {
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-semibold text-gray-900">
-                    {(() => {
-                      if (selectedCategory === "all") {
-                        return `Indicadores Registrados (${indicators.length})`;
-                      } else if (selectedSubcategory === "all") {
-                        return `${selectedCategory} (${filteredIndicators.length})`;
-                      } else {
-                        return `${selectedCategory} - ${selectedSubcategory} (${filteredIndicators.length})`;
-                      }
-                    })()}
+                    Registros de Indicadores ({indicators.length})
                   </h2>
                 </div>
 
@@ -401,21 +163,15 @@ const PatientIndicators = () => {
                           Valor
                         </th>
                         <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm">
-                          Data/Hora
-                        </th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm">
-                          Visibilidade
+                          Data
                         </th>
                         <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm">
                           Registrado em
                         </th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm">
-                          Ações
-                        </th>
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredIndicators.map((indicator) => (
+                      {indicators.map((indicator) => (
                         <tr
                           key={indicator.id}
                           className="border-b border-gray-100 hover:bg-gray-50"
@@ -438,53 +194,15 @@ const PatientIndicators = () => {
                           </td>
                           <td className="py-3 px-4">
                             <span className="text-sm text-gray-600">
-                              {indicator.date && indicator.time
-                                ? formatDateTime(indicator.date, indicator.time)
-                                : indicator.date
-                                  ? formatDate(indicator.date)
-                                  : "Não informado"}
+                              {indicator.date
+                                ? formatDate(indicator.date)
+                                : "Não informado"}
                             </span>
-                          </td>
-                          <td className="py-3 px-4">
-                            <Badge
-                              variant={
-                                indicator.visibleToMedics
-                                  ? "default"
-                                  : "secondary"
-                              }
-                              className="text-xs"
-                            >
-                              {indicator.visibleToMedics
-                                ? "Médicos"
-                                : "Privado"}
-                            </Badge>
                           </td>
                           <td className="py-3 px-4">
                             <span className="text-sm text-gray-600">
                               {formatDate(indicator.createdAt)}
                             </span>
-                          </td>
-                          <td className="py-3 px-4">
-                            <div className="flex items-center gap-2">
-                              <button
-                                onClick={() =>
-                                  handleEditIndicator(indicator.id)
-                                }
-                                className="text-blue-600 hover:text-blue-800 p-1"
-                                title="Editar indicador"
-                              >
-                                <Edit className="h-4 w-4" />
-                              </button>
-                              <button
-                                onClick={() =>
-                                  handleDeleteConfirm(indicator.id)
-                                }
-                                className="text-red-600 hover:text-red-800 p-1"
-                                title="Remover indicador"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </button>
-                            </div>
                           </td>
                         </tr>
                       ))}
@@ -496,18 +214,6 @@ const PatientIndicators = () => {
           )}
         </div>
       </div>
-
-      {/* Delete Confirmation Dialog */}
-      <ConfirmDialog
-        open={showDeleteDialog}
-        onOpenChange={setShowDeleteDialog}
-        title="Remover Indicador"
-        description="Tem certeza que deseja remover este registro de indicador? Esta ação não pode ser desfeita."
-        confirmText="Remover"
-        cancelText="Cancelar"
-        onConfirm={handleDeleteIndicator}
-        variant="destructive"
-      />
     </div>
   );
 };

@@ -11,26 +11,52 @@ interface SidebarItem {
   path: string;
 }
 
-const sidebarItems: SidebarItem[] = [
-  {
-    id: "inicio",
-    label: "Início",
-    icon: Home,
-    path: "/dashboard",
-  },
-  {
-    id: "pacientes",
-    label: "Pacientes",
-    icon: Users,
-    path: "/pacientes",
-  },
-  {
-    id: "indicadores",
-    label: "Indicadores",
-    icon: BarChart3,
-    path: "/indicadores",
-  },
-];
+const getSidebarItems = (userProfession?: string): SidebarItem[] => {
+  const baseItems = [
+    {
+      id: "inicio",
+      label: "Início",
+      icon: Home,
+      path: "/dashboard",
+    },
+  ];
+
+  if (userProfession === "medico") {
+    return [
+      ...baseItems,
+      {
+        id: "pacientes",
+        label: "Pacientes",
+        icon: Users,
+        path: "/pacientes",
+      },
+      {
+        id: "indicadores",
+        label: "Indicadores",
+        icon: BarChart3,
+        path: "/indicadores",
+      },
+    ];
+  } else if (userProfession === "paciente") {
+    return [
+      ...baseItems,
+      {
+        id: "meus-dados",
+        label: "Dados pessoais",
+        icon: Users,
+        path: "/patient-profile",
+      },
+      {
+        id: "meus-indicadores",
+        label: "Indicadores",
+        icon: BarChart3,
+        path: "/patient/indicadores",
+      },
+    ];
+  }
+
+  return baseItems;
+};
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
@@ -79,6 +105,10 @@ const Sidebar: React.FC = () => {
     return location.pathname === path;
   };
 
+  const sidebarItems = getSidebarItems(user?.profession);
+  const profilePath =
+    user?.profession === "paciente" ? "/patient-profile" : "/profile";
+
   return (
     <div className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col">
       {/* Header */}
@@ -109,7 +139,7 @@ const Sidebar: React.FC = () => {
             <span className="text-sm text-gray-600">Meu Perfil</span>
           </div>
           <button
-            onClick={() => navigate("/profile")}
+            onClick={() => navigate(profilePath)}
             className="text-xs text-blue-600 hover:text-blue-800"
           >
             ▼
