@@ -699,14 +699,15 @@ class IndicatorAPI {
   async updateStandardIndicatorVisibility(
     id: string,
     visible: boolean,
+    doctorId: string,
   ): Promise<void> {
     await this.delay(200);
-    const indicators = this.getStoredStandardIndicators();
+    const indicators = this.getStoredStandardIndicators(doctorId);
     const indicatorIndex = indicators.findIndex((ind) => ind.id === id);
 
     if (indicatorIndex !== -1) {
       indicators[indicatorIndex].visible = visible;
-      this.saveStandardIndicators(indicators);
+      this.saveStandardIndicators(indicators, doctorId);
     }
   }
 
