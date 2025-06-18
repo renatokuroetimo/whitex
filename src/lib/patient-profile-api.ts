@@ -55,31 +55,88 @@ class PatientProfileAPI {
   ): Promise<PatientPersonalData> {
     await this.delay(300);
 
+    console.log("🔥 SALVANDO DADOS PESSOAIS:", { userId, formData });
+
     const allData = this.getStoredPersonalData();
     const existingIndex = allData.findIndex((item) => item.userId === userId);
 
+    let resultData: PatientPersonalData;
+
     if (existingIndex >= 0) {
       // Atualizar existente
-      allData[existingIndex] = {
+      resultData = {
         ...allData[existingIndex],
         ...formData,
         updatedAt: new Date().toISOString(),
       };
-      this.savePersonalData(allData);
-      return allData[existingIndex];
     } else {
       // Criar novo
-      const newData: PatientPersonalData = {
+      resultData = {
         id: this.generateId(),
         userId,
         ...formData,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-      allData.push(newData);
-      this.savePersonalData(allData);
-      return newData;
     }
+
+    // Se Supabase estiver ativo, usar Supabase
+    if (isFeatureEnabled("useSupabaseProfiles") && supabase) {
+      console.log("🚀 Salvando dados pessoais no Supabase");
+
+      try {
+        const insertData = {
+          id: resultData.id,
+          user_id: resultData.userId,
+          full_name: resultData.fullName,
+          birth_date: resultData.birthDate,
+          gender: resultData.gender,
+          state: resultData.state,
+          city: resultData.city,
+          health_plan: resultData.healthPlan,
+          profile_image: resultData.profileImage,
+          created_at: resultData.createdAt,
+          updated_at: resultData.updatedAt,
+        };
+
+        console.log("📝 Dados pessoais para Supabase:", insertData);
+
+        const { data: supabaseData, error } =
+          existingIndex >= 0
+            ? await supabase
+                .from("patient_personal_data")
+                .update(insertData)
+                .eq("user_id", userId)
+            : await supabase.from("patient_personal_data").insert([insertData]);
+
+        console.log("📊 Resposta Supabase dados pessoais:", {
+          data: supabaseData,
+          error,
+        });
+
+        if (error) {
+          console.error("❌ Erro ao salvar dados pessoais:", error);
+          throw error; // Forçar fallback
+        } else {
+          console.log("✅ Dados pessoais salvos no Supabase!");
+          return resultData;
+        }
+      } catch (supabaseError) {
+        console.error("💥 Erro no Supabase dados pessoais:", supabaseError);
+        // Continuar para fallback
+      }
+    } else {
+      console.log("⚠️ Supabase perfis não ativo");
+    }
+
+    console.log("📁 Salvando dados pessoais no localStorage");
+    if (existingIndex >= 0) {
+      allData[existingIndex] = resultData;
+    } else {
+      allData.push(resultData);
+    }
+    this.savePersonalData(allData);
+    return resultData;
   }
 
   // === DADOS MÉDICOS ===
