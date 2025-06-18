@@ -355,17 +355,21 @@ const PatientDetailView = () => {
                   )}
                 </div>
 
-                {patient.status !== "compartilhado" && (
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={handleDeletePatient}
-                    className="w-full mt-4"
-                  >
-                    <Trash2 className="h-4 w-4 mr-1" />
-                    Deletar perfil
-                  </Button>
-                )}
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={
+                    patient.status === "compartilhado"
+                      ? handleRemoveSharing
+                      : handleDeletePatient
+                  }
+                  className="w-full mt-4"
+                >
+                  <Trash2 className="h-4 w-4 mr-1" />
+                  {patient.status === "compartilhado"
+                    ? "Remover compartilhamento"
+                    : "Deletar perfil"}
+                </Button>
               </div>
 
               {/* Add Indicator Button */}
