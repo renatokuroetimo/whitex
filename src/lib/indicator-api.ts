@@ -293,14 +293,54 @@ class IndicatorAPI {
       ...data,
       doctorId,
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
     };
 
+    console.log("🔥 CRIANDO INDICADOR:", newIndicator);
+
+    // Se Supabase estiver ativo, usar Supabase
+    if (isFeatureEnabled("useSupabaseIndicators") && supabase) {
+      console.log("🚀 Criando indicador no Supabase");
+
+      try {
+        const insertData = {
+          id: newIndicator.id,
+          name: newIndicator.name,
+          unit: newIndicator.unit,
+          type: newIndicator.type,
+          category: newIndicator.categoryId,
+          doctor_id: newIndicator.doctorId,
+          is_standard: false,
+          created_at: newIndicator.createdAt,
+        };
+
+        console.log("📝 Dados do indicador:", insertData);
+
+        const { data: supabaseData, error } = await supabase.from("indicators").insert([insertData]);
+
+        console.log("📊 Resposta do Supabase:", { data: supabaseData, error });
+
+        if (error) {
+          console.error("❌ Erro ao criar indicador:", error);
+          throw error; // Forçar fallback
+        } else {
+          console.log("✅ Indicador criado no Supabase!");
+          return newIndicator;
+        }
+      } catch (supabaseError) {
+        console.error("💥 Erro no Supabase indicador:", supabaseError);
+        // Continuar para fallback
+      }
+    } else {
+      console.log("⚠️ Supabase indicadores não ativo");
+    }
+
+    console.log("📁 Salvando no localStorage");
     const indicators = this.getStoredIndicators();
     indicators.push(newIndicator);
     this.saveIndicators(indicators);
 
     return newIndicator;
+  }
   }
 
   async deleteIndicator(id: string): Promise<void> {
@@ -313,9 +353,7 @@ class IndicatorAPI {
   // === STANDARD INDICATORS ===
   private getStoredStandardIndicators(): any[] {
     try {
-      const indicators = localStorage.getItem(
-        this.STORAGE_KEYS.STANDARD_INDICATORS,
-      );
+      const indicators = localStorage.getItem(this.STORAGE_KEYS.STANDARD_INDICATORS);
       return indicators ? JSON.parse(indicators) : [];
     } catch {
       return [];
@@ -423,13 +461,10 @@ class IndicatorAPI {
     return indicators;
   }
 
-  async updateStandardIndicatorVisibility(
-    id: string,
-    visible: boolean,
-  ): Promise<void> {
+  async updateStandardIndicatorVisibility(id: string, visible: boolean): Promise<void> {
     await this.delay(200);
     const indicators = this.getStoredStandardIndicators();
-    const indicatorIndex = indicators.findIndex((ind) => ind.id === id);
+    const indicatorIndex = indicators.findIndex(ind => ind.id === id);
 
     if (indicatorIndex !== -1) {
       indicators[indicatorIndex].visible = visible;
@@ -439,7 +474,7 @@ class IndicatorAPI {
 
   async getVisibleStandardIndicators(): Promise<any[]> {
     const indicators = await this.getStandardIndicators();
-    return indicators.filter((ind) => ind.visible);
+    return indicators.filter(ind => ind.visible);
   }
 
   // Método para limpar todos os dados (útil para testes)
