@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextHybrid";
 import { indicatorAPI } from "@/lib/indicator-api";
 import { patientAPI } from "@/lib/patient-api";
 import { patientIndicatorAPI } from "@/lib/patient-indicator-api";

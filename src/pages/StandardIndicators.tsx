@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContextHybrid";
 import { indicatorAPI } from "@/lib/indicator-api";
 import { toast } from "@/hooks/use-toast";
 
