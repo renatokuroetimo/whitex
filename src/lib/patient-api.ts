@@ -324,25 +324,53 @@ class PatientAPI {
       console.log("🚀 Buscando pacientes no Supabase");
 
       try {
-        const { data: supabasePatients, error } = await supabase
+        // Buscar pacientes criados pelo médico
+        const { data: supabasePatients, error: patientsError } = await supabase
           .from("patients")
           .select("*")
           .eq("doctor_id", doctorId);
 
-        console.log("📊 Pacientes do Supabase:", {
+        console.log("📊 Pacientes criados pelo médico:", {
           data: supabasePatients,
-          error,
+          error: patientsError,
         });
 
-        if (error) {
+        // Buscar pacientes compartilhados com o médico
+        const { data: sharedData, error: sharedError } = await supabase
+          .from("doctor_patient_sharing")
+          .select(
+            `
+            patient_id,
+            shared_at,
+            users!inner (
+              id,
+              email,
+              full_name
+            ),
+            patient_personal_data (
+              full_name,
+              birth_date,
+              city,
+              state
+            )
+          `,
+          )
+          .eq("doctor_id", doctorId);
+
+        console.log("🤝 Pacientes compartilhados:", {
+          data: sharedData,
+          error: sharedError,
+        });
+
+        if (patientsError) {
           console.error(
-            "❌ Erro ao buscar pacientes:",
+            "❌ Erro ao buscar pacientes criados:",
             JSON.stringify(
               {
-                message: error.message,
-                details: error.details,
-                hint: error.hint,
-                code: error.code,
+                message: patientsError.message,
+                details: patientsError.details,
+                hint: patientsError.hint,
+                code: patientsError.code,
               },
               null,
               2,
@@ -350,8 +378,8 @@ class PatientAPI {
           );
           // Fallback para localStorage
         } else {
-          // Converter dados do Supabase para formato local
-          const patients = (supabasePatients || []).map(
+          // Converter pacientes criados pelo médico
+          let allPatients = (supabasePatients || []).map(
             (p: any): Patient => ({
               id: p.id,
               name: p.name,
@@ -359,7 +387,7 @@ class PatientAPI {
               city: p.city,
               state: p.state,
               weight: p.weight,
-              status: p.status,
+              status: p.status || "ativo",
               notes: p.notes,
               doctorId: p.doctor_id,
               createdAt: p.created_at,
@@ -367,17 +395,56 @@ class PatientAPI {
             }),
           );
 
-          console.log("✅ Pacientes convertidos:", patients);
+          // Converter pacientes compartilhados
+          if (!sharedError && sharedData) {
+            const sharedPatients = sharedData.map((share: any): Patient => {
+              const personalData = share.patient_personal_data?.[0];
+              const userData = share.users;
+
+              return {
+                id: share.patient_id,
+                name:
+                  personalData?.full_name ||
+                  userData?.full_name ||
+                  userData?.email?.split("@")[0] ||
+                  "Paciente",
+                email: userData?.email || "",
+                age: personalData?.birth_date
+                  ? this.calculateAge(personalData.birth_date)
+                  : undefined,
+                city: personalData?.city || "",
+                state: personalData?.state || "",
+                weight: undefined,
+                status: "compartilhado" as const,
+                doctorId: doctorId,
+                createdAt: share.shared_at,
+                notes: "Dados compartilhados pelo paciente",
+              };
+            });
+
+            console.log(
+              "✅ Pacientes compartilhados convertidos:",
+              sharedPatients,
+            );
+            allPatients = [...allPatients, ...sharedPatients];
+          }
+
+          console.log(
+            "✅ Todos os pacientes (criados + compartilhados):",
+            allPatients,
+          );
 
           // Aplicar filtro de busca se necessário
-          let filteredPatients = patients;
+          let filteredPatients = allPatients;
           if (search && search.trim()) {
             const searchLower = search.toLowerCase().trim();
-            filteredPatients = patients.filter(
+            filteredPatients = allPatients.filter(
               (patient) =>
                 patient.name.toLowerCase().includes(searchLower) ||
                 (patient.city &&
-                  patient.city.toLowerCase().includes(searchLower)),
+                  patient.city.toLowerCase().includes(searchLower)) ||
+                (patient.email &&
+                  patient.email.toLowerCase().includes(searchLower)),
             );
           }
 
@@ -403,7 +470,7 @@ class PatientAPI {
         }
       } catch (supabaseError) {
         console.error(
-          "�� Erro no Supabase getPatients:",
+          "💥 Erro no Supabase getPatients:",
           JSON.stringify(
             {
               message:
