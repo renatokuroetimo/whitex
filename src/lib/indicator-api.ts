@@ -361,12 +361,9 @@ class IndicatorAPI {
       }
     }
 
-    // Fallback para localStorage se Supabase não funcionou
+    // Se não conseguiu carregar do Supabase, falhar
     if (indicators.length === 0) {
-      console.log("⚠️ Usando localStorage para indicadores");
-      indicators = this.getStoredIndicators().filter(
-        (ind) => ind.doctorId === doctorId,
-      );
+      throw new Error("Não foi possível carregar indicadores do Supabase");
     }
 
     const categories = await this.getCategories();
