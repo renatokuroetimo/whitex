@@ -119,7 +119,13 @@ class PatientIndicatorAPI {
           return newValue;
         }
       } catch (supabaseError) {
-        console.error("💥 Erro no Supabase valor indicador:", supabaseError);
+        console.error("💥 Erro no Supabase valor indicador:", {
+          message:
+            supabaseError instanceof Error
+              ? supabaseError.message
+              : "Unknown error",
+          error: supabaseError,
+        });
         // Continuar para fallback
       }
     } else {
