@@ -293,14 +293,17 @@ class IndicatorAPI {
           indicators = (supabaseIndicators || []).map(
             (ind: any): Indicator => ({
               id: ind.id,
-              name: ind.name,
-              unit: ind.unit,
-              type: ind.type,
-              categoryId: ind.category,
-              subcategoryId: ind.subcategory || "",
+              categoryId: ind.category || ind.category_name || "",
+              subcategoryId: ind.subcategory || ind.subcategory_name || "",
+              parameter: ind.name || ind.parameter || "",
+              unitOfMeasureId: ind.unit || ind.unit_symbol || "",
+              requiresTime: ind.requires_time || false,
+              requiresDate: ind.requires_date || false,
+              visible: true,
+              visibleToMedics: true,
               doctorId: ind.doctor_id,
               createdAt: ind.created_at,
-              updatedAt: ind.updated_at,
+              updatedAt: ind.updated_at || ind.created_at,
             }),
           );
 
