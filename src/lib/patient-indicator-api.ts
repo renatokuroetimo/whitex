@@ -275,13 +275,83 @@ class PatientIndicatorAPI {
     patientId: string,
   ): Promise<PatientIndicatorValue[]> {
     await this.delay(300);
-    const values = this.getStoredIndicatorValues();
-    return values
-      .filter((value) => value.patientId === patientId)
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      );
+
+    console.log(
+      "🔍 getPatientIndicatorValues chamado para patientId:",
+      patientId,
+    );
+
+    // Se Supabase estiver ativo, usar Supabase
+    if (isFeatureEnabled("useSupabaseIndicators") && supabase) {
+      console.log("🚀 Buscando valores de indicadores no Supabase");
+
+      try {
+        const { data: supabaseValues, error } = await supabase
+          .from("patient_indicator_values")
+          .select("*")
+          .eq("patient_id", patientId)
+          .order("created_at", { ascending: false });
+
+        console.log("📊 Valores do Supabase:", { data: supabaseValues, error });
+
+        if (error) {
+          console.error(
+            "❌ Erro ao buscar valores:",
+            JSON.stringify(
+              {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+              },
+              null,
+              2,
+            ),
+          );
+          throw error;
+        }
+
+        // Converter dados do Supabase para formato local
+        const values: PatientIndicatorValue[] = (supabaseValues || []).map(
+          (val: any): PatientIndicatorValue => ({
+            id: val.id,
+            patientId: val.patient_id,
+            indicatorId: val.indicator_id,
+            categoryName: val.category_name || "Categoria",
+            subcategoryName: val.subcategory_name || "Subcategoria",
+            parameter: val.parameter || "Parâmetro",
+            unitSymbol: val.unit_symbol || "",
+            value: val.value,
+            date: val.date,
+            time: val.time,
+            visibleToMedics: true,
+            createdAt: val.created_at,
+            updatedAt: val.updated_at || val.created_at,
+          }),
+        );
+
+        console.log("✅ Valores convertidos:", values);
+        return values;
+      } catch (supabaseError) {
+        console.error(
+          "💥 Erro no Supabase getPatientIndicatorValues:",
+          JSON.stringify(
+            {
+              message:
+                supabaseError instanceof Error
+                  ? supabaseError.message
+                  : "Unknown error",
+              error: supabaseError,
+            },
+            null,
+            2,
+          ),
+        );
+        throw supabaseError;
+      }
+    } else {
+      throw new Error("Supabase não está ativo para indicadores");
+    }
   }
 
   // Buscar valores de indicadores de um paciente por categoria
