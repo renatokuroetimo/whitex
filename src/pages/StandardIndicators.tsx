@@ -4,11 +4,13 @@ import { ArrowLeft } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useAuth } from "@/contexts/AuthContext";
 import { indicatorAPI } from "@/lib/indicator-api";
 import { toast } from "@/hooks/use-toast";
 
 const StandardIndicators = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [indicators, setIndicators] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
