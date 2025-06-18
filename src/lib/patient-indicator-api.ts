@@ -175,21 +175,24 @@ class PatientIndicatorAPI {
       }
 
       try {
-        // Usar estrutura mínima - apenas campos que sabemos que existem
+        // Usar estrutura mais completa com os dados do indicador
         const insertData: any = {
           id: newValue.id,
-          patient_id: newValue.patientId, // Tentar com patient_id em vez de user_id
+          patient_id: newValue.patientId,
           indicator_id: newValue.indicatorId,
           value: newValue.value,
+          category_name: newValue.categoryName,
+          subcategory_name: newValue.subcategoryName,
+          parameter: newValue.parameter,
+          unit_symbol: newValue.unitSymbol,
         };
 
-        // Tentar adicionar campos básicos de data se possível
+        // Adicionar campos de data e tempo se disponíveis
         if (newValue.date) {
-          try {
-            insertData.date = newValue.date;
-          } catch (e) {
-            console.warn("⚠️ Campo date não suportado");
-          }
+          insertData.date = newValue.date;
+        }
+        if (newValue.time) {
+          insertData.time = newValue.time;
         }
 
         console.log("📝 Dados do valor indicador:", insertData);
