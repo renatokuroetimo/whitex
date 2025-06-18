@@ -150,8 +150,9 @@ const Sidebar: React.FC = () => {
   const sidebarItems = getSidebarItems(user?.profession);
   const profilePath =
     user?.profession === "paciente" ? "/patient-profile" : "/profile";
+
   return (
-    <div className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col sidebar-container">
+    <div className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col">
       {/* Header */}
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center gap-2">
@@ -162,14 +163,8 @@ const Sidebar: React.FC = () => {
         </div>
       </div>
 
-      {/* User Profile */}
-      <div
-        className="p-6 border-b border-gray-200 sidebar-profile-section"
-        style={{
-          backgroundColor: "white",
-          background: "white",
-        }}
-      >
+      {/* User Profile - ALWAYS WHITE BACKGROUND, NO CONDITIONAL TEXT */}
+      <div className="p-6 border-b border-gray-200 bg-white">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-gray-100 rounded-full overflow-hidden flex items-center justify-center border border-gray-200">
@@ -189,16 +184,11 @@ const Sidebar: React.FC = () => {
                 <User className="w-4 h-4 text-gray-600" />
               )}
             </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-medium text-gray-700">
-                Meu Perfil
-              </span>
-            </div>
+            <span className="text-sm text-gray-600">Meu Perfil</span>
           </div>
           <button
             onClick={() => navigate(profilePath)}
-            className="text-xs text-blue-600 hover:text-blue-800 p-1 hover:bg-blue-50 rounded transition-colors"
-            title="Ver perfil"
+            className="text-xs text-blue-600 hover:text-blue-800"
           >
             ▼
           </button>
@@ -218,7 +208,7 @@ const Sidebar: React.FC = () => {
                   onClick={() => handleNavigation(item.path)}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                     active
-                      ? "!bg-blue-50 !text-blue-700 !border !border-blue-200"
+                      ? "bg-blue-50 text-blue-700 border border-blue-200"
                       : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                   }`}
                 >
