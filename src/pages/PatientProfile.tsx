@@ -183,8 +183,11 @@ const PatientProfile = () => {
   };
 
   const handleStateChange = (stateId: string) => {
+    console.log("State changed to:", stateId);
     setSelectedState(stateId);
-    setAvailableCities(getCitiesByState(stateId));
+    const cities = getCitiesByState(stateId);
+    console.log("Cities for state:", cities);
+    setAvailableCities(cities);
     setPersonalData((prev) => ({
       ...prev,
       state: stateId,
