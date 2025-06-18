@@ -44,24 +44,32 @@ const ProfilePage: React.FC = () => {
     email: user?.email || "",
   });
 
-  // Carregar dados salvos do localStorage
+  // Carregar dados do usuário do contexto do Supabase
   useEffect(() => {
-    const savedProfile = localStorage.getItem(`profile_${user?.id}`);
-    if (savedProfile) {
-      const profileData = JSON.parse(savedProfile);
-      setFormData(profileData);
-      if (profileData.state) {
-        setSelectedState(profileData.state);
-        setAvailableCities(getCitiesByState(profileData.state));
+    if (user) {
+      setFormData({
+        name: user.fullName || "",
+        crm: user.crm || "",
+        state: user.state || "",
+        city: user.city || "",
+        phone: "", // Will be loaded from Supabase
+        email: user.email || "",
+      });
+
+      if (user.state) {
+        setSelectedState(user.state);
+        setAvailableCities(getCitiesByState(user.state));
       }
     }
 
-    // Carregar imagem de perfil
-    const savedImage = localStorage.getItem(`profile_image_${user?.id}`);
-    if (savedImage) {
-      setProfileImage(savedImage);
+    // Carregar imagem de perfil do localStorage (temporário)
+    if (user?.id) {
+      const savedImage = localStorage.getItem(`profile_image_${user.id}`);
+      if (savedImage) {
+        setProfileImage(savedImage);
+      }
     }
-  }, [user?.id]);
+  }, [user]);
 
   const handleStateChange = (stateId: string) => {
     setSelectedState(stateId);
@@ -129,42 +137,51 @@ const ProfilePage: React.FC = () => {
         phone: removeMask(formData.phone), // Remove mask before saving
       };
 
-      // Tentar salvar no Supabase
+      // SALVAR APENAS NO SUPABASE - SEM FALLBACK PARA LOCALSTORAGE
       const { supabase } = await import("@/lib/supabase");
-      let supabaseSuccess = false;
 
-      if (supabase && user?.id) {
-        console.log("🚀 Atualizando perfil no Supabase:", updateData);
-
-        const { data, error } = await supabase
-          .from("users")
-          .update(updateData)
-          .eq("id", user.id);
-
-        console.log("📊 Resultado da atualização:", { data, error });
-
-        if (error) {
-          console.error("❌ Erro ao atualizar no Supabase:", error);
-          toast({
-            variant: "destructive",
-            title: "Aviso",
-            description:
-              "Dados salvos localmente. Erro na sincronização com servidor.",
-          });
-        } else {
-          console.log("✅ Perfil atualizado no Supabase com sucesso!");
-          supabaseSuccess = true;
-        }
+      if (!supabase) {
+        throw new Error(
+          "Supabase não está configurado. Verifique a configuração.",
+        );
       }
 
-      // Salvar dados no localStorage (backup)
-      localStorage.setItem(`profile_${user?.id}`, JSON.stringify(formData));
+      if (!user?.id) {
+        throw new Error("Usuário não identificado. Faça login novamente.");
+      }
+
+      console.log("🚀 Atualizando perfil no Supabase:", updateData);
+
+      const { data, error } = await supabase
+        .from("users")
+        .update(updateData)
+        .eq("id", user.id);
+
+      console.log("📊 Resultado da atualização:", { data, error });
+
+      if (error) {
+        console.error(
+          "❌ Erro ao atualizar no Supabase:",
+          JSON.stringify(
+            {
+              message: error.message,
+              details: error.details,
+              hint: error.hint,
+              code: error.code,
+            },
+            null,
+            2,
+          ),
+        );
+
+        throw new Error(`Erro ao salvar dados: ${error.message}`);
+      }
+
+      console.log("✅ Perfil atualizado no Supabase com sucesso!");
 
       toast({
         title: "Sucesso!",
-        description: supabaseSuccess
-          ? "Dados salvos e sincronizados com sucesso"
-          : "Dados salvos localmente",
+        description: "Dados salvos e sincronizados com sucesso",
       });
     } catch (error) {
       toast({
@@ -178,27 +195,24 @@ const ProfilePage: React.FC = () => {
   };
 
   const handleCancel = () => {
-    // Recarregar dados salvos
-    const savedProfile = localStorage.getItem(`profile_${user?.id}`);
-    if (savedProfile) {
-      const profileData = JSON.parse(savedProfile);
-      setFormData(profileData);
-      if (profileData.state) {
-        setSelectedState(profileData.state);
-        setAvailableCities(getCitiesByState(profileData.state));
-      }
-    } else {
-      // Reset para dados iniciais
+    // Reset para dados originais do usuário
+    if (user) {
       setFormData({
-        name: "",
-        crm: user?.crm || "",
-        state: "",
-        city: "",
-        phone: "",
-        email: user?.email || "",
+        name: user.fullName || "",
+        crm: user.crm || "",
+        state: user.state || "",
+        city: user.city || "",
+        phone: "", // Will be loaded from Supabase
+        email: user.email || "",
       });
-      setSelectedState("");
-      setAvailableCities([]);
+
+      if (user.state) {
+        setSelectedState(user.state);
+        setAvailableCities(getCitiesByState(user.state));
+      } else {
+        setSelectedState("");
+        setAvailableCities([]);
+      }
     }
   };
 

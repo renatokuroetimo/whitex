@@ -9,13 +9,13 @@ interface FeatureFlags {
   enableDataMigration: boolean;
 }
 
-// Flags padrão (migração gradual)
+// Flags padrão - MIGRAÇÃO COMPLETA PARA SUPABASE
 const defaultFlags: FeatureFlags = {
-  useSupabaseAuth: false, // Começar com localStorage
-  useSupabasePatients: false,
-  useSupabaseIndicators: false,
-  useSupabaseProfiles: false,
-  enableDataMigration: false,
+  useSupabaseAuth: true, // Usar Supabase por padrão
+  useSupabasePatients: true,
+  useSupabaseIndicators: true,
+  useSupabaseProfiles: true, // ATIVAR PERFIS NO SUPABASE
+  enableDataMigration: true,
 };
 
 // Carregar flags do localStorage (para persistir configurações)

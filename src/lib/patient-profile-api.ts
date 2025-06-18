@@ -252,6 +252,81 @@ class PatientProfileAPI {
     userId: string,
   ): Promise<PatientMedicalData | null> {
     await this.delay(200);
+
+    console.log("🔍 getPatientMedicalData chamado para userId:", userId);
+
+    // Se Supabase estiver ativo, usar Supabase
+    if (isFeatureEnabled("useSupabaseProfiles") && supabase) {
+      console.log("🚀 Buscando dados médicos no Supabase");
+
+      try {
+        const { data: supabaseData, error } = await supabase
+          .from("patient_medical_data")
+          .select("*")
+          .eq("user_id", userId)
+          .maybeSingle(); // Use maybeSingle instead of single to avoid PGRST116
+
+        console.log("📊 Dados médicos do Supabase:", {
+          data: supabaseData,
+          error,
+        });
+
+        if (error) {
+          console.error(
+            "❌ Erro ao buscar dados médicos no Supabase:",
+            JSON.stringify(
+              {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+              },
+              null,
+              2,
+            ),
+          );
+          // Fallback para localStorage
+        } else if (supabaseData) {
+          // Converter dados do Supabase para formato local
+          const medicalData: PatientMedicalData = {
+            id: supabaseData.id,
+            userId: supabaseData.user_id,
+            height: supabaseData.height,
+            weight: supabaseData.weight
+              ? parseFloat(supabaseData.weight)
+              : undefined,
+            smoker: supabaseData.smoker || false,
+            highBloodPressure: supabaseData.high_blood_pressure || false,
+            physicalActivity: supabaseData.physical_activity || false,
+            exerciseFrequency: supabaseData.exercise_frequency,
+            healthyDiet: supabaseData.healthy_diet || false,
+            createdAt: supabaseData.created_at,
+            updatedAt: supabaseData.updated_at,
+          };
+
+          console.log("✅ Dados médicos convertidos:", medicalData);
+          return medicalData;
+        } else {
+          console.log("📝 Dados médicos não encontrados no Supabase");
+          return null;
+        }
+      } catch (supabaseError) {
+        console.error("💥 Erro no Supabase getPatientMedicalData:", {
+          message:
+            supabaseError instanceof Error
+              ? supabaseError.message
+              : "Unknown error",
+          name: supabaseError instanceof Error ? supabaseError.name : "Unknown",
+          stack:
+            supabaseError instanceof Error
+              ? supabaseError.stack?.split("\n")[0]
+              : undefined,
+        });
+        // Continuar para fallback localStorage
+      }
+    }
+
+    console.log("⚠️ Usando localStorage para dados médicos");
     const data = this.getStoredMedicalData();
     return data.find((item) => item.userId === userId) || null;
   }
@@ -262,31 +337,110 @@ class PatientProfileAPI {
   ): Promise<PatientMedicalData> {
     await this.delay(300);
 
+    console.log("🔥 SALVANDO DADOS MÉDICOS:", { userId, formData });
+
     const allData = this.getStoredMedicalData();
     const existingIndex = allData.findIndex((item) => item.userId === userId);
 
+    let resultData: PatientMedicalData;
+
     if (existingIndex >= 0) {
       // Atualizar existente
-      allData[existingIndex] = {
+      resultData = {
         ...allData[existingIndex],
         ...formData,
         updatedAt: new Date().toISOString(),
       };
-      this.saveMedicalData(allData);
-      return allData[existingIndex];
     } else {
       // Criar novo
-      const newData: PatientMedicalData = {
+      resultData = {
         id: this.generateId(),
         userId,
         ...formData,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-      allData.push(newData);
-      this.saveMedicalData(allData);
-      return newData;
     }
+
+    // Se Supabase estiver ativo, usar Supabase
+    if (isFeatureEnabled("useSupabaseProfiles") && supabase) {
+      console.log("🚀 Salvando dados médicos no Supabase");
+
+      try {
+        const insertData = {
+          id: resultData.id,
+          user_id: resultData.userId,
+          height: resultData.height,
+          weight: resultData.weight,
+          smoker: resultData.smoker,
+          high_blood_pressure: resultData.highBloodPressure,
+          physical_activity: resultData.physicalActivity,
+          exercise_frequency: resultData.exerciseFrequency,
+          healthy_diet: resultData.healthyDiet,
+          created_at: resultData.createdAt,
+          updated_at: resultData.updatedAt,
+        };
+
+        console.log("📝 Dados médicos para Supabase:", insertData);
+
+        const { data: supabaseData, error } =
+          existingIndex >= 0
+            ? await supabase
+                .from("patient_medical_data")
+                .update(insertData)
+                .eq("user_id", userId)
+            : await supabase.from("patient_medical_data").insert([insertData]);
+
+        console.log("📊 Resposta Supabase dados médicos:", {
+          data: supabaseData,
+          error,
+        });
+
+        if (error) {
+          console.error(
+            "❌ Erro ao salvar dados médicos:",
+            JSON.stringify(
+              {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+              },
+              null,
+              2,
+            ),
+          );
+          throw error; // Forçar fallback
+        } else {
+          console.log("✅ Dados médicos salvos no Supabase!");
+          return resultData;
+        }
+      } catch (supabaseError) {
+        console.error("💥 Erro no Supabase dados médicos:", {
+          message:
+            supabaseError instanceof Error
+              ? supabaseError.message
+              : "Unknown error",
+          name: supabaseError instanceof Error ? supabaseError.name : "Unknown",
+          stack:
+            supabaseError instanceof Error
+              ? supabaseError.stack?.split("\n")[0]
+              : undefined,
+        });
+        // Continuar para fallback
+      }
+    } else {
+      console.log("⚠️ Supabase perfis não ativo");
+    }
+
+    console.log("📁 Salvando dados médicos no localStorage");
+    if (existingIndex >= 0) {
+      allData[existingIndex] = resultData;
+    } else {
+      allData.push(resultData);
+    }
+    this.saveMedicalData(allData);
+    return resultData;
   }
 
   // === MÉDICOS ===
