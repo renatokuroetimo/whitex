@@ -782,6 +782,13 @@ class IndicatorAPI {
     localStorage.removeItem(this.STORAGE_KEYS.UNITS);
     localStorage.removeItem(this.STORAGE_KEYS.INDICATORS);
     localStorage.removeItem(this.STORAGE_KEYS.STANDARD_INDICATORS);
+
+    // Limpar configurações específicas dos médicos
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith(`${this.STORAGE_KEYS.STANDARD_INDICATORS}_doctor_`)) {
+        localStorage.removeItem(key);
+      }
+    });
   }
 }
 
