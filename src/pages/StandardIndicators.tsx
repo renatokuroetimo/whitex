@@ -24,9 +24,12 @@ const StandardIndicators = () => {
   }, [user, navigate]);
 
   const loadStandardIndicators = async () => {
+    if (!user?.id) return;
+
     setIsLoading(true);
     try {
-      const result = await indicatorAPI.getStandardIndicators();
+      // Carregar indicadores com configuração específica do médico
+      const result = await indicatorAPI.getStandardIndicators(user.id);
       setIndicators(result);
     } catch (error) {
       toast({
@@ -40,14 +43,21 @@ const StandardIndicators = () => {
   };
 
   const handleVisibilityChange = async (id: string, visible: boolean) => {
+    if (!user?.id) return;
+
     try {
-      await indicatorAPI.updateStandardIndicatorVisibility(id, visible);
+      // Atualizar visibilidade apenas para este médico
+      await indicatorAPI.updateStandardIndicatorVisibility(
+        id,
+        visible,
+        user.id,
+      );
       setIndicators((prev) =>
         prev.map((ind) => (ind.id === id ? { ...ind, visible } : ind)),
       );
       toast({
         title: "Sucesso",
-        description: `Indicador ${visible ? "ativado" : "desativado"} com sucesso`,
+        description: `Indicador ${visible ? "ativado" : "desativado"} apenas para você`,
       });
     } catch (error) {
       toast({
