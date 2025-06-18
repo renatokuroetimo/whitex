@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS patient_diagnoses (
 );
 
 -- ================================================================
--- 8. ÍNDICES PARA PERFORMANCE
+-- 9. ÍNDICES PARA PERFORMANCE
 -- ================================================================
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_profession ON users(profession);
@@ -133,6 +133,8 @@ CREATE INDEX IF NOT EXISTS idx_patient_indicator_values_user_id ON patient_indic
 CREATE INDEX IF NOT EXISTS idx_patient_indicator_values_date ON patient_indicator_values(date);
 CREATE INDEX IF NOT EXISTS idx_doctor_patient_sharing_doctor_id ON doctor_patient_sharing(doctor_id);
 CREATE INDEX IF NOT EXISTS idx_doctor_patient_sharing_patient_id ON doctor_patient_sharing(patient_id);
+CREATE INDEX IF NOT EXISTS idx_patient_diagnoses_patient_id ON patient_diagnoses(patient_id);
+CREATE INDEX IF NOT EXISTS idx_patient_diagnoses_date ON patient_diagnoses(date);
 
 -- ================================================================
 -- 9. TRIGGERS PARA UPDATED_AT AUTOMÁTICO
