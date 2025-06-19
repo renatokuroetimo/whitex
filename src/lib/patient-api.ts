@@ -97,8 +97,7 @@ class PatientAPI {
             // 2.1 Buscar dados básicos do usuário paciente (COM CAMPO full_name)
             const { data: patientUser, error: patientError } = await supabase
               .from("users")
-              .select(
-                `
+              .select(`
                 id,
                 email,
                 profession,
@@ -109,8 +108,7 @@ class PatientAPI {
                 specialty,
                 phone,
                 created_at
-              `,
-              )
+              `)
               .eq("id", share.patient_id)
               .eq("profession", "paciente")
               .single();
@@ -337,7 +335,7 @@ class PatientAPI {
     }
 
     try {
-      // Verificar compartilhamento
+      // PRIMEIRO: Verificar se é um paciente compartilhado
       const { data: shareData } = await supabase
         .from("doctor_patient_sharing")
         .select("*")
@@ -345,62 +343,62 @@ class PatientAPI {
         .eq("patient_id", id)
         .single();
 
-      if (!shareData) {
-        return null;
-      }
+      if (shareData) {
+        console.log("🔍 Paciente encontrado como COMPARTILHADO");
 
-      // Buscar dados básicos do paciente
-      const { data: patientUser } = await supabase
-        .from("users")
-        .select("id, email, profession, full_name, city, state")
-        .eq("id", id)
-        .eq("profession", "paciente")
-        .single();
-
-      if (!patientUser) {
-        return null;
-      }
-
-      // Nome do paciente
-      let patientName = "Sem nome definido";
-      if (patientUser.full_name && patientUser.full_name.trim()) {
-        patientName = patientUser.full_name.trim();
-      } else if (patientUser.email) {
-        patientName = `Paciente ${patientUser.email.split("@")[0]}`;
-      }
-
-      // Buscar observações médicas salvas
-      let notes = `Compartilhado em ${new Date(shareData.shared_at).toLocaleDateString("pt-BR")}`;
-
-      try {
-        const { data: observations } = await supabase
-          .from("patient_medical_observations")
-          .select("observations")
-          .eq("patient_id", id)
-          .eq("doctor_id", currentUser.id)
+        // Buscar dados básicos do paciente
+        const { data: patientUser } = await supabase
+          .from("users")
+          .select("id, email, profession, full_name, city, state")
+          .eq("id", id)
+          .eq("profession", "paciente")
           .single();
 
-        if (observations?.observations) {
-          notes = observations.observations;
+        if (!patientUser) {
+          return null;
         }
-      } catch (error) {
-        // Ignorar erro se não houver observações
-      }
 
-      return {
-        id: id,
-        name: patientName,
-        age: null,
-        city: patientUser.city || "N/A",
-        state: patientUser.state || "N/A",
-        weight: null,
-        status: "compartilhado" as const,
-        notes: notes,
-        createdAt: shareData.shared_at || new Date().toISOString(),
-        doctorId: null,
-        isShared: true,
+        // Nome do paciente
+        let patientName = "Sem nome definido";
+        if (patientUser.full_name && patientUser.full_name.trim()) {
+          patientName = patientUser.full_name.trim();
+        } else if (patientUser.email) {
+          patientName = `Paciente ${patientUser.email.split("@")[0]}`;
+        }
+
+        // Buscar observações médicas salvas
+        let notes = `Compartilhado em ${new Date(shareData.shared_at).toLocaleDateString("pt-BR")}`;
+
+        try {
+          const { data: observations } = await supabase
+            .from("patient_medical_observations")
+            .select("observations")
+            .eq("patient_id", id)
+            .eq("doctor_id", currentUser.id)
+            .single();
+
+          if (observations?.observations) {
+            notes = observations.observations;
+          }
+        } catch (error) {
+          // Ignorar erro se não houver observações
+        }
+
+        return {
+          id: id,
+          name: patientName,
+          age: null,
+          city: patientUser.city || "N/A",
+          state: patientUser.state || "N/A",
+          weight: null,
+          status: "compartilhado" as const,
+          notes: notes,
+          createdAt: shareData.shared_at || new Date().toISOString(),
+          doctorId: null,
+          isShared: true,
         sharedId: shareData.id,
       };
+
     } catch (error) {
       return null;
     }
@@ -428,16 +426,16 @@ class PatientAPI {
     const newPatientId = this.generateId();
 
     // Criar paciente na tabela patients
-    const { error: createError } = await supabase.from("patients").insert([
-      {
+    const { error: createError } = await supabase
+      .from("patients")
+      .insert([{
         id: newPatientId,
         doctor_id: currentUser.id,
         name: data.name,
         status: data.status || "ativo",
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-      },
-    ]);
+      }]);
 
     if (createError) {
       throw new Error(`Erro ao criar paciente: ${createError.message}`);
@@ -515,24 +513,20 @@ class PatientAPI {
           .eq("id", existingObs.id);
 
         if (updateError) {
-          throw new Error(
-            `Erro ao atualizar observações: ${updateError.message}`,
-          );
+          throw new Error(`Erro ao atualizar observações: ${updateError.message}`);
         }
       } else {
         // Criar nova
         const { error: insertError } = await supabase
           .from("patient_medical_observations")
-          .insert([
-            {
-              id: this.generateId(),
-              patient_id: id,
-              doctor_id: currentUser.id,
-              observations: data.notes,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            },
-          ]);
+          .insert([{
+            id: this.generateId(),
+            patient_id: id,
+            doctor_id: currentUser.id,
+            observations: data.notes,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          }]);
 
         if (insertError) {
           throw new Error(`Erro ao salvar observações: ${insertError.message}`);
@@ -556,10 +550,7 @@ class PatientAPI {
   }
 
   async getDiagnoses(patientId: string): Promise<Diagnosis[]> {
-    console.log(
-      "🔍 getDiagnoses - Buscando diagnósticos para paciente:",
-      patientId,
-    );
+    console.log("🔍 getDiagnoses - Buscando diagnósticos para paciente:", patientId);
 
     await this.delay(200);
 
@@ -617,6 +608,7 @@ class PatientAPI {
 
       console.log(`✅ ${convertedDiagnoses.length} diagnósticos carregados`);
       return convertedDiagnoses;
+
     } catch (error) {
       console.error("💥 Erro crítico ao buscar diagnósticos:", error);
       return [];
@@ -672,9 +664,7 @@ class PatientAPI {
 
       if (!shareData) {
         console.log("⚠️ Paciente não está compartilhado com este médico");
-        throw new Error(
-          "Você não tem permissão para adicionar diagnósticos a este paciente",
-        );
+        throw new Error("Você não tem permissão para adicionar diagnósticos a este paciente");
       }
 
       // 2. CRIAR O DIAGNÓSTICO
@@ -718,6 +708,7 @@ class PatientAPI {
 
       console.log("✅ Diagnóstico salvo com sucesso!");
       return newDiagnosis;
+
     } catch (error) {
       console.error("💥 Erro crítico ao adicionar diagnóstico:", error);
       throw error;
