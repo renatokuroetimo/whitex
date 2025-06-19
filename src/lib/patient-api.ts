@@ -568,15 +568,8 @@ class PatientAPI {
     }
     console.error("🔥 PASSO 3 OK: Supabase configurado");
 
-    // VALIDAÇÃO 3: Verificar se este código está executando
-    console.error("🚨🚨🚨 CÓDIGO UPDATEPATIENT EXECUTANDO! ID:", id);
-    console.error("🚨🚨🚨 DADOS RECEBIDOS:", data);
-    console.error(
-      "🚨🚨🚨 SE VOCÊ VÊ ESTA MENSAGEM, O CÓDIGO ESTÁ FUNCIONANDO!",
-    );
-
+    console.error("🔥 PASSO 4: Testando conectividade...");
     // Testar conectividade real
-    console.log("🔍 TESTANDO CONECTIVIDADE COM SUPABASE...");
     try {
       const { data: connectTest, error: connectError } = await supabase
         .from("users")
@@ -589,7 +582,7 @@ class PatientAPI {
           `Sem conexão com banco de dados: ${connectError.message}`,
         );
       }
-      console.log("✅ Conectividade OK");
+      console.error("🔥 PASSO 4 OK: Conectividade OK");
     } catch (error) {
       console.error("❌ FALHA CRÍTICA DE CONECTIVIDADE:", error);
       throw new Error("Falha crítica de conectividade com banco de dados");
@@ -663,7 +656,7 @@ class PatientAPI {
         .single();
 
       if (searchError && searchError.code !== "PGRST116") {
-        console.error("��� FALHA AO BUSCAR OBSERVAÇÃO:", searchError);
+        console.error("❌ FALHA AO BUSCAR OBSERVAÇÃO:", searchError);
         throw new Error(`Erro ao buscar observações: ${searchError.message}`);
       }
 
