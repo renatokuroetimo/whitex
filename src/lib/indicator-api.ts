@@ -360,8 +360,93 @@ Erro fallback: ${fallbackError.message}`);
   async getStandardIndicators(
     doctorId?: string,
   ): Promise<IndicatorWithDetails[]> {
-    // Retornar indicadores padrão básicos
-    return this.getDefaultStandardIndicators();
+    await this.delay(500);
+
+    if (!supabase) {
+      console.warn(
+        "❌ Supabase não configurado, usando indicadores padrão locais",
+      );
+      return this.getDefaultStandardIndicators();
+    }
+
+    try {
+      console.log("🔍 Buscando indicadores padrão no banco de dados...");
+
+      // Buscar todos os indicadores marcados como padrão/público na tabela indicators
+      const { data, error } = await supabase
+        .from("indicators")
+        .select("*")
+        .or("is_standard.eq.true,doctor_id.is.null") // Indicadores padrão ou sem doctor específico
+        .order("created_at", { ascending: true });
+
+      if (error) {
+        console.error("❌ Erro ao buscar indicadores padrão:", error);
+        console.log("🔄 Usando indicadores padrão locais como fallback");
+        return this.getDefaultStandardIndicators();
+      }
+
+      console.log(
+        `✅ ${data?.length || 0} indicadores padrão encontrados no banco`,
+      );
+
+      if (!data || data.length === 0) {
+        console.log("📋 Nenhum indicador padrão no banco, usando locais");
+        return this.getDefaultStandardIndicators();
+      }
+
+      // Get categories and subcategories to resolve names
+      const [categories, subcategories] = await Promise.all([
+        this.getCategories(),
+        this.getSubcategories(),
+      ]);
+
+      // Mapear dados do banco para o formato esperado
+      const indicators = data.map((indicator: any): IndicatorWithDetails => {
+        // Find actual category and subcategory names
+        const category = categories.find(
+          (cat) => cat.id === indicator.category_id,
+        );
+        const subcategory = subcategories.find(
+          (sub) => sub.id === indicator.subcategory_id,
+        );
+
+        return {
+          id: indicator.id,
+          name: indicator.name || indicator.parameter || "Indicador",
+          categoryId: indicator.category_id || "cat1",
+          categoryName:
+            category?.name ||
+            this.mapCategoryIdToName(indicator.category_id) ||
+            "Categoria",
+          subcategoryId: indicator.subcategory_id || "sub1",
+          subcategoryName:
+            subcategory?.name ||
+            this.mapSubcategoryIdToName(indicator.subcategory_id) ||
+            "Subcategoria",
+          parameter: indicator.parameter || indicator.name || "Parâmetro",
+          unitId: indicator.unit_id || "unit_un",
+          unitSymbol: indicator.unit_symbol || "un",
+          isMandatory: indicator.is_mandatory || false,
+          requiresTime: indicator.requires_time || false,
+          requiresDate: indicator.requires_date || false,
+          doctorId: indicator.doctor_id || "",
+          createdAt: indicator.created_at || new Date().toISOString(),
+        };
+      });
+
+      console.log(
+        "📋 Indicadores padrão processados:",
+        indicators.map(
+          (i) => `${i.categoryName} - ${i.subcategoryName} - ${i.parameter}`,
+        ),
+      );
+
+      return indicators;
+    } catch (error) {
+      console.error("💥 Erro crítico ao buscar indicadores padrão:", error);
+      console.log("🔄 Usando indicadores padrão locais como fallback");
+      return this.getDefaultStandardIndicators();
+    }
   }
 
   // Atualizar visibilidade de indicador padrão (apenas Supabase)
