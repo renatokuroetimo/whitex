@@ -472,9 +472,9 @@ const PatientDetailView = () => {
                   </Button>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div>
-                    <h4 className="text-sm font-medium text-gray-900 mb-1">
+                    <h4 className="text-sm font-medium text-gray-900 mb-2">
                       Dados pessoais
                     </h4>
                     <div className="text-sm text-gray-600 space-y-1">
@@ -485,15 +485,100 @@ const PatientDetailView = () => {
                         <strong>Idade:</strong> {getPatientAge()} anos
                       </p>
                       <p>
-                        <strong>Peso:</strong>{" "}
-                        {patient?.weight || personalData?.weight || "N/A"}kg
+                        <strong>Sexo:</strong>{" "}
+                        {personalData?.gender
+                          ? personalData.gender.charAt(0).toUpperCase() +
+                            personalData.gender.slice(1)
+                          : "N/A"}
                       </p>
+                      {personalData?.email && (
+                        <p>
+                          <strong>Email:</strong> {personalData.email}
+                        </p>
+                      )}
+                      {personalData?.healthPlan && (
+                        <p>
+                          <strong>Plano de saúde:</strong>{" "}
+                          {personalData.healthPlan}
+                        </p>
+                      )}
                     </div>
                   </div>
 
                   <div>
-                    <h4 className="text-sm font-medium text-gray-900 mb-1">
-                      Endereço
+                    <h4 className="text-sm font-medium text-gray-900 mb-2">
+                      Medidas físicas
+                    </h4>
+                    <div className="text-sm text-gray-600 space-y-1">
+                      <p>
+                        <strong>Altura:</strong>{" "}
+                        {medicalData?.height
+                          ? `${medicalData.height} cm`
+                          : "N/A"}
+                      </p>
+                      <p>
+                        <strong>Peso:</strong>{" "}
+                        {medicalData?.weight
+                          ? `${medicalData.weight} kg`
+                          : patient?.weight
+                            ? `${patient.weight} kg`
+                            : "N/A"}
+                      </p>
+                      {medicalData?.height && medicalData?.weight && (
+                        <p>
+                          <strong>IMC:</strong>{" "}
+                          {(
+                            medicalData.weight /
+                            Math.pow(medicalData.height / 100, 2)
+                          ).toFixed(1)}{" "}
+                          kg/m²
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900 mb-2">
+                      Condições médicas
+                    </h4>
+                    <div className="text-sm text-gray-600 space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span>Fumante:</span>
+                        <div className="flex items-center">
+                          <div
+                            className={`w-2 h-2 rounded-full mr-1 ${medicalData?.smoker ? "bg-red-500" : "bg-green-500"}`}
+                          ></div>
+                          <span>{medicalData?.smoker ? "Sim" : "Não"}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span>Pressão alta:</span>
+                        <div className="flex items-center">
+                          <div
+                            className={`w-2 h-2 rounded-full mr-1 ${medicalData?.highBloodPressure ? "bg-red-500" : "bg-green-500"}`}
+                          ></div>
+                          <span>
+                            {medicalData?.highBloodPressure ? "Sim" : "Não"}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span>Atividade física:</span>
+                        <div className="flex items-center">
+                          <div
+                            className={`w-2 h-2 rounded-full mr-1 ${medicalData?.physicalActivity ? "bg-green-500" : "bg-gray-400"}`}
+                          ></div>
+                          <span>
+                            {medicalData?.physicalActivity ? "Sim" : "Não"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900 mb-2">
+                      Localização
                     </h4>
                     <p className="text-sm text-gray-600">
                       {getPatientLocation()}
@@ -502,8 +587,8 @@ const PatientDetailView = () => {
 
                   {(patient?.notes || personalData?.notes) && (
                     <div>
-                      <h4 className="text-sm font-medium text-gray-900 mb-1">
-                        Nota
+                      <h4 className="text-sm font-medium text-gray-900 mb-2">
+                        Observações
                       </h4>
                       <p className="text-sm text-gray-600">
                         {patient?.notes || personalData?.notes}
