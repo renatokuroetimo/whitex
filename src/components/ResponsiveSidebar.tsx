@@ -42,6 +42,7 @@ const SidebarContent: React.FC<SidebarContentProps> = ({ onItemClick }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { logout, user } = useAuth();
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   const handleNavigation = (path: string) => {
     navigate(path);
