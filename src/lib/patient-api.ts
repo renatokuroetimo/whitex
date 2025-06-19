@@ -546,7 +546,71 @@ class PatientAPI {
   }
 
   async getDiagnoses(patientId: string): Promise<Diagnosis[]> {
-    return [];
+    console.log(
+      "🔍 getDiagnoses - Buscando diagnósticos para paciente:",
+      patientId,
+    );
+
+    await this.delay(200);
+
+    // Verificar se usuário está logado
+    const currentUserStr = localStorage.getItem("medical_app_current_user");
+    if (!currentUserStr) {
+      console.error("❌ Usuário não autenticado");
+      return [];
+    }
+
+    const currentUser = JSON.parse(currentUserStr);
+    console.log("👤 Usuário buscando diagnósticos:", {
+      id: currentUser.id,
+      profession: currentUser.profession,
+    });
+
+    if (!supabase) {
+      console.warn("⚠️ Supabase não configurado");
+      return [];
+    }
+
+    try {
+      // BUSCAR DIAGNÓSTICOS DO PACIENTE
+      const { data: diagnoses, error } = await supabase
+        .from("patient_diagnoses")
+        .select("*")
+        .eq("patient_id", patientId)
+        .order("created_at", { ascending: false });
+
+      console.log("📊 DIAGNÓSTICOS ENCONTRADOS:", {
+        total: diagnoses?.length || 0,
+        erro: error?.message || "nenhum",
+        dados: diagnoses,
+      });
+
+      if (error) {
+        console.error("❌ Erro ao buscar diagnósticos:", error);
+        return [];
+      }
+
+      if (!diagnoses || diagnoses.length === 0) {
+        console.log("📝 Nenhum diagnóstico encontrado para este paciente");
+        return [];
+      }
+
+      // CONVERTER PARA FORMATO DA APLICAÇÃO
+      const convertedDiagnoses: Diagnosis[] = diagnoses.map((d: any) => ({
+        id: d.id,
+        patientId: d.patient_id,
+        date: d.date,
+        diagnosis: d.status, // Campo 'status' contém o diagnóstico
+        code: d.code,
+        status: d.status,
+      }));
+
+      console.log(`✅ ${convertedDiagnoses.length} diagnósticos carregados`);
+      return convertedDiagnoses;
+    } catch (error) {
+      console.error("💥 Erro crítico ao buscar diagnósticos:", error);
+      return [];
+    }
   }
 
   async addDiagnosis(
