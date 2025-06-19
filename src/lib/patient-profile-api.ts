@@ -915,15 +915,30 @@ class PatientProfileAPI {
             }
 
             if (doctorUser) {
-              // Usar nome real se disponível, senão criar nome baseado no email
-              const doctorName =
-                doctorUser.name && doctorUser.name.trim()
-                  ? doctorUser.name
-                  : doctorUser.email?.split("@")[0] || "Médico";
+              console.log(`🔍 DEBUG - Dados brutos do médico:`, doctorUser);
+
+              // Priorizar nome real, mas se for genérico, usar email
+              let doctorName = doctorUser.name;
+
+              // Se nome está vazio, é "medico", ou outros valores genéricos, usar email
+              if (
+                !doctorName ||
+                doctorName.trim() === "" ||
+                doctorName.toLowerCase() === "medico" ||
+                doctorName.toLowerCase() === "doctor" ||
+                doctorName.toLowerCase() === "dr"
+              ) {
+                doctorName = doctorUser.email?.split("@")[0] || "Médico";
+                console.log(
+                  `⚠️ Nome genérico detectado, usando email: ${doctorName}`,
+                );
+              } else {
+                console.log(`✅ Usando nome real: ${doctorName}`);
+              }
 
               doctors.push({
                 id: doctorUser.id,
-                name: doctorName, // Nome limpo, sem "Dr." aqui
+                name: doctorName,
                 crm: doctorUser.crm || "N/A",
                 state: doctorUser.state || "N/A",
                 specialty: doctorUser.specialty || "Clínico Geral",
@@ -932,9 +947,7 @@ class PatientProfileAPI {
                 createdAt: doctorUser.created_at || new Date().toISOString(),
               });
 
-              console.log(
-                `✅ Médico adicionado: ${doctorName} (email: ${doctorUser.email})`,
-              );
+              console.log(`✅ Médico final adicionado: ${doctorName}`);
             }
           } catch (error) {
             console.warn(
