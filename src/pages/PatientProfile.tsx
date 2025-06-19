@@ -40,6 +40,7 @@ const PatientProfile = () => {
 
   // Estados gerais
   const [isLoading, setIsLoading] = useState(false);
+  const [isSavingMedicalData, setIsSavingMedicalData] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("perfil");
 
@@ -247,10 +248,10 @@ const PatientProfile = () => {
     }
   };
 
-  const handleMedicalDataSave = async () => {
+  const handleSaveMedicalData = async () => {
     if (!user?.id) return;
 
-    setIsLoading(true);
+    setIsSavingMedicalData(true);
     try {
       console.log("🔥 INICIANDO SALVAMENTO - Dados médicos:", {
         userId: user.id,
@@ -276,7 +277,7 @@ const PatientProfile = () => {
         description: `Erro ao salvar dados médicos: ${error instanceof Error ? error.message : "Erro desconhecido"}`,
       });
     } finally {
-      setIsLoading(false);
+      setIsSavingMedicalData(false);
     }
   };
 
@@ -1089,7 +1090,7 @@ const PatientProfile = () => {
                   Dr. {selectedDoctor.name}
                 </h4>
                 <p className="text-sm text-gray-600">
-                  {selectedDoctor.specialty} • CRM {selectedDoctor.crm}
+                  {selectedDoctor.specialty} �� CRM {selectedDoctor.crm}
                 </p>
               </div>
             )}
