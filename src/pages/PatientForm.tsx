@@ -231,7 +231,17 @@ const PatientForm = () => {
     try {
       if (isEditing && id) {
         console.log("🚀 Chamando patientAPI.updatePatient...");
-        await patientAPI.updatePatient(id, formData);
+
+        // AGUARDAR e VALIDAR a resposta
+        const result = await patientAPI.updatePatient(id, formData);
+
+        console.log("📊 RESULTADO do updatePatient:", result);
+
+        if (!result) {
+          throw new Error("Operação retornou resultado vazio");
+        }
+
+        console.log("✅ Atualização confirmada, mostrando sucesso");
         toast({
           title: "Sucesso",
           description: "Paciente atualizado com sucesso",
@@ -247,12 +257,18 @@ const PatientForm = () => {
         navigate(`/pacientes/${newPatient.id}`);
       }
     } catch (error) {
+      console.error("💥 ERRO CAPTURADO no PatientForm:", error);
+
+      // Mostrar a mensagem de erro específica
+      const errorMessage =
+        error instanceof Error ? error.message : "Erro desconhecido";
+
       toast({
         variant: "destructive",
         title: "Erro",
         description: isEditing
-          ? "Erro ao atualizar paciente"
-          : "Erro ao criar paciente",
+          ? `Erro ao atualizar paciente: ${errorMessage}`
+          : `Erro ao criar paciente: ${errorMessage}`,
       });
     } finally {
       setIsLoading(false);
