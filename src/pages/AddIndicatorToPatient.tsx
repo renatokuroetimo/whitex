@@ -95,25 +95,35 @@ const AddIndicatorToPatient = () => {
         ...customIndicators.map((ind) => {
           console.log("🔍 DEBUG Custom Indicator:", ind);
 
-          // Try multiple field name variations for category
-          const categoryName =
-            ind.categoryName ||
-            ind.category_name ||
-            ind.category ||
-            "Categoria";
+          // Category name (this is working correctly)
+          const categoryName = ind.categoryName || "Categoria";
 
-          // Try multiple field name variations for subcategory
-          const subcategoryName =
-            ind.subcategoryName ||
-            ind.subcategory_name ||
-            ind.subcategory ||
-            "Subcategoria";
+          // Subcategory ID to name mapping
+          const subcategoryMap: { [key: string]: string } = {
+            sub1: "Pressão Arterial",
+            sub2: "Frequência Cardíaca",
+            sub3: "Temperatura",
+            sub4: "Glicemia",
+            sub5: "Colesterol",
+            sub6: "Peso",
+            sub7: "Altura",
+            sub8: "IMC",
+          };
 
-          // Try multiple field name variations for parameter
+          // Get subcategory name, map ID to name if needed
+          let subcategoryName = ind.subcategoryName || "Subcategoria";
+          if (subcategoryMap[subcategoryName]) {
+            subcategoryName = subcategoryMap[subcategoryName];
+          }
+
+          // Parameter and unit
           const parameter = ind.parameter || ind.name || "Parâmetro";
-
-          // Try multiple field name variations for unit
           const unit = ind.unitSymbol || ind.unit_symbol || ind.unit || "un";
+
+          console.log(
+            "🎯 FINAL DISPLAY:",
+            `${categoryName} - ${subcategoryName} - ${parameter} (${unit})`,
+          );
 
           return {
             ...ind,
