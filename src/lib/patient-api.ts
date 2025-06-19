@@ -88,22 +88,24 @@ class PatientAPI {
             isShared: false,
           }),
         ),
-        ...(sharedData || []).map(
-          (shared: any): Patient => ({
-            id: shared.patients.id,
-            name: shared.patients.name,
-            age: shared.patients.age,
-            city: shared.patients.city,
-            state: shared.patients.state,
-            weight: shared.patients.weight,
-            status: shared.patients.status || "ativo",
-            notes: shared.patients.notes || "",
-            createdAt: shared.patients.created_at,
-            doctorId: shared.patients.doctor_id,
-            isShared: true,
-            sharedId: shared.id,
-          }),
-        ),
+        ...(sharedData || [])
+          .filter((shared) => shared.patients) // Garantir que o paciente existe
+          .map(
+            (shared: any): Patient => ({
+              id: shared.patients.id,
+              name: shared.patients.name,
+              age: shared.patients.age,
+              city: shared.patients.city,
+              state: shared.patients.state,
+              weight: shared.patients.weight,
+              status: "compartilhado", // Marcar como compartilhado
+              notes: shared.patients.notes || "",
+              createdAt: shared.patients.created_at,
+              doctorId: shared.patients.doctor_id,
+              isShared: true,
+              sharedId: shared.id,
+            }),
+          ),
       ];
 
       console.log(`✅ ${allPatients.length} pacientes carregados do Supabase`);
