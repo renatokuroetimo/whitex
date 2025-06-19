@@ -359,21 +359,48 @@ class PatientAPI {
       ]);
 
       if (error) {
-        // Se a tabela não existir, dar erro mais claro
+        console.error("🔍 Detailed error information:", {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint,
+          fullError: error,
+        });
+
+        // Check for table not existing
         if (
           (error.message && error.message.includes("does not exist")) ||
-          error.code === "42P01"
+          error.code === "42P01" ||
+          (error.message &&
+            error.message.includes("relation") &&
+            error.message.includes("diagnoses"))
         ) {
           throw new Error(
-            "❌ Tabela diagnoses não existe. Execute o script fix_all_database_errors.sql no Supabase SQL Editor.",
+            "❌ Tabela 'diagnoses' não existe no banco de dados. Execute o script 'fix_all_database_errors.sql' no Supabase SQL Editor para criar as tabelas necessárias.",
           );
         }
-        throw new Error(
-          `Erro ao adicionar diagnóstico: ${error.message || "Erro desconhecido"}`,
-        );
+
+        // Check for missing columns
+        if (
+          error.message &&
+          error.message.includes("column") &&
+          error.message.includes("does not exist")
+        ) {
+          throw new Error(
+            "❌ Colunas necessárias não existem na tabela 'diagnoses'. Execute o script 'fix_all_database_errors.sql' no Supabase SQL Editor.",
+          );
+        }
+
+        // Generic error with more details
+        const errorMsg =
+          error.message ||
+          error.details ||
+          error.hint ||
+          "Erro de banco de dados desconhecido";
+        throw new Error(`Erro ao adicionar diagnóstico: ${errorMsg}`);
       }
 
-      console.log("��� Diagnóstico adicionado no Supabase");
+      console.log("✅ Diagnóstico adicionado no Supabase");
     } catch (error) {
       console.error("💥 Erro ao adicionar diagnóstico:", error);
       throw error;
