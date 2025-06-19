@@ -534,32 +534,52 @@ class PatientAPI {
     id: string,
     data: Partial<PatientFormData>,
   ): Promise<Patient> {
-    console.log("📝 updatePatient - Atualizando paciente:", {
+    console.log("📝 updatePatient - VERSÃO RIGOROSA - Atualizando paciente:", {
       id,
       data,
     });
 
     await this.delay(300);
 
-    // Verificar se usuário está logado
+    // VALIDAÇÃO 1: Usuário autenticado
     const currentUserStr = localStorage.getItem("medical_app_current_user");
     if (!currentUserStr) {
-      throw new Error("❌ Usuário não autenticado");
+      console.error("❌ FALHA: Usuário não autenticado");
+      throw new Error("Usuário não autenticado");
     }
 
     const currentUser = JSON.parse(currentUserStr);
-    console.log("👤 Usuário atualizando paciente:", {
-      user_id: currentUser.id,
-      profession: currentUser.profession,
-      patient_id: id,
-    });
+    console.log("👤 Usuário:", currentUser.id, currentUser.profession);
 
+    // VALIDAÇÃO 2: Supabase configurado
     if (!supabase) {
-      throw new Error("❌ Supabase não está configurado");
+      console.error("❌ FALHA: Supabase não está configurado");
+      throw new Error("Sistema de banco de dados não está configurado");
     }
 
+    // VALIDAÇÃO 3: Testar conectividade OBRIGATÓRIA
+    console.log("🔍 TESTANDO CONECTIVIDADE COM SUPABASE...");
     try {
-      // 1. VERIFICAR SE É UM PACIENTE COMPARTILHADO
+      const { data: connectTest, error: connectError } = await supabase
+        .from("users")
+        .select("id")
+        .limit(1);
+
+      if (connectError) {
+        console.error("❌ FALHA DE CONECTIVIDADE:", connectError);
+        throw new Error(
+          `Sem conexão com banco de dados: ${connectError.message}`,
+        );
+      }
+      console.log("✅ Conectividade OK");
+    } catch (error) {
+      console.error("❌ FALHA CRÍTICA DE CONECTIVIDADE:", error);
+      throw new Error("Falha crítica de conectividade com banco de dados");
+    }
+
+    // VALIDAÇÃO 4: Verificar permissões
+    console.log("🔍 VERIFICANDO PERMISSÕES...");
+    try {
       const { data: shareData, error: shareError } = await supabase
         .from("doctor_patient_sharing")
         .select("*")
@@ -567,197 +587,163 @@ class PatientAPI {
         .eq("patient_id", id)
         .single();
 
-      console.log("📊 VERIFICAÇÃO DE COMPARTILHAMENTO:", {
-        compartilhado: !!shareData,
-        erro: shareError?.message || "nenhum",
-        dados: shareData,
-      });
-
-      const isSharedPatient = !!shareData;
-
       if (shareError && shareError.code !== "PGRST116") {
-        console.error("❌ Erro ao verificar compartilhamento:", shareError);
-        throw new Error("Erro ao verificar permissões de acesso ao paciente");
+        console.error("❌ FALHA AO VERIFICAR PERMISSÕES:", shareError);
+        throw new Error(`Erro ao verificar permissões: ${shareError.message}`);
       }
 
-      // 2. BUSCAR DADOS ATUAIS DO PACIENTE
+      if (!shareData) {
+        console.error("❌ FALHA: Paciente não compartilhado");
+        throw new Error("Você não tem permissão para editar este paciente");
+      }
+
+      console.log("✅ Permissões OK - paciente compartilhado");
+    } catch (error) {
+      console.error("❌ FALHA NA VERIFICAÇÃO DE PERMISSÕES:", error);
+      throw error;
+    }
+
+    // VALIDAÇÃO 5: Salvar observações (se houver)
+    if (!data.notes || !data.notes.trim()) {
+      console.log("⚠️ Nenhuma observação para salvar");
       const currentPatient = await this.getPatientById(id);
       if (!currentPatient) {
         throw new Error("Paciente não encontrado");
       }
+      return currentPatient;
+    }
 
-      // 3. PARA PACIENTES COMPARTILHADOS, APENAS PERMITIR ATUALIZAÇÃO DAS OBSERVAÇÕES
-      if (isSharedPatient) {
-        console.log("🔒 Paciente compartilhado - salvando observações médicas");
+    console.log("💾 SALVANDO OBSERVAÇÕES MÉDICAS...");
 
-        if (data.notes && data.notes.trim()) {
-          try {
-            console.log("💾 Salvando observações - TESTANDO CONECTIVIDADE...");
+    // VALIDAÇÃO 6: Testar tabela de observações
+    try {
+      const { data: tableTest, error: tableError } = await supabase
+        .from("patient_medical_observations")
+        .select("id")
+        .limit(1);
 
-            // PRIMEIRO: Testar se Supabase está funcionando
-            const { data: testData, error: testError } = await supabase
-              .from("users")
-              .select("id")
-              .limit(1);
-
-            if (testError) {
-              console.error("❌ SUPABASE NÃO ESTÁ FUNCIONANDO:", testError);
-              throw new Error(
-                `Erro de conectividade com banco de dados: ${testError.message}`,
-              );
-            }
-
-            console.log("✅ Supabase conectado, procedendo...");
-
-            // SEGUNDO: Verificar se a tabela existe testando uma consulta
-            const { data: tableTest, error: tableError } = await supabase
-              .from("patient_medical_observations")
-              .select("id")
-              .limit(1);
-
-            if (tableError) {
-              console.error(
-                "❌ TABELA NÃO EXISTE OU ERRO DE ACESSO:",
-                tableError,
-              );
-              throw new Error(
-                `Tabela de observações não encontrada. Execute o script SQL primeiro: ${tableError.message}`,
-              );
-            }
-
-            console.log("✅ Tabela patient_medical_observations existe");
-
-            // TERCEIRO: Verificar se já existe observação deste médico para este paciente
-            const { data: existingObs, error: searchError } = await supabase
-              .from("patient_medical_observations")
-              .select("*")
-              .eq("patient_id", id)
-              .eq("doctor_id", currentUser.id)
-              .single();
-
-            console.log("🔍 Observação existente:", {
-              encontrada: !!existingObs,
-              erro: searchError?.message || "nenhum",
-            });
-
-            if (existingObs) {
-              // Atualizar observação existente
-              const { data: updatedData, error: updateError } = await supabase
-                .from("patient_medical_observations")
-                .update({
-                  observations: data.notes,
-                  updated_at: new Date().toISOString(),
-                })
-                .eq("id", existingObs.id)
-                .select();
-
-              if (updateError) {
-                console.error("❌ Erro ao atualizar observação:", updateError);
-                throw new Error(
-                  `Erro ao salvar observações: ${updateError.message}`,
-                );
-              }
-
-              if (!updatedData || updatedData.length === 0) {
-                console.error("❌ Nenhum registro foi atualizado");
-                throw new Error(
-                  "Falha ao atualizar observações - nenhum registro modificado",
-                );
-              }
-
-              console.log("✅ Observação atualizada com sucesso:", updatedData);
-            } else {
-              // Criar nova observação
-              const newObservationId = this.generateId();
-              const { data: insertedData, error: insertError } = await supabase
-                .from("patient_medical_observations")
-                .insert([
-                  {
-                    id: newObservationId,
-                    patient_id: id,
-                    doctor_id: currentUser.id,
-                    observations: data.notes,
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString(),
-                  },
-                ])
-                .select();
-
-              if (insertError) {
-                console.error("❌ Erro ao criar observação:", insertError);
-                throw new Error(
-                  `Erro ao salvar observações: ${insertError.message}`,
-                );
-              }
-
-              if (!insertedData || insertedData.length === 0) {
-                console.error("❌ Nenhum registro foi inserido");
-                throw new Error(
-                  "Falha ao criar observações - nenhum registro inserido",
-                );
-              }
-
-              console.log(
-                "✅ Nova observação criada com sucesso:",
-                insertedData,
-              );
-
-              // VALIDAÇÃO ADICIONAL: Verificar se realmente foi salvo
-              const { data: verifyData, error: verifyError } = await supabase
-                .from("patient_medical_observations")
-                .select("*")
-                .eq("id", newObservationId)
-                .single();
-
-              if (verifyError || !verifyData) {
-                console.error(
-                  "❌ VALIDAÇÃO FALHOU - Dados não foram salvos:",
-                  verifyError,
-                );
-                throw new Error(
-                  "Validação falhou - observações não foram salvas no banco",
-                );
-              }
-
-              console.log(
-                "✅ VALIDAÇÃO OK - Dados confirmados no banco:",
-                verifyData,
-              );
-            }
-          } catch (error) {
-            console.error("💥 Erro ao salvar observações médicas:", error);
-            throw error;
-          }
-        }
-
-        // Retornar paciente atualizado
-        const updatedPatient: Patient = {
-          ...currentPatient,
-          notes: data.notes || currentPatient.notes,
-        };
-
-        console.log("✅ Paciente atualizado com sucesso!");
-        return updatedPatient;
-      } else {
-        // 4. PARA PACIENTES PRÓPRIOS, PERMITIR ATUALIZAÇÃO COMPLETA
-        console.log("📝 Paciente próprio - atualizando dados completos");
-
-        // Implementar atualização completa se necessário
-        // Por ora, vamos focar apenas nos pacientes compartilhados
+      if (tableError) {
+        console.error("❌ FALHA: Tabela não existe:", tableError);
         throw new Error(
-          "Atualização de pacientes próprios não implementada ainda",
+          `Tabela de observações não encontrada. Execute o script SQL primeiro: ${tableError.message}`,
         );
       }
+      console.log("✅ Tabela patient_medical_observations OK");
     } catch (error) {
-      console.error("💥 Erro crítico no updatePatient:", error);
+      console.error("❌ FALHA AO ACESSAR TABELA:", error);
       throw error;
     }
-  }
 
-  async deletePatient(id: string): Promise<void> {
-    throw new Error("Método não implementado para teste");
-  }
+    // VALIDAÇÃO 7: Verificar observação existente
+    let existingObs = null;
+    try {
+      const { data: searchData, error: searchError } = await supabase
+        .from("patient_medical_observations")
+        .select("*")
+        .eq("patient_id", id)
+        .eq("doctor_id", currentUser.id)
+        .single();
 
+      if (searchError && searchError.code !== "PGRST116") {
+        console.error("❌ FALHA AO BUSCAR OBSERVAÇÃO:", searchError);
+        throw new Error(`Erro ao buscar observações: ${searchError.message}`);
+      }
+
+      existingObs = searchData;
+      console.log("🔍 Observação existente:", !!existingObs);
+    } catch (error) {
+      console.error("❌ FALHA NA BUSCA:", error);
+      throw error;
+    }
+
+    // VALIDAÇÃO 8: Salvar/Atualizar com VERIFICAÇÃO OBRIGATÓRIA
+    try {
+      if (existingObs) {
+        console.log("📝 Atualizando observação existente...");
+        const { data: updatedData, error: updateError } = await supabase
+          .from("patient_medical_observations")
+          .update({
+            observations: data.notes,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", existingObs.id)
+          .select();
+
+        if (updateError) {
+          console.error("❌ FALHA AO ATUALIZAR:", updateError);
+          throw new Error(
+            `Falha ao atualizar observações: ${updateError.message}`,
+          );
+        }
+
+        if (!updatedData || updatedData.length === 0) {
+          console.error("❌ FALHA: Nenhum registro atualizado");
+          throw new Error("Falha crítica: observações não foram atualizadas");
+        }
+
+        console.log("✅ Observação atualizada:", updatedData[0]);
+      } else {
+        console.log("📝 Criando nova observação...");
+        const newId = this.generateId();
+        const { data: insertedData, error: insertError } = await supabase
+          .from("patient_medical_observations")
+          .insert([
+            {
+              id: newId,
+              patient_id: id,
+              doctor_id: currentUser.id,
+              observations: data.notes,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            },
+          ])
+          .select();
+
+        if (insertError) {
+          console.error("❌ FALHA AO INSERIR:", insertError);
+          throw new Error(`Falha ao criar observações: ${insertError.message}`);
+        }
+
+        if (!insertedData || insertedData.length === 0) {
+          console.error("❌ FALHA: Nenhum registro inserido");
+          throw new Error("Falha crítica: observações não foram criadas");
+        }
+
+        console.log("✅ Nova observação criada:", insertedData[0]);
+
+        // VALIDAÇÃO FINAL: Confirmar que foi salvo
+        const { data: confirmData, error: confirmError } = await supabase
+          .from("patient_medical_observations")
+          .select("*")
+          .eq("id", newId)
+          .single();
+
+        if (confirmError || !confirmData) {
+          console.error("❌ FALHA NA VALIDAÇÃO FINAL:", confirmError);
+          throw new Error("ERRO CRÍTICO: Dados não foram salvos no banco");
+        }
+
+        console.log("✅ VALIDAÇÃO FINAL OK:", confirmData);
+      }
+    } catch (error) {
+      console.error("❌ FALHA CRÍTICA NO SALVAMENTO:", error);
+      throw error;
+    }
+
+    // SUCESSO: Retornar paciente atualizado
+    const currentPatient = await this.getPatientById(id);
+    if (!currentPatient) {
+      throw new Error("Erro ao buscar paciente atualizado");
+    }
+
+    const updatedPatient: Patient = {
+      ...currentPatient,
+      notes: data.notes || currentPatient.notes,
+    };
+
+    console.log("✅ SUCESSO TOTAL - Observações salvas e validadas!");
+    return updatedPatient;
+  }
   async deletePatients(ids: string[]): Promise<void> {
     throw new Error("Método não implementado para teste");
   }
