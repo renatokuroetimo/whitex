@@ -429,12 +429,32 @@ class PatientAPI {
     }
   }
 
-  // Buscar diagnósticos (apenas Supabase)
+  // Buscar diagnósticos (Supabase + localStorage fallback)
   async getDiagnoses(patientId: string): Promise<Diagnosis[]> {
     await this.delay(300);
 
+    // TEMPORARY: Check localStorage first
+    const storageKey = `diagnoses_${patientId}`;
+    const localDiagnoses = JSON.parse(localStorage.getItem(storageKey) || "[]");
+
+    if (localDiagnoses.length > 0) {
+      console.log(
+        "📋 Loading diagnoses from localStorage:",
+        localDiagnoses.length,
+      );
+      return localDiagnoses.map((item: any) => ({
+        id: item.id,
+        patientId: item.patientId,
+        date: item.date,
+        status: item.diagnosis,
+        code: item.code,
+        createdAt: item.createdAt,
+      }));
+    }
+
     if (!supabase) {
-      throw new Error("❌ Supabase não está configurado");
+      console.warn("❌ Supabase não está configurado, retornando array vazio");
+      return [];
     }
 
     try {
