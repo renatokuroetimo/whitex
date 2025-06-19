@@ -915,15 +915,15 @@ class PatientProfileAPI {
             }
 
             if (doctorUser) {
-              // Garantir que sempre mostramos nome, nunca email na exibição principal
+              // Usar nome real se disponível, senão criar nome baseado no email
               const doctorName =
                 doctorUser.name && doctorUser.name.trim()
                   ? doctorUser.name
-                  : "Dr. " + (doctorUser.email?.split("@")[0] || "Médico");
+                  : doctorUser.email?.split("@")[0] || "Médico";
 
               doctors.push({
                 id: doctorUser.id,
-                name: doctorName,
+                name: doctorName, // Nome limpo, sem "Dr." aqui
                 crm: doctorUser.crm || "N/A",
                 state: doctorUser.state || "N/A",
                 specialty: doctorUser.specialty || "Clínico Geral",
