@@ -180,6 +180,9 @@ class PatientAPI {
 
     const currentUser = JSON.parse(currentUserStr);
 
+    console.log("💾 Criando paciente no Supabase");
+    console.log("📋 Dados recebidos:", JSON.stringify(data, null, 2));
+
     // Validar dados obrigatórios
     if (!data.name || typeof data.name !== "string" || !data.name.trim()) {
       throw new Error("❌ Nome é obrigatório e não pode estar vazio");
