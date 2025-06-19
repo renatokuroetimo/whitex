@@ -327,7 +327,10 @@ class PatientAPI {
   }
 
   // Adicionar diagnóstico (apenas Supabase)
-  async addDiagnosis(patientId: string, diagnosis: string): Promise<void> {
+  async addDiagnosis(
+    patientId: string,
+    diagnosisData: { date: string; status: string; code: string },
+  ): Promise<void> {
     await this.delay(300);
 
     if (!supabase) {
@@ -348,7 +351,9 @@ class PatientAPI {
           id: this.generateId(),
           patient_id: patientId,
           doctor_id: currentUser.id,
-          diagnosis,
+          diagnosis: diagnosisData.status,
+          code: diagnosisData.code,
+          date: diagnosisData.date,
           created_at: new Date().toISOString(),
         },
       ]);
