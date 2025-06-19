@@ -588,93 +588,81 @@ class PatientAPI {
 
       // 3. PARA PACIENTES COMPARTILHADOS, APENAS PERMITIR ATUALIZAÇÃO DAS OBSERVAÇÕES
       if (isSharedPatient) {
-        console.log(
-          "🔒 Paciente compartilhado - atualizando apenas observações médicas",
-        );
+        console.log("🔒 Paciente compartilhado - salvando observações médicas");
 
-        // Para pacientes compartilhados, as observações são salvas em uma tabela separada
-        // ou no campo notes do compartilhamento. Vou salvar no patient_medical_data
-        try {
-          // Buscar dados médicos existentes
-          const { data: existingMedicalData, error: medicalError } =
-            await supabase
-              .from("patient_medical_data")
+        if (data.notes && data.notes.trim()) {
+          try {
+            console.log("💾 Salvando observações na tabela dedicada...");
+
+            // Verificar se já existe observação deste médico para este paciente
+            const { data: existingObs, error: searchError } = await supabase
+              .from("patient_medical_observations")
               .select("*")
-              .eq("user_id", id)
+              .eq("patient_id", id)
+              .eq("doctor_id", currentUser.id)
               .single();
 
-          if (medicalError && medicalError.code !== "PGRST116") {
-            console.warn(
-              "⚠️ Erro ao buscar dados médicos existentes:",
-              medicalError,
-            );
-          }
+            console.log("🔍 Observação existente:", {
+              encontrada: !!existingObs,
+              erro: searchError?.message || "nenhum",
+            });
 
-          // Preparar dados para atualizar/inserir
-          const medicalDataToSave = {
-            user_id: id,
-            // Manter dados existentes se houver
-            height: existingMedicalData?.height || null,
-            weight: existingMedicalData?.weight || null,
-            smoker: existingMedicalData?.smoker || false,
-            high_blood_pressure:
-              existingMedicalData?.high_blood_pressure || false,
-            physical_activity: existingMedicalData?.physical_activity || false,
-            exercise_frequency: existingMedicalData?.exercise_frequency || null,
-            healthy_diet: existingMedicalData?.healthy_diet || false,
-            // Adicionar observações médicas (usar um campo customizado)
-            medical_notes: data.notes || null,
-            updated_at: new Date().toISOString(),
-          };
+            if (existingObs) {
+              // Atualizar observação existente
+              const { error: updateError } = await supabase
+                .from("patient_medical_observations")
+                .update({
+                  observations: data.notes,
+                  updated_at: new Date().toISOString(),
+                })
+                .eq("id", existingObs.id);
 
-          console.log("💾 Salvando observações médicas:", medicalDataToSave);
+              if (updateError) {
+                console.error("❌ Erro ao atualizar observação:", updateError);
+                throw new Error(
+                  `Erro ao salvar observações: ${updateError.message}`,
+                );
+              }
 
-          if (existingMedicalData) {
-            // Atualizar registro existente
-            const { error: updateError } = await supabase
-              .from("patient_medical_data")
-              .update(medicalDataToSave)
-              .eq("user_id", id);
+              console.log("✅ Observação atualizada com sucesso!");
+            } else {
+              // Criar nova observação
+              const { error: insertError } = await supabase
+                .from("patient_medical_observations")
+                .insert([
+                  {
+                    id: this.generateId(),
+                    patient_id: id,
+                    doctor_id: currentUser.id,
+                    observations: data.notes,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                  },
+                ]);
 
-            if (updateError) {
-              console.error("❌ Erro ao atualizar dados médicos:", updateError);
-              throw new Error(
-                `Erro ao salvar observações: ${updateError.message}`,
-              );
+              if (insertError) {
+                console.error("❌ Erro ao criar observação:", insertError);
+                throw new Error(
+                  `Erro ao salvar observações: ${insertError.message}`,
+                );
+              }
+
+              console.log("✅ Nova observação criada com sucesso!");
             }
-          } else {
-            // Criar novo registro
-            const { error: insertError } = await supabase
-              .from("patient_medical_data")
-              .insert([
-                {
-                  id: this.generateId(),
-                  ...medicalDataToSave,
-                  created_at: new Date().toISOString(),
-                },
-              ]);
-
-            if (insertError) {
-              console.error("❌ Erro ao inserir dados médicos:", insertError);
-              throw new Error(
-                `Erro ao salvar observações: ${insertError.message}`,
-              );
-            }
+          } catch (error) {
+            console.error("💥 Erro ao salvar observações médicas:", error);
+            throw error;
           }
-
-          console.log("✅ Observações médicas salvas com sucesso!");
-
-          // Retornar paciente atualizado com as novas observações
-          const updatedPatient: Patient = {
-            ...currentPatient,
-            notes: data.notes || currentPatient.notes,
-          };
-
-          return updatedPatient;
-        } catch (error) {
-          console.error("💥 Erro ao salvar observações médicas:", error);
-          throw error;
         }
+
+        // Retornar paciente atualizado
+        const updatedPatient: Patient = {
+          ...currentPatient,
+          notes: data.notes || currentPatient.notes,
+        };
+
+        console.log("✅ Paciente atualizado com sucesso!");
+        return updatedPatient;
       } else {
         // 4. PARA PACIENTES PRÓPRIOS, PERMITIR ATUALIZAÇÃO COMPLETA
         console.log("📝 Paciente próprio - atualizando dados completos");
