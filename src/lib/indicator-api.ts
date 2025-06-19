@@ -98,6 +98,8 @@ class IndicatorAPI {
           unitId: indicator.unit_id || "unit_un",
           unitSymbol: indicator.unit_symbol || "un",
           isMandatory: indicator.is_mandatory || false,
+          requiresTime: indicator.requires_time || false,
+          requiresDate: indicator.requires_date || false,
           doctorId: indicator.doctor_id || "",
           createdAt: indicator.created_at || new Date().toISOString(),
         };
