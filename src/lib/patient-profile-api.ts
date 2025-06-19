@@ -890,7 +890,7 @@ class PatientProfileAPI {
         }
 
         if (!shares || shares.length === 0) {
-          console.log("��� Nenhum compartilhamento encontrado");
+          console.log("📝 Nenhum compartilhamento encontrado");
           return [];
         }
 
@@ -902,7 +902,7 @@ class PatientProfileAPI {
             const { data: doctorUser, error: doctorError } = await supabase
               .from("users")
               .select(
-                "id, email, profession, crm, specialty, state, city, created_at",
+                "id, name, email, profession, crm, specialty, state, city, created_at",
               )
               .eq("id", share.doctor_id)
               .eq("profession", "medico")
