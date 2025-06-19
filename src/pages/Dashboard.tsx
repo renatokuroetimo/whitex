@@ -22,12 +22,17 @@ import {
 import MobileLayout from "@/components/MobileLayout";
 import { patientAPI } from "@/lib/patient-api";
 import { patientIndicatorAPI } from "@/lib/patient-indicator-api";
+import { indicatorAPI } from "@/lib/indicator-api";
+import { Patient } from "@/lib/patient-types";
+import { PatientIndicatorValue } from "@/lib/patient-indicator-types";
 
 interface DashboardStats {
   totalPatients: number;
   activePatients: number;
   totalIndicators: number;
   recentMeasurements: number;
+  measurementsToday: number;
+  measurementsYesterday: number;
 }
 
 interface RecentActivity {
@@ -40,12 +45,20 @@ interface RecentActivity {
   color: string;
 }
 
-interface PatientAlert {
+interface MedicalAlert {
   id: string;
+  patientId: string;
   patientName: string;
-  type: "high_pressure" | "missing_measurements" | "urgent_review";
+  type:
+    | "high_pressure"
+    | "low_pressure"
+    | "missing_measurements"
+    | "urgent_review"
+    | "abnormal_value";
   message: string;
   severity: "high" | "medium" | "low";
+  value?: string;
+  indicator?: string;
 }
 
 const Dashboard = () => {
@@ -56,11 +69,13 @@ const Dashboard = () => {
     activePatients: 0,
     totalIndicators: 0,
     recentMeasurements: 0,
+    measurementsToday: 0,
+    measurementsYesterday: 0,
   });
   const [recentActivities, setRecentActivities] = useState<RecentActivity[]>(
     [],
   );
-  const [patientAlerts, setPatientAlerts] = useState<PatientAlert[]>([]);
+  const [medicalAlerts, setMedicalAlerts] = useState<MedicalAlert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Redirect patients to PatientDashboard
@@ -72,84 +87,351 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (user?.profession === "medico") {
-      loadDashboardData();
+      loadRealDashboardData();
     }
   }, [user]);
 
-  const loadDashboardData = async () => {
+  const loadRealDashboardData = async () => {
     try {
       setIsLoading(true);
 
-      // Load patients data
+      // Load real patients data
       const patientsResponse = await patientAPI.getPatients();
       const patients = patientsResponse.patients;
 
-      // Calculate stats
-      const totalPatients = patients.length;
-      const activePatients = patients.filter(
-        (p) => p.status === "ativo",
-      ).length;
+      // Load real indicators data
+      const customIndicators = await indicatorAPI.getIndicators();
+      const standardIndicators = await indicatorAPI.getStandardIndicators();
+      const totalIndicators =
+        customIndicators.length + standardIndicators.length;
+
+      // Load measurements for all patients
+      const allMeasurements: PatientIndicatorValue[] = [];
+      const patientMeasurements: {
+        [patientId: string]: PatientIndicatorValue[];
+      } = {};
+
+      for (const patient of patients) {
+        try {
+          const measurements =
+            await patientIndicatorAPI.getPatientIndicatorValues(patient.id);
+          allMeasurements.push(...measurements);
+          patientMeasurements[patient.id] = measurements;
+        } catch (error) {
+          console.warn(
+            `Could not load measurements for patient ${patient.id}:`,
+            error,
+          );
+          patientMeasurements[patient.id] = [];
+        }
+      }
+
+      // Calculate real stats
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      const measurementsToday = allMeasurements.filter((m) => {
+        const measurementDate = new Date(m.createdAt);
+        return measurementDate.toDateString() === today.toDateString();
+      }).length;
+
+      const measurementsYesterday = allMeasurements.filter((m) => {
+        const measurementDate = new Date(m.createdAt);
+        return measurementDate.toDateString() === yesterday.toDateString();
+      }).length;
+
+      const recentMeasurements = allMeasurements.filter((m) => {
+        const measurementDate = new Date(m.createdAt);
+        const daysDiff =
+          (today.getTime() - measurementDate.getTime()) / (1000 * 60 * 60 * 24);
+        return daysDiff <= 7; // Last 7 days
+      }).length;
 
       setStats({
-        totalPatients,
-        activePatients,
-        totalIndicators: 15, // Mock data - replace with real API call
-        recentMeasurements: 42, // Mock data - replace with real API call
+        totalPatients: patients.length,
+        activePatients: patients.filter((p) => p.status === "ativo").length,
+        totalIndicators,
+        recentMeasurements,
+        measurementsToday,
+        measurementsYesterday,
       });
 
-      // Generate recent activities (mock data)
-      setRecentActivities([
-        {
-          id: "1",
-          type: "patient_added",
-          patientName: "Maria Silva",
-          description: "Novo paciente adicionado",
-          time: "há 2 horas",
-          icon: UserPlus,
-          color: "text-green-600",
-        },
-        {
-          id: "2",
-          type: "measurement_taken",
-          patientName: "João Santos",
-          description: "Pressão arterial registrada: 140/90 mmHg",
-          time: "há 4 horas",
-          icon: Heart,
-          color: "text-red-600",
-        },
-        {
-          id: "3",
-          type: "indicator_added",
-          patientName: "Ana Costa",
-          description: "Novo indicador de temperatura adicionado",
-          time: "há 6 horas",
-          icon: ThermometerSun,
-          color: "text-blue-600",
-        },
-      ]);
+      // Generate real recent activities
+      const activities = generateRealActivities(patients, allMeasurements);
+      setRecentActivities(activities);
 
-      // Generate patient alerts (mock data)
-      setPatientAlerts([
-        {
-          id: "1",
-          patientName: "João Santos",
-          type: "high_pressure",
-          message: "Pressão arterial elevada detectada (160/100)",
-          severity: "high",
-        },
-        {
-          id: "2",
-          patientName: "Maria Silva",
-          type: "missing_measurements",
-          message: "Sem medições há 7 dias",
-          severity: "medium",
-        },
-      ]);
+      // Generate intelligent medical alerts
+      const alerts = generateMedicalAlerts(patients, patientMeasurements);
+      setMedicalAlerts(alerts);
     } catch (error) {
-      console.error("Erro ao carregar dados do dashboard:", error);
+      console.error("Erro ao carregar dados reais do dashboard:", error);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const generateRealActivities = (
+    patients: Patient[],
+    measurements: PatientIndicatorValue[],
+  ): RecentActivity[] => {
+    const activities: RecentActivity[] = [];
+
+    // Recent patients (last 7 days)
+    const recentPatients = patients
+      .filter((p) => {
+        const createdDate = new Date(p.createdAt);
+        const daysDiff =
+          (new Date().getTime() - createdDate.getTime()) /
+          (1000 * 60 * 60 * 24);
+        return daysDiff <= 7;
+      })
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      )
+      .slice(0, 3);
+
+    recentPatients.forEach((patient) => {
+      activities.push({
+        id: `patient_${patient.id}`,
+        type: "patient_added",
+        patientName: patient.name,
+        description: "Novo paciente cadastrado",
+        time: getRelativeTime(patient.createdAt),
+        icon: UserPlus,
+        color: "text-green-600",
+      });
+    });
+
+    // Recent measurements (last 24 hours)
+    const recentMeasurements = measurements
+      .filter((m) => {
+        const measurementDate = new Date(m.createdAt);
+        const hoursDiff =
+          (new Date().getTime() - measurementDate.getTime()) / (1000 * 60 * 60);
+        return hoursDiff <= 24;
+      })
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      )
+      .slice(0, 5);
+
+    recentMeasurements.forEach((measurement) => {
+      const patient = patients.find((p) => p.id === measurement.patientId);
+      if (patient) {
+        activities.push({
+          id: `measurement_${measurement.id}`,
+          type: "measurement_taken",
+          patientName: patient.name,
+          description: `${measurement.parameter}: ${measurement.value} ${measurement.unitSymbol}`,
+          time: getRelativeTime(measurement.createdAt),
+          icon: getIconForMeasurement(measurement.parameter),
+          color: getColorForMeasurement(measurement.parameter),
+        });
+      }
+    });
+
+    return activities
+      .sort((a, b) => getTimeInHours(a.time) - getTimeInHours(b.time))
+      .slice(0, 6);
+  };
+
+  const generateMedicalAlerts = (
+    patients: Patient[],
+    patientMeasurements: { [patientId: string]: PatientIndicatorValue[] },
+  ): MedicalAlert[] => {
+    const alerts: MedicalAlert[] = [];
+
+    patients.forEach((patient) => {
+      const measurements = patientMeasurements[patient.id] || [];
+
+      // Alert 1: High Blood Pressure (Pressão Arterial > 140/90)
+      const pressureMeasurements = measurements.filter(
+        (m) =>
+          m.parameter.toLowerCase().includes("pressão") ||
+          m.parameter.toLowerCase().includes("arterial"),
+      );
+
+      pressureMeasurements.forEach((measurement) => {
+        const value = measurement.value;
+        // Check for patterns like "150/95", "160/100", etc.
+        const pressureMatch = value.match(/(\d+)\/(\d+)/);
+        if (pressureMatch) {
+          const systolic = parseInt(pressureMatch[1]);
+          const diastolic = parseInt(pressureMatch[2]);
+
+          if (systolic >= 140 || diastolic >= 90) {
+            alerts.push({
+              id: `pressure_${measurement.id}`,
+              patientId: patient.id,
+              patientName: patient.name,
+              type: "high_pressure",
+              message: `Pressão arterial elevada: ${value} mmHg (Normal: <140/90)`,
+              severity: systolic >= 160 || diastolic >= 100 ? "high" : "medium",
+              value: value,
+              indicator: "Pressão Arterial",
+            });
+          }
+        }
+      });
+
+      // Alert 2: Missing Measurements (No measurements in last 7 days)
+      const lastMeasurement = measurements.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      )[0];
+
+      if (lastMeasurement) {
+        const daysSinceLastMeasurement =
+          (new Date().getTime() -
+            new Date(lastMeasurement.createdAt).getTime()) /
+          (1000 * 60 * 60 * 24);
+
+        if (daysSinceLastMeasurement > 7) {
+          alerts.push({
+            id: `missing_${patient.id}`,
+            patientId: patient.id,
+            patientName: patient.name,
+            type: "missing_measurements",
+            message: `Sem medições há ${Math.floor(daysSinceLastMeasurement)} dias`,
+            severity: daysSinceLastMeasurement > 14 ? "high" : "medium",
+            indicator: "Monitoramento",
+          });
+        }
+      } else if (patient.status === "ativo") {
+        // No measurements at all for active patient
+        alerts.push({
+          id: `no_measurements_${patient.id}`,
+          patientId: patient.id,
+          patientName: patient.name,
+          type: "missing_measurements",
+          message: "Paciente ativo sem nenhuma medição registrada",
+          severity: "high",
+          indicator: "Monitoramento",
+        });
+      }
+
+      // Alert 3: Abnormal Temperature (< 35°C or > 38°C)
+      const temperatureMeasurements = measurements.filter((m) =>
+        m.parameter.toLowerCase().includes("temperatura"),
+      );
+
+      temperatureMeasurements.forEach((measurement) => {
+        const temp = parseFloat(measurement.value);
+        if (!isNaN(temp)) {
+          if (temp < 35 || temp > 38) {
+            alerts.push({
+              id: `temp_${measurement.id}`,
+              patientId: patient.id,
+              patientName: patient.name,
+              type: "abnormal_value",
+              message: `Temperatura ${temp < 35 ? "baixa" : "alta"}: ${temp}°C (Normal: 36-37.5°C)`,
+              severity: temp < 34 || temp > 39 ? "high" : "medium",
+              value: `${temp}°C`,
+              indicator: "Temperatura",
+            });
+          }
+        }
+      });
+
+      // Alert 4: Abnormal Heart Rate (< 60 or > 100 bpm)
+      const heartRateMeasurements = measurements.filter(
+        (m) =>
+          m.parameter.toLowerCase().includes("frequência") &&
+          m.parameter.toLowerCase().includes("cardíaca"),
+      );
+
+      heartRateMeasurements.forEach((measurement) => {
+        const bpm = parseFloat(measurement.value);
+        if (!isNaN(bpm)) {
+          if (bpm < 60 || bpm > 100) {
+            alerts.push({
+              id: `hr_${measurement.id}`,
+              patientId: patient.id,
+              patientName: patient.name,
+              type: "abnormal_value",
+              message: `Frequência cardíaca ${bpm < 60 ? "baixa" : "alta"}: ${bpm} bpm (Normal: 60-100)`,
+              severity: bpm < 50 || bpm > 120 ? "high" : "medium",
+              value: `${bpm} bpm`,
+              indicator: "Frequência Cardíaca",
+            });
+          }
+        }
+      });
+    });
+
+    // Sort by severity (high first) and limit to 10 most important
+    return alerts
+      .sort((a, b) => {
+        const severityOrder = { high: 3, medium: 2, low: 1 };
+        return severityOrder[b.severity] - severityOrder[a.severity];
+      })
+      .slice(0, 10);
+  };
+
+  const getRelativeTime = (dateString: string): string => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+
+    if (diffInHours < 1) {
+      const minutes = Math.floor(diffInHours * 60);
+      return `há ${minutes} min`;
+    } else if (diffInHours < 24) {
+      return `há ${Math.floor(diffInHours)} horas`;
+    } else {
+      const days = Math.floor(diffInHours / 24);
+      return `há ${days} dias`;
+    }
+  };
+
+  const getTimeInHours = (relativeTime: string): number => {
+    if (relativeTime.includes("min")) {
+      return parseFloat(relativeTime.match(/\d+/)?.[0] || "0") / 60;
+    } else if (relativeTime.includes("horas")) {
+      return parseFloat(relativeTime.match(/\d+/)?.[0] || "0");
+    } else if (relativeTime.includes("dias")) {
+      return parseFloat(relativeTime.match(/\d+/)?.[0] || "0") * 24;
+    }
+    return 0;
+  };
+
+  const getIconForMeasurement = (
+    parameter: string,
+  ): React.ComponentType<any> => {
+    const param = parameter.toLowerCase();
+    if (param.includes("pressão") || param.includes("arterial")) return Heart;
+    if (param.includes("temperatura")) return ThermometerSun;
+    if (param.includes("peso")) return Weight;
+    if (param.includes("frequência")) return Activity;
+    return Target;
+  };
+
+  const getColorForMeasurement = (parameter: string): string => {
+    const param = parameter.toLowerCase();
+    if (param.includes("pressão") || param.includes("arterial"))
+      return "text-red-600";
+    if (param.includes("temperatura")) return "text-orange-600";
+    if (param.includes("peso")) return "text-blue-600";
+    if (param.includes("frequência")) return "text-purple-600";
+    return "text-gray-600";
+  };
+
+  const calculateTrend = (): { percentage: number; isPositive: boolean } => {
+    if (stats.measurementsYesterday === 0) {
+      return {
+        percentage: stats.measurementsToday > 0 ? 100 : 0,
+        isPositive: true,
+      };
+    }
+
+    const percentage =
+      ((stats.measurementsToday - stats.measurementsYesterday) /
+        stats.measurementsYesterday) *
+      100;
+    return { percentage: Math.abs(percentage), isPositive: percentage >= 0 };
   };
 
   if (!user) {
@@ -167,12 +449,14 @@ const Dashboard = () => {
         <div className="p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-64">
           <div className="text-center">
             <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
-            <p className="text-gray-600">Carregando dashboard...</p>
+            <p className="text-gray-600">Carregando dados médicos...</p>
           </div>
         </div>
       </MobileLayout>
     );
   }
+
+  const trend = calculateTrend();
 
   return (
     <MobileLayout>
@@ -198,7 +482,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Stats Cards */}
+        {/* Real Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <div className="flex items-center justify-between">
@@ -224,7 +508,7 @@ const Dashboard = () => {
                 <p className="text-3xl font-bold text-gray-900">
                   {stats.totalIndicators}
                 </p>
-                <p className="text-sm text-blue-600 mt-1">Tipos criados</p>
+                <p className="text-sm text-blue-600 mt-1">Tipos disponíveis</p>
               </div>
               <div className="p-3 bg-green-100 rounded-full">
                 <Activity className="h-6 w-6 text-green-600" />
@@ -237,9 +521,14 @@ const Dashboard = () => {
               <div>
                 <p className="text-sm text-gray-600">Medições Hoje</p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {stats.recentMeasurements}
+                  {stats.measurementsToday}
                 </p>
-                <p className="text-sm text-green-600 mt-1">+12% vs ontem</p>
+                <p
+                  className={`text-sm mt-1 ${trend.isPositive ? "text-green-600" : "text-red-600"}`}
+                >
+                  {trend.isPositive ? "+" : "-"}
+                  {trend.percentage.toFixed(0)}% vs ontem
+                </p>
               </div>
               <div className="p-3 bg-purple-100 rounded-full">
                 <TrendingUp className="h-6 w-6 text-purple-600" />
@@ -250,11 +539,14 @@ const Dashboard = () => {
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Alertas</p>
+                <p className="text-sm text-gray-600">Alertas Médicos</p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {patientAlerts.length}
+                  {medicalAlerts.length}
                 </p>
-                <p className="text-sm text-orange-600 mt-1">Requerem atenção</p>
+                <p className="text-sm text-orange-600 mt-1">
+                  {medicalAlerts.filter((a) => a.severity === "high").length}{" "}
+                  urgentes
+                </p>
               </div>
               <div className="p-3 bg-orange-100 rounded-full">
                 <AlertTriangle className="h-6 w-6 text-orange-600" />
@@ -264,7 +556,7 @@ const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Recent Activities */}
+          {/* Real Recent Activities */}
           <div className="lg:col-span-2 bg-white rounded-lg border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-semibold text-gray-900">
@@ -279,55 +571,106 @@ const Dashboard = () => {
               </Button>
             </div>
             <div className="space-y-4">
-              {recentActivities.map((activity) => (
-                <div
-                  key={activity.id}
-                  className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg"
-                >
+              {recentActivities.length === 0 ? (
+                <p className="text-gray-500 text-center py-8">
+                  Nenhuma atividade recente
+                </p>
+              ) : (
+                recentActivities.map((activity) => (
                   <div
-                    className={`p-2 bg-white rounded-full ${activity.color}`}
+                    key={activity.id}
+                    className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg"
                   >
-                    <activity.icon className="h-4 w-4" />
+                    <div
+                      className={`p-2 bg-white rounded-full ${activity.color}`}
+                    >
+                      <activity.icon className="h-4 w-4" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-900">
+                        {activity.patientName}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {activity.description}
+                      </p>
+                    </div>
+                    <div className="text-xs text-gray-500">{activity.time}</div>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">
-                      {activity.patientName}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {activity.description}
-                    </p>
-                  </div>
-                  <div className="text-xs text-gray-500">{activity.time}</div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
 
-          {/* Patient Alerts & Quick Actions */}
+          {/* Real Medical Alerts & Quick Actions */}
           <div className="space-y-6">
-            {/* Alerts */}
+            {/* Medical Alerts */}
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">Alertas</h2>
-                <Badge variant="destructive" className="text-xs">
-                  {patientAlerts.length}
-                </Badge>
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Alertas Médicos
+                </h2>
+                {medicalAlerts.length > 0 && (
+                  <Badge variant="destructive" className="text-xs">
+                    {medicalAlerts.filter((a) => a.severity === "high").length}
+                  </Badge>
+                )}
               </div>
-              <div className="space-y-3">
-                {patientAlerts.map((alert) => (
-                  <div
-                    key={alert.id}
-                    className="p-3 bg-red-50 border border-red-200 rounded-lg"
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      <AlertTriangle className="h-4 w-4 text-red-600" />
-                      <p className="text-sm font-medium text-red-900">
-                        {alert.patientName}
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {medicalAlerts.length === 0 ? (
+                  <p className="text-gray-500 text-center py-4">
+                    Nenhum alerta médico
+                  </p>
+                ) : (
+                  medicalAlerts.map((alert) => (
+                    <div
+                      key={alert.id}
+                      className={`p-3 rounded-lg border ${
+                        alert.severity === "high"
+                          ? "bg-red-50 border-red-200"
+                          : alert.severity === "medium"
+                            ? "bg-orange-50 border-orange-200"
+                            : "bg-yellow-50 border-yellow-200"
+                      }`}
+                      onClick={() => navigate(`/pacientes/${alert.patientId}`)}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <AlertTriangle
+                          className={`h-4 w-4 ${
+                            alert.severity === "high"
+                              ? "text-red-600"
+                              : alert.severity === "medium"
+                                ? "text-orange-600"
+                                : "text-yellow-600"
+                          }`}
+                        />
+                        <p
+                          className={`text-sm font-medium ${
+                            alert.severity === "high"
+                              ? "text-red-900"
+                              : alert.severity === "medium"
+                                ? "text-orange-900"
+                                : "text-yellow-900"
+                          }`}
+                        >
+                          {alert.patientName}
+                        </p>
+                      </div>
+                      <p
+                        className={`text-xs ${
+                          alert.severity === "high"
+                            ? "text-red-700"
+                            : alert.severity === "medium"
+                              ? "text-orange-700"
+                              : "text-yellow-700"
+                        }`}
+                      >
+                        {alert.message}
                       </p>
                     </div>
-                    <p className="text-xs text-red-700">{alert.message}</p>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
 
