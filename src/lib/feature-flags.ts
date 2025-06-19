@@ -1,144 +1,47 @@
-// Sistema de Feature Flags para migração gradual
+// Sistema simplificado - sempre usar Supabase
 import { isSupabaseConfigured } from "./supabase";
 
-interface FeatureFlags {
-  useSupabaseAuth: boolean;
-  useSupabasePatients: boolean;
-  useSupabaseIndicators: boolean;
-  useSupabaseProfiles: boolean;
-  enableDataMigration: boolean;
-}
-
-// Flags padrão - MIGRAÇÃO COMPLETA PARA SUPABASE
-const defaultFlags: FeatureFlags = {
-  useSupabaseAuth: true, // Usar Supabase por padrão
-  useSupabasePatients: true,
-  useSupabaseIndicators: true,
-  useSupabaseProfiles: true, // ATIVAR PERFIS NO SUPABASE
-  enableDataMigration: true,
+// Verificar se Supabase está configurado e disponível
+export const isFeatureEnabled = (flag: string): boolean => {
+  // Sempre retorna true se Supabase estiver configurado
+  // Se não estiver configurado, deixa falhar com erro
+  return isSupabaseConfigured();
 };
 
-// Carregar flags do localStorage (para persistir configurações)
-const getStoredFlags = (): Partial<FeatureFlags> => {
-  try {
-    const stored = localStorage.getItem("medical_app_feature_flags");
-    return stored ? JSON.parse(stored) : {};
-  } catch {
-    return {};
-  }
+// Funções para compatibilidade (não fazem nada, sempre Supabase)
+export const setFeatureFlag = (flag: string, value: boolean): void => {
+  console.log(`⚠️ Feature flags removidas - sempre usando Supabase`);
 };
 
-// Salvar flags no localStorage
-const saveFlags = (flags: FeatureFlags): void => {
-  localStorage.setItem("medical_app_feature_flags", JSON.stringify(flags));
-};
-
-// Obter flags atuais
-export const getFeatureFlags = (): FeatureFlags => {
-  const stored = getStoredFlags();
-  return { ...defaultFlags, ...stored };
-};
-
-// Atualizar uma flag específica
-export const setFeatureFlag = (
-  flag: keyof FeatureFlags,
-  value: boolean,
-): void => {
-  const currentFlags = getFeatureFlags();
-  const newFlags = { ...currentFlags, [flag]: value };
-  saveFlags(newFlags);
-
-  console.log(`🏁 Feature flag atualizada: ${flag} = ${value}`);
-  console.log(`📊 Todas as flags:`, newFlags);
-
-  // Verificar se foi salvo corretamente
-  const verificacao = getFeatureFlags();
-  console.log(`✅ Verificação após salvar:`, verificacao);
-};
-
-// Verificar se uma feature está habilitada
-export const isFeatureEnabled = (flag: keyof FeatureFlags): boolean => {
-  const flags = getFeatureFlags();
-  const isEnabled = flags[flag] && isSupabaseConfigured();
-
-  // Log para debug
-  if (import.meta.env.DEV) {
-    console.log(
-      `🔍 Feature check: ${flag} = ${isEnabled} (flag: ${flags[flag]}, supabase: ${isSupabaseConfigured()})`,
-    );
-  }
-
-  return isEnabled;
-};
-
-// Ativar migração em lote (apenas para admin/dev)
-export const enableSupabaseMigration = (): void => {
-  console.log("🚀 Ativando migração para Supabase...");
-
-  setFeatureFlag("useSupabaseAuth", true);
-  setFeatureFlag("useSupabasePatients", true);
-  setFeatureFlag("useSupabaseIndicators", true);
-  setFeatureFlag("useSupabaseProfiles", true);
-  setFeatureFlag("enableDataMigration", true);
-
-  console.log("✅ Migração ativada!");
-
-  // Notificar que precisa recarregar, mas não forçar
-  if (typeof window !== "undefined") {
-    // Disparar evento customizado para o painel reagir
-    window.dispatchEvent(new CustomEvent("migrationChanged"));
-  }
-};
-
-// Voltar para localStorage (rollback)
-export const disableSupabaseMigration = (): void => {
-  console.log("🔄 Voltando para localStorage...");
-
-  setFeatureFlag("useSupabaseAuth", false);
-  setFeatureFlag("useSupabasePatients", false);
-  setFeatureFlag("useSupabaseIndicators", false);
-  setFeatureFlag("useSupabaseProfiles", false);
-  setFeatureFlag("enableDataMigration", false);
-
-  console.log("✅ Rollback concluído!");
-
-  // Notificar mudança
-  if (typeof window !== "undefined") {
-    window.dispatchEvent(new CustomEvent("migrationChanged"));
-  }
-};
-
-// Status da migração
-export const getMigrationStatus = () => {
-  const flags = getFeatureFlags();
+export const getFeatureFlags = () => {
   return {
-    supabaseAvailable: isSupabaseConfigured(),
-    authMigrated: flags.useSupabaseAuth,
-    patientsMigrated: flags.useSupabasePatients,
-    indicatorsMigrated: flags.useSupabaseIndicators,
-    profilesMigrated: flags.useSupabaseProfiles,
-    migrationEnabled: flags.enableDataMigration,
-    overallProgress: [
-      flags.useSupabaseAuth,
-      flags.useSupabasePatients,
-      flags.useSupabaseIndicators,
-      flags.useSupabaseProfiles,
-    ].filter(Boolean).length,
+    useSupabaseAuth: true,
+    useSupabasePatients: true,
+    useSupabaseIndicators: true,
+    useSupabaseProfiles: true,
+    enableDataMigration: true,
   };
 };
 
-// Funções globais para console (desenvolvimento)
-if (import.meta.env.DEV && typeof window !== "undefined") {
-  (window as any).enableSupabaseMigration = enableSupabaseMigration;
-  (window as any).disableSupabaseMigration = disableSupabaseMigration;
-  (window as any).getMigrationStatus = getMigrationStatus;
-  (window as any).setFeatureFlag = setFeatureFlag;
+export const getMigrationStatus = () => {
+  return {
+    supabaseAvailable: isSupabaseConfigured(),
+    authMigrated: true,
+    patientsMigrated: true,
+    indicatorsMigrated: true,
+    profilesMigrated: true,
+    migrationEnabled: true,
+    overallProgress: 4,
+  };
+};
 
-  console.log(`
-🔧 COMANDOS DE MIGRAÇÃO DISPONÍVEIS:
-- enableSupabaseMigration() - Ativar Supabase
-- disableSupabaseMigration() - Voltar para localStorage
-- getMigrationStatus() - Ver status da migração
-- setFeatureFlag('flagName', true/false) - Ativar flag específica
-  `);
-}
+// Funções obsoletas - mantidas para compatibilidade mas não fazem nada
+export const enableSupabaseMigration = (): void => {
+  console.log("✅ Sistema sempre usa Supabase - feature flags removidas");
+};
+
+export const disableSupabaseMigration = (): void => {
+  console.log(
+    "❌ Não é possível desabilitar Supabase - feature flags removidas",
+  );
+};
