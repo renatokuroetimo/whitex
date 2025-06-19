@@ -816,8 +816,40 @@ class PatientProfileAPI {
     patientId: string,
     doctorId: string,
   ): Promise<void> {
+    console.log("🗑️ stopSharingWithDoctor - Removendo compartilhamento:", {
+      patientId,
+      doctorId,
+    });
+
     await this.delay(300);
 
+    if (isFeatureEnabled("useSupabaseProfiles") && supabase) {
+      console.log("🚀 Usando Supabase para remover compartilhamento");
+
+      try {
+        // Deletar o compartilhamento do banco
+        const { error } = await supabase
+          .from("doctor_patient_sharing")
+          .delete()
+          .eq("patient_id", patientId)
+          .eq("doctor_id", doctorId);
+
+        if (error) {
+          console.error("❌ Erro ao deletar compartilhamento:", error);
+          throw new Error(`Erro ao remover compartilhamento: ${error.message}`);
+        }
+
+        console.log("✅ Compartilhamento removido com sucesso do banco");
+        return;
+      } catch (error) {
+        console.error("💥 Erro crítico ao remover compartilhamento:", error);
+        throw error;
+      }
+    } else {
+      console.log("⚠️ Supabase não ativo, usando localStorage");
+    }
+
+    // Fallback para localStorage
     const allShares = this.getStoredSharedData();
     const updatedShares = allShares.map((share) =>
       share.patientId === patientId && share.doctorId === doctorId
