@@ -303,7 +303,7 @@ class PatientAPI {
         },
       };
     } catch (error) {
-      console.error("��� ERRO CRÍTICO no getPatients:", error);
+      console.error("💥 ERRO CRÍTICO no getPatients:", error);
       return {
         patients: [],
         pagination: {
@@ -592,9 +592,42 @@ class PatientAPI {
 
         if (data.notes && data.notes.trim()) {
           try {
-            console.log("💾 Salvando observações na tabela dedicada...");
+            console.log("💾 Salvando observações - TESTANDO CONECTIVIDADE...");
 
-            // Verificar se já existe observação deste médico para este paciente
+            // PRIMEIRO: Testar se Supabase está funcionando
+            const { data: testData, error: testError } = await supabase
+              .from("users")
+              .select("id")
+              .limit(1);
+
+            if (testError) {
+              console.error("❌ SUPABASE NÃO ESTÁ FUNCIONANDO:", testError);
+              throw new Error(
+                `Erro de conectividade com banco de dados: ${testError.message}`,
+              );
+            }
+
+            console.log("✅ Supabase conectado, procedendo...");
+
+            // SEGUNDO: Verificar se a tabela existe testando uma consulta
+            const { data: tableTest, error: tableError } = await supabase
+              .from("patient_medical_observations")
+              .select("id")
+              .limit(1);
+
+            if (tableError) {
+              console.error(
+                "❌ TABELA NÃO EXISTE OU ERRO DE ACESSO:",
+                tableError,
+              );
+              throw new Error(
+                `Tabela de observações não encontrada. Execute o script SQL primeiro: ${tableError.message}`,
+              );
+            }
+
+            console.log("✅ Tabela patient_medical_observations existe");
+
+            // TERCEIRO: Verificar se já existe observação deste médico para este paciente
             const { data: existingObs, error: searchError } = await supabase
               .from("patient_medical_observations")
               .select("*")
