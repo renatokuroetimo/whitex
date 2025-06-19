@@ -68,23 +68,30 @@ class IndicatorAPI {
         throw new Error(`Erro ao buscar indicadores: ${error.message}`);
       }
 
+      // Get categories and subcategories to resolve names
+      const categories = await this.getCategories();
+      const subcategories = await this.getSubcategories();
+
       return (data || []).map(
-        (indicator: any): IndicatorWithDetails => ({
-          id: indicator.id || `temp_${Date.now()}`,
-          name: indicator.name || indicator.parameter || "Indicador",
-          categoryId: indicator.category_id || "cat1",
-          categoryName:
-            this.mapCategoryIdToName(indicator.category_id) || "Categoria",
-          subcategoryId: indicator.subcategory_id || "sub1",
-          subcategoryName:
-            this.mapSubcategoryIdToName(indicator.subcategory_id) ||
-            "Subcategoria",
-          parameter: indicator.parameter || indicator.name || "Parâmetro",
-          unitId: indicator.unit_id || "unit_un",
-          unitSymbol: indicator.unit_symbol || "un",
-          isMandatory: indicator.is_mandatory || false,
-          doctorId: indicator.doctor_id || "",
-          createdAt: indicator.created_at || new Date().toISOString(),
+        (indicator: any): IndicatorWithDetails => {
+          // Find actual category and subcategory names
+          const category = categories.find(cat => cat.id === indicator.category_id);
+          const subcategory = subcategories.find(sub => sub.id === indicator.subcategory_id);
+
+          return {
+            id: indicator.id || `temp_${Date.now()}`,
+            name: indicator.name || indicator.parameter || "Indicador",
+            categoryId: indicator.category_id || "cat1",
+            categoryName: category?.name || this.mapCategoryIdToName(indicator.category_id) || "Categoria",
+            subcategoryId: indicator.subcategory_id || "sub1",
+            subcategoryName: subcategory?.name || this.mapSubcategoryIdToName(indicator.subcategory_id) || "Subcategoria",
+            parameter: indicator.parameter || indicator.name || "Parâmetro",
+            unitId: indicator.unit_id || "unit_un",
+            unitSymbol: indicator.unit_symbol || "un",
+            isMandatory: indicator.is_mandatory || false,
+            doctorId: indicator.doctor_id || "",
+            createdAt: indicator.created_at || new Date().toISOString(),
+          };
         }),
       );
     } catch (error) {
@@ -125,7 +132,7 @@ class IndicatorAPI {
 
     // Buscar informações da unidade selecionada
     const units = await this.getUnits();
-    const selectedUnit = units.find((unit) => unit.id === data.unitOfMeasureId);
+    const selectedUnit = units.find(unit => unit.id === data.unitOfMeasureId);
 
     const newIndicator = {
       id: Date.now().toString(36) + Math.random().toString(36).substr(2),
@@ -159,10 +166,7 @@ class IndicatorAPI {
 
       if (error) {
         // Se for erro de coluna não encontrada, tentar com colunas mínimas
-        if (
-          error.message.includes("Could not find") ||
-          error.message.includes("column")
-        ) {
+        if (error.message.includes("Could not find") || error.message.includes("column")) {
           console.warn("⚠️ Tentando inserir indicador com colunas mínimas...");
 
           // Tentar inserir apenas com colunas que provavelmente existem
@@ -181,10 +185,7 @@ Erro original: ${error.message}
 Erro fallback: ${fallbackError.message}`);
           }
 
-          console.log(
-            "✅ Indicador criado com colunas mínimas:",
-            fallbackIndicator.id,
-          );
+          console.log("✅ Indicador criado com colunas mínimas:", fallbackIndicator.id);
 
           // Retornar dados básicos já que não temos todos os campos
           return {
@@ -433,10 +434,7 @@ Erro fallback: ${fallbackError.message}`);
   }
 
   // Criar nova subcategoria (método simplificado)
-  async createSubcategory(
-    name: string,
-    categoryId: string,
-  ): Promise<Subcategory> {
+  async createSubcategory(name: string, categoryId: string): Promise<Subcategory> {
     await this.delay(300);
 
     const newSubcategory: Subcategory = {
