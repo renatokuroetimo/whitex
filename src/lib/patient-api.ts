@@ -620,17 +620,23 @@ class PatientAPI {
       throw error;
     }
 
+    console.error("🔥 PASSO 6: Verificando se há observações para salvar...");
+    console.error("🔥 PASSO 6 - data.notes:", data.notes);
     // VALIDAÇÃO 5: Salvar observações (se houver)
     if (!data.notes || !data.notes.trim()) {
-      console.log("⚠️ Nenhuma observação para salvar");
+      console.error(
+        "🔥 PASSO 6A: Nenhuma observação para salvar, buscando paciente atual...",
+      );
       const currentPatient = await this.getPatientById(id);
       if (!currentPatient) {
+        console.error("❌ FALHA: Paciente não encontrado no getPatientById");
         throw new Error("Paciente não encontrado");
       }
+      console.error("🔥 PASSO 6A OK: Retornando paciente sem alterações");
       return currentPatient;
     }
 
-    console.log("💾 SALVANDO OBSERVAÇÕES MÉDICAS...");
+    console.error("🔥 PASSO 6B: Há observações para salvar, continuando...");
 
     // VALIDAÇÃO 6: Testar tabela de observações
     try {
@@ -837,7 +843,7 @@ class PatientAPI {
     patientId: string,
     diagnosis: Omit<Diagnosis, "id" | "patientId">,
   ): Promise<Diagnosis> {
-    console.log("🏥 addDiagnosis - Adicionando diagn��stico:", {
+    console.log("🏥 addDiagnosis - Adicionando diagnóstico:", {
       patientId,
       diagnosis,
     });
