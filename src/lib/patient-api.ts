@@ -90,7 +90,7 @@ class PatientAPI {
         );
       });
 
-      let allPatients: Patient[] = [testPatient]; // Sempre incluir teste
+      let allPatients: Patient[] = [];
 
       if (sharesError) {
         console.error("❌ ERRO ao buscar compartilhamentos:", sharesError);
@@ -98,7 +98,7 @@ class PatientAPI {
         console.log(`✅ ${shares.length} compartilhamentos encontrados`);
 
         // Adicionar um paciente real para cada compartilhamento
-        const realPatients = shares.map((share, index) => ({
+        allPatients = shares.map((share, index) => ({
           id: share.patient_id,
           name: `Paciente Real ${index + 1}`,
           age: 30 + index,
@@ -113,14 +113,9 @@ class PatientAPI {
           sharedId: share.id,
         }));
 
-        allPatients = [...realPatients, testPatient];
-        console.log(
-          `🎯 TOTAL: ${allPatients.length} pacientes (${realPatients.length} reais + 1 teste)`,
-        );
+        console.log(`🎯 TOTAL: ${allPatients.length} pacientes compartilhados`);
       } else {
-        console.log(
-          "📝 Nenhum compartilhamento encontrado - apenas paciente teste",
-        );
+        console.log("📝 Nenhum compartilhamento encontrado");
       }
 
       return {
@@ -134,14 +129,14 @@ class PatientAPI {
       };
     } catch (error) {
       console.error("💥 ERRO CRÍTICO:", error);
-      console.log("🔄 Retornando apenas paciente teste devido ao erro");
+      console.log("🔄 Retornando lista vazia devido ao erro");
 
       return {
-        patients: [testPatient],
+        patients: [],
         pagination: {
           currentPage: 1,
           totalPages: 1,
-          totalItems: 1,
+          totalItems: 0,
           itemsPerPage: 10,
         },
       };
