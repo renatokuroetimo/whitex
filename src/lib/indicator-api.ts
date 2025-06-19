@@ -146,6 +146,28 @@ class IndicatorAPI {
         .insert([newIndicator]);
 
       if (error) {
+        // Se for erro de coluna não encontrada, dar instruções claras
+        if (
+          error.message.includes("Could not find") ||
+          error.message.includes("column")
+        ) {
+          throw new Error(`❌ ERRO DE SCHEMA: A tabela 'indicators' não tem as colunas necessárias.
+
+SOLUÇÃO:
+1. Acesse Supabase Dashboard → SQL Editor
+2. Execute o script 'fix_all_database_errors.sql'
+3. Ou execute este comando:
+
+ALTER TABLE indicators ADD COLUMN IF NOT EXISTS category_id TEXT;
+ALTER TABLE indicators ADD COLUMN IF NOT EXISTS subcategory_id TEXT;
+ALTER TABLE indicators ADD COLUMN IF NOT EXISTS parameter TEXT;
+ALTER TABLE indicators ADD COLUMN IF NOT EXISTS unit_id TEXT;
+ALTER TABLE indicators ADD COLUMN IF NOT EXISTS unit_symbol TEXT DEFAULT 'un';
+ALTER TABLE indicators ADD COLUMN IF NOT EXISTS is_mandatory BOOLEAN DEFAULT false;
+ALTER TABLE indicators ADD COLUMN IF NOT EXISTS doctor_id TEXT;
+
+Erro original: ${error.message}`);
+        }
         throw new Error(`Erro ao criar indicador: ${error.message}`);
       }
 
