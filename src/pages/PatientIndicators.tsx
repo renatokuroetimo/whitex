@@ -209,6 +209,17 @@ const PatientIndicators = () => {
                   Ver Gráficos
                 </Button>
               )}
+              {isViewingOtherPatient && (
+                <Button
+                  onClick={() =>
+                    navigate(`/pacientes/${patientId}/adicionar-indicador`)
+                  }
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Adicionar indicador
+                </Button>
+              )}
               {!isViewingOtherPatient && (
                 <Button
                   onClick={handleAddIndicator}
