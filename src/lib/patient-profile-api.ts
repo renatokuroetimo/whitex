@@ -816,7 +816,7 @@ class PatientProfileAPI {
     patientId: string,
     doctorId: string,
   ): Promise<void> {
-    console.log("🗑️ stopSharingWithDoctor - Removendo compartilhamento:", {
+    console.log("���️ stopSharingWithDoctor - Removendo compartilhamento:", {
       patientId,
       doctorId,
     });
@@ -917,11 +917,53 @@ class PatientProfileAPI {
             }
 
             if (doctorUser) {
-              console.log(`🔍 DEBUG - Dados brutos do médico:`, doctorUser);
+              console.log(
+                `🔍 DEBUG - Dados brutos do médico no getSharedDoctors:`,
+                doctorUser,
+              );
+              console.log(`📧 Email do médico:`, doctorUser.email);
 
-              // Como não há coluna name, usar email como nome base
-              const doctorName = doctorUser.email?.split("@")[0] || "Médico";
-              console.log(`✅ Usando nome baseado no email: ${doctorName}`);
+              // Agora vou tentar buscar dados mais detalhados do médico
+              let doctorName = doctorUser.email?.split("@")[0] || "Médico";
+
+              // Tentar buscar nome real na tabela de dados pessoais do médico
+              try {
+                const { data: doctorPersonalData, error: doctorPersonalError } =
+                  await supabase
+                    .from("patient_personal_data")
+                    .select("full_name")
+                    .eq("user_id", share.doctor_id)
+                    .single();
+
+                console.log(
+                  `🔍 Tentativa de buscar dados pessoais do médico:`,
+                  doctorPersonalData,
+                );
+                console.log(
+                  `🔍 Erro na busca:`,
+                  doctorPersonalError?.message || "nenhum",
+                );
+
+                if (
+                  doctorPersonalData &&
+                  doctorPersonalData.full_name &&
+                  doctorPersonalData.full_name.trim()
+                ) {
+                  doctorName = doctorPersonalData.full_name.trim();
+                  console.log(
+                    `✅ ENCONTROU nome real do médico: "${doctorName}"`,
+                  );
+                } else {
+                  console.log(
+                    `⚠️ Sem dados pessoais para médico, usando email: "${doctorName}"`,
+                  );
+                }
+              } catch (error) {
+                console.log(
+                  `⚠️ Erro ao buscar dados pessoais do médico:`,
+                  error,
+                );
+              }
 
               doctors.push({
                 id: doctorUser.id,
@@ -934,7 +976,9 @@ class PatientProfileAPI {
                 createdAt: doctorUser.created_at || new Date().toISOString(),
               });
 
-              console.log(`✅ Médico final adicionado: ${doctorName}`);
+              console.log(
+                `✅ Médico final adicionado na lista: "${doctorName}"`,
+              );
             }
           } catch (error) {
             console.warn(
