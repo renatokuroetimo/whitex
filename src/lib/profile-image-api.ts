@@ -660,3 +660,77 @@ class ProfileImageAPI {
 }
 
 export const profileImageAPI = new ProfileImageAPI();
+
+// Expor funções de debug globalmente para fácil acesso no console
+declare global {
+  interface Window {
+    debugImages: () => Promise<void>;
+    migrateImages: () => Promise<any>;
+    checkImageAuth: () => Promise<any>;
+  }
+}
+
+// Expor funções de debug no window para uso no console
+if (typeof window !== "undefined") {
+  window.debugImages = async () => {
+    console.log("🔍 ===== DIAGNÓSTICO DE IMAGENS =====");
+
+    // 1. Configuração básica
+    console.log("1️⃣ CONFIGURAÇÃO:");
+    console.log("   - Supabase configurado:", !!supabase);
+    console.log(
+      "   - Feature flag ativo:",
+      isFeatureEnabled("useSupabaseIndicators"),
+    );
+
+    // 2. Verificar localStorage
+    const localImages = Object.keys(localStorage).filter((key) =>
+      key.startsWith("profile_image_"),
+    );
+    console.log("   - Imagens no localStorage:", localImages.length);
+    if (localImages.length > 0) {
+      console.log("   - Chaves:", localImages);
+    }
+
+    // 3. Verificar autenticação
+    try {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+      console.log("2️⃣ AUTENTICAÇÃO:");
+      console.log("   - Usuário autenticado:", !!user);
+      console.log("   - User ID:", user?.id);
+      console.log("   - Erro:", error?.message);
+
+      // 4. Verificar tabela Supabase
+      if (user) {
+        console.log("3️⃣ TABELA SUPABASE:");
+        try {
+          const { data, error: tableError } = await supabase
+            .from("profile_images")
+            .select("id, user_id, created_at")
+            .limit(5);
+
+          console.log("   - Registros encontrados:", data?.length || 0);
+          console.log("   - Dados:", data);
+          console.log("   - Erro:", tableError?.message);
+        } catch (e) {
+          console.log("   - Erro ao consultar tabela:", e);
+        }
+      }
+    } catch (e) {
+      console.log("   - Erro de autenticação:", e);
+    }
+
+    console.log("🔍 ===== FIM DIAGNÓSTICO =====");
+  };
+
+  window.migrateImages = async () => {
+    return await profileImageAPI.migrateLocalImagesToSupabase();
+  };
+
+  window.checkImageAuth = async () => {
+    return await profileImageAPI.checkAuthenticationStatus();
+  };
+}
