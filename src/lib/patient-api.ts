@@ -588,8 +588,8 @@ class PatientAPI {
       throw new Error("Falha crítica de conectividade com banco de dados");
     }
 
+    console.error("🔥 PASSO 5: Verificando permissões...");
     // VALIDAÇÃO 4: Verificar permissões
-    console.log("🔍 VERIFICANDO PERMISSÕES...");
     try {
       const { data: shareData, error: shareError } = await supabase
         .from("doctor_patient_sharing")
@@ -597,6 +597,12 @@ class PatientAPI {
         .eq("doctor_id", currentUser.id)
         .eq("patient_id", id)
         .single();
+
+      console.error("🔥 PASSO 5 - Resultado da consulta:", {
+        shareData,
+        shareError: shareError?.message || "nenhum",
+        code: shareError?.code,
+      });
 
       if (shareError && shareError.code !== "PGRST116") {
         console.error("❌ FALHA AO VERIFICAR PERMISSÕES:", shareError);
@@ -608,7 +614,7 @@ class PatientAPI {
         throw new Error("Você não tem permissão para editar este paciente");
       }
 
-      console.log("✅ Permissões OK - paciente compartilhado");
+      console.error("🔥 PASSO 5 OK: Permissões OK - paciente compartilhado");
     } catch (error) {
       console.error("❌ FALHA NA VERIFICAÇÃO DE PERMISSÕES:", error);
       throw error;
@@ -831,7 +837,7 @@ class PatientAPI {
     patientId: string,
     diagnosis: Omit<Diagnosis, "id" | "patientId">,
   ): Promise<Diagnosis> {
-    console.log("🏥 addDiagnosis - Adicionando diagnóstico:", {
+    console.log("🏥 addDiagnosis - Adicionando diagn��stico:", {
       patientId,
       diagnosis,
     });
