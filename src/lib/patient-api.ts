@@ -128,10 +128,13 @@ class PatientAPI {
     await this.delay(300);
 
     if (!supabase) {
-      throw new Error("❌ Supabase não está configurado");
+      console.error("❌ Supabase não está configurado");
+      return null;
     }
 
     try {
+      console.log(`🔍 Buscando paciente ID: ${id}`);
+
       const { data, error } = await supabase
         .from("patients")
         .select("*")
@@ -139,11 +142,23 @@ class PatientAPI {
         .single();
 
       if (error) {
+        console.error("❌ Erro ao buscar paciente:", error);
         if (error.code === "PGRST116") {
+          console.log("ℹ️ Paciente não encontrado");
           return null; // Não encontrado
+        }
+        // For network errors, return null instead of throwing
+        if (
+          error.message.includes("Failed to fetch") ||
+          error.message.includes("NetworkError")
+        ) {
+          console.error("🌐 Erro de rede ao buscar paciente, retornando null");
+          return null;
         }
         throw new Error(`Erro ao buscar paciente: ${error.message}`);
       }
+
+      console.log("✅ Paciente encontrado:", data?.name);
 
       return {
         id: data.id,
@@ -306,7 +321,7 @@ class PatientAPI {
 
       console.log("✅ Paciente deletado do Supabase:", id);
     } catch (error) {
-      console.error("�� Erro ao deletar paciente:", error);
+      console.error("💥 Erro ao deletar paciente:", error);
       throw error;
     }
   }
