@@ -33,7 +33,7 @@ class ProfileImageAPI {
   }> {
     try {
       // Verificar se há usuário logado no sistema da aplicação
-      const currentUserStr = localStorage.getItem("medical_app_current_user");
+      const currentUserStr = localStorage.getItem('medical_app_current_user');
 
       if (!currentUserStr) {
         return {
@@ -62,10 +62,7 @@ class ProfileImageAPI {
       return {
         isAuthenticated: false,
         userId: null,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Erro ao verificar autenticação",
+        error: error instanceof Error ? error.message : "Erro ao verificar autenticação"
       };
     }
   }
@@ -74,14 +71,8 @@ class ProfileImageAPI {
   async saveProfileImage(userId: string, imageData: string): Promise<void> {
     await this.delay(300);
 
-    console.log(
-      "💾 Iniciando salvamento de imagem de perfil para usuário:",
-      userId,
-    );
-    console.log(
-      "🔧 Feature useSupabaseIndicators:",
-      isFeatureEnabled("useSupabaseIndicators"),
-    );
+    console.log("💾 Iniciando salvamento de imagem de perfil para usuário:", userId);
+    console.log("🔧 Feature useSupabaseIndicators:", isFeatureEnabled("useSupabaseIndicators"));
     console.log("🔗 Supabase client disponível:", !!supabase);
 
     if (isFeatureEnabled("useSupabaseIndicators") && supabase) {
@@ -90,12 +81,8 @@ class ProfileImageAPI {
       // Verificar se a tabela existe na primeira vez
       const tableExists = await this.checkTableExists();
       if (!tableExists) {
-        console.warn(
-          "⚠️ Tabela profile_images não encontrada. Executando fallback para localStorage.",
-        );
-        console.info(
-          "📋 Para habilitar o Supabase, execute o script: create_profile_images_table.sql",
-        );
+        console.warn("⚠️ Tabela profile_images não encontrada. Executando fallback para localStorage.");
+        console.info("📋 Para habilitar o Supabase, execute o script: create_profile_images_table.sql");
         localStorage.setItem(`${this.STORAGE_KEY_PREFIX}${userId}`, imageData);
         return;
       }
@@ -103,24 +90,15 @@ class ProfileImageAPI {
       // Verificar se o usuário está autenticado na aplicação
       const authStatus = await this.checkAuthenticationStatus();
       if (!authStatus.isAuthenticated) {
-        console.warn(
-          "⚠️ Usuário não autenticado na aplicação. Usando localStorage como fallback.",
-        );
-        console.info(
-          "🔑 Para usar o Supabase, faça login na aplicação primeiro.",
-        );
+        console.warn("⚠️ Usuário não autenticado na aplicação. Usando localStorage como fallback.");
+        console.info("🔑 Para usar o Supabase, faça login na aplicação primeiro.");
         localStorage.setItem(`${this.STORAGE_KEY_PREFIX}${userId}`, imageData);
         return;
       }
 
       // Verificar se o userId corresponde ao usuário autenticado na aplicação
       if (authStatus.userId !== userId) {
-        console.warn(
-          "⚠️ User ID mismatch - App User:",
-          authStatus.userId,
-          "Requested User:",
-          userId,
-        );
+        console.warn("⚠️ User ID mismatch - App User:", authStatus.userId, "Requested User:", userId);
         console.info("📝 Salvando no localStorage devido ao mismatch de IDs");
         localStorage.setItem(`${this.STORAGE_KEY_PREFIX}${userId}`, imageData);
         return;
@@ -130,7 +108,7 @@ class ProfileImageAPI {
         // Calcular tamanho da imagem em bytes (aproximado)
         // Math.floor garante que o resultado seja um INTEGER (não decimal)
         const base64Size = Math.floor(
-          imageData.length * (3 / 4) - (imageData.match(/=/g) || []).length,
+          imageData.length * (3 / 4) - (imageData.match(/=/g) || []).length
         );
 
         // Tentar fazer upsert (insert ou update)
@@ -149,44 +127,23 @@ class ProfileImageAPI {
 
         if (error) {
           if (error.code === "PGRST204") {
-            console.warn(
-              "⚠️ Tabela profile_images não existe no Supabase. Execute o script create_profile_images_table.sql",
-            );
-            console.log(
-              "📁 Salvando imagem apenas no localStorage como fallback",
-            );
-            localStorage.setItem(
-              `${this.STORAGE_KEY_PREFIX}${userId}`,
-              imageData,
-            );
+            console.warn("⚠️ Tabela profile_images não existe no Supabase. Execute o script create_profile_images_table.sql");
+            console.log("📁 Salvando imagem apenas no localStorage como fallback");
+            localStorage.setItem(`${this.STORAGE_KEY_PREFIX}${userId}`, imageData);
             return;
           } else if (error.code === "42501") {
-            console.warn(
-              "⚠️ Violação de política RLS - usuário não autorizado a salvar esta imagem",
-            );
-            console.info(
-              "🔑 Isso pode indicar que o usuário não está autenticado ou há mismatch de IDs",
-            );
+            console.warn("⚠️ Violação de política RLS - usuário não autorizado a salvar esta imagem");
+            console.info("🔑 Isso pode indicar que o usuário não está autenticado ou há mismatch de IDs");
             console.log("📁 Salvando imagem no localStorage como fallback");
-            localStorage.setItem(
-              `${this.STORAGE_KEY_PREFIX}${userId}`,
-              imageData,
-            );
+            localStorage.setItem(`${this.STORAGE_KEY_PREFIX}${userId}`, imageData);
             return;
           } else {
-            console.error(
-              "❌ Erro ao salvar imagem no Supabase:",
-              JSON.stringify(
-                {
-                  message: error.message,
-                  details: error.details,
-                  hint: error.hint,
-                  code: error.code,
-                },
-                null,
-                2,
-              ),
-            );
+            console.error("❌ Erro ao salvar imagem no Supabase:", JSON.stringify({
+              message: error.message,
+              details: error.details,
+              hint: error.hint,
+              code: error.code
+            }, null, 2));
             throw error;
           }
         }
@@ -196,24 +153,11 @@ class ProfileImageAPI {
         // Também salvar no localStorage como cache local
         localStorage.setItem(`${this.STORAGE_KEY_PREFIX}${userId}`, imageData);
       } catch (supabaseError) {
-        console.error(
-          "💥 Erro no Supabase saveProfileImage:",
-          JSON.stringify(
-            {
-              message:
-                supabaseError instanceof Error
-                  ? supabaseError.message
-                  : "Unknown error",
-              stack:
-                supabaseError instanceof Error
-                  ? supabaseError.stack
-                  : undefined,
-              error: supabaseError,
-            },
-            null,
-            2,
-          ),
-        );
+        console.error("💥 Erro no Supabase saveProfileImage:", JSON.stringify({
+          message: supabaseError instanceof Error ? supabaseError.message : 'Unknown error',
+          stack: supabaseError instanceof Error ? supabaseError.stack : undefined,
+          error: supabaseError
+        }, null, 2));
         // Fallback para localStorage
         localStorage.setItem(`${this.STORAGE_KEY_PREFIX}${userId}`, imageData);
       }
@@ -242,28 +186,17 @@ class ProfileImageAPI {
           // PGRST204 = tabela não existe
           // 42501 = violação de política RLS
           if (error.code === "PGRST204") {
-            console.warn(
-              "⚠️ Tabela profile_images não existe no Supabase. Execute o script create_profile_images_table.sql",
-            );
+            console.warn("⚠️ Tabela profile_images não existe no Supabase. Execute o script create_profile_images_table.sql");
           } else if (error.code === "42501") {
-            console.warn(
-              "⚠️ Violação de política RLS ao carregar imagem - usuário não autorizado",
-            );
+            console.warn("⚠️ Violação de política RLS ao carregar imagem - usuário não autorizado");
             console.info("🔑 Usando localStorage como fallback");
           } else {
-            console.error(
-              "❌ Erro ao carregar imagem do Supabase:",
-              JSON.stringify(
-                {
-                  message: error.message,
-                  details: error.details,
-                  hint: error.hint,
-                  code: error.code,
-                },
-                null,
-                2,
-              ),
-            );
+            console.error("❌ Erro ao carregar imagem do Supabase:", JSON.stringify({
+              message: error.message,
+              details: error.details,
+              hint: error.hint,
+              code: error.code
+            }, null, 2));
           }
           // Se der erro, tentar localStorage como fallback
           return localStorage.getItem(`${this.STORAGE_KEY_PREFIX}${userId}`);
@@ -282,24 +215,11 @@ class ProfileImageAPI {
         // Se não encontrou no Supabase, tentar localStorage
         return localStorage.getItem(`${this.STORAGE_KEY_PREFIX}${userId}`);
       } catch (supabaseError) {
-        console.error(
-          "💥 Erro no Supabase getProfileImage:",
-          JSON.stringify(
-            {
-              message:
-                supabaseError instanceof Error
-                  ? supabaseError.message
-                  : "Unknown error",
-              stack:
-                supabaseError instanceof Error
-                  ? supabaseError.stack
-                  : undefined,
-              error: supabaseError,
-            },
-            null,
-            2,
-          ),
-        );
+        console.error("💥 Erro no Supabase getProfileImage:", JSON.stringify({
+          message: supabaseError instanceof Error ? supabaseError.message : 'Unknown error',
+          stack: supabaseError instanceof Error ? supabaseError.stack : undefined,
+          error: supabaseError
+        }, null, 2));
         // Fallback para localStorage
         return localStorage.getItem(`${this.STORAGE_KEY_PREFIX}${userId}`);
       }
@@ -323,19 +243,12 @@ class ProfileImageAPI {
           .eq("user_id", userId);
 
         if (error) {
-          console.error(
-            "❌ Erro ao remover imagem do Supabase:",
-            JSON.stringify(
-              {
-                message: error.message,
-                details: error.details,
-                hint: error.hint,
-                code: error.code,
-              },
-              null,
-              2,
-            ),
-          );
+          console.error("❌ Erro ao remover imagem do Supabase:", JSON.stringify({
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code
+          }, null, 2));
         } else {
           console.log("✅ Imagem removida do Supabase");
         }
@@ -343,24 +256,11 @@ class ProfileImageAPI {
         // Remover do localStorage também
         localStorage.removeItem(`${this.STORAGE_KEY_PREFIX}${userId}`);
       } catch (supabaseError) {
-        console.error(
-          "💥 Erro no Supabase removeProfileImage:",
-          JSON.stringify(
-            {
-              message:
-                supabaseError instanceof Error
-                  ? supabaseError.message
-                  : "Unknown error",
-              stack:
-                supabaseError instanceof Error
-                  ? supabaseError.stack
-                  : undefined,
-              error: supabaseError,
-            },
-            null,
-            2,
-          ),
-        );
+        console.error("💥 Erro no Supabase removeProfileImage:", JSON.stringify({
+          message: supabaseError instanceof Error ? supabaseError.message : 'Unknown error',
+          stack: supabaseError instanceof Error ? supabaseError.stack : undefined,
+          error: supabaseError
+        }, null, 2));
         // Mesmo com erro, remover do localStorage
         localStorage.removeItem(`${this.STORAGE_KEY_PREFIX}${userId}`);
       }
@@ -400,12 +300,8 @@ class ProfileImageAPI {
     }
 
     console.warn("❌ Tabela profile_images não existe.");
-    console.info(
-      "📋 Para criar a tabela, execute o SQL do arquivo: create_profile_images_table.sql",
-    );
-    console.info(
-      "💡 Ou acesse o Supabase Dashboard > SQL Editor e execute o script",
-    );
+    console.info("📋 Para criar a tabela, execute o SQL do arquivo: create_profile_images_table.sql");
+    console.info("💡 Ou acesse o Supabase Dashboard > SQL Editor e execute o script");
     return false;
   }
 
@@ -437,10 +333,7 @@ class ProfileImageAPI {
     // 1. Verificar configuração básica
     console.log("1️⃣ CONFIGURAÇÃO BÁSICA:");
     console.log("   - Supabase configurado:", !!supabase);
-    console.log(
-      "   - Feature flag ativo:",
-      isFeatureEnabled("useSupabaseIndicators"),
-    );
+    console.log("   - Feature flag ativo:", isFeatureEnabled("useSupabaseIndicators"));
 
     // 2. Verificar autenticação
     console.log("\n2️⃣ AUTENTICAÇÃO:");
@@ -469,8 +362,8 @@ class ProfileImageAPI {
 
     // 4. Verificar localStorage
     console.log("\n4️⃣ LOCALSTORAGE:");
-    const localStorageKeys = Object.keys(localStorage).filter((key) =>
-      key.startsWith(this.STORAGE_KEY_PREFIX),
+    const localStorageKeys = Object.keys(localStorage).filter(key =>
+      key.startsWith(this.STORAGE_KEY_PREFIX)
     );
     console.log("   - Imagens no localStorage:", localStorageKeys.length);
     console.log("   - Chaves encontradas:", localStorageKeys);
@@ -480,9 +373,7 @@ class ProfileImageAPI {
       console.log(`\n5️⃣ TESTE COM USUÁRIO ${userId}:`);
 
       // Verificar localStorage
-      const localImage = localStorage.getItem(
-        `${this.STORAGE_KEY_PREFIX}${userId}`,
-      );
+      const localImage = localStorage.getItem(`${this.STORAGE_KEY_PREFIX}${userId}`);
       console.log("   - Imagem no localStorage:", localImage ? "SIM" : "NÃO");
 
       // Tentar carregar do Supabase
@@ -510,19 +401,11 @@ class ProfileImageAPI {
     if (!authStatus.isAuthenticated) {
       console.log("   ❌ Usuário precisa estar logado no Supabase");
     }
-    if (
-      localStorageKeys.length > 0 &&
-      tableExists &&
-      authStatus.isAuthenticated
-    ) {
-      console.log(
-        "   💡 Execute: profileImageAPI.migrateLocalImagesToSupabase()",
-      );
+    if (localStorageKeys.length > 0 && tableExists && authStatus.isAuthenticated) {
+      console.log("   💡 Execute: profileImageAPI.migrateLocalImagesToSupabase()");
     }
     if (!isFeatureEnabled("useSupabaseIndicators")) {
-      console.log(
-        "   ❌ Feature flag 'useSupabaseIndicators' está desabilitada",
-      );
+      console.log("   ❌ Feature flag 'useSupabaseIndicators' está desabilitada");
     }
 
     console.log("\n🔍 ===== FIM DIAGNÓSTICO =====");
@@ -536,17 +419,10 @@ class ProfileImageAPI {
     errors: number;
     details: string[];
   }> {
-    const result = {
-      success: 0,
-      skipped: 0,
-      errors: 0,
-      details: [] as string[],
-    };
+    const result = { success: 0, skipped: 0, errors: 0, details: [] as string[] };
 
     if (!isFeatureEnabled("useSupabaseIndicators") || !supabase) {
-      result.details.push(
-        "❌ Supabase não configurado ou feature flag desabilitada",
-      );
+      result.details.push("❌ Supabase não configurado ou feature flag desabilitada");
       return result;
     }
 
@@ -572,9 +448,7 @@ class ProfileImageAPI {
         key.startsWith(this.STORAGE_KEY_PREFIX),
       );
 
-      result.details.push(
-        `📋 Encontradas ${profileImageKeys.length} imagens no localStorage`,
-      );
+      result.details.push(`📋 Encontradas ${profileImageKeys.length} imagens no localStorage`);
 
       for (const key of profileImageKeys) {
         const userId = key.replace(this.STORAGE_KEY_PREFIX, "");
@@ -591,32 +465,26 @@ class ProfileImageAPI {
 
             if (checkError && checkError.code !== "PGRST116") {
               result.errors++;
-              result.details.push(
-                `❌ Erro ao verificar usuário ${userId}: ${checkError.message}`,
-              );
+              result.details.push(`❌ Erro ao verificar usuário ${userId}: ${checkError.message}`);
               continue;
             }
 
             if (existing) {
               result.skipped++;
-              result.details.push(
-                `⏭️ Usuário ${userId} já tem imagem no Supabase`,
-              );
+              result.details.push(`⏭️ Usuário ${userId} já tem imagem no Supabase`);
               continue;
             }
 
             // Só migrar se o usuário atual for o dono da imagem
             if (userId !== authStatus.userId) {
               result.skipped++;
-              result.details.push(
-                `⏭️ Pulando usuário ${userId} (não é o usuário atual)`,
-              );
+              result.details.push(`⏭️ Pulando usuário ${userId} (não é o usuário atual)`);
               continue;
             }
 
             // Migrar usando insert direto para evitar loops
             const base64Size = Math.floor(
-              imageData.length * (3 / 4) - (imageData.match(/=/g) || []).length,
+              imageData.length * (3 / 4) - (imageData.match(/=/g) || []).length
             );
 
             const { error: insertError } = await supabase
@@ -630,9 +498,7 @@ class ProfileImageAPI {
 
             if (insertError) {
               result.errors++;
-              result.details.push(
-                `❌ Erro ao migrar usuário ${userId}: ${insertError.message}`,
-              );
+              result.details.push(`❌ Erro ao migrar usuário ${userId}: ${insertError.message}`);
             } else {
               result.success++;
               result.details.push(`✅ Imagem migrada para usuário ${userId}`);
@@ -640,7 +506,7 @@ class ProfileImageAPI {
           } catch (migrationError) {
             result.errors++;
             result.details.push(
-              `❌ Erro ao migrar usuário ${userId}: ${migrationError instanceof Error ? migrationError.message : "Unknown error"}`,
+              `❌ Erro ao migrar usuário ${userId}: ${migrationError instanceof Error ? migrationError.message : 'Unknown error'}`
             );
           }
         } else {
@@ -649,15 +515,11 @@ class ProfileImageAPI {
         }
       }
 
-      result.details.push(
-        `🎯 Migração concluída: ${result.success} sucesso, ${result.skipped} puladas, ${result.errors} erros`,
-      );
+      result.details.push(`🎯 Migração concluída: ${result.success} sucesso, ${result.skipped} puladas, ${result.errors} erros`);
       console.log("✅ Migração de imagens concluída:", result);
     } catch (error) {
       result.errors++;
-      result.details.push(
-        `💥 Erro geral na migração: ${error instanceof Error ? error.message : "Unknown error"}`,
-      );
+      result.details.push(`💥 Erro geral na migração: ${error instanceof Error ? error.message : 'Unknown error'}`);
       console.error("💥 Erro na migração de imagens:", error);
     }
 
@@ -679,7 +541,7 @@ declare global {
 }
 
 // Expor funções de debug no window para uso no console
-if (typeof window !== "undefined") {
+if (typeof window !== 'undefined') {
   // Função de diagnóstico completo
   window.debugImages = async () => {
     console.log("🔍 ===== DIAGNÓSTICO DE IMAGENS =====");
@@ -687,20 +549,17 @@ if (typeof window !== "undefined") {
     // 1. Configuração básica
     console.log("1️⃣ CONFIGURAÇÃO:");
     console.log("   - Supabase configurado:", !!supabase);
-    console.log(
-      "   - Feature flag ativo:",
-      isFeatureEnabled("useSupabaseIndicators"),
-    );
+    console.log("   - Feature flag ativo:", isFeatureEnabled("useSupabaseIndicators"));
 
     // 2. Verificar localStorage
-    const localImages = Object.keys(localStorage).filter((key) =>
-      key.startsWith("profile_image_"),
+    const localImages = Object.keys(localStorage).filter(key =>
+      key.startsWith('profile_image_')
     );
     console.log("   - Imagens no localStorage:", localImages.length);
     if (localImages.length > 0) {
       console.log("   - Chaves:", localImages);
       // Mostrar tamanho das primeiras imagens
-      localImages.slice(0, 3).forEach((key) => {
+      localImages.slice(0, 3).forEach(key => {
         const data = localStorage.getItem(key);
         const size = data ? Math.round(data.length / 1024) : 0;
         console.log(`   - ${key}: ${size}KB`);
@@ -709,23 +568,16 @@ if (typeof window !== "undefined") {
 
     // 3. Verificar autenticação
     try {
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser();
+      const authStatus = await this.checkAuthenticationStatus();
       console.log("2️⃣ AUTENTICAÇÃO:");
-      console.log("   - Usuário autenticado:", !!user);
-      console.log("   - User ID:", user?.id);
-      console.log("   - Email:", user?.email);
-      console.log("   - Erro:", error?.message);
-
-      // 4. Verificar tabela Supabase
-      if (user) {
+      console.log("   - Usuário autenticado:", authStatus.isAuthenticated);
+      console.log("   - User ID:", authStatus.userId);
+      console.log("   - Erro:", authStatus.error);
         console.log("3️⃣ TABELA SUPABASE:");
         try {
           const { data, error: tableError } = await supabase
-            .from("profile_images")
-            .select("id, user_id, created_at, file_size")
+            .from('profile_images')
+            .select('id, user_id, created_at, file_size')
             .limit(5);
 
           console.log("   - Registros encontrados:", data?.length || 0);
@@ -734,11 +586,8 @@ if (typeof window !== "undefined") {
 
           // Verificar se há imagem para o usuário atual
           if (data && data.length > 0) {
-            const userImage = data.find((img) => img.user_id === user.id);
-            console.log(
-              "   - Imagem do usuário atual:",
-              userImage ? "SIM" : "NÃO",
-            );
+            const userImage = data.find(img => img.user_id === user.id);
+            console.log("   - Imagem do usuário atual:", userImage ? "SIM" : "NÃO");
           }
         } catch (e) {
           console.log("   - Erro ao consultar tabela:", e);
@@ -750,9 +599,7 @@ if (typeof window !== "undefined") {
 
     console.log("\n4️⃣ RECOMENDAÇÕES:");
     if (localImages.length > 0) {
-      console.log(
-        "   💡 Execute: migrateImages() para migrar imagens para Supabase",
-      );
+      console.log("   💡 Execute: migrateImages() para migrar imagens para Supabase");
     }
 
     console.log("🔍 ===== FIM DIAGNÓSTICO =====");
@@ -794,8 +641,7 @@ if (typeof window !== "undefined") {
       }
 
       // Criar uma imagem de teste pequena (1x1 pixel PNG)
-      const testImage =
-        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+      const testImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
 
       await profileImageAPI.saveProfileImage(authStatus.userId!, testImage);
       console.log("✅ Teste de salvamento concluído");
@@ -811,8 +657,8 @@ if (typeof window !== "undefined") {
     console.log("🔥 MIGRAÇÃO FORÇADA INICIADA...");
 
     // Buscar imagens no localStorage
-    const localImages = Object.keys(localStorage).filter((key) =>
-      key.startsWith("profile_image_"),
+    const localImages = Object.keys(localStorage).filter(key =>
+      key.startsWith('profile_image_')
     );
 
     if (localImages.length === 0) {
@@ -827,7 +673,7 @@ if (typeof window !== "undefined") {
     const details = [];
 
     // Obter o usuário atual do localStorage da aplicação
-    const currentUserStr = localStorage.getItem("medical_app_current_user");
+    const currentUserStr = localStorage.getItem('medical_app_current_user');
     if (!currentUserStr) {
       console.log("❌ Usuário atual não encontrado no localStorage");
       return { success: 0, errors: 1, message: "Usuário não encontrado" };
@@ -837,10 +683,10 @@ if (typeof window !== "undefined") {
     console.log("👤 Usuário atual:", currentUser.id, currentUser.email);
 
     for (const key of localImages) {
-      const userId = key.replace("profile_image_", "");
+      const userId = key.replace('profile_image_', '');
       const imageData = localStorage.getItem(key);
 
-      if (!imageData || !imageData.startsWith("data:")) {
+      if (!imageData || !imageData.startsWith('data:')) {
         console.log(`⏭️ Pulando ${userId} - dados inválidos`);
         continue;
       }
@@ -848,40 +694,36 @@ if (typeof window !== "undefined") {
       try {
         // Calcular tamanho
         const base64Size = Math.floor(
-          imageData.length * (3 / 4) - (imageData.match(/=/g) || []).length,
+          imageData.length * (3 / 4) - (imageData.match(/=/g) || []).length
         );
 
         // Detectar MIME type
-        let mimeType = "image/jpeg";
-        if (imageData.startsWith("data:image/png")) mimeType = "image/png";
-        else if (imageData.startsWith("data:image/gif")) mimeType = "image/gif";
-        else if (imageData.startsWith("data:image/webp"))
-          mimeType = "image/webp";
+        let mimeType = 'image/jpeg';
+        if (imageData.startsWith('data:image/png')) mimeType = 'image/png';
+        else if (imageData.startsWith('data:image/gif')) mimeType = 'image/gif';
+        else if (imageData.startsWith('data:image/webp')) mimeType = 'image/webp';
 
         // Inserir diretamente sem verificação de autenticação RLS
-        const { error } = await supabase.from("profile_images").upsert(
-          {
+        const { error } = await supabase
+          .from('profile_images')
+          .upsert({
             user_id: userId,
             image_data: imageData,
             mime_type: mimeType,
             file_size: base64Size,
             created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          },
-          {
-            onConflict: "user_id",
-          },
-        );
+            updated_at: new Date().toISOString()
+          }, {
+            onConflict: 'user_id'
+          });
 
         if (error) {
           console.log(`❌ Erro ao migrar ${userId}:`, error.message);
           details.push(`❌ ${userId}: ${error.message}`);
           errors++;
         } else {
-          console.log(
-            `✅ Migrado: ${userId} (${Math.round(base64Size / 1024)}KB)`,
-          );
-          details.push(`✅ ${userId}: ${Math.round(base64Size / 1024)}KB`);
+          console.log(`✅ Migrado: ${userId} (${Math.round(base64Size/1024)}KB)`);
+          details.push(`✅ ${userId}: ${Math.round(base64Size/1024)}KB`);
           success++;
         }
       } catch (error) {
@@ -896,7 +738,7 @@ if (typeof window !== "undefined") {
       errors,
       total: localImages.length,
       details,
-      message: `Migração concluída: ${success} sucessos, ${errors} erros`,
+      message: `Migração concluída: ${success} sucessos, ${errors} erros`
     };
 
     console.log("🎯 RESULTADO DA MIGRAÇÃO FORÇADA:", result);
