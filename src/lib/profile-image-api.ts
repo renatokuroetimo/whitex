@@ -45,6 +45,33 @@ class ProfileImageAPI {
         return;
       }
 
+      // Verificar se o usuário está autenticado no Supabase
+      const {
+        data: { user: supabaseUser },
+        error: authError,
+      } = await supabase.auth.getUser();
+      if (authError || !supabaseUser) {
+        console.warn(
+          "⚠️ Usuário não autenticado no Supabase. Usando localStorage como fallback.",
+        );
+        console.info("🔑 Para usar o Supabase, faça login primeiro.");
+        localStorage.setItem(`${this.STORAGE_KEY_PREFIX}${userId}`, imageData);
+        return;
+      }
+
+      // Verificar se o userId corresponde ao usuário autenticado
+      if (supabaseUser.id !== userId) {
+        console.warn(
+          "⚠️ User ID mismatch - Supabase User:",
+          supabaseUser.id,
+          "Requested User:",
+          userId,
+        );
+        console.info("📝 Salvando no localStorage devido ao mismatch de IDs");
+        localStorage.setItem(`${this.STORAGE_KEY_PREFIX}${userId}`, imageData);
+        return;
+      }
+
       try {
         // Calcular tamanho da imagem em bytes (aproximado)
         // Math.floor garante que o resultado seja um INTEGER (não decimal)
