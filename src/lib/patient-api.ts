@@ -553,7 +553,101 @@ class PatientAPI {
     patientId: string,
     diagnosis: Omit<Diagnosis, "id" | "patientId">,
   ): Promise<Diagnosis> {
-    throw new Error("Método não implementado para teste");
+    console.log("🏥 addDiagnosis - Adicionando diagnóstico:", {
+      patientId,
+      diagnosis,
+    });
+
+    await this.delay(300);
+
+    // Verificar se usuário está logado (médico)
+    const currentUserStr = localStorage.getItem("medical_app_current_user");
+    if (!currentUserStr) {
+      throw new Error("❌ Usuário não autenticado");
+    }
+
+    const currentUser = JSON.parse(currentUserStr);
+    console.log("👤 Médico adicionando diagnóstico:", {
+      doctor_id: currentUser.id,
+      patient_id: patientId,
+    });
+
+    if (!supabase) {
+      throw new Error("❌ Supabase não está configurado");
+    }
+
+    try {
+      // 1. VERIFICAR SE O PACIENTE ESTÁ COMPARTILHADO COM ESTE MÉDICO
+      const { data: shareData, error: shareError } = await supabase
+        .from("doctor_patient_sharing")
+        .select("*")
+        .eq("doctor_id", currentUser.id)
+        .eq("patient_id", patientId)
+        .single();
+
+      console.log("📊 VERIFICAÇÃO DE COMPARTILHAMENTO:", {
+        compartilhado: !!shareData,
+        erro: shareError?.message || "nenhum",
+        dados: shareData,
+      });
+
+      if (shareError && shareError.code !== "PGRST116") {
+        console.error("❌ Erro ao verificar compartilhamento:", shareError);
+        throw new Error("Erro ao verificar permissões de acesso ao paciente");
+      }
+
+      if (!shareData) {
+        console.log("⚠️ Paciente não está compartilhado com este médico");
+        throw new Error(
+          "Você não tem permissão para adicionar diagnósticos a este paciente",
+        );
+      }
+
+      // 2. CRIAR O DIAGNÓSTICO
+      const newDiagnosis: Diagnosis = {
+        id: this.generateId(),
+        patientId: patientId,
+        date: diagnosis.date,
+        diagnosis: diagnosis.diagnosis,
+        code: diagnosis.code,
+        status: diagnosis.status || diagnosis.diagnosis, // Fallback para compatibilidade
+      };
+
+      console.log("📝 Diagnóstico que será salvo:", newDiagnosis);
+
+      // 3. SALVAR NO BANCO SUPABASE (tabela patient_diagnoses)
+      const { data: savedDiagnosis, error: saveError } = await supabase
+        .from("patient_diagnoses")
+        .insert([
+          {
+            id: newDiagnosis.id,
+            patient_id: newDiagnosis.patientId,
+            date: newDiagnosis.date,
+            status: newDiagnosis.status,
+            code: newDiagnosis.code,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          },
+        ])
+        .select()
+        .single();
+
+      console.log("📊 Resultado do salvamento no Supabase:", {
+        dados: savedDiagnosis,
+        erro: saveError?.message || "nenhum",
+      });
+
+      if (saveError) {
+        console.error("❌ Erro ao salvar diagnóstico:", saveError);
+        throw new Error(`Erro ao salvar diagnóstico: ${saveError.message}`);
+      }
+
+      console.log("✅ Diagnóstico salvo com sucesso!");
+      return newDiagnosis;
+    } catch (error) {
+      console.error("💥 Erro crítico ao adicionar diagnóstico:", error);
+      throw error;
+    }
   }
 
   async updateDiagnosis(
