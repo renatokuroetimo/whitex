@@ -402,18 +402,27 @@ const PatientProfile = () => {
   const handleRemoveDoctor = async (doctorId: string) => {
     if (!user?.id) return;
 
+    console.log("🗑️ Removendo compartilhamento com médico:", doctorId);
+
     try {
       await patientProfileAPI.stopSharingWithDoctor(user.id, doctorId);
+
+      // Atualizar lista local
       setSharedDoctors((prev) => prev.filter((d) => d.id !== doctorId));
+
       toast({
         title: "Sucesso",
-        description: "Compartilhamento removido",
+        description: "Compartilhamento removido com sucesso",
       });
+
+      console.log("✅ Compartilhamento removido da interface");
     } catch (error) {
+      console.error("❌ Erro ao remover compartilhamento:", error);
+
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Erro ao remover compartilhamento",
+        description: `Erro ao remover compartilhamento: ${error instanceof Error ? error.message : "Erro desconhecido"}`,
       });
     }
   };
@@ -1090,7 +1099,7 @@ const PatientProfile = () => {
                   Dr. {selectedDoctor.name}
                 </h4>
                 <p className="text-sm text-gray-600">
-                  {selectedDoctor.specialty} �� CRM {selectedDoctor.crm}
+                  {selectedDoctor.specialty} • CRM {selectedDoctor.crm}
                 </p>
               </div>
             )}
