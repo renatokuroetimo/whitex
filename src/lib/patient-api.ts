@@ -105,26 +105,50 @@ class PatientAPI {
               );
             }
 
-            if (personalData) {
-              sharedPatients.push({
-                ...share,
-                patientData: {
-                  id: share.patient_id,
-                  name: personalData.full_name,
-                  age: personalData.birth_date
-                    ? new Date().getFullYear() -
-                      new Date(personalData.birth_date).getFullYear()
-                    : null,
-                  city: personalData.city,
-                  state: personalData.state,
-                  weight: medicalData?.weight,
-                  status: "compartilhado",
-                  notes: "",
-                  created_at: share.shared_at,
-                  doctor_id: null, // Não tem doctor_id pois é um paciente real
-                },
-              });
+            // Buscar dados básicos do usuário como fallback
+            const { data: userData, error: userError } = await supabase
+              .from("users")
+              .select("*")
+              .eq("id", share.patient_id)
+              .single();
+
+            if (userError) {
+              console.warn(
+                `⚠️ Erro ao buscar dados do usuário ${share.patient_id}:`,
+                userError,
+              );
             }
+
+            // Criar dados do paciente usando o que estiver disponível
+            const patientName =
+              personalData?.full_name ||
+              userData?.name ||
+              userData?.email ||
+              "Paciente Compartilhado";
+            const patientAge = personalData?.birth_date
+              ? new Date().getFullYear() -
+                new Date(personalData.birth_date).getFullYear()
+              : null;
+
+            sharedPatients.push({
+              ...share,
+              patientData: {
+                id: share.patient_id,
+                name: patientName,
+                age: patientAge,
+                city: personalData?.city || "N/A",
+                state: personalData?.state || "N/A",
+                weight: medicalData?.weight,
+                status: "compartilhado",
+                notes: "",
+                created_at: share.shared_at,
+                doctor_id: null, // Não tem doctor_id pois é um paciente real
+              },
+            });
+
+            console.log(
+              `✅ Dados do paciente compartilhado processados: ${patientName}`,
+            );
           } catch (error) {
             console.warn(
               `⚠️ Erro ao buscar dados do paciente compartilhado ${share.patient_id}:`,
