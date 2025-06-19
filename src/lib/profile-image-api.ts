@@ -67,8 +67,18 @@ class ProfileImageAPI {
   async saveProfileImage(userId: string, imageData: string): Promise<void> {
     await this.delay(300);
 
+    console.log(
+      "💾 Iniciando salvamento de imagem de perfil para usuário:",
+      userId,
+    );
+    console.log(
+      "🔧 Feature useSupabaseIndicators:",
+      isFeatureEnabled("useSupabaseIndicators"),
+    );
+    console.log("🔗 Supabase client disponível:", !!supabase);
+
     if (isFeatureEnabled("useSupabaseIndicators") && supabase) {
-      console.log("🚀 Salvando imagem de perfil no Supabase");
+      console.log("🚀 Tentando salvar imagem de perfil no Supabase");
 
       // Verificar se a tabela existe na primeira vez
       const tableExists = await this.checkTableExists();
