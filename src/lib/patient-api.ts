@@ -12,12 +12,12 @@ class PatientAPI {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  // MÉTODO ULTRA-SIMPLES PARA TESTE DE COMPARTILHAMENTO
+  // MÉTODO CORRIGIDO BASEADO NA ARQUITETURA REAL DO BANCO
   async getPatients(): Promise<{
     patients: Patient[];
     pagination: PaginationData;
   }> {
-    console.log("🚀🚀🚀 MÉTODO GETPATIENTS LIMPO E SIMPLES");
+    console.log("🔄 GETPATIENTS - VERSÃO CORRIGIDA PARA ARQUITETURA REAL");
 
     await this.delay(200);
 
@@ -37,11 +37,11 @@ class PatientAPI {
     }
 
     const currentUser = JSON.parse(currentUserStr);
-    console.log(
-      "👤 USUÁRIO LOGADO:",
-      currentUser.email,
-      currentUser.profession,
-    );
+    console.log("👤 USUÁRIO LOGADO:", {
+      id: currentUser.id,
+      email: currentUser.email,
+      profession: currentUser.profession,
+    });
 
     if (!supabase) {
       console.warn("⚠️ Supabase não configurado - retornando lista vazia");
@@ -57,170 +57,224 @@ class PatientAPI {
     }
 
     try {
-      console.log("🔍 Buscando compartilhamentos reais no banco...");
-      console.log("👤 ID do médico logado:", currentUser.id);
+      console.log("🔍 Buscando compartilhamentos para médico:", currentUser.id);
 
+      // 1. BUSCAR COMPARTILHAMENTOS USANDO A ESTRUTURA REAL
       const { data: shares, error: sharesError } = await supabase
         .from("doctor_patient_sharing")
         .select("*")
         .eq("doctor_id", currentUser.id);
 
-      console.log("📊 RESULTADO DETALHADO:");
-      console.log("- Total de compartilhamentos:", shares?.length || 0);
-      console.log("- Erro:", sharesError?.message || "nenhum");
-      console.log(
-        "- Query executada: doctor_patient_sharing WHERE doctor_id =",
-        currentUser.id,
-      );
-      console.log("- Dados completos:", shares);
-
-      // Buscar TODOS os compartilhamentos para comparar
-      const { data: allShares } = await supabase
-        .from("doctor_patient_sharing")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      console.log(
-        "🗂️ TODOS OS COMPARTILHAMENTOS NO BANCO:",
-        allShares?.length || 0,
-      );
-      allShares?.forEach((share, index) => {
-        console.log(
-          `  ${index + 1}. Doctor: ${share.doctor_id}, Patient: ${share.patient_id}, Data: ${share.shared_at}`,
-        );
+      console.log("📊 COMPARTILHAMENTOS ENCONTRADOS:", {
+        total: shares?.length || 0,
+        error: sharesError?.message || "nenhum",
+        shares: shares,
       });
-
-      let allPatients: Patient[] = [];
 
       if (sharesError) {
         console.error("❌ ERRO ao buscar compartilhamentos:", sharesError);
-      } else if (shares && shares.length > 0) {
+        return {
+          patients: [],
+          pagination: {
+            currentPage: 1,
+            totalPages: 1,
+            totalItems: 0,
+            itemsPerPage: 10,
+          },
+        };
+      }
+
+      let allPatients: Patient[] = [];
+
+      if (shares && shares.length > 0) {
         console.log(`✅ ${shares.length} compartilhamentos encontrados`);
 
-        // Para cada compartilhamento, buscar dados REAIS do paciente
+        // 2. PARA CADA COMPARTILHAMENTO, BUSCAR DADOS REAIS DO PACIENTE
         for (const share of shares) {
           try {
-            console.log(
-              `🔍 Buscando dados reais do paciente: ${share.patient_id}`,
-            );
+            console.log(`🔍 Processando paciente: ${share.patient_id}`);
 
-            // Buscar dados do usuário paciente
+            // 2.1 Buscar dados básicos do usuário paciente na tabela users
             const { data: patientUser, error: patientError } = await supabase
               .from("users")
-              .select("id, name, email, profession, created_at")
+              .select(
+                `
+                id,
+                email,
+                profession,
+                name,
+                city,
+                state,
+                phone,
+                created_at
+              `,
+              )
               .eq("id", share.patient_id)
               .eq("profession", "paciente")
               .single();
 
+            console.log(`👤 DADOS BÁSICOS DO PACIENTE:`, {
+              dados: patientUser,
+              erro: patientError?.message || "nenhum",
+            });
+
             if (patientError) {
               console.warn(
-                `⚠️ Erro ao buscar paciente ${share.patient_id}:`,
+                `⚠️ Erro ao buscar dados básicos do paciente ${share.patient_id}:`,
                 patientError,
               );
               continue;
             }
 
-            if (patientUser) {
-              console.log(`🔍 DEBUG - Dados brutos do paciente:`, patientUser);
+            if (!patientUser) {
+              console.warn(
+                `⚠️ Paciente ${share.patient_id} não encontrado na tabela users`,
+              );
+              continue;
+            }
+
+            // 2.2 Determinar nome do paciente (prioridade: campo name da tabela users)
+            let patientName = "Sem nome definido";
+
+            if (patientUser.name && patientUser.name.trim()) {
+              patientName = patientUser.name.trim();
               console.log(
-                `👤 Nome do paciente na tabela users:`,
-                patientUser.name,
+                `✅ Nome do paciente obtido da tabela users: "${patientName}"`,
+              );
+            } else {
+              console.log(
+                `⚠️ Campo name vazio na tabela users, tentando buscar em patient_personal_data...`,
               );
 
-              // Priorizar campo name da tabela users
-              let patientName;
-              if (patientUser.name && patientUser.name.trim()) {
-                patientName = patientUser.name.trim();
-                console.log(`✅ Usando nome da tabela users: "${patientName}"`);
-              } else {
-                patientName = "Sem nome definido";
-                console.log(`⚠️ Campo name vazio, usando: "${patientName}"`);
-              }
-
-              let age = null;
-              let city = "N/A";
-              let state = "N/A";
-              let weight = null;
-
+              // Fallback: buscar nome em patient_personal_data
               try {
-                console.log(
-                  `🔍 Buscando dados pessoais detalhados para user_id: ${share.patient_id}`,
-                );
-
                 const { data: personalData, error: personalError } =
                   await supabase
                     .from("patient_personal_data")
-                    .select(
-                      "full_name, email, birth_date, gender, state, city, health_plan",
-                    )
+                    .select("full_name")
                     .eq("user_id", share.patient_id)
                     .single();
 
-                console.log(`📊 RESULTADO da busca de dados pessoais:`);
-                console.log(`- Dados encontrados:`, personalData);
-                console.log(`- Erro:`, personalError?.message || "nenhum");
-
-                if (personalData) {
-                  // Se há nome mais detalhado nos dados pessoais, usar ele
-                  if (
-                    personalData.full_name &&
-                    personalData.full_name.trim() &&
-                    personalData.full_name.trim() !== patientName
-                  ) {
-                    patientName = personalData.full_name.trim();
-                    console.log(
-                      `✅ Atualizando para nome completo dos dados pessoais: "${patientName}"`,
-                    );
-                  }
-
-                  city = personalData.city || city;
-                  state = personalData.state || state;
-
-                  if (personalData.birth_date) {
-                    const today = new Date();
-                    const birthDate = new Date(personalData.birth_date);
-                    age = today.getFullYear() - birthDate.getFullYear();
-                    console.log(`✅ Idade calculada: ${age} anos`);
-                  }
-                } else {
+                if (
+                  !personalError &&
+                  personalData?.full_name &&
+                  personalData.full_name.trim()
+                ) {
+                  patientName = personalData.full_name.trim();
                   console.log(
-                    `ℹ️ Sem dados pessoais detalhados, usando nome da tabela users: "${patientName}"`,
+                    `✅ Nome do paciente obtido de patient_personal_data: "${patientName}"`,
                   );
-                }
-
-                const { data: medicalData } = await supabase
-                  .from("patient_medical_data")
-                  .select("*")
-                  .eq("user_id", share.patient_id)
-                  .single();
-
-                if (medicalData) {
-                  weight = medicalData.weight;
+                } else {
+                  console.log(`ℹ️ Mantendo nome padrão: "${patientName}"`);
                 }
               } catch (error) {
                 console.warn(
-                  `⚠️ Erro ao buscar dados detalhados do paciente:`,
+                  `⚠️ Erro ao buscar dados pessoais do paciente:`,
                   error,
                 );
               }
-
-              allPatients.push({
-                id: share.patient_id,
-                name: patientName, // Nome REAL do banco
-                age: age,
-                city: city,
-                state: state,
-                weight: weight,
-                status: "compartilhado" as const,
-                notes: `Compartilhado em ${new Date(share.shared_at).toLocaleDateString()}`,
-                createdAt: share.shared_at || new Date().toISOString(),
-                doctorId: null,
-                isShared: true,
-                sharedId: share.id,
-              });
-
-              console.log(`✅ Paciente real adicionado: ${patientName}`);
             }
+
+            // 2.3 Buscar dados adicionais (idade, peso, etc.)
+            let age = null;
+            let weight = null;
+            let city = patientUser.city || "N/A";
+            let state = patientUser.state || "N/A";
+
+            // Buscar dados pessoais detalhados
+            try {
+              const { data: personalData, error: personalError } =
+                await supabase
+                  .from("patient_personal_data")
+                  .select(
+                    `
+                  birth_date,
+                  city,
+                  state,
+                  gender,
+                  health_plan
+                `,
+                  )
+                  .eq("user_id", share.patient_id)
+                  .single();
+
+              if (!personalError && personalData) {
+                console.log(`📋 DADOS PESSOAIS DETALHADOS:`, personalData);
+
+                // Atualizar cidade e estado se disponíveis
+                if (personalData.city) city = personalData.city;
+                if (personalData.state) state = personalData.state;
+
+                // Calcular idade se data de nascimento disponível
+                if (personalData.birth_date) {
+                  const today = new Date();
+                  const birthDate = new Date(personalData.birth_date);
+                  age = today.getFullYear() - birthDate.getFullYear();
+                  const monthDiff = today.getMonth() - birthDate.getMonth();
+                  if (
+                    monthDiff < 0 ||
+                    (monthDiff === 0 && today.getDate() < birthDate.getDate())
+                  ) {
+                    age--;
+                  }
+                  console.log(`✅ Idade calculada: ${age} anos`);
+                }
+              }
+            } catch (error) {
+              console.warn(
+                `⚠️ Erro ao buscar dados pessoais detalhados:`,
+                error,
+              );
+            }
+
+            // Buscar dados médicos (peso, altura, etc.)
+            try {
+              const { data: medicalData, error: medicalError } = await supabase
+                .from("patient_medical_data")
+                .select(
+                  `
+                  height,
+                  weight,
+                  smoker,
+                  high_blood_pressure,
+                  physical_activity,
+                  exercise_frequency,
+                  healthy_diet
+                `,
+                )
+                .eq("user_id", share.patient_id)
+                .single();
+
+              if (!medicalError && medicalData) {
+                console.log(`🏥 DADOS MÉDICOS:`, medicalData);
+                if (medicalData.weight) {
+                  weight = parseFloat(medicalData.weight.toString());
+                }
+              }
+            } catch (error) {
+              console.warn(`⚠️ Erro ao buscar dados médicos:`, error);
+            }
+
+            // 2.4 Criar objeto paciente final
+            const patient: Patient = {
+              id: share.patient_id,
+              name: patientName,
+              age: age,
+              city: city,
+              state: state,
+              weight: weight,
+              status: "compartilhado" as const,
+              notes: `Compartilhado em ${new Date(share.shared_at).toLocaleDateString("pt-BR")}`,
+              createdAt: share.shared_at || new Date().toISOString(),
+              doctorId: null,
+              isShared: true,
+              sharedId: share.id,
+            };
+
+            allPatients.push(patient);
+            console.log(
+              `✅ PACIENTE ADICIONADO: "${patientName}" (ID: ${share.patient_id})`,
+            );
           } catch (error) {
             console.warn(
               `⚠️ Erro ao processar paciente ${share.patient_id}:`,
@@ -230,10 +284,10 @@ class PatientAPI {
         }
 
         console.log(
-          `🎯 TOTAL: ${allPatients.length} pacientes reais compartilhados`,
+          `🎯 RESULTADO FINAL: ${allPatients.length} pacientes compartilhados carregados`,
         );
       } else {
-        console.log("📝 Nenhum compartilhamento encontrado");
+        console.log("📝 Nenhum compartilhamento encontrado para este médico");
       }
 
       return {
@@ -246,9 +300,7 @@ class PatientAPI {
         },
       };
     } catch (error) {
-      console.error("💥 ERRO CRÍTICO:", error);
-      console.log("🔄 Retornando lista vazia devido ao erro");
-
+      console.error("💥 ERRO CRÍTICO no getPatients:", error);
       return {
         patients: [],
         pagination: {
@@ -314,10 +366,7 @@ class PatientAPI {
   }
 
   async removePatientSharing(patientId: string): Promise<void> {
-    console.log(
-      "🗑️ removePatientSharing - Removendo compartilhamento do paciente:",
-      patientId,
-    );
+    console.log("🗑️ REMOVENDO COMPARTILHAMENTO - patient_id:", patientId);
 
     if (!supabase) {
       throw new Error("❌ Supabase não está configurado");
@@ -330,10 +379,13 @@ class PatientAPI {
     }
 
     const currentUser = JSON.parse(currentUserStr);
-    console.log("👤 Médico removendo compartilhamento:", currentUser.id);
+    console.log("👤 Médico removendo compartilhamento:", {
+      doctor_id: currentUser.id,
+      patient_id: patientId,
+    });
 
     try {
-      // Deletar o compartilhamento específico
+      // Deletar o compartilhamento específico usando a estrutura correta
       const { error } = await supabase
         .from("doctor_patient_sharing")
         .delete()
@@ -345,7 +397,7 @@ class PatientAPI {
         throw new Error(`Erro ao remover compartilhamento: ${error.message}`);
       }
 
-      console.log("✅ Compartilhamento removido com sucesso do banco");
+      console.log("✅ Compartilhamento removido com sucesso");
     } catch (error) {
       console.error("💥 Erro crítico ao remover compartilhamento:", error);
       throw error;
