@@ -90,6 +90,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { logout, user } = useAuth();
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   // Obter dados do usuário com fallback
   const getUserData = () => {
