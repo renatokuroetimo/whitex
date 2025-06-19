@@ -138,16 +138,35 @@ class IndicatorAPI {
       throw new Error("❌ Unidade de medida é obrigatória");
     }
 
-    // Buscar informações da unidade selecionada
-    const units = await this.getUnits();
+    // Buscar informações da unidade selecionada e categorias/subcategorias
+    const [units, categories, subcategories] = await Promise.all([
+      this.getUnits(),
+      this.getCategories(),
+      this.getSubcategories(),
+    ]);
+
     const selectedUnit = units.find((unit) => unit.id === data.unitOfMeasureId);
+    const selectedCategory = categories.find(
+      (cat) => cat.id === data.categoryId,
+    );
+    const selectedSubcategory = subcategories.find(
+      (sub) => sub.id === data.subcategoryId,
+    );
 
     const newIndicator = {
       id: Date.now().toString(36) + Math.random().toString(36).substr(2),
       name: data.parameter, // Usar o parâmetro como nome
       category_id: data.categoryId,
       category: data.categoryId, // Add category field for NOT NULL constraint
+      category_name:
+        selectedCategory?.name ||
+        this.mapCategoryIdToName(data.categoryId) ||
+        "Categoria",
       subcategory_id: data.subcategoryId,
+      subcategory_name:
+        selectedSubcategory?.name ||
+        this.mapSubcategoryIdToName(data.subcategoryId) ||
+        "Subcategoria",
       parameter: data.parameter.trim(),
       unit_id: data.unitOfMeasureId,
       unit: selectedUnit?.symbol || "un", // Add unit field for NOT NULL constraint
