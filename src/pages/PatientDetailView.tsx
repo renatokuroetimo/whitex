@@ -57,6 +57,11 @@ const PatientDetailView = () => {
           await patientProfileAPI.getPatientPersonalData(patientId);
         setPersonalData(personal);
 
+        // Carregar dados médicos detalhados
+        const medical =
+          await patientProfileAPI.getPatientMedicalData(patientId);
+        setMedicalData(medical);
+
         // Carregar histórico de diagnósticos
         const patientDiagnoses = await patientAPI.getDiagnoses(patientId);
         setDiagnoses(patientDiagnoses);
