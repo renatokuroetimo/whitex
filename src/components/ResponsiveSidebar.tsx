@@ -49,7 +49,12 @@ const SidebarContent: React.FC<SidebarContentProps> = ({ onItemClick }) => {
     onItemClick?.();
   };
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
+    setShowLogoutDialog(true);
+  };
+
+  const confirmLogout = async () => {
+    setShowLogoutDialog(false);
     await logout();
     navigate("/login");
     onItemClick?.();
