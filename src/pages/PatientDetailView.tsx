@@ -52,8 +52,7 @@ const PatientDetailView = () => {
         setPersonalData(personal);
 
         // Carregar histórico de diagnósticos
-        const patientDiagnoses =
-          await patientAPI.getPatientDiagnoses(patientId);
+        const patientDiagnoses = await patientAPI.getDiagnoses(patientId);
         setDiagnoses(patientDiagnoses);
       } else {
         toast({
