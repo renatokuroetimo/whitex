@@ -449,7 +449,7 @@ class PatientProfileAPI {
               2,
             ),
           );
-          throw error; // Forçar fallback
+          throw error; // For��ar fallback
         } else {
           console.log("✅ Dados médicos salvos no Supabase!");
           return resultData;
@@ -594,26 +594,30 @@ class PatientProfileAPI {
     }
   }
 
-  // Helper function corrigido para mapear baseado na estrutura real (SEM CAMPO NAME)
+  // Helper function corrigido para mapear baseado na estrutura real (CAMPO full_name)
   private mapUserToDoctor(
     user: any,
     source: "supabase" | "localStorage",
   ): Doctor {
-    // Como não há campo 'name' na tabela users, usar fallback
+    // Usar campo full_name da tabela public.users
     let doctorName = "Sem nome definido";
 
-    // Tentar diferentes campos que podem existir
-    if (user.fullName && user.fullName.trim()) {
-      doctorName = user.fullName.trim();
-    } else if (user.full_name && user.full_name.trim()) {
+    if (user.full_name && user.full_name.trim()) {
       doctorName = user.full_name.trim();
+      console.log(`✅ Usando full_name: "${doctorName}"`);
+    } else if (user.fullName && user.fullName.trim()) {
+      // Fallback para localStorage
+      doctorName = user.fullName.trim();
+      console.log(`✅ Usando fullName (localStorage): "${doctorName}"`);
     } else if (user.email) {
       doctorName = `Dr. ${user.email.split("@")[0]}`;
+      console.log(`⚠️ Usando email como fallback: "${doctorName}"`);
     }
 
     console.log(`🔍 Dados originais do usuário médico (${source}):`, {
       id: user.id,
-      fullName: user.fullName || user.full_name,
+      full_name: user.full_name,
+      fullName: user.fullName,
       crm: user.crm,
       state: user.state,
       email: user.email,
