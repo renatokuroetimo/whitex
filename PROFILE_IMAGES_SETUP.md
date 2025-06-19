@@ -63,7 +63,39 @@ import { profileImageAPI } from "/src/lib/profile-image-api.ts";
 profileImageAPI.initializeTable();
 ```
 
-### 3. Migrate Existing Images (Optional)
+### 3. Fix RLS Policy Issues (If Needed)
+
+If you encounter RLS policy violations, run this SQL script:
+
+```sql
+-- Execute in Supabase SQL Editor
+-- This fixes authentication issues with RLS policies
+
+-- Drop existing policies first
+DROP POLICY IF EXISTS "Users can view own profile image" ON profile_images;
+DROP POLICY IF EXISTS "Users can insert own profile image" ON profile_images;
+DROP POLICY IF EXISTS "Users can update own profile image" ON profile_images;
+DROP POLICY IF EXISTS "Users can delete own profile image" ON profile_images;
+
+-- Create more robust policies
+CREATE POLICY "Allow authenticated users to view own profile image" ON profile_images
+  FOR SELECT
+  USING (auth.uid() IS NOT NULL AND user_id = auth.uid()::text);
+
+CREATE POLICY "Allow authenticated users to insert own profile image" ON profile_images
+  FOR INSERT
+  WITH CHECK (auth.uid() IS NOT NULL AND user_id = auth.uid()::text);
+
+CREATE POLICY "Allow authenticated users to update own profile image" ON profile_images
+  FOR UPDATE
+  USING (auth.uid() IS NOT NULL AND user_id = auth.uid()::text);
+
+CREATE POLICY "Allow authenticated users to delete own profile image" ON profile_images
+  FOR DELETE
+  USING (auth.uid() IS NOT NULL AND user_id = auth.uid()::text);
+```
+
+### 4. Migrate Existing Images (Optional)
 
 If you have existing profile images in localStorage, you can migrate them:
 
