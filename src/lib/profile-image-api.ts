@@ -47,6 +47,7 @@ class ProfileImageAPI {
 
       try {
         // Calcular tamanho da imagem em bytes (aproximado)
+        // Math.floor garante que o resultado seja um INTEGER (não decimal)
         const base64Size = Math.floor(
           imageData.length * (3 / 4) - (imageData.match(/=/g) || []).length,
         );
