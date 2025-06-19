@@ -76,7 +76,7 @@ const CreateIndicator = () => {
       const [categoriesData, subcategoriesData, unitsData] = await Promise.all([
         indicatorAPI.getCategories(),
         indicatorAPI.getSubcategories(),
-        indicatorAPI.getUnitsOfMeasure(),
+        indicatorAPI.getUnits(),
       ]);
 
       setCategories(categoriesData);
