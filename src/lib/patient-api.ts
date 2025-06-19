@@ -359,13 +359,12 @@ class PatientAPI {
       ]);
 
       if (error) {
-        console.error("🔍 Detailed error information:", {
-          message: error.message,
-          code: error.code,
-          details: error.details,
-          hint: error.hint,
-          fullError: error,
-        });
+        console.error("🔍 Detailed error information:");
+        console.error("- Message:", error.message);
+        console.error("- Code:", error.code);
+        console.error("- Details:", error.details);
+        console.error("- Hint:", error.hint);
+        console.error("- Full error:", JSON.stringify(error, null, 2));
 
         // Check for table not existing
         if (
