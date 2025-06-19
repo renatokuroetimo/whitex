@@ -68,44 +68,18 @@ class PatientAPI {
         sharedData,
       );
 
-      // Buscar dados dos pacientes compartilhados nas tabelas de perfis
+      // Buscar dados básicos dos pacientes compartilhados (versão simplificada)
       let sharedPatients: any[] = [];
       if (sharedData && sharedData.length > 0) {
+        console.log(`📤 Processando ${sharedData.length} compartilhamentos`);
+
         for (const share of sharedData) {
           try {
             console.log(
-              `🔍 Buscando dados para paciente compartilhado: ${share.patient_id}`,
+              `🔍 Buscando dados básicos para paciente: ${share.patient_id}`,
             );
 
-            // Buscar dados pessoais do paciente
-            const { data: personalData, error: personalError } = await supabase
-              .from("patient_personal_data")
-              .select("*")
-              .eq("user_id", share.patient_id)
-              .single();
-
-            if (personalError) {
-              console.warn(
-                `⚠️ Erro ao buscar dados pessoais do paciente ${share.patient_id}:`,
-                personalError,
-              );
-            }
-
-            // Buscar dados médicos do paciente
-            const { data: medicalData, error: medicalError } = await supabase
-              .from("patient_medical_data")
-              .select("*")
-              .eq("user_id", share.patient_id)
-              .single();
-
-            if (medicalError) {
-              console.warn(
-                `⚠️ Erro ao buscar dados médicos do paciente ${share.patient_id}:`,
-                medicalError,
-              );
-            }
-
-            // Buscar dados básicos do usuário como fallback
+            // Buscar apenas dados básicos da tabela users (que sabemos que existe)
             const { data: userData, error: userError } = await supabase
               .from("users")
               .select("*")
@@ -114,46 +88,38 @@ class PatientAPI {
 
             if (userError) {
               console.warn(
-                `⚠️ Erro ao buscar dados do usuário ${share.patient_id}:`,
+                `⚠️ Erro ao buscar usuário ${share.patient_id}:`,
                 userError,
               );
+              continue; // Pular este compartilhamento se não conseguir buscar o usuário
             }
 
-            // Criar dados do paciente usando o que estiver disponível
-            const patientName =
-              personalData?.full_name ||
-              userData?.name ||
-              userData?.email ||
-              "Paciente Compartilhado";
-            const patientAge = personalData?.birth_date
-              ? new Date().getFullYear() -
-                new Date(personalData.birth_date).getFullYear()
-              : null;
+            if (userData) {
+              const patientName =
+                userData.name || userData.email || "Paciente Compartilhado";
 
-            sharedPatients.push({
-              ...share,
-              patientData: {
-                id: share.patient_id,
-                name: patientName,
-                age: patientAge,
-                city: personalData?.city || "N/A",
-                state: personalData?.state || "N/A",
-                weight: medicalData?.weight,
-                status: "compartilhado",
-                notes: "",
-                created_at: share.shared_at,
-                doctor_id: null, // Não tem doctor_id pois é um paciente real
-              },
-            });
+              sharedPatients.push({
+                ...share,
+                patientData: {
+                  id: share.patient_id,
+                  name: patientName,
+                  age: null, // Não temos idade por enquanto
+                  city: "N/A", // Dados detalhados virão depois
+                  state: "N/A",
+                  weight: null,
+                  status: "compartilhado",
+                  notes: "",
+                  created_at: share.shared_at,
+                  doctor_id: null,
+                },
+              });
 
-            console.log(
-              `✅ Dados do paciente compartilhado processados: ${patientName}`,
-            );
+              console.log(
+                `✅ Paciente compartilhado adicionado: ${patientName}`,
+              );
+            }
           } catch (error) {
-            console.warn(
-              `⚠️ Erro ao buscar dados do paciente compartilhado ${share.patient_id}:`,
-              error,
-            );
+            console.warn(`⚠️ Erro geral ao processar compartilhamento:`, error);
           }
         }
       }
