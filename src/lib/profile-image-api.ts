@@ -25,6 +25,44 @@ class ProfileImageAPI {
     }
   }
 
+  // Verificar status de autenticação do Supabase
+  async checkAuthenticationStatus(): Promise<{
+    isAuthenticated: boolean;
+    userId: string | null;
+    error: string | null;
+  }> {
+    if (!supabase) {
+      return {
+        isAuthenticated: false,
+        userId: null,
+        error: "Supabase not configured",
+      };
+    }
+
+    try {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+
+      if (error) {
+        return { isAuthenticated: false, userId: null, error: error.message };
+      }
+
+      return {
+        isAuthenticated: !!user,
+        userId: user?.id || null,
+        error: null,
+      };
+    } catch (error) {
+      return {
+        isAuthenticated: false,
+        userId: null,
+        error: error instanceof Error ? error.message : "Unknown error",
+      };
+    }
+  }
+
   // Salvar imagem de perfil
   async saveProfileImage(userId: string, imageData: string): Promise<void> {
     await this.delay(300);
