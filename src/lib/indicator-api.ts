@@ -165,6 +165,8 @@ class IndicatorAPI {
       unit_symbol: selectedUnit?.symbol || "un",
       type: "custom", // Add type field for NOT NULL constraint
       is_mandatory: false, // Padrão como não obrigatório
+      requires_time: data.requiresTime || false, // Add time requirement
+      requires_date: data.requiresDate || false, // Add date requirement
       doctor_id: currentUser.id,
       created_at: new Date().toISOString(),
     };
@@ -177,6 +179,8 @@ class IndicatorAPI {
       type: "custom", // Include type for NOT NULL constraint
       category: data.categoryId, // Include category for NOT NULL constraint
       parameter: data.parameter.trim(),
+      requires_time: data.requiresTime || false,
+      requires_date: data.requiresDate || false,
     };
 
     try {
