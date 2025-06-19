@@ -239,6 +239,13 @@ const Sidebar: React.FC = () => {
           Sair
         </Button>
       </div>
+
+      <LogoutConfirmDialog
+        open={showLogoutDialog}
+        onOpenChange={setShowLogoutDialog}
+        onConfirm={confirmLogout}
+        userType={userProfession === "paciente" ? "paciente" : "médico"}
+      />
     </div>
   );
 };
