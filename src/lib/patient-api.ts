@@ -132,21 +132,6 @@ class PatientAPI {
       };
     }
   }
-                  notes: "",
-                  createdAt: share.shared_at,
-                  doctorId: null,
-                  isShared: true,
-                  sharedId: share.id,
-                });
-
-                console.log(`✅ Paciente compartilhado adicionado: ${patientName}`);
-              }
-            } catch (shareError) {
-              console.warn(`⚠️ Erro ao processar compartilhamento:`, shareError);
-            }
-          }
-        }
-      } catch (sharedError) {
         console.warn("⚠️ Erro crítico ao buscar compartilhamentos:", sharedError);
         sharedPatients = [];
       }
