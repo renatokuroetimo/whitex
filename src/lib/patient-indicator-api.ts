@@ -1,15 +1,8 @@
-import {
-  PatientIndicatorValue,
-  PatientIndicatorFormData,
-} from "./patient-indicator-types";
-import { indicatorAPI } from "./indicator-api";
+import { PatientIndicatorValue } from "./patient-types";
 import { supabase } from "./supabase";
-import { isFeatureEnabled } from "./feature-flags";
 
 class PatientIndicatorAPI {
-  private readonly STORAGE_KEY = "medical_app_patient_indicators";
-
-  // Simula delay de rede
+  // Delay para simular operação real
   private delay(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
@@ -19,446 +12,246 @@ class PatientIndicatorAPI {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
   }
 
-  // Garantir que indicador padrão existe no Supabase
-  private async ensureStandardIndicatorExists(
-    indicatorId: string,
-  ): Promise<void> {
-    if (!supabase) return;
+  // Criar valor de indicador (apenas Supabase)
+  async createPatientIndicatorValue(
+    newValue: PatientIndicatorValue,
+  ): Promise<PatientIndicatorValue> {
+    await this.delay(500);
 
-    console.log(
-      `🔍 Verificando se indicador padrão ${indicatorId} existe no Supabase`,
-    );
+    if (!supabase) {
+      throw new Error("❌ Supabase n��o está configurado");
+    }
+
+    // Verificar se usuário está logado
+    const currentUserStr = localStorage.getItem("medical_app_current_user");
+    if (!currentUserStr) {
+      throw new Error("❌ Usuário não autenticado");
+    }
+
+    console.log("🚀 Criando valor indicador no Supabase");
 
     try {
-      // Verificar se o indicador já existe
-      const { data: existing, error: checkError } = await supabase
-        .from("indicators")
-        .select("id")
-        .eq("id", indicatorId)
-        .single();
+      const insertData = {
+        id: newValue.id || this.generateId(),
+        patient_id: newValue.patientId,
+        indicator_id: newValue.indicatorId,
+        value: newValue.value,
+        category_name: newValue.categoryName,
+        subcategory_name: newValue.subcategoryName,
+        parameter: newValue.parameter,
+        unit_symbol: newValue.unitSymbol,
+        date: newValue.date,
+        time: newValue.time,
+        created_at: new Date().toISOString(),
+      };
 
-      // PGRST116 means no rows found, which is expected when indicator doesn't exist
-      const indicatorExists = existing && !checkError;
+      const { error } = await supabase
+        .from("patient_indicator_values")
+        .insert([insertData]);
 
-      if (!indicatorExists) {
-        console.log(`📝 Indicador ${indicatorId} não existe, criando...`);
-
-        // Buscar dados do indicador padrão no localStorage
-        const standardIndicators = await indicatorAPI.getStandardIndicators();
-        const indicator = standardIndicators.find(
-          (ind) => ind.id === indicatorId,
-        );
-
-        if (indicator) {
-          const insertData = {
-            id: indicator.id,
-            name: indicator.parameter,
-            unit: indicator.unitSymbol,
-            type: "numeric",
-            category: indicator.categoryName,
-            doctor_id: null, // Indicadores padrão não pertencem a um médico específico
-            is_standard: true,
-            created_at: new Date().toISOString(),
-          };
-
-          const { error } = await supabase
-            .from("indicators")
-            .insert([insertData]);
-
-          if (error) {
-            console.error(
-              `❌ Erro ao inserir indicador padrão ${indicatorId}:`,
-              JSON.stringify(
-                {
-                  message: error.message,
-                  details: error.details,
-                  hint: error.hint,
-                  code: error.code,
-                },
-                null,
-                2,
-              ),
-            );
-            throw error;
-          } else {
-            console.log(
-              `✅ Indicador padrão ${indicatorId} criado com sucesso`,
-            );
-          }
-        } else {
-          throw new Error(`Indicador padrão ${indicatorId} não encontrado`);
-        }
-      } else {
-        console.log(`✅ Indicador padrão ${indicatorId} já existe no Supabase`);
+      if (error) {
+        throw new Error(`Erro ao criar valor indicador: ${error.message}`);
       }
+
+      console.log("✅ Valor indicador criado no Supabase:", insertData.id);
+
+      return {
+        id: insertData.id,
+        patientId: insertData.patient_id,
+        indicatorId: insertData.indicator_id,
+        value: insertData.value,
+        categoryName: insertData.category_name,
+        subcategoryName: insertData.subcategory_name,
+        parameter: insertData.parameter,
+        unitSymbol: insertData.unit_symbol,
+        date: insertData.date,
+        time: insertData.time,
+        createdAt: insertData.created_at,
+      };
     } catch (error) {
-      console.error(
-        `💥 Erro ao verificar/criar indicador padrão ${indicatorId}:`,
-        error,
-      );
+      console.error("💥 Erro ao criar valor indicador:", error);
       throw error;
     }
   }
 
-  // Pega todos os valores de indicadores salvos
-  private getStoredIndicatorValues(): PatientIndicatorValue[] {
-    try {
-      const values = localStorage.getItem(this.STORAGE_KEY);
-      return values ? JSON.parse(values) : [];
-    } catch {
-      return [];
-    }
-  }
-
-  // Salva valores de indicadores
-  private saveIndicatorValues(values: PatientIndicatorValue[]): void {
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(values));
-  }
-
-  // Criar valor de indicador para paciente
-  async createPatientIndicatorValue(
-    patientId: string,
-    doctorId: string,
-    data: PatientIndicatorFormData,
-  ): Promise<PatientIndicatorValue> {
-    await this.delay(500);
-
-    // Buscar detalhes do indicador
-    let indicatorDetails: any = null;
-
-    if (data.indicatorType === "standard") {
-      const standardIndicators = await indicatorAPI.getStandardIndicators();
-      indicatorDetails = standardIndicators.find(
-        (ind) => ind.id === data.indicatorId,
-      );
-    } else {
-      const customIndicators = await indicatorAPI.getIndicators(doctorId);
-      indicatorDetails = customIndicators.find(
-        (ind) => ind.id === data.indicatorId,
-      );
-    }
-
-    if (!indicatorDetails) {
-      throw new Error("Indicador não encontrado");
-    }
-
-    const newValue: PatientIndicatorValue = {
-      id: this.generateId(),
-      patientId,
-      indicatorId: data.indicatorId,
-      indicatorType: data.indicatorType,
-      categoryName: indicatorDetails.categoryName,
-      subcategoryName: indicatorDetails.subcategoryName,
-      parameter: indicatorDetails.parameter,
-      unitSymbol:
-        data.indicatorType === "standard"
-          ? indicatorDetails.unitSymbol
-          : indicatorDetails.unitOfMeasureSymbol,
-      value: data.value,
-      date: data.date,
-      time: data.time,
-      visibleToMedics: data.visibleToMedics,
-      doctorId,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    console.log("🔥 CRIANDO VALOR INDICADOR:", newValue);
-
-    // Se Supabase estiver ativo, usar Supabase
-    if (isFeatureEnabled("useSupabaseIndicators") && supabase) {
-      console.log("🚀 Criando valor indicador no Supabase");
-
-      // Garantir que indicadores padrão existam no Supabase
-      if (data.indicatorType === "standard") {
-        await this.ensureStandardIndicatorExists(data.indicatorId);
-      }
-
-      try {
-        // Usar estrutura mais completa com os dados do indicador
-        const insertData: any = {
-          id: newValue.id,
-          patient_id: newValue.patientId,
-          indicator_id: newValue.indicatorId,
-          value: newValue.value,
-          category_name: newValue.categoryName,
-          subcategory_name: newValue.subcategoryName,
-          parameter: newValue.parameter,
-          unit_symbol: newValue.unitSymbol,
-        };
-
-        // Adicionar campos de data e tempo se disponíveis
-        if (newValue.date) {
-          insertData.date = newValue.date;
-        }
-        if (newValue.time) {
-          insertData.time = newValue.time;
-        }
-
-        console.log("📝 Dados do valor indicador:", insertData);
-
-        let supabaseData, error;
-
-        try {
-          const result = await supabase
-            .from("patient_indicator_values")
-            .insert([insertData]);
-          supabaseData = result.data;
-          error = result.error;
-
-          console.log("📊 Resposta do Supabase:", {
-            data: supabaseData,
-            error,
-          });
-
-          if (error) {
-            // Se ainda der erro de schema, tentar estrutura ainda mais simples
-            if (error.code === "PGRST204") {
-              console.log(
-                "🔄 Tentando estrutura mínima devido a erro de schema",
-              );
-              const minimalData = {
-                id: newValue.id,
-                value: newValue.value,
-              };
-
-              const minimalResult = await supabase
-                .from("patient_indicator_values")
-                .insert([minimalData]);
-
-              if (minimalResult.error) {
-                console.error(
-                  "❌ Erro mesmo com estrutura mínima:",
-                  minimalResult.error,
-                );
-                throw minimalResult.error;
-              } else {
-                console.log("✅ Valor indicador criado com estrutura mínima!");
-                return newValue;
-              }
-            } else {
-              throw error;
-            }
-          } else {
-            console.log("✅ Valor indicador criado no Supabase!");
-            return newValue;
-          }
-        } catch (insertError) {
-          console.error("💥 Erro no insert:", insertError);
-          throw insertError;
-        }
-      } catch (supabaseError) {
-        console.error(
-          "💥 Erro no Supabase valor indicador:",
-          JSON.stringify(
-            {
-              message:
-                supabaseError instanceof Error
-                  ? supabaseError.message
-                  : "Unknown error",
-              stack:
-                supabaseError instanceof Error
-                  ? supabaseError.stack
-                  : undefined,
-              error: supabaseError,
-            },
-            null,
-            2,
-          ),
-        );
-        throw supabaseError; // Falhar sem fallback
-      }
-    } else {
-      throw new Error("Supabase não está ativo para indicadores");
-    }
-  }
-
-  // Buscar valores de indicadores de um paciente
+  // Buscar valores de indicadores (apenas Supabase)
   async getPatientIndicatorValues(
     patientId: string,
   ): Promise<PatientIndicatorValue[]> {
-    await this.delay(300);
-
-    console.log(
-      "🔍 getPatientIndicatorValues chamado para patientId:",
-      patientId,
-    );
-
-    // Se Supabase estiver ativo, usar Supabase
-    if (isFeatureEnabled("useSupabaseIndicators") && supabase) {
-      console.log("🚀 Buscando valores de indicadores no Supabase");
-
-      try {
-        const { data: supabaseValues, error } = await supabase
-          .from("patient_indicator_values")
-          .select("*")
-          .eq("patient_id", patientId)
-          .order("created_at", { ascending: false });
-
-        console.log("📊 Valores brutos do Supabase:", {
-          data: supabaseValues,
-          error,
-        });
-
-        if (error) {
-          console.error(
-            "❌ Erro ao buscar valores:",
-            JSON.stringify(
-              {
-                message: error.message,
-                details: error.details,
-                hint: error.hint,
-                code: error.code,
-              },
-              null,
-              2,
-            ),
-          );
-          throw error;
-        }
-
-        if (!supabaseValues || supabaseValues.length === 0) {
-          console.log("📭 Nenhum valor encontrado");
-          return [];
-        }
-
-        // Converter dados do Supabase para formato local usando dados salvos
-        const values: PatientIndicatorValue[] = (supabaseValues || []).map(
-          (val: any): PatientIndicatorValue => {
-            console.log("🔍 Processando valor do Supabase:", val);
-
-            const result: PatientIndicatorValue = {
-              id: val.id,
-              patientId: val.patient_id,
-              indicatorId: val.indicator_id,
-              indicatorType: "standard", // Assumir padrão por enquanto
-              categoryName: val.category_name || "Categoria não encontrada",
-              subcategoryName:
-                val.subcategory_name || "Subcategoria não encontrada",
-              parameter: val.parameter || "Parâmetro não encontrado",
-              unitSymbol: val.unit_symbol || "",
-              value: val.value,
-              date: val.date,
-              time: val.time,
-              visibleToMedics: true,
-              createdAt: val.created_at,
-              updatedAt: val.updated_at || val.created_at,
-            };
-
-            console.log("✅ Valor processado:", result);
-            return result;
-          },
-        );
-
-        console.log("✅ Todos os valores convertidos:", values);
-        return values;
-      } catch (supabaseError) {
-        console.error(
-          "💥 Erro no Supabase getPatientIndicatorValues:",
-          JSON.stringify(
-            {
-              message:
-                supabaseError instanceof Error
-                  ? supabaseError.message
-                  : "Unknown error",
-              error: supabaseError,
-            },
-            null,
-            2,
-          ),
-        );
-        throw supabaseError;
-      }
-    } else {
-      throw new Error("Supabase não está ativo para indicadores");
-    }
-  }
-
-  // Buscar valores de indicadores de um paciente por categoria
-  // Obter subcategorias únicas dos indicadores de um paciente
-  async getPatientIndicatorSubcategories(
-    patientId: string,
-    categoryName?: string,
-  ): Promise<string[]> {
-    const values = await this.getPatientIndicatorValues(patientId);
-
-    let filteredValues = values;
-    if (categoryName && categoryName !== "all") {
-      filteredValues = values.filter(
-        (value) => value.categoryName === categoryName,
-      );
-    }
-
-    const subcategories = [
-      ...new Set(filteredValues.map((value) => value.subcategoryName)),
-    ];
-    return subcategories.sort();
-  }
-
-  // Buscar valores de indicadores de um paciente por categoria e subcategoria
-  async getPatientIndicatorValuesByFilters(
-    patientId: string,
-    categoryName?: string,
-    subcategoryName?: string,
-  ): Promise<PatientIndicatorValue[]> {
-    const values = await this.getPatientIndicatorValues(patientId);
-
-    let filteredValues = values;
-
-    if (categoryName && categoryName !== "all") {
-      filteredValues = filteredValues.filter(
-        (value) => value.categoryName === categoryName,
-      );
-    }
-
-    if (subcategoryName && subcategoryName !== "all") {
-      filteredValues = filteredValues.filter(
-        (value) => value.subcategoryName === subcategoryName,
-      );
-    }
-
-    return filteredValues;
-  }
-
-  // Atualizar valor de indicador
-  async updatePatientIndicatorValue(
-    id: string,
-    updateData: Partial<PatientIndicatorFormData>,
-  ): Promise<PatientIndicatorValue | null> {
     await this.delay(500);
 
-    const values = this.getStoredIndicatorValues();
-    const index = values.findIndex((value) => value.id === id);
-
-    if (index === -1) {
-      throw new Error("Valor de indicador não encontrado");
+    if (!supabase) {
+      throw new Error("❌ Supabase não está configurado");
     }
 
-    // Atualizar apenas os campos fornecidos
-    const updatedValue: PatientIndicatorValue = {
-      ...values[index],
-      ...updateData,
-      updatedAt: new Date().toISOString(),
-    };
+    console.log("🚀 Buscando valores de indicadores no Supabase");
 
-    values[index] = updatedValue;
-    this.saveIndicatorValues(values);
+    try {
+      const { data, error } = await supabase
+        .from("patient_indicator_values")
+        .select("*")
+        .eq("patient_id", patientId)
+        .order("created_at", { ascending: false });
 
-    return updatedValue;
+      if (error) {
+        throw new Error(
+          `Erro ao buscar valores de indicadores: ${error.message}`,
+        );
+      }
+
+      const values = (data || []).map(
+        (item: any): PatientIndicatorValue => ({
+          id: item.id,
+          patientId: item.patient_id,
+          indicatorId: item.indicator_id,
+          value: item.value,
+          categoryName: item.category_name || "Categoria",
+          subcategoryName: item.subcategory_name || "Subcategoria",
+          parameter: item.parameter || "Parâmetro",
+          unitSymbol: item.unit_symbol || "un",
+          date: item.date,
+          time: item.time,
+          createdAt: item.created_at,
+        }),
+      );
+
+      console.log(`✅ ${values.length} valores carregados do Supabase`);
+      return values;
+    } catch (error) {
+      console.error("💥 Erro ao buscar valores de indicadores:", error);
+      throw error;
+    }
   }
 
-  // Deletar valor de indicador
+  // Atualizar valor de indicador (apenas Supabase)
+  async updatePatientIndicatorValue(
+    id: string,
+    updates: Partial<PatientIndicatorValue>,
+  ): Promise<PatientIndicatorValue> {
+    await this.delay(300);
+
+    if (!supabase) {
+      throw new Error("❌ Supabase não está configurado");
+    }
+
+    try {
+      const { error } = await supabase
+        .from("patient_indicator_values")
+        .update({
+          value: updates.value,
+          date: updates.date,
+          time: updates.time,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", id);
+
+      if (error) {
+        throw new Error(`Erro ao atualizar valor indicador: ${error.message}`);
+      }
+
+      console.log("✅ Valor indicador atualizado no Supabase:", id);
+
+      // Buscar o valor atualizado
+      const { data, error: fetchError } = await supabase
+        .from("patient_indicator_values")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (fetchError || !data) {
+        throw new Error("Erro: Valor não encontrado após atualização");
+      }
+
+      return {
+        id: data.id,
+        patientId: data.patient_id,
+        indicatorId: data.indicator_id,
+        value: data.value,
+        categoryName: data.category_name || "Categoria",
+        subcategoryName: data.subcategory_name || "Subcategoria",
+        parameter: data.parameter || "Parâmetro",
+        unitSymbol: data.unit_symbol || "un",
+        date: data.date,
+        time: data.time,
+        createdAt: data.created_at,
+      };
+    } catch (error) {
+      console.error("💥 Erro ao atualizar valor indicador:", error);
+      throw error;
+    }
+  }
+
+  // Deletar valor de indicador (apenas Supabase)
   async deletePatientIndicatorValue(id: string): Promise<void> {
     await this.delay(300);
-    const values = this.getStoredIndicatorValues();
-    const filteredValues = values.filter((value) => value.id !== id);
-    this.saveIndicatorValues(filteredValues);
+
+    if (!supabase) {
+      throw new Error("❌ Supabase não está configurado");
+    }
+
+    try {
+      const { error } = await supabase
+        .from("patient_indicator_values")
+        .delete()
+        .eq("id", id);
+
+      if (error) {
+        throw new Error(`Erro ao deletar valor indicador: ${error.message}`);
+      }
+
+      console.log("✅ Valor indicador deletado do Supabase:", id);
+    } catch (error) {
+      console.error("💥 Erro ao deletar valor indicador:", error);
+      throw error;
+    }
   }
 
-  // Limpar todos os dados
-  clearAllData(): void {
-    localStorage.removeItem(this.STORAGE_KEY);
+  // Buscar valores por indicador específico (apenas Supabase)
+  async getValuesByIndicator(
+    patientId: string,
+    indicatorId: string,
+  ): Promise<PatientIndicatorValue[]> {
+    await this.delay(300);
+
+    if (!supabase) {
+      throw new Error("❌ Supabase não está configurado");
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("patient_indicator_values")
+        .select("*")
+        .eq("patient_id", patientId)
+        .eq("indicator_id", indicatorId)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        throw new Error(
+          `Erro ao buscar valores por indicador: ${error.message}`,
+        );
+      }
+
+      return (data || []).map(
+        (item: any): PatientIndicatorValue => ({
+          id: item.id,
+          patientId: item.patient_id,
+          indicatorId: item.indicator_id,
+          value: item.value,
+          categoryName: item.category_name || "Categoria",
+          subcategoryName: item.subcategory_name || "Subcategoria",
+          parameter: item.parameter || "Parâmetro",
+          unitSymbol: item.unit_symbol || "un",
+          date: item.date,
+          time: item.time,
+          createdAt: item.created_at,
+        }),
+      );
+    } catch (error) {
+      console.error("💥 Erro ao buscar valores por indicador:", error);
+      throw error;
+    }
   }
 }
 
+// Instância singleton
 export const patientIndicatorAPI = new PatientIndicatorAPI();
