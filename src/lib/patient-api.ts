@@ -361,17 +361,19 @@ class PatientAPI {
       if (error) {
         // Se a tabela não existir, dar erro mais claro
         if (
-          error.message.includes("does not exist") ||
+          (error.message && error.message.includes("does not exist")) ||
           error.code === "42P01"
         ) {
           throw new Error(
             "❌ Tabela diagnoses não existe. Execute o script fix_all_database_errors.sql no Supabase SQL Editor.",
           );
         }
-        throw new Error(`Erro ao adicionar diagnóstico: ${error.message}`);
+        throw new Error(
+          `Erro ao adicionar diagnóstico: ${error.message || "Erro desconhecido"}`,
+        );
       }
 
-      console.log("✅ Diagnóstico adicionado no Supabase");
+      console.log("��� Diagnóstico adicionado no Supabase");
     } catch (error) {
       console.error("💥 Erro ao adicionar diagnóstico:", error);
       throw error;
