@@ -672,8 +672,9 @@ declare global {
 
 // Expor funções de debug no window para uso no console
 if (typeof window !== "undefined") {
+  // Função de diagnóstico completo
   window.debugImages = async () => {
-    console.log("🔍 ===== DIAGNÓSTICO DE IMAGENS =====");
+    console.log("��� ===== DIAGNÓSTICO DE IMAGENS =====");
 
     // 1. Configuração básica
     console.log("1️⃣ CONFIGURAÇÃO:");
@@ -690,6 +691,12 @@ if (typeof window !== "undefined") {
     console.log("   - Imagens no localStorage:", localImages.length);
     if (localImages.length > 0) {
       console.log("   - Chaves:", localImages);
+      // Mostrar tamanho das primeiras imagens
+      localImages.slice(0, 3).forEach((key) => {
+        const data = localStorage.getItem(key);
+        const size = data ? Math.round(data.length / 1024) : 0;
+        console.log(`   - ${key}: ${size}KB`);
+      });
     }
 
     // 3. Verificar autenticação
@@ -701,6 +708,7 @@ if (typeof window !== "undefined") {
       console.log("2️⃣ AUTENTICAÇÃO:");
       console.log("   - Usuário autenticado:", !!user);
       console.log("   - User ID:", user?.id);
+      console.log("   - Email:", user?.email);
       console.log("   - Erro:", error?.message);
 
       // 4. Verificar tabela Supabase
@@ -709,12 +717,21 @@ if (typeof window !== "undefined") {
         try {
           const { data, error: tableError } = await supabase
             .from("profile_images")
-            .select("id, user_id, created_at")
+            .select("id, user_id, created_at, file_size")
             .limit(5);
 
           console.log("   - Registros encontrados:", data?.length || 0);
           console.log("   - Dados:", data);
           console.log("   - Erro:", tableError?.message);
+
+          // Verificar se há imagem para o usuário atual
+          if (data && data.length > 0) {
+            const userImage = data.find((img) => img.user_id === user.id);
+            console.log(
+              "   - Imagem do usuário atual:",
+              userImage ? "SIM" : "NÃO",
+            );
+          }
         } catch (e) {
           console.log("   - Erro ao consultar tabela:", e);
         }
@@ -723,14 +740,67 @@ if (typeof window !== "undefined") {
       console.log("   - Erro de autenticação:", e);
     }
 
+    console.log("\n4️⃣ RECOMENDAÇÕES:");
+    if (localImages.length > 0) {
+      console.log(
+        "   💡 Execute: migrateImages() para migrar imagens para Supabase",
+      );
+    }
+
     console.log("🔍 ===== FIM DIAGNÓSTICO =====");
   };
 
+  // Função para migrar imagens
   window.migrateImages = async () => {
-    return await profileImageAPI.migrateLocalImagesToSupabase();
+    console.log("🔄 Iniciando migração de imagens...");
+    try {
+      const result = await profileImageAPI.migrateLocalImagesToSupabase();
+      console.log("✅ Migração concluída:", result);
+      return result;
+    } catch (error) {
+      console.error("❌ Erro na migração:", error);
+      return { error: error.message };
+    }
   };
 
+  // Função para verificar autenticação
   window.checkImageAuth = async () => {
-    return await profileImageAPI.checkAuthenticationStatus();
+    try {
+      const result = await profileImageAPI.checkAuthenticationStatus();
+      console.log("🔑 Status de autenticação:", result);
+      return result;
+    } catch (error) {
+      console.error("❌ Erro ao verificar autenticação:", error);
+      return { error: error.message };
+    }
   };
+
+  // Função para testar salvamento de imagem
+  window.testImageSave = async () => {
+    console.log("🧪 Testando salvamento de imagem...");
+    try {
+      const authStatus = await profileImageAPI.checkAuthenticationStatus();
+      if (!authStatus.isAuthenticated) {
+        console.log("❌ Usuário não autenticado");
+        return { error: "Usuário não autenticado" };
+      }
+
+      // Criar uma imagem de teste pequena (1x1 pixel PNG)
+      const testImage =
+        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+
+      await profileImageAPI.saveProfileImage(authStatus.userId!, testImage);
+      console.log("✅ Teste de salvamento concluído");
+      return { success: true };
+    } catch (error) {
+      console.error("❌ Erro no teste:", error);
+      return { error: error.message };
+    }
+  };
+
+  console.log("🔧 Funções de debug disponíveis:");
+  console.log("   - debugImages() - Diagnóstico completo");
+  console.log("   - migrateImages() - Migrar imagens para Supabase");
+  console.log("   - checkImageAuth() - Verificar autenticação");
+  console.log("   - testImageSave() - Testar salvamento");
 }
