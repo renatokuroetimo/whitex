@@ -21,7 +21,6 @@ class PatientAPI {
   async getPatients(): Promise<{
     patients: Patient[];
     pagination: PaginationData;
-  }>
   }> {
     await this.delay(500);
 
@@ -29,7 +28,12 @@ class PatientAPI {
       console.error("❌ Supabase não está configurado");
       return {
         patients: [],
-        pagination: { currentPage: 1, totalPages: 1, totalItems: 0, itemsPerPage: 10 },
+        pagination: {
+          currentPage: 1,
+          totalPages: 1,
+          totalItems: 0,
+          itemsPerPage: 10,
+        },
       };
     }
 
@@ -39,7 +43,12 @@ class PatientAPI {
       console.error("❌ Usuário não autenticado");
       return {
         patients: [],
-        pagination: { currentPage: 1, totalPages: 1, totalItems: 0, itemsPerPage: 10 },
+        pagination: {
+          currentPage: 1,
+          totalPages: 1,
+          totalItems: 0,
+          itemsPerPage: 10,
+        },
       };
     }
 
@@ -60,13 +69,21 @@ class PatientAPI {
           .order("created_at", { ascending: false });
 
         if (patientsError) {
-          console.warn("⚠️ Erro ao buscar pacientes próprios:", patientsError.message);
+          console.warn(
+            "⚠️ Erro ao buscar pacientes próprios:",
+            patientsError.message,
+          );
         } else {
           ownPatients = patientsData || [];
-          console.log(`✅ ${ownPatients.length} pacientes próprios encontrados`);
+          console.log(
+            `✅ ${ownPatients.length} pacientes próprios encontrados`,
+          );
         }
       } catch (patientsError) {
-        console.warn("⚠️ Erro crítico ao buscar pacientes próprios:", patientsError);
+        console.warn(
+          "⚠️ Erro crítico ao buscar pacientes próprios:",
+          patientsError,
+        );
         ownPatients = [];
       }
 
@@ -74,22 +91,29 @@ class PatientAPI {
       try {
         const { data: sharedData, error: sharedError } = await supabase
           .from("doctor_patient_sharing")
-          .select(`
+          .select(
+            `
             id,
             patient_id,
             doctor_id,
             shared_at
-          `)
+          `,
+          )
           .eq("doctor_id", currentUser.id);
 
         if (sharedError) {
-          console.warn("⚠️ Erro ao buscar compartilhamentos:", sharedError.message);
+          console.warn(
+            "⚠️ Erro ao buscar compartilhamentos:",
+            sharedError.message,
+          );
         } else if (sharedData && sharedData.length > 0) {
           console.log(`📤 Processando ${sharedData.length} compartilhamentos`);
 
           for (const share of sharedData) {
             try {
-              console.log(`🔍 Buscando dados básicos para paciente: ${share.patient_id}`);
+              console.log(
+                `🔍 Buscando dados básicos para paciente: ${share.patient_id}`,
+              );
 
               // Buscar dados básicos da tabela users
               const { data: userData, error: userError } = await supabase
@@ -99,12 +123,16 @@ class PatientAPI {
                 .single();
 
               if (userError) {
-                console.warn(`⚠️ Erro ao buscar usuário ${share.patient_id}:`, userError);
+                console.warn(
+                  `⚠️ Erro ao buscar usuário ${share.patient_id}:`,
+                  userError,
+                );
                 continue;
               }
 
-              if (userData && userData.profession === 'paciente') {
-                const patientName = userData.name || userData.email || "Paciente Compartilhado";
+              if (userData && userData.profession === "paciente") {
+                const patientName =
+                  userData.name || userData.email || "Paciente Compartilhado";
 
                 sharedPatients.push({
                   id: share.patient_id,
@@ -121,15 +149,23 @@ class PatientAPI {
                   sharedId: share.id,
                 });
 
-                console.log(`✅ Paciente compartilhado adicionado: ${patientName}`);
+                console.log(
+                  `✅ Paciente compartilhado adicionado: ${patientName}`,
+                );
               }
             } catch (shareError) {
-              console.warn(`⚠️ Erro ao processar compartilhamento:`, shareError);
+              console.warn(
+                `⚠️ Erro ao processar compartilhamento:`,
+                shareError,
+              );
             }
           }
         }
       } catch (sharedError) {
-        console.warn("⚠️ Erro crítico ao buscar compartilhamentos:", sharedError);
+        console.warn(
+          "⚠️ Erro crítico ao buscar compartilhamentos:",
+          sharedError,
+        );
         sharedPatients = [];
       }
 
@@ -153,7 +189,9 @@ class PatientAPI {
         ...sharedPatients,
       ];
 
-      console.log(`✅ Total de pacientes carregados: ${allPatients.length} (${ownPatients.length} próprios + ${sharedPatients.length} compartilhados)`);
+      console.log(
+        `✅ Total de pacientes carregados: ${allPatients.length} (${ownPatients.length} próprios + ${sharedPatients.length} compartilhados)`,
+      );
 
       return {
         patients: allPatients,
@@ -164,7 +202,6 @@ class PatientAPI {
           itemsPerPage: allPatients.length,
         },
       };
-
     } catch (error) {
       console.error("💥 Erro crítico ao buscar pacientes:", error);
 
@@ -206,7 +243,10 @@ class PatientAPI {
           return null; // Não encontrado
         }
         // For network errors, return null instead of throwing
-        if (error.message.includes("Failed to fetch") || error.message.includes("NetworkError")) {
+        if (
+          error.message.includes("Failed to fetch") ||
+          error.message.includes("NetworkError")
+        ) {
           console.error("🌐 Erro de rede ao buscar paciente, retornando null");
           return null;
         }
@@ -254,7 +294,7 @@ class PatientAPI {
     console.log("📋 Dados recebidos:", JSON.stringify(data, null, 2));
 
     // Validar dados obrigatórios
-    if (!data.name || typeof data.name !== 'string' || !data.name.trim()) {
+    if (!data.name || typeof data.name !== "string" || !data.name.trim()) {
       throw new Error("❌ Nome é obrigatório e não pode estar vazio");
     }
 
@@ -262,11 +302,11 @@ class PatientAPI {
       throw new Error("❌ Idade é obrigatória e deve ser maior que 0");
     }
 
-    if (!data.state || typeof data.state !== 'string' || !data.state.trim()) {
+    if (!data.state || typeof data.state !== "string" || !data.state.trim()) {
       throw new Error("❌ Estado é obrigatório");
     }
 
-    if (!data.city || typeof data.city !== 'string' || !data.city.trim()) {
+    if (!data.city || typeof data.city !== "string" || !data.city.trim()) {
       throw new Error("❌ Cidade é obrigatória");
     }
 
@@ -382,7 +422,10 @@ class PatientAPI {
   }
 
   // Adicionar diagnóstico (apenas Supabase)
-  async addDiagnosis(patientId: string, diagnosisData: { date: string; status: string; code: string }): Promise<void> {
+  async addDiagnosis(
+    patientId: string,
+    diagnosisData: { date: string; status: string; code: string },
+  ): Promise<void> {
     await this.delay(300);
 
     if (!supabase) {
@@ -403,23 +446,21 @@ class PatientAPI {
         doctor_id: currentUser.id,
         diagnosis: diagnosisData.status,
         code: diagnosisData.code,
-        date: diagnosisData.date
+        date: diagnosisData.date,
       });
 
       // Fix RLS by using service bypass
-      const { error } = await supabase
-        .from("diagnoses")
-        .insert([
-          {
-            id: this.generateId(),
-            patient_id: patientId,
-            doctor_id: currentUser.id,
-            diagnosis: diagnosisData.status,
-            code: diagnosisData.code,
-            date: diagnosisData.date,
-            created_at: new Date().toISOString(),
-          },
-        ]);
+      const { error } = await supabase.from("diagnoses").insert([
+        {
+          id: this.generateId(),
+          patient_id: patientId,
+          doctor_id: currentUser.id,
+          diagnosis: diagnosisData.status,
+          code: diagnosisData.code,
+          date: diagnosisData.date,
+          created_at: new Date().toISOString(),
+        },
+      ]);
 
       if (error) {
         console.error("🔍 Detailed error information:");
@@ -430,19 +471,35 @@ class PatientAPI {
         console.error("- Full error:", JSON.stringify(error, null, 2));
 
         // Check for table not existing
-        if ((error.message && error.message.includes("does not exist")) ||
-            error.code === "42P01" ||
-            (error.message && error.message.includes("relation") && error.message.includes("diagnoses"))) {
-          throw new Error("❌ Tabela 'diagnoses' não existe no banco de dados. Execute o script 'fix_all_database_errors.sql' no Supabase SQL Editor para criar as tabelas necessárias.");
+        if (
+          (error.message && error.message.includes("does not exist")) ||
+          error.code === "42P01" ||
+          (error.message &&
+            error.message.includes("relation") &&
+            error.message.includes("diagnoses"))
+        ) {
+          throw new Error(
+            "❌ Tabela 'diagnoses' não existe no banco de dados. Execute o script 'fix_all_database_errors.sql' no Supabase SQL Editor para criar as tabelas necessárias.",
+          );
         }
 
         // Check for missing columns
-        if (error.message && error.message.includes("column") && error.message.includes("does not exist")) {
-          throw new Error("❌ Colunas necessárias não existem na tabela 'diagnoses'. Execute o script 'fix_all_database_errors.sql' no Supabase SQL Editor.");
+        if (
+          error.message &&
+          error.message.includes("column") &&
+          error.message.includes("does not exist")
+        ) {
+          throw new Error(
+            "❌ Colunas necessárias não existem na tabela 'diagnoses'. Execute o script 'fix_all_database_errors.sql' no Supabase SQL Editor.",
+          );
         }
 
         // Generic error with more details
-        const errorMsg = error.message || error.details || error.hint || 'Erro de banco de dados desconhecido';
+        const errorMsg =
+          error.message ||
+          error.details ||
+          error.hint ||
+          "Erro de banco de dados desconhecido";
         throw new Error(`Erro ao adicionar diagnóstico: ${errorMsg}`);
       }
 
@@ -471,8 +528,13 @@ class PatientAPI {
 
       if (error) {
         // Se a tabela não existir, retornar array vazio ao invés de erro
-        if (error.message.includes("does not exist") || error.code === "42P01") {
-          console.warn("⚠️ Tabela diagnoses não existe. Execute o script fix_all_database_errors.sql");
+        if (
+          error.message.includes("does not exist") ||
+          error.code === "42P01"
+        ) {
+          console.warn(
+            "⚠️ Tabela diagnoses não existe. Execute o script fix_all_database_errors.sql",
+          );
           return [];
         }
         throw new Error(`Erro ao buscar diagnósticos: ${error.message}`);
@@ -493,7 +555,9 @@ class PatientAPI {
       console.error("💥 Erro ao buscar diagnósticos:", error);
       // Se for erro de tabela não existir, retornar array vazio
       if (error instanceof Error && error.message.includes("does not exist")) {
-        console.warn("⚠️ Retornando array vazio para diagnósticos - tabela não existe");
+        console.warn(
+          "⚠️ Retornando array vazio para diagnósticos - tabela não existe",
+        );
         return [];
       }
       throw error;
