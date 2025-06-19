@@ -414,6 +414,104 @@ class ProfileImageAPI {
     console.log("🔍 ===== FIM DEBUG =====");
   }
 
+  // Diagnóstico completo do sistema de imagens
+  async debugImageSystem(userId?: string): Promise<void> {
+    console.log("🔍 ===== DIAGNÓSTICO COMPLETO DO SISTEMA DE IMAGENS =====");
+
+    // 1. Verificar configuração básica
+    console.log("1️⃣ CONFIGURAÇÃO BÁSICA:");
+    console.log("   - Supabase configurado:", !!supabase);
+    console.log(
+      "   - Feature flag ativo:",
+      isFeatureEnabled("useSupabaseIndicators"),
+    );
+
+    // 2. Verificar autenticação
+    console.log("\n2️⃣ AUTENTICAÇÃO:");
+    const authStatus = await this.checkAuthenticationStatus();
+    console.log("   - Status:", authStatus);
+
+    // 3. Verificar tabela
+    console.log("\n3️⃣ TABELA SUPABASE:");
+    const tableExists = await this.checkTableExists();
+    console.log("   - Tabela profile_images existe:", tableExists);
+
+    if (tableExists && authStatus.isAuthenticated) {
+      try {
+        const { data, error } = await supabase!
+          .from("profile_images")
+          .select("id, user_id, created_at")
+          .limit(5);
+
+        console.log("   - Registros na tabela:", data?.length || 0);
+        console.log("   - Primeiros registros:", data);
+        console.log("   - Erros:", error);
+      } catch (error) {
+        console.log("   - Erro ao consultar tabela:", error);
+      }
+    }
+
+    // 4. Verificar localStorage
+    console.log("\n4️⃣ LOCALSTORAGE:");
+    const localStorageKeys = Object.keys(localStorage).filter((key) =>
+      key.startsWith(this.STORAGE_KEY_PREFIX),
+    );
+    console.log("   - Imagens no localStorage:", localStorageKeys.length);
+    console.log("   - Chaves encontradas:", localStorageKeys);
+
+    // 5. Teste com usuário específico
+    if (userId) {
+      console.log(`\n5️⃣ TESTE COM USUÁRIO ${userId}:`);
+
+      // Verificar localStorage
+      const localImage = localStorage.getItem(
+        `${this.STORAGE_KEY_PREFIX}${userId}`,
+      );
+      console.log("   - Imagem no localStorage:", localImage ? "SIM" : "NÃO");
+
+      // Tentar carregar do Supabase
+      if (tableExists && authStatus.isAuthenticated) {
+        try {
+          const { data, error } = await supabase!
+            .from("profile_images")
+            .select("image_data")
+            .eq("user_id", userId)
+            .single();
+
+          console.log("   - Imagem no Supabase:", data ? "SIM" : "NÃO");
+          console.log("   - Erro:", error);
+        } catch (error) {
+          console.log("   - Erro ao buscar no Supabase:", error);
+        }
+      }
+    }
+
+    // 6. Recomendações
+    console.log("\n6️⃣ RECOMENDAÇÕES:");
+    if (!tableExists) {
+      console.log("   ❌ Execute o script: create_profile_images_table.sql");
+    }
+    if (!authStatus.isAuthenticated) {
+      console.log("   ❌ Usuário precisa estar logado no Supabase");
+    }
+    if (
+      localStorageKeys.length > 0 &&
+      tableExists &&
+      authStatus.isAuthenticated
+    ) {
+      console.log(
+        "   💡 Execute: profileImageAPI.migrateLocalImagesToSupabase()",
+      );
+    }
+    if (!isFeatureEnabled("useSupabaseIndicators")) {
+      console.log(
+        "   ❌ Feature flag 'useSupabaseIndicators' está desabilitada",
+      );
+    }
+
+    console.log("\n🔍 ===== FIM DIAGNÓSTICO =====");
+  }
+
   // Migrar imagens do localStorage para Supabase
   // Migrar imagens do localStorage para Supabase
   async migrateLocalImagesToSupabase(): Promise<void> {
