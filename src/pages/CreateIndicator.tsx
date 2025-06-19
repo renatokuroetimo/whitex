@@ -272,68 +272,23 @@ const CreateIndicator = () => {
                     <Label className="text-sm font-medium text-gray-700 mb-2">
                       Categoria Principal *
                     </Label>
-                    <div className="flex gap-2">
-                      <Select
-                        value={formData.categoryId}
-                        onValueChange={(value) =>
-                          handleInputChange("categoryId", value)
-                        }
-                      >
-                        <SelectTrigger className="flex-1">
-                          <SelectValue placeholder="Selecione uma categoria" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {categories.map((category) => (
-                            <SelectItem key={category.id} value={category.id}>
-                              {category.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <Dialog
-                        open={showCategoryDialog}
-                        onOpenChange={setShowCategoryDialog}
-                      >
-                        <DialogTrigger asChild>
-                          <Button type="button" size="icon" variant="outline">
-                            <Plus className="h-4 w-4" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Criar Nova Categoria</DialogTitle>
-                          </DialogHeader>
-                          <div className="space-y-4">
-                            <div className="space-y-2">
-                              <Label>Nome da Categoria</Label>
-                              <Input
-                                value={newCategoryName}
-                                onChange={(e) =>
-                                  setNewCategoryName(e.target.value)
-                                }
-                                placeholder="Digite o nome da categoria"
-                              />
-                            </div>
-                            <div className="flex justify-end gap-2">
-                              <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => setShowCategoryDialog(false)}
-                              >
-                                Cancelar
-                              </Button>
-                              <Button
-                                type="button"
-                                onClick={handleCreateCategory}
-                                disabled={!newCategoryName.trim()}
-                              >
-                                Criar
-                              </Button>
-                            </div>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                    </div>
+                    <Select
+                      value={formData.categoryId}
+                      onValueChange={(value) =>
+                        handleInputChange("categoryId", value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione uma categoria" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem key={category.id} value={category.id}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   {/* Subcategoria */}
@@ -341,83 +296,33 @@ const CreateIndicator = () => {
                     <Label className="text-sm font-medium text-gray-700 mb-2">
                       Subcategoria *
                     </Label>
-                    <div className="flex gap-2">
-                      <Select
-                        value={formData.subcategoryId}
-                        onValueChange={(value) =>
-                          handleInputChange("subcategoryId", value)
-                        }
-                        disabled={!formData.categoryId}
-                      >
-                        <SelectTrigger className="flex-1">
-                          <SelectValue
-                            placeholder={
-                              formData.categoryId
-                                ? "Selecione uma subcategoria"
-                                : "Primeiro selecione uma categoria"
-                            }
-                          />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {subcategories.map((subcategory) => (
-                            <SelectItem
-                              key={subcategory.id}
-                              value={subcategory.id}
-                            >
-                              {subcategory.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <Dialog
-                        open={showSubcategoryDialog}
-                        onOpenChange={setShowSubcategoryDialog}
-                      >
-                        <DialogTrigger asChild>
-                          <Button
-                            type="button"
-                            size="icon"
-                            variant="outline"
-                            disabled={!formData.categoryId}
+                    <Select
+                      value={formData.subcategoryId}
+                      onValueChange={(value) =>
+                        handleInputChange("subcategoryId", value)
+                      }
+                      disabled={!formData.categoryId}
+                    >
+                      <SelectTrigger>
+                        <SelectValue
+                          placeholder={
+                            formData.categoryId
+                              ? "Selecione uma subcategoria"
+                              : "Primeiro selecione uma categoria"
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {subcategories.map((subcategory) => (
+                          <SelectItem
+                            key={subcategory.id}
+                            value={subcategory.id}
                           >
-                            <Plus className="h-4 w-4" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Criar Nova Subcategoria</DialogTitle>
-                          </DialogHeader>
-                          <div className="space-y-4">
-                            <div className="space-y-2">
-                              <Label>Nome da Subcategoria</Label>
-                              <Input
-                                value={newSubcategoryName}
-                                onChange={(e) =>
-                                  setNewSubcategoryName(e.target.value)
-                                }
-                                placeholder="Digite o nome da subcategoria"
-                              />
-                            </div>
-                            <div className="flex justify-end gap-2">
-                              <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => setShowSubcategoryDialog(false)}
-                              >
-                                Cancelar
-                              </Button>
-                              <Button
-                                type="button"
-                                onClick={handleCreateSubcategory}
-                                disabled={!newSubcategoryName.trim()}
-                              >
-                                Criar
-                              </Button>
-                            </div>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                    </div>
+                            {subcategory.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   {/* Parâmetro */}
