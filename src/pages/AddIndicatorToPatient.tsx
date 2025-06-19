@@ -94,10 +94,31 @@ const AddIndicatorToPatient = () => {
         })),
         ...customIndicators.map((ind) => {
           console.log("🔍 DEBUG Custom Indicator:", ind);
+
+          // Try multiple field name variations for category
+          const categoryName =
+            ind.categoryName ||
+            ind.category_name ||
+            ind.category ||
+            "Categoria";
+
+          // Try multiple field name variations for subcategory
+          const subcategoryName =
+            ind.subcategoryName ||
+            ind.subcategory_name ||
+            ind.subcategory ||
+            "Subcategoria";
+
+          // Try multiple field name variations for parameter
+          const parameter = ind.parameter || ind.name || "Parâmetro";
+
+          // Try multiple field name variations for unit
+          const unit = ind.unitSymbol || ind.unit_symbol || ind.unit || "un";
+
           return {
             ...ind,
             isStandard: false,
-            displayName: `${ind.categoryName || ind.category_name || "Categoria"} - ${ind.subcategoryName || ind.subcategory_name || "Subcategoria"} - ${ind.parameter || ind.name || "Parâmetro"} (${ind.unitSymbol || ind.unit_symbol || "un"})`,
+            displayName: `${categoryName} - ${subcategoryName} - ${parameter} (${unit})`,
           };
         }),
       ];
