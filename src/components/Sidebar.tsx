@@ -139,7 +139,12 @@ const Sidebar: React.FC = () => {
     navigate(path);
   };
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
+    setShowLogoutDialog(true);
+  };
+
+  const confirmLogout = async () => {
+    setShowLogoutDialog(false);
     await logout();
     navigate("/login");
   };
