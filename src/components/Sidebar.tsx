@@ -187,10 +187,6 @@ const Sidebar: React.FC = () => {
             const Icon = item.icon;
             const active = isActive(item.path);
 
-            console.log(
-              `🚨 RENDERING: ${item.label} (${item.path}) - Active: ${active}`,
-            );
-
             return (
               <li key={`${item.id}-${Date.now()}`}>
                 <button
