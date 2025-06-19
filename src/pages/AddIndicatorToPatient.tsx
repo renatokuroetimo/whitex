@@ -122,42 +122,24 @@ const AddIndicatorToPatient = () => {
         ...customIndicators.map((ind) => {
           console.log("🔍 DEBUG Custom Indicator:", ind);
 
-          // FORCE correct names - no more "Categoria - Subcategoria"!
+          // Use already processed names from the API (they should be correct now)
           let categoryName = ind.categoryName;
           let subcategoryName = ind.subcategoryName;
 
-          // If we don't have proper names, force them based on standard categories
-          if (!categoryName || categoryName === "Categoria") {
-            categoryName = "Custom Category";
+          // Only fallback if truly empty (the API should handle most cases now)
+          if (!categoryName) {
+            categoryName = "Indicadores Customizados";
           }
 
-          if (
-            !subcategoryName ||
-            subcategoryName === "Subcategoria" ||
-            subcategoryName === "sub1" ||
-            subcategoryName === "sub2" ||
-            subcategoryName === "sub3"
-          ) {
-            // Map subcategory IDs to real names
-            const subcategoryMap: { [key: string]: string } = {
-              sub1: "Pressão Arterial",
-              sub2: "Frequência Cardíaca",
-              sub3: "Temperatura",
-              sub4: "Glicemia",
-              sub5: "Colesterol",
-              sub6: "Peso",
-              sub7: "Altura",
-              sub8: "IMC",
-            };
-            subcategoryName =
-              subcategoryMap[subcategoryName] || "Custom Subcategory";
+          if (!subcategoryName) {
+            subcategoryName = "Parâmetro Personalizado";
           }
 
           const parameter = ind.parameter || ind.name || "Parâmetro";
           const unit = ind.unitSymbol || ind.unit_symbol || ind.unit || "un";
 
           const finalDisplay = `${categoryName} - ${subcategoryName} - ${parameter} (${unit})`;
-          console.log("🎯 FINAL DISPLAY:", finalDisplay);
+          console.log("🎯 FINAL CUSTOM DISPLAY:", finalDisplay);
 
           return {
             ...ind,
