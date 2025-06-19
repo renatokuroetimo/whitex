@@ -76,16 +76,36 @@ class PatientAPI {
 
     try {
       console.log("🔍 Buscando compartilhamentos reais no banco...");
+      console.log("👤 ID do médico logado:", currentUser.id);
 
       const { data: shares, error: sharesError } = await supabase
         .from("doctor_patient_sharing")
         .select("*")
         .eq("doctor_id", currentUser.id);
 
-      console.log("📊 RESULTADO:", {
-        total: shares?.length || 0,
-        error: sharesError?.message || "nenhum",
-        shares: shares,
+      console.log("📊 RESULTADO DETALHADO:");
+      console.log("- Total de compartilhamentos:", shares?.length || 0);
+      console.log("- Erro:", sharesError?.message || "nenhum");
+      console.log(
+        "- Query executada: doctor_patient_sharing WHERE doctor_id =",
+        currentUser.id,
+      );
+      console.log("- Dados completos:", shares);
+
+      // Buscar TODOS os compartilhamentos para comparar
+      const { data: allShares } = await supabase
+        .from("doctor_patient_sharing")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      console.log(
+        "🗂️ TODOS OS COMPARTILHAMENTOS NO BANCO:",
+        allShares?.length || 0,
+      );
+      allShares?.forEach((share, index) => {
+        console.log(
+          `  ${index + 1}. Doctor: ${share.doctor_id}, Patient: ${share.patient_id}, Data: ${share.shared_at}`,
+        );
       });
 
       let allPatients: Patient[] = [testPatient]; // Sempre incluir teste
