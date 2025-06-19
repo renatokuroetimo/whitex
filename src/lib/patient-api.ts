@@ -534,6 +534,9 @@ class PatientAPI {
     id: string,
     data: Partial<PatientFormData>,
   ): Promise<Patient> {
+    console.error("🆘🆘🆘 UPDATEPATIENT CHAMADO! INÍCIO ABSOLUTO!");
+    console.error("🆘 ID recebido:", id);
+    console.error("🆘 Data recebida:", data);
     console.log("📝 updatePatient - VERSÃO RIGOROSA - Atualizando paciente:", {
       id,
       data,
@@ -685,7 +688,7 @@ class PatientAPI {
 
         if (!updatedData || updatedData.length === 0) {
           console.error("❌ FALHA: Nenhum registro atualizado");
-          throw new Error("Falha crítica: observações não foram atualizadas");
+          throw new Error("Falha crítica: observaç��es não foram atualizadas");
         }
 
         console.log("✅ Observação atualizada:", updatedData[0]);
