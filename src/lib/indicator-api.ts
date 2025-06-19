@@ -7,18 +7,9 @@ import {
   IndicatorWithDetails,
 } from "./indicator-types";
 import { supabase } from "./supabase";
-import { isFeatureEnabled } from "./feature-flags";
 
 class IndicatorAPI {
-  private readonly STORAGE_KEYS = {
-    CATEGORIES: "medical_app_categories",
-    SUBCATEGORIES: "medical_app_subcategories",
-    UNITS: "medical_app_units",
-    INDICATORS: "medical_app_indicators",
-    STANDARD_INDICATORS: "medical_app_standard_indicators",
-  };
-
-  // Simula delay de rede
+  // Delay para simular operação real
   private delay(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
@@ -50,862 +41,331 @@ class IndicatorAPI {
     return subcategoryMap[subcategoryId] || subcategoryId || "Subcategoria";
   }
 
-  // Gera ID único
-  private generateId(): string {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
-  }
-
-  // === CATEGORIES ===
-  private getStoredCategories(): Category[] {
-    try {
-      const categories = localStorage.getItem(this.STORAGE_KEYS.CATEGORIES);
-      return categories ? JSON.parse(categories) : [];
-    } catch {
-      return [];
-    }
-  }
-
-  private saveCategories(categories: Category[]): void {
-    localStorage.setItem(
-      this.STORAGE_KEYS.CATEGORIES,
-      JSON.stringify(categories),
-    );
-  }
-
-  async getCategories(): Promise<Category[]> {
-    await this.delay(200);
-    let categories = this.getStoredCategories();
-
-    // Inicializar com categorias padrão se não existir
-    if (categories.length === 0) {
-      categories = [
-        {
-          id: "cat1",
-          name: "Sinais Vitais",
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: "cat2",
-          name: "Exames Laboratoriais",
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: "cat3",
-          name: "Medidas Antropométricas",
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: "cat4",
-          name: "Medicamentos",
-          createdAt: new Date().toISOString(),
-        },
-      ];
-      this.saveCategories(categories);
-    }
-
-    return categories;
-  }
-
-  async createCategory(name: string): Promise<Category> {
-    await this.delay(300);
-    const newCategory: Category = {
-      id: this.generateId(),
-      name,
-      createdAt: new Date().toISOString(),
-    };
-
-    const categories = this.getStoredCategories();
-    categories.push(newCategory);
-    this.saveCategories(categories);
-
-    return newCategory;
-  }
-
-  // === SUBCATEGORIES ===
-  private getStoredSubcategories(): Subcategory[] {
-    try {
-      const subcategories = localStorage.getItem(
-        this.STORAGE_KEYS.SUBCATEGORIES,
-      );
-      return subcategories ? JSON.parse(subcategories) : [];
-    } catch {
-      return [];
-    }
-  }
-
-  private saveSubcategories(subcategories: Subcategory[]): void {
-    localStorage.setItem(
-      this.STORAGE_KEYS.SUBCATEGORIES,
-      JSON.stringify(subcategories),
-    );
-  }
-
-  async getSubcategories(): Promise<Subcategory[]> {
-    await this.delay(200);
-    let subcategories = this.getStoredSubcategories();
-
-    // Inicializar com subcategorias padrão se não existir
-    if (subcategories.length === 0) {
-      subcategories = [
-        {
-          id: "sub1",
-          name: "Pressão Arterial",
-          categoryId: "cat1",
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: "sub2",
-          name: "Frequência Cardíaca",
-          categoryId: "cat1",
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: "sub3",
-          name: "Temperatura",
-          categoryId: "cat1",
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: "sub4",
-          name: "Glicemia",
-          categoryId: "cat2",
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: "sub5",
-          name: "Colesterol",
-          categoryId: "cat2",
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: "sub6",
-          name: "Peso",
-          categoryId: "cat3",
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: "sub7",
-          name: "Altura",
-          categoryId: "cat3",
-          createdAt: new Date().toISOString(),
-        },
-      ];
-      this.saveSubcategories(subcategories);
-    }
-
-    return subcategories;
-  }
-
-  async getSubcategoriesByCategory(categoryId: string): Promise<Subcategory[]> {
-    const subcategories = await this.getSubcategories();
-    return subcategories.filter((sub) => sub.categoryId === categoryId);
-  }
-
-  async createSubcategory(
-    name: string,
-    categoryId: string,
-  ): Promise<Subcategory> {
-    await this.delay(300);
-    const newSubcategory: Subcategory = {
-      id: this.generateId(),
-      name,
-      categoryId,
-      createdAt: new Date().toISOString(),
-    };
-
-    const subcategories = this.getStoredSubcategories();
-    subcategories.push(newSubcategory);
-    this.saveSubcategories(subcategories);
-
-    return newSubcategory;
-  }
-
-  // === UNITS OF MEASURE ===
-  private getStoredUnits(): UnitOfMeasure[] {
-    try {
-      const units = localStorage.getItem(this.STORAGE_KEYS.UNITS);
-      return units ? JSON.parse(units) : [];
-    } catch {
-      return [];
-    }
-  }
-
-  private saveUnits(units: UnitOfMeasure[]): void {
-    localStorage.setItem(this.STORAGE_KEYS.UNITS, JSON.stringify(units));
-  }
-
-  async getUnitsOfMeasure(): Promise<UnitOfMeasure[]> {
-    await this.delay(200);
-    let units = this.getStoredUnits();
-
-    // Inicializar com unidades padrão se não existir
-    if (units.length === 0) {
-      units = [
-        { id: "unit1", name: "Milímetros de Mercúrio", symbol: "mmHg" },
-        { id: "unit2", name: "Batimentos por Minuto", symbol: "bpm" },
-        { id: "unit3", name: "Graus Celsius", symbol: "°C" },
-        { id: "unit4", name: "Graus Fahrenheit", symbol: "°F" },
-        { id: "unit5", name: "Quilograma", symbol: "kg" },
-        { id: "unit6", name: "Grama", symbol: "g" },
-        { id: "unit7", name: "Metro", symbol: "m" },
-        { id: "unit8", name: "Centímetro", symbol: "cm" },
-        { id: "unit9", name: "Miligramas por Decilitro", symbol: "mg/dL" },
-        { id: "unit10", name: "Gramas por Decilitro", symbol: "g/dL" },
-        { id: "unit11", name: "Mililitro", symbol: "mL" },
-        { id: "unit12", name: "Litro", symbol: "L" },
-        { id: "unit13", name: "Porcentagem", symbol: "%" },
-        { id: "unit14", name: "Unidade", symbol: "un" },
-        { id: "unit15", name: "Comprimido", symbol: "cp" },
-        { id: "unit16", name: "Miliequivalente", symbol: "mEq" },
-      ];
-      this.saveUnits(units);
-    }
-
-    return units;
-  }
-
-  // === INDICATORS ===
-  private getStoredIndicators(): Indicator[] {
-    try {
-      const indicators = localStorage.getItem(this.STORAGE_KEYS.INDICATORS);
-      return indicators ? JSON.parse(indicators) : [];
-    } catch {
-      return [];
-    }
-  }
-
-  private saveIndicators(indicators: Indicator[]): void {
-    localStorage.setItem(
-      this.STORAGE_KEYS.INDICATORS,
-      JSON.stringify(indicators),
-    );
-  }
-
-  async getIndicators(doctorId: string): Promise<IndicatorWithDetails[]> {
-    await this.delay(300);
-
-    console.log("🔍 getIndicators chamado para doctorId:", doctorId);
-
-    let indicators: Indicator[] = [];
-
-    // Se Supabase estiver ativo, usar Supabase
-    if (isFeatureEnabled("useSupabaseIndicators") && supabase) {
-      console.log("🚀 Buscando indicadores no Supabase");
-
-      try {
-        // Query específica com colunas que sabemos que existem + campos de obrigatoriedade
-        const { data: supabaseIndicators, error } = await supabase
-          .from("indicators")
-          .select(
-            "id, name, unit, type, category, subcategory, parameter, unit_symbol, requires_date, requires_time, doctor_id, is_standard, created_at",
-          )
-          .eq("doctor_id", doctorId);
-
-        console.log("📊 Indicadores do Supabase:", {
-          data: supabaseIndicators,
-          error,
-        });
-
-        if (error) {
-          console.error("❌ Erro detalhado ao buscar indicadores:", {
-            message: error.message,
-            details: error.details,
-            hint: error.hint,
-            code: error.code,
-            fullError: error,
-          });
-          // Fallback para localStorage
-        } else {
-          // Retornar dados do Supabase diretamente como IndicatorWithDetails
-          const indicatorsWithDetails: IndicatorWithDetails[] = (
-            supabaseIndicators || []
-          ).map(
-            (ind: any): IndicatorWithDetails => ({
-              id: ind.id,
-              categoryId: ind.categoryId || ind.category || "",
-              subcategoryId: ind.subcategory || "",
-              parameter: ind.parameter || ind.name || "",
-              unitOfMeasureId: ind.unit_symbol || ind.unit || "",
-              requiresTime: Boolean(ind.requires_time),
-              requiresDate: Boolean(ind.requires_date),
-              visible: true,
-              visibleToMedics: true,
-              doctorId: ind.doctor_id,
-              createdAt: ind.created_at,
-              updatedAt: ind.updated_at || ind.created_at,
-              // Campos específicos de IndicatorWithDetails - mapear IDs para nomes reais
-              categoryName: this.mapCategoryIdToName(
-                ind.categoryId || ind.category || "",
-              ),
-              subcategoryName: this.mapSubcategoryIdToName(
-                ind.subcategory || "",
-              ),
-              unitOfMeasureName: ind.unit_symbol || ind.unit || "Unidade",
-              unitOfMeasureSymbol: ind.unit_symbol || ind.unit || "",
-            }),
-          );
-
-          console.log(
-            "✅ Indicadores convertidos diretamente:",
-            indicatorsWithDetails,
-          );
-          return indicatorsWithDetails; // Retornar diretamente sem processamento adicional
-        }
-      } catch (supabaseError: any) {
-        console.error("💥 Erro no Supabase getIndicators:", {
-          message: supabaseError?.message || "Erro desconhecido",
-          stack: supabaseError?.stack,
-          fullError: supabaseError,
-        });
-        // Continuar para fallback localStorage
-      }
-    }
-
-    // Se não conseguiu carregar do Supabase, falhar
-    if (indicators.length === 0) {
-      throw new Error("Não foi possível carregar indicadores do Supabase");
-    }
-
-    const categories = await this.getCategories();
-    const subcategories = await this.getSubcategories();
-    const units = await this.getUnitsOfMeasure();
-
-    return indicators.map((indicator) => {
-      // Para todos os indicadores, usar lookup nas tabelas quando possível
-      const category = categories.find(
-        (cat) => cat.id === indicator.categoryId,
-      );
-      const subcategory = subcategories.find(
-        (sub) => sub.id === indicator.subcategoryId,
-      );
-      const unit = units.find((u) => u.id === indicator.unitOfMeasureId);
-
-      const indicatorWithDetails: IndicatorWithDetails = {
-        ...indicator,
-        categoryName:
-          category?.name ||
-          this.mapCategoryIdToName(indicator.categoryId) ||
-          "Categoria",
-        subcategoryName:
-          subcategory?.name ||
-          this.mapSubcategoryIdToName(indicator.subcategoryId) ||
-          "Subcategoria",
-        unitOfMeasureName: unit?.name || indicator.unitOfMeasureId || "Unidade",
-        unitOfMeasureSymbol: unit?.symbol || indicator.unitOfMeasureId || "",
-      };
-
-      console.log("🔄 Mapeamento universal:", indicatorWithDetails);
-      return indicatorWithDetails;
-    });
-  }
-
-  async createIndicator(
-    doctorId: string,
-    data: IndicatorFormData,
-  ): Promise<Indicator> {
+  // Buscar indicadores (apenas Supabase)
+  async getIndicators(): Promise<IndicatorWithDetails[]> {
     await this.delay(500);
 
-    const newIndicator: Indicator = {
-      id: this.generateId(),
-      categoryId: data.categoryId,
-      subcategoryId: data.subcategoryId,
-      parameter: data.parameter,
-      unitOfMeasureId: data.unitOfMeasureId,
-      requiresTime: data.requiresTime,
-      requiresDate: data.requiresDate,
-      visible: data.visible,
-      visibleToMedics: data.visibleToMedics,
-      doctorId,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    if (!supabase) {
+      throw new Error("❌ Supabase não está configurado");
+    }
 
-    console.log("🔥 CRIANDO INDICADOR:", newIndicator);
-    console.log(
-      "🔧 Feature flag useSupabaseIndicators:",
-      isFeatureEnabled("useSupabaseIndicators"),
-    );
-    console.log("🔗 Supabase client:", !!supabase);
+    // Verificar se usuário está logado
+    const currentUserStr = localStorage.getItem("medical_app_current_user");
+    if (!currentUserStr) {
+      throw new Error("❌ Usuário não autenticado");
+    }
 
-    // Se Supabase estiver ativo, usar Supabase
-    if (isFeatureEnabled("useSupabaseIndicators") && supabase) {
-      console.log("🚀 Criando indicador no Supabase");
+    const currentUser = JSON.parse(currentUserStr);
 
-      try {
-        // Buscar detalhes da unidade para obter símbolo
-        const units = await this.getUnitsOfMeasure();
-        const unit = units.find((u) => u.id === newIndicator.unitOfMeasureId);
+    try {
+      const { data, error } = await supabase
+        .from("indicators")
+        .select("*")
+        .eq("doctor_id", currentUser.id)
+        .order("created_at", { ascending: false });
 
-        const insertData = {
-          id: newIndicator.id,
-          name: newIndicator.parameter, // Mapear parameter -> name
-          unit: unit?.symbol || "un", // Mapear unitOfMeasureId -> unit symbol
-          type: "numeric", // Tipo padrão
-          category: newIndicator.categoryId,
-          subcategory: newIndicator.subcategoryId,
-          parameter: newIndicator.parameter,
-          unit_symbol: unit?.symbol || "un",
-          requires_date: newIndicator.requiresDate,
-          requires_time: newIndicator.requiresTime,
-          doctor_id: newIndicator.doctorId,
-          is_standard: false,
-          created_at: newIndicator.createdAt,
-        };
-
-        console.log("📝 Dados do indicador:", insertData);
-
-        const { data: supabaseData, error } = await supabase
-          .from("indicators")
-          .insert([insertData]);
-
-        console.log("📊 Resposta do Supabase:", { data: supabaseData, error });
-
-        if (error) {
-          console.error("❌ Erro detalhado ao criar indicador:", {
-            message: error.message,
-            details: error.details,
-            hint: error.hint,
-            code: error.code,
-          });
-          throw error; // Forçar fallback
-        } else {
-          console.log("✅ Indicador criado no Supabase!");
-          return newIndicator;
-        }
-      } catch (supabaseError) {
-        console.error(
-          "💥 Erro no Supabase createIndicator:",
-          JSON.stringify(
-            {
-              message:
-                supabaseError instanceof Error
-                  ? supabaseError.message
-                  : "Unknown error",
-              stack:
-                supabaseError instanceof Error
-                  ? supabaseError.stack
-                  : undefined,
-              error: supabaseError,
-            },
-            null,
-            2,
-          ),
-        );
-        throw supabaseError; // Falhar sem fallback
+      if (error) {
+        throw new Error(`Erro ao buscar indicadores: ${error.message}`);
       }
-    } else {
-      throw new Error("Supabase não está ativo para criação de indicadores");
+
+      return (data || []).map(
+        (indicator: any): IndicatorWithDetails => ({
+          id: indicator.id,
+          name: indicator.name,
+          categoryId: indicator.category_id,
+          categoryName: this.mapCategoryIdToName(indicator.category_id),
+          subcategoryId: indicator.subcategory_id,
+          subcategoryName: this.mapSubcategoryIdToName(
+            indicator.subcategory_id,
+          ),
+          parameter: indicator.parameter,
+          unitId: indicator.unit_id,
+          unitSymbol: indicator.unit_symbol || "un",
+          isMandatory: indicator.is_mandatory || false,
+          doctorId: indicator.doctor_id,
+          createdAt: indicator.created_at,
+        }),
+      );
+    } catch (error) {
+      console.error("💥 Erro ao buscar indicadores:", error);
+      throw error;
     }
   }
 
+  // Criar indicador (apenas Supabase)
+  async createIndicator(data: IndicatorFormData): Promise<Indicator> {
+    await this.delay(500);
+
+    if (!supabase) {
+      throw new Error("❌ Supabase não está configurado");
+    }
+
+    // Verificar se usuário está logado
+    const currentUserStr = localStorage.getItem("medical_app_current_user");
+    if (!currentUserStr) {
+      throw new Error("❌ Usuário não autenticado");
+    }
+
+    const currentUser = JSON.parse(currentUserStr);
+
+    const newIndicator = {
+      id: Date.now().toString(36) + Math.random().toString(36).substr(2),
+      name: data.name,
+      category_id: data.categoryId,
+      subcategory_id: data.subcategoryId,
+      parameter: data.parameter,
+      unit_id: data.unitId,
+      unit_symbol: data.unitSymbol || "un",
+      is_mandatory: data.isMandatory || false,
+      doctor_id: currentUser.id,
+      created_at: new Date().toISOString(),
+    };
+
+    try {
+      const { error } = await supabase
+        .from("indicators")
+        .insert([newIndicator]);
+
+      if (error) {
+        throw new Error(`Erro ao criar indicador: ${error.message}`);
+      }
+
+      console.log("✅ Indicador criado no Supabase:", newIndicator.id);
+
+      return {
+        id: newIndicator.id,
+        name: newIndicator.name,
+        categoryId: newIndicator.category_id,
+        subcategoryId: newIndicator.subcategory_id,
+        parameter: newIndicator.parameter,
+        unitId: newIndicator.unit_id,
+        unitSymbol: newIndicator.unit_symbol,
+        isMandatory: newIndicator.is_mandatory,
+        doctorId: newIndicator.doctor_id,
+        createdAt: newIndicator.created_at,
+      };
+    } catch (error) {
+      console.error("💥 Erro ao criar indicador:", error);
+      throw error;
+    }
+  }
+
+  // Deletar indicador (apenas Supabase)
   async deleteIndicator(id: string): Promise<void> {
     await this.delay(300);
 
-    console.log("🗑️ DELETANDO INDICADOR:", id);
-
-    // Se Supabase estiver ativo, usar Supabase
-    if (isFeatureEnabled("useSupabaseIndicators") && supabase) {
-      console.log("🚀 Deletando indicador no Supabase");
-
-      try {
-        const { error } = await supabase
-          .from("indicators")
-          .delete()
-          .eq("id", id);
-
-        console.log("📊 Resultado da deleção no Supabase:", { error });
-
-        if (error) {
-          console.error(
-            "❌ Erro ao deletar indicador:",
-            JSON.stringify(
-              {
-                message: error.message,
-                details: error.details,
-                hint: error.hint,
-                code: error.code,
-              },
-              null,
-              2,
-            ),
-          );
-          throw error; // Forçar fallback
-        } else {
-          console.log("✅ Indicador deletado no Supabase!");
-
-          // Sincronizar com localStorage também
-          try {
-            const indicators = this.getStoredIndicators();
-            const filteredIndicators = indicators.filter(
-              (ind) => ind.id !== id,
-            );
-            this.saveIndicators(filteredIndicators);
-            console.log("✅ Sincronizado remoção com localStorage");
-          } catch (syncError) {
-            console.warn(
-              "⚠️ Erro ao sincronizar remoção com localStorage:",
-              syncError,
-            );
-          }
-
-          return;
-        }
-      } catch (supabaseError) {
-        console.error(
-          "💥 Erro no Supabase deleteIndicator:",
-          JSON.stringify(
-            {
-              message:
-                supabaseError instanceof Error
-                  ? supabaseError.message
-                  : "Unknown error",
-              stack:
-                supabaseError instanceof Error
-                  ? supabaseError.stack
-                  : undefined,
-              error: supabaseError,
-            },
-            null,
-            2,
-          ),
-        );
-        throw supabaseError; // Falhar sem fallback
-      }
-    } else {
-      throw new Error("Supabase não está ativo para deleção de indicadores");
+    if (!supabase) {
+      throw new Error("❌ Supabase não está configurado");
     }
-  }
 
-  // === STANDARD INDICATORS ===
-  private getStoredStandardIndicators(doctorId?: string): any[] {
     try {
-      // Se é médico, usar configuração específica do médico
-      // Se não tem doctorId, usar configuração global (padrão)
-      const storageKey = doctorId
-        ? `${this.STORAGE_KEYS.STANDARD_INDICATORS}_doctor_${doctorId}`
-        : this.STORAGE_KEYS.STANDARD_INDICATORS;
-
-      const indicators = localStorage.getItem(storageKey);
-      return indicators ? JSON.parse(indicators) : [];
-    } catch {
-      return [];
-    }
-  }
-
-  private saveStandardIndicators(indicators: any[], doctorId?: string): void {
-    // Se é médico, salvar configuração específica do médico
-    // Se não tem doctorId, salvar configuração global (padrão)
-    const storageKey = doctorId
-      ? `${this.STORAGE_KEYS.STANDARD_INDICATORS}_doctor_${doctorId}`
-      : this.STORAGE_KEYS.STANDARD_INDICATORS;
-
-    localStorage.setItem(storageKey, JSON.stringify(indicators));
-  }
-
-  async getStandardIndicators(doctorId?: string): Promise<any[]> {
-    await this.delay(200);
-
-    // Indicadores padrão básicos (sempre os mesmos para todos)
-    const defaultIndicators = [
-      {
-        id: "std1",
-        categoryName: "Sinais Vitais",
-        subcategoryName: "Pressão Arterial",
-        parameter: "Sistólica",
-        unitSymbol: "mmHg",
-        requiresDate: true,
-        requiresTime: true,
-        visible: true,
-      },
-      {
-        id: "std2",
-        categoryName: "Sinais Vitais",
-        subcategoryName: "Pressão Arterial",
-        parameter: "Diastólica",
-        unitSymbol: "mmHg",
-        requiresDate: true,
-        requiresTime: true,
-        visible: true,
-      },
-      {
-        id: "std3",
-        categoryName: "Sinais Vitais",
-        subcategoryName: "Frequência Cardíaca",
-        parameter: "Batimentos",
-        unitSymbol: "bpm",
-        requiresDate: true,
-        requiresTime: false,
-        visible: true,
-      },
-      {
-        id: "std4",
-        categoryName: "Sinais Vitais",
-        subcategoryName: "Temperatura",
-        parameter: "Corporal",
-        unitSymbol: "°C",
-        requiresDate: true,
-        requiresTime: true,
-        visible: true,
-      },
-      {
-        id: "std5",
-        categoryName: "Exames Laboratoriais",
-        subcategoryName: "Glicemia",
-        parameter: "Jejum",
-        unitSymbol: "mg/dL",
-        requiresDate: true,
-        requiresTime: false,
-        visible: true,
-      },
-      {
-        id: "std6",
-        categoryName: "Exames Laboratoriais",
-        subcategoryName: "Colesterol",
-        parameter: "Total",
-        unitSymbol: "mg/dL",
-        requiresDate: true,
-        requiresTime: false,
-        visible: true,
-      },
-      {
-        id: "std7",
-        categoryName: "Medidas Antropométricas",
-        subcategoryName: "Peso",
-        parameter: "Corporal",
-        unitSymbol: "kg",
-        requiresDate: true,
-        requiresTime: false,
-        visible: true,
-      },
-      {
-        id: "std8",
-        categoryName: "Medidas Antropométricas",
-        subcategoryName: "Altura",
-        parameter: "Estatura",
-        unitSymbol: "cm",
-        requiresDate: false,
-        requiresTime: false,
-        visible: true,
-      },
-    ];
-
-    // Se não tem doctorId ou não está usando Supabase, retornar indicadores padrão
-    if (!doctorId || !isFeatureEnabled("useSupabaseIndicators") || !supabase) {
-      return defaultIndicators;
-    }
-
-    // Se tem doctorId e está usando Supabase, aplicar configurações de visibilidade
-    try {
-      const { data: settings, error } = await supabase
-        .from("doctor_standard_indicator_settings")
-        .select("*")
-        .eq("doctor_id", doctorId);
+      const { error } = await supabase.from("indicators").delete().eq("id", id);
 
       if (error) {
-        console.error("❌ Erro ao buscar configurações:", error);
-        return defaultIndicators; // Fallback
+        throw new Error(`Erro ao deletar indicador: ${error.message}`);
       }
 
-      // Aplicar configurações de visibilidade aos indicadores padrão
-      const settingsMap = new Map(
-        settings?.map((s) => [s.standard_indicator_id, s.visible]) || [],
-      );
-
-      return defaultIndicators.map((indicator) => ({
-        ...indicator,
-        visible: settingsMap.has(indicator.id)
-          ? settingsMap.get(indicator.id)
-          : true,
-      }));
-    } catch (supabaseError) {
-      console.error(
-        "💥 Erro no Supabase getStandardIndicators:",
-        supabaseError,
-      );
-      return defaultIndicators; // Fallback
+      console.log("✅ Indicador deletado do Supabase:", id);
+    } catch (error) {
+      console.error("💥 Erro ao deletar indicador:", error);
+      throw error;
     }
   }
 
+  // Indicadores padrão básicos
+  private getDefaultStandardIndicators() {
+    return [
+      {
+        id: "std_blood_pressure",
+        name: "Pressão Arterial",
+        categoryId: "cat1",
+        categoryName: "Sinais Vitais",
+        subcategoryId: "sub1",
+        subcategoryName: "Pressão Arterial",
+        parameter: "Sistólica/Diastólica",
+        unitId: "unit_mmhg",
+        unitSymbol: "mmHg",
+        isMandatory: true,
+      },
+      {
+        id: "std_heart_rate",
+        name: "Frequência Cardíaca",
+        categoryId: "cat1",
+        categoryName: "Sinais Vitais",
+        subcategoryId: "sub2",
+        subcategoryName: "Frequência Cardíaca",
+        parameter: "Batimentos por minuto",
+        unitId: "unit_bpm",
+        unitSymbol: "bpm",
+        isMandatory: false,
+      },
+      {
+        id: "std_temperature",
+        name: "Temperatura Corporal",
+        categoryId: "cat1",
+        categoryName: "Sinais Vitais",
+        subcategoryId: "sub3",
+        subcategoryName: "Temperatura",
+        parameter: "Temperatura",
+        unitId: "unit_celsius",
+        unitSymbol: "°C",
+        isMandatory: false,
+      },
+    ];
+  }
+
+  // Buscar indicadores padrão (apenas Supabase)
+  async getStandardIndicators(
+    doctorId?: string,
+  ): Promise<IndicatorWithDetails[]> {
+    // Retornar indicadores padrão básicos
+    return this.getDefaultStandardIndicators();
+  }
+
+  // Atualizar visibilidade de indicador padrão (apenas Supabase)
   async updateStandardIndicatorVisibility(
-    id: string,
+    indicatorId: string,
     visible: boolean,
-    doctorId: string,
+    doctorId?: string,
   ): Promise<void> {
-    await this.delay(200);
+    await this.delay(300);
 
-    if (isFeatureEnabled("useSupabaseIndicators") && supabase) {
-      console.log("🚀 Atualizando visibilidade no Supabase");
-
-      try {
-        // Tentar fazer upsert (insert ou update)
-        const { error } = await supabase
-          .from("doctor_standard_indicator_settings")
-          .upsert(
-            {
-              doctor_id: doctorId,
-              standard_indicator_id: id,
-              visible: visible,
-              updated_at: new Date().toISOString(),
-            },
-            {
-              onConflict: "doctor_id,standard_indicator_id",
-            },
-          );
-
-        if (error) {
-          console.error("❌ Erro ao atualizar visibilidade:", error);
-          throw error;
-        }
-
-        console.log("✅ Visibilidade atualizada no Supabase");
-      } catch (supabaseError) {
-        console.error(
-          "💥 Erro no Supabase updateStandardIndicatorVisibility:",
-          supabaseError,
-        );
-        throw supabaseError;
-      }
-    } else {
-      // Fallback para localStorage (temporário)
-      const indicators = this.getStoredStandardIndicators(doctorId);
-      const indicatorIndex = indicators.findIndex((ind) => ind.id === id);
-
-      if (indicatorIndex !== -1) {
-        indicators[indicatorIndex].visible = visible;
-        this.saveStandardIndicators(indicators, doctorId);
-      }
-    }
-  }
-
-  async getVisibleStandardIndicators(doctorId?: string): Promise<any[]> {
-    if (!doctorId) {
-      // Se não tem doctorId, retornar todos os indicadores padrão
-      return await this.getStandardIndicators();
+    if (!supabase) {
+      throw new Error("❌ Supabase não está configurado");
     }
 
-    if (isFeatureEnabled("useSupabaseIndicators") && supabase) {
-      console.log("🚀 Buscando configurações de visibilidade no Supabase");
-
-      try {
-        // Buscar indicadores padrão
-        const standardIndicators = await this.getStandardIndicators();
-
-        // Buscar configurações do médico
-        const { data: settings, error } = await supabase
-          .from("doctor_standard_indicator_settings")
-          .select("*")
-          .eq("doctor_id", doctorId);
-
-        if (error) {
-          console.error("❌ Erro ao buscar configurações:", error);
-          // Se der erro, retornar todos os indicadores (fallback)
-          return standardIndicators;
-        }
-
-        // Aplicar configurações de visibilidade
-        const settingsMap = new Map(
-          settings?.map((s) => [s.standard_indicator_id, s.visible]) || [],
-        );
-
-        const visibleIndicators = standardIndicators.filter((indicator) => {
-          // Se não tem configuração específica, assume como visível
-          return settingsMap.get(indicator.id) !== false;
-        });
-
-        console.log(
-          "✅ Configurações de visibilidade aplicadas:",
-          visibleIndicators.length,
-        );
-        return visibleIndicators;
-      } catch (supabaseError) {
-        console.error(
-          "💥 Erro no Supabase getVisibleStandardIndicators:",
-          supabaseError,
-        );
-        // Se der erro, retornar todos os indicadores (fallback)
-        return await this.getStandardIndicators();
-      }
-    } else {
-      // Fallback para localStorage
-      const indicators = await this.getStandardIndicators(doctorId);
-      return indicators.filter((ind) => ind.visible);
-    }
-  }
-
-  // Garantir que indicadores padrão existam no Supabase
-  private async ensureStandardIndicatorsInSupabase(): Promise<void> {
-    if (!isFeatureEnabled("useSupabaseIndicators") || !supabase) {
-      return;
+    // Verificar se usuário está logado
+    const currentUserStr = localStorage.getItem("medical_app_current_user");
+    if (!currentUserStr) {
+      throw new Error("❌ Usuário não autenticado");
     }
 
-    console.log("🔄 Verificando indicadores padrão no Supabase...");
+    const currentUser = JSON.parse(currentUserStr);
+    const finalDoctorId = doctorId || currentUser.id;
 
     try {
-      const standardIndicators = await this.getStandardIndicators();
+      const { error } = await supabase
+        .from("doctor_standard_indicator_settings")
+        .upsert(
+          {
+            doctor_id: finalDoctorId,
+            standard_indicator_id: indicatorId,
+            visible: visible,
+          },
+          {
+            onConflict: "doctor_id,standard_indicator_id",
+          },
+        );
 
-      for (const indicator of standardIndicators) {
-        // Verificar se o indicador já existe
-        const { data: existing, error: checkError } = await supabase
-          .from("indicators")
-          .select("id")
-          .eq("id", indicator.id)
-          .single();
-
-        // PGRST116 means no rows found, which is expected when indicator doesn't exist
-        const indicatorExists = existing && !checkError;
-
-        if (!indicatorExists) {
-          console.log(
-            `📝 Inserindo indicador padrão ${indicator.id} no Supabase`,
-          );
-
-          const insertData = {
-            id: indicator.id,
-            name: indicator.parameter,
-            unit: indicator.unitSymbol,
-            type: "numeric",
-            category: indicator.categoryName,
-            doctor_id: null, // Indicadores padrão não pertencem a um médico específico
-            is_standard: true,
-            created_at: new Date().toISOString(),
-          };
-
-          const { error } = await supabase
-            .from("indicators")
-            .insert([insertData]);
-
-          if (error) {
-            console.error(
-              `❌ Erro ao inserir indicador padrão ${indicator.id}:`,
-              error,
-            );
-          } else {
-            console.log(
-              `✅ Indicador padrão ${indicator.id} inserido com sucesso`,
-            );
-          }
-        }
+      if (error) {
+        throw new Error(`Erro ao atualizar visibilidade: ${error.message}`);
       }
+
+      console.log("✅ Visibilidade atualizada no Supabase");
     } catch (error) {
-      console.error("💥 Erro ao verificar indicadores padrão:", error);
+      console.error("💥 Erro ao atualizar visibilidade:", error);
+      throw error;
     }
   }
 
-  // Método para limpar todos os dados (útil para testes)
-  clearAllData(): void {
-    localStorage.removeItem(this.STORAGE_KEYS.CATEGORIES);
-    localStorage.removeItem(this.STORAGE_KEYS.SUBCATEGORIES);
-    localStorage.removeItem(this.STORAGE_KEYS.UNITS);
-    localStorage.removeItem(this.STORAGE_KEYS.INDICATORS);
-    localStorage.removeItem(this.STORAGE_KEYS.STANDARD_INDICATORS);
+  // Buscar indicadores padrão visíveis (apenas Supabase)
+  async getVisibleStandardIndicators(
+    doctorId?: string,
+  ): Promise<IndicatorWithDetails[]> {
+    await this.delay(300);
 
-    // Limpar configurações específicas dos médicos
-    Object.keys(localStorage).forEach((key) => {
-      if (key.startsWith(`${this.STORAGE_KEYS.STANDARD_INDICATORS}_doctor_`)) {
-        localStorage.removeItem(key);
+    if (!supabase) {
+      throw new Error("❌ Supabase não está configurado");
+    }
+
+    // Verificar se usuário está logado
+    const currentUserStr = localStorage.getItem("medical_app_current_user");
+    if (!currentUserStr) {
+      throw new Error("❌ Usuário não autenticado");
+    }
+
+    const currentUser = JSON.parse(currentUserStr);
+    const finalDoctorId = doctorId || currentUser.id;
+
+    try {
+      const { data, error } = await supabase
+        .from("doctor_standard_indicator_settings")
+        .select("*")
+        .eq("doctor_id", finalDoctorId)
+        .eq("visible", true);
+
+      if (error) {
+        console.warn("⚠️ Erro ao buscar configurações:", error.message);
+        // Retornar todos os indicadores padrão se não houver configurações
+        return this.getDefaultStandardIndicators();
       }
-    });
+
+      if (!data || data.length === 0) {
+        // Se não há configurações, retornar todos os indicadores padrão
+        return this.getDefaultStandardIndicators();
+      }
+
+      // Filtrar indicadores baseado nas configurações
+      const allStandard = this.getDefaultStandardIndicators();
+      const visibleIds = data.map(
+        (setting: any) => setting.standard_indicator_id,
+      );
+
+      return allStandard.filter((indicator) =>
+        visibleIds.includes(indicator.id),
+      );
+    } catch (error) {
+      console.error("💥 Erro ao buscar indicadores visíveis:", error);
+      // Fallback para todos os indicadores padrão
+      return this.getDefaultStandardIndicators();
+    }
+  }
+
+  // Categorias básicas
+  async getCategories(): Promise<Category[]> {
+    return [
+      { id: "cat1", name: "Sinais Vitais" },
+      { id: "cat2", name: "Exames Laboratoriais" },
+      { id: "cat3", name: "Medidas Antropométricas" },
+      { id: "cat4", name: "Medicamentos" },
+      { id: "cat5", name: "Sintomas" },
+    ];
+  }
+
+  // Subcategorias básicas
+  async getSubcategories(): Promise<Subcategory[]> {
+    return [
+      { id: "sub1", categoryId: "cat1", name: "Pressão Arterial" },
+      { id: "sub2", categoryId: "cat1", name: "Frequência Cardíaca" },
+      { id: "sub3", categoryId: "cat1", name: "Temperatura" },
+      { id: "sub4", categoryId: "cat2", name: "Glicemia" },
+      { id: "sub5", categoryId: "cat2", name: "Colesterol" },
+      { id: "sub6", categoryId: "cat3", name: "Peso" },
+      { id: "sub7", categoryId: "cat3", name: "Altura" },
+      { id: "sub8", categoryId: "cat3", name: "IMC" },
+    ];
+  }
+
+  // Unidades de medida básicas
+  async getUnits(): Promise<UnitOfMeasure[]> {
+    return [
+      { id: "unit_mmhg", name: "Milímetros de Mercúrio", symbol: "mmHg" },
+      { id: "unit_bpm", name: "Batimentos por Minuto", symbol: "bpm" },
+      { id: "unit_celsius", name: "Graus Celsius", symbol: "°C" },
+      { id: "unit_mgdl", name: "Miligramas por Decilitro", symbol: "mg/dL" },
+      { id: "unit_kg", name: "Quilograma", symbol: "kg" },
+      { id: "unit_cm", name: "Centímetro", symbol: "cm" },
+      {
+        id: "unit_kgm2",
+        name: "Quilograma por Metro Quadrado",
+        symbol: "kg/m²",
+      },
+      { id: "unit_percent", name: "Porcentagem", symbol: "%" },
+      { id: "unit_ml", name: "Mililitro", symbol: "mL" },
+      { id: "unit_mg", name: "Miligrama", symbol: "mg" },
+    ];
   }
 }
 
+// Instância singleton
 export const indicatorAPI = new IndicatorAPI();
