@@ -816,7 +816,7 @@ class PatientProfileAPI {
     patientId: string,
     doctorId: string,
   ): Promise<void> {
-    console.log("���️ stopSharingWithDoctor - Removendo compartilhamento:", {
+    console.log("🗑️ stopSharingWithDoctor - Removendo compartilhamento:", {
       patientId,
       doctorId,
     });
@@ -890,7 +890,7 @@ class PatientProfileAPI {
         }
 
         if (!shares || shares.length === 0) {
-          console.log("📝 Nenhum compartilhamento encontrado");
+          console.log("��� Nenhum compartilhamento encontrado");
           return [];
         }
 
@@ -926,42 +926,38 @@ class PatientProfileAPI {
               // Agora vou tentar buscar dados mais detalhados do médico
               let doctorName = doctorUser.email?.split("@")[0] || "Médico";
 
-              // Tentar buscar nome real na tabela de dados pessoais do médico
-              try {
-                const { data: doctorPersonalData, error: doctorPersonalError } =
-                  await supabase
-                    .from("patient_personal_data")
-                    .select("full_name")
-                    .eq("user_id", share.doctor_id)
-                    .single();
+              // Estratégia inteligente para nome do médico
+              if (doctorUser.email) {
+                const emailUser = doctorUser.email.split("@")[0];
 
-                console.log(
-                  `🔍 Tentativa de buscar dados pessoais do médico:`,
-                  doctorPersonalData,
-                );
-                console.log(
-                  `🔍 Erro na busca:`,
-                  doctorPersonalError?.message || "nenhum",
-                );
-
+                // Se email contém nome real (não é genérico), usar ele formatado
                 if (
-                  doctorPersonalData &&
-                  doctorPersonalData.full_name &&
-                  doctorPersonalData.full_name.trim()
+                  emailUser &&
+                  emailUser !== "medico" &&
+                  emailUser !== "doctor" &&
+                  emailUser !== "admin"
                 ) {
-                  doctorName = doctorPersonalData.full_name.trim();
+                  // Capitalizar primeira letra de cada palavra
+                  doctorName = emailUser
+                    .split(".")
+                    .map(
+                      (part) =>
+                        part.charAt(0).toUpperCase() +
+                        part.slice(1).toLowerCase(),
+                    )
+                    .join(" ");
+
                   console.log(
-                    `✅ ENCONTROU nome real do médico: "${doctorName}"`,
+                    `✅ Nome do médico formatado do email: "${doctorName}"`,
                   );
                 } else {
-                  console.log(
-                    `⚠️ Sem dados pessoais para médico, usando email: "${doctorName}"`,
-                  );
+                  doctorName = "Dr. " + emailUser;
+                  console.log(`⚠️ Email genérico, usando: "${doctorName}"`);
                 }
-              } catch (error) {
+              } else {
+                doctorName = "Médico";
                 console.log(
-                  `⚠️ Erro ao buscar dados pessoais do médico:`,
-                  error,
+                  `⚠️ Sem email, usando nome genérico: "${doctorName}"`,
                 );
               }
 
