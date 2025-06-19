@@ -73,27 +73,27 @@ class IndicatorAPI {
       const subcategories = await this.getSubcategories();
 
       return (data || []).map((indicator: any): IndicatorWithDetails => {
-        // Find actual category and subcategory names
-        const category = categories.find(
-          (cat) => cat.id === indicator.category_id,
-        );
-        const subcategory = subcategories.find(
-          (sub) => sub.id === indicator.subcategory_id,
-        );
+        // Use stored names first, then try to resolve from IDs as fallback
+        const categoryName =
+          indicator.category_name ||
+          categories.find((cat) => cat.id === indicator.category_id)?.name ||
+          this.mapCategoryIdToName(indicator.category_id) ||
+          "Categoria";
+
+        const subcategoryName =
+          indicator.subcategory_name ||
+          subcategories.find((sub) => sub.id === indicator.subcategory_id)
+            ?.name ||
+          this.mapSubcategoryIdToName(indicator.subcategory_id) ||
+          "Subcategoria";
 
         return {
           id: indicator.id || `temp_${Date.now()}`,
           name: indicator.name || indicator.parameter || "Indicador",
           categoryId: indicator.category_id || "cat1",
-          categoryName:
-            category?.name ||
-            this.mapCategoryIdToName(indicator.category_id) ||
-            "Categoria",
+          categoryName: categoryName,
           subcategoryId: indicator.subcategory_id || "sub1",
-          subcategoryName:
-            subcategory?.name ||
-            this.mapSubcategoryIdToName(indicator.subcategory_id) ||
-            "Subcategoria",
+          subcategoryName: subcategoryName,
           parameter: indicator.parameter || indicator.name || "Parâmetro",
           unitId: indicator.unit_id || "unit_un",
           unitSymbol: indicator.unit_symbol || "un",
