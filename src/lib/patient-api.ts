@@ -407,7 +407,58 @@ class PatientAPI {
   }
 
   async createPatient(data: PatientFormData): Promise<Patient> {
-    throw new Error("Método não implementado para teste");
+    await this.delay(300);
+
+    if (!supabase) {
+      throw new Error("Sistema de banco de dados não configurado");
+    }
+
+    const currentUserStr = localStorage.getItem("medical_app_current_user");
+    if (!currentUserStr) {
+      throw new Error("Usuário não autenticado");
+    }
+
+    const currentUser = JSON.parse(currentUserStr);
+
+    if (currentUser.profession !== "medico") {
+      throw new Error("Apenas médicos podem criar pacientes");
+    }
+
+    // Gerar ID único para o novo paciente
+    const newPatientId = this.generateId();
+
+    // Criar paciente na tabela patients
+    const { error: createError } = await supabase.from("patients").insert([
+      {
+        id: newPatientId,
+        doctor_id: currentUser.id,
+        name: data.name,
+        status: data.status || "ativo",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    ]);
+
+    if (createError) {
+      throw new Error(`Erro ao criar paciente: ${createError.message}`);
+    }
+
+    // Retornar o paciente criado
+    const newPatient: Patient = {
+      id: newPatientId,
+      name: data.name,
+      age: data.age || null,
+      city: data.city || "N/A",
+      state: data.state || "N/A",
+      weight: data.weight || null,
+      status: data.status || "ativo",
+      notes: data.notes || "",
+      createdAt: new Date().toISOString(),
+      doctorId: currentUser.id,
+      isShared: false,
+    };
+
+    return newPatient;
   }
 
   async updatePatient(
