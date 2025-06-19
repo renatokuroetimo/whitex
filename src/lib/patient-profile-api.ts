@@ -915,9 +915,15 @@ class PatientProfileAPI {
             }
 
             if (doctorUser) {
+              // Garantir que sempre mostramos nome, nunca email na exibição principal
+              const doctorName =
+                doctorUser.name && doctorUser.name.trim()
+                  ? doctorUser.name
+                  : "Dr. " + (doctorUser.email?.split("@")[0] || "Médico");
+
               doctors.push({
                 id: doctorUser.id,
-                name: doctorUser.name || doctorUser.email || "Médico",
+                name: doctorName,
                 crm: doctorUser.crm || "N/A",
                 state: doctorUser.state || "N/A",
                 specialty: doctorUser.specialty || "Clínico Geral",
@@ -927,7 +933,7 @@ class PatientProfileAPI {
               });
 
               console.log(
-                `✅ Médico adicionado: ${doctorUser.name || doctorUser.email}`,
+                `✅ Médico adicionado: ${doctorName} (email: ${doctorUser.email})`,
               );
             }
           } catch (error) {
