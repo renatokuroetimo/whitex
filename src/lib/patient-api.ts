@@ -107,7 +107,7 @@ class PatientAPI {
             // Buscar dados do usuário paciente
             const { data: patientUser, error: patientError } = await supabase
               .from("users")
-              .select("id, email, profession, created_at")
+              .select("id, name, email, profession, created_at")
               .eq("id", share.patient_id)
               .eq("profession", "paciente")
               .single();
