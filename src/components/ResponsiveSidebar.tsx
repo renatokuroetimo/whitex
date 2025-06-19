@@ -4,6 +4,7 @@ import { Home, Users, BarChart3, LogOut, User, Menu, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContextHybrid";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
 
 interface SidebarItem {
   id: string;
