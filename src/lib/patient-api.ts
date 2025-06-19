@@ -450,6 +450,8 @@ class PatientAPI {
           id: d.id,
           patientId: d.patient_id,
           diagnosis: d.diagnosis,
+          code: d.code || "",
+          date: d.date || new Date(d.created_at).toLocaleDateString("pt-BR"),
           createdAt: d.created_at,
           doctorId: d.doctor_id,
         }),
