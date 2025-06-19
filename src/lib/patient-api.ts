@@ -97,23 +97,101 @@ class PatientAPI {
       } else if (shares && shares.length > 0) {
         console.log(`✅ ${shares.length} compartilhamentos encontrados`);
 
-        // Adicionar um paciente real para cada compartilhamento
-        allPatients = shares.map((share, index) => ({
-          id: share.patient_id,
-          name: `Paciente Real ${index + 1}`,
-          age: 30 + index,
-          city: "Cidade Real",
-          state: "PR",
-          weight: 65 + index * 5,
-          status: "compartilhado" as const,
-          notes: `Compartilhado em ${new Date(share.shared_at).toLocaleDateString()}`,
-          createdAt: share.shared_at || new Date().toISOString(),
-          doctorId: null,
-          isShared: true,
-          sharedId: share.id,
-        }));
+        // Para cada compartilhamento, buscar dados REAIS do paciente
+        for (const share of shares) {
+          try {
+            console.log(
+              `🔍 Buscando dados reais do paciente: ${share.patient_id}`,
+            );
 
-        console.log(`🎯 TOTAL: ${allPatients.length} pacientes compartilhados`);
+            // Buscar dados do usuário paciente
+            const { data: patientUser, error: patientError } = await supabase
+              .from("users")
+              .select("*")
+              .eq("id", share.patient_id)
+              .eq("profession", "paciente")
+              .single();
+
+            if (patientError) {
+              console.warn(
+                `⚠️ Erro ao buscar paciente ${share.patient_id}:`,
+                patientError,
+              );
+              continue;
+            }
+
+            if (patientUser) {
+              // Tentar buscar dados pessoais mais detalhados
+              let patientName =
+                patientUser.name || patientUser.email || "Paciente";
+              let age = null;
+              let city = "N/A";
+              let state = "N/A";
+              let weight = null;
+
+              try {
+                const { data: personalData } = await supabase
+                  .from("patient_personal_data")
+                  .select("*")
+                  .eq("user_id", share.patient_id)
+                  .single();
+
+                if (personalData) {
+                  patientName = personalData.full_name || patientName;
+                  city = personalData.city || city;
+                  state = personalData.state || state;
+
+                  if (personalData.birth_date) {
+                    const today = new Date();
+                    const birthDate = new Date(personalData.birth_date);
+                    age = today.getFullYear() - birthDate.getFullYear();
+                  }
+                }
+
+                const { data: medicalData } = await supabase
+                  .from("patient_medical_data")
+                  .select("*")
+                  .eq("user_id", share.patient_id)
+                  .single();
+
+                if (medicalData) {
+                  weight = medicalData.weight;
+                }
+              } catch (error) {
+                console.warn(
+                  `⚠️ Erro ao buscar dados detalhados do paciente:`,
+                  error,
+                );
+              }
+
+              allPatients.push({
+                id: share.patient_id,
+                name: patientName, // Nome REAL do banco
+                age: age,
+                city: city,
+                state: state,
+                weight: weight,
+                status: "compartilhado" as const,
+                notes: `Compartilhado em ${new Date(share.shared_at).toLocaleDateString()}`,
+                createdAt: share.shared_at || new Date().toISOString(),
+                doctorId: null,
+                isShared: true,
+                sharedId: share.id,
+              });
+
+              console.log(`✅ Paciente real adicionado: ${patientName}`);
+            }
+          } catch (error) {
+            console.warn(
+              `⚠️ Erro ao processar paciente ${share.patient_id}:`,
+              error,
+            );
+          }
+        }
+
+        console.log(
+          `🎯 TOTAL: ${allPatients.length} pacientes reais compartilhados`,
+        );
       } else {
         console.log("📝 Nenhum compartilhamento encontrado");
       }
