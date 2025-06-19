@@ -136,6 +136,7 @@ class IndicatorAPI {
       unit_id: data.unitOfMeasureId,
       unit: selectedUnit?.symbol || "un", // Add unit field for NOT NULL constraint
       unit_symbol: selectedUnit?.symbol || "un",
+      type: "custom", // Add type field for NOT NULL constraint
       is_mandatory: false, // Padrão como não obrigatório
       doctor_id: currentUser.id,
       created_at: new Date().toISOString(),
@@ -146,6 +147,7 @@ class IndicatorAPI {
       id: newIndicator.id,
       name: newIndicator.name,
       unit: selectedUnit?.symbol || "un", // Include unit for NOT NULL constraint
+      type: "custom", // Include type for NOT NULL constraint
     };
 
     try {
