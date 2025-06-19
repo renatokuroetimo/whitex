@@ -78,7 +78,7 @@ const PatientDetailView = () => {
     if (!patientId) return;
 
     try {
-      await patientAPI.deletePatients([patientId]);
+      await patientAPI.deletePatient(patientId);
       toast({
         title: "Sucesso",
         description: "Paciente deletado com sucesso",
