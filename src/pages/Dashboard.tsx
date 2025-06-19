@@ -95,59 +95,149 @@ const Dashboard = () => {
     try {
       setIsLoading(true);
 
-      // Load real patients data
-      const patientsResponse = await patientAPI.getPatients();
-      const patients = patientsResponse.patients;
+      // Load real patients data with error handling
+      let patients: Patient[] = [];
+      try {
+        const patientsResponse = await patientAPI.getPatients();
+        patients = patientsResponse.patients;
+        console.log(`✅ Loaded ${patients.length} patients`);
+      } catch (error) {
+        console.error("❌ Failed to load patients:", error);
+        patients = [];
+      }
 
-      // Load real indicators data
-      const customIndicators = await indicatorAPI.getIndicators();
-      const standardIndicators = await indicatorAPI.getStandardIndicators();
-      const totalIndicators =
-        customIndicators.length + standardIndicators.length;
+      // Load real indicators data with error handling
+      let totalIndicators = 0;
+      try {
+        const [customIndicators, standardIndicators] = await Promise.allSettled(
+          [indicatorAPI.getIndicators(), indicatorAPI.getStandardIndicators()],
+        );
 
-      // Load measurements for all patients
+        const customCount =
+          customIndicators.status === "fulfilled"
+            ? customIndicators.value.length
+            : 0;
+        const standardCount =
+          standardIndicators.status === "fulfilled"
+            ? standardIndicators.value.length
+            : 0;
+
+        totalIndicators = customCount + standardCount;
+        console.log(
+          `✅ Loaded ${totalIndicators} indicators (${customCount} custom, ${standardCount} standard)`,
+        );
+      } catch (error) {
+        console.error("❌ Failed to load indicators:", error);
+        totalIndicators = 0;
+      }
+
+      // Load measurements for all patients with robust error handling
       const allMeasurements: PatientIndicatorValue[] = [];
       const patientMeasurements: {
         [patientId: string]: PatientIndicatorValue[];
       } = {};
 
-      for (const patient of patients) {
-        try {
-          const measurements =
-            await patientIndicatorAPI.getPatientIndicatorValues(patient.id);
-          allMeasurements.push(...measurements);
-          patientMeasurements[patient.id] = measurements;
-        } catch (error) {
-          console.warn(
-            `Could not load measurements for patient ${patient.id}:`,
-            error,
-          );
-          patientMeasurements[patient.id] = [];
+      console.log(`📊 Loading measurements for ${patients.length} patients...`);
+
+      // Process patients in smaller batches to avoid overwhelming the API
+      const batchSize = 5;
+      for (let i = 0; i < patients.length; i += batchSize) {
+        const batch = patients.slice(i, i + batchSize);
+
+        const batchPromises = batch.map(async (patient) => {
+          try {
+            const measurements =
+              await patientIndicatorAPI.getPatientIndicatorValues(patient.id);
+            return { patientId: patient.id, measurements, success: true };
+          } catch (error) {
+            console.warn(
+              `⚠️ Could not load measurements for patient ${patient.name} (${patient.id}):`,
+              error,
+            );
+            return { patientId: patient.id, measurements: [], success: false };
+          }
+        });
+
+        const batchResults = await Promise.allSettled(batchPromises);
+
+        batchResults.forEach((result) => {
+          if (result.status === "fulfilled") {
+            const { patientId, measurements, success } = result.value;
+            allMeasurements.push(...measurements);
+            patientMeasurements[patientId] = measurements;
+            if (success && measurements.length > 0) {
+              console.log(
+                `✅ Loaded ${measurements.length} measurements for patient ${patientId}`,
+              );
+            }
+          }
+        });
+
+        // Small delay between batches to avoid rate limiting
+        if (i + batchSize < patients.length) {
+          await new Promise((resolve) => setTimeout(resolve, 100));
         }
       }
 
-      // Calculate real stats
-      const today = new Date();
-      const yesterday = new Date(today);
-      yesterday.setDate(yesterday.getDate() - 1);
+      console.log(`📊 Total measurements loaded: ${allMeasurements.length}`);
 
-      const measurementsToday = allMeasurements.filter((m) => {
-        const measurementDate = new Date(m.createdAt);
-        return measurementDate.toDateString() === today.toDateString();
-      }).length;
+      // Calculate real stats with safe date handling
+      let measurementsToday = 0;
+      let measurementsYesterday = 0;
+      let recentMeasurements = 0;
 
-      const measurementsYesterday = allMeasurements.filter((m) => {
-        const measurementDate = new Date(m.createdAt);
-        return measurementDate.toDateString() === yesterday.toDateString();
-      }).length;
+      try {
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
 
-      const recentMeasurements = allMeasurements.filter((m) => {
-        const measurementDate = new Date(m.createdAt);
-        const daysDiff =
-          (today.getTime() - measurementDate.getTime()) / (1000 * 60 * 60 * 24);
-        return daysDiff <= 7; // Last 7 days
-      }).length;
+        measurementsToday = allMeasurements.filter((m) => {
+          try {
+            const measurementDate = new Date(m.createdAt);
+            return (
+              !isNaN(measurementDate.getTime()) &&
+              measurementDate.toDateString() === today.toDateString()
+            );
+          } catch {
+            return false;
+          }
+        }).length;
 
+        measurementsYesterday = allMeasurements.filter((m) => {
+          try {
+            const measurementDate = new Date(m.createdAt);
+            return (
+              !isNaN(measurementDate.getTime()) &&
+              measurementDate.toDateString() === yesterday.toDateString()
+            );
+          } catch {
+            return false;
+          }
+        }).length;
+
+        recentMeasurements = allMeasurements.filter((m) => {
+          try {
+            const measurementDate = new Date(m.createdAt);
+            if (isNaN(measurementDate.getTime())) return false;
+
+            const daysDiff =
+              (today.getTime() - measurementDate.getTime()) /
+              (1000 * 60 * 60 * 24);
+            return daysDiff <= 7; // Last 7 days
+          } catch {
+            return false;
+          }
+        }).length;
+
+        console.log(
+          `📊 Stats calculated: ${measurementsToday} today, ${measurementsYesterday} yesterday, ${recentMeasurements} recent`,
+        );
+      } catch (error) {
+        console.error("❌ Error calculating measurement stats:", error);
+        // Keep default values (0) if calculation fails
+      }
+
+      // Set stats with safe values
       setStats({
         totalPatients: patients.length,
         activePatients: patients.filter((p) => p.status === "ativo").length,
@@ -157,15 +247,39 @@ const Dashboard = () => {
         measurementsYesterday,
       });
 
-      // Generate real recent activities
-      const activities = generateRealActivities(patients, allMeasurements);
-      setRecentActivities(activities);
+      // Generate real recent activities with error handling
+      try {
+        const activities = generateRealActivities(patients, allMeasurements);
+        setRecentActivities(activities);
+        console.log(`📋 Generated ${activities.length} recent activities`);
+      } catch (error) {
+        console.error("❌ Error generating activities:", error);
+        setRecentActivities([]);
+      }
 
-      // Generate intelligent medical alerts
-      const alerts = generateMedicalAlerts(patients, patientMeasurements);
-      setMedicalAlerts(alerts);
+      // Generate intelligent medical alerts with error handling
+      try {
+        const alerts = generateMedicalAlerts(patients, patientMeasurements);
+        setMedicalAlerts(alerts);
+        console.log(`🚨 Generated ${alerts.length} medical alerts`);
+      } catch (error) {
+        console.error("❌ Error generating alerts:", error);
+        setMedicalAlerts([]);
+      }
     } catch (error) {
-      console.error("Erro ao carregar dados reais do dashboard:", error);
+      console.error("💥 Critical error loading dashboard data:", error);
+
+      // Set fallback stats so dashboard still shows something
+      setStats({
+        totalPatients: 0,
+        activePatients: 0,
+        totalIndicators: 0,
+        recentMeasurements: 0,
+        measurementsToday: 0,
+        measurementsYesterday: 0,
+      });
+      setRecentActivities([]);
+      setMedicalAlerts([]);
     } finally {
       setIsLoading(false);
     }
