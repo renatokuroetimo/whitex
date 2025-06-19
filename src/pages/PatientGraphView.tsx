@@ -129,7 +129,26 @@ const PatientGraphView = () => {
   };
 
   const processChartData = () => {
+    console.log("🔍 === DEBUG GRAPH DATA ===");
+    console.log("📊 Total indicators loaded:", indicators.length);
+    console.log("📊 Sample indicator:", indicators[0]);
+
     let filteredIndicators = [...indicators];
+
+    // Debug: check what dates we have
+    const indicatorsWithDates = filteredIndicators.filter(
+      (indicator) => indicator.date,
+    );
+    const indicatorsWithoutDates = filteredIndicators.filter(
+      (indicator) => !indicator.date,
+    );
+
+    console.log("📅 Indicators with dates:", indicatorsWithDates.length);
+    console.log("❌ Indicators without dates:", indicatorsWithoutDates.length);
+    console.log(
+      "📅 Sample dates:",
+      indicatorsWithDates.slice(0, 3).map((i) => i.date),
+    );
 
     // Filtrar por período se não for "all"
     if (timeRange !== "all") {
@@ -151,29 +170,54 @@ const PatientGraphView = () => {
           break;
       }
 
+      console.log("📅 Filtering from date:", cutoffDate.toISOString());
+
+      const beforeFilter = filteredIndicators.length;
       filteredIndicators = filteredIndicators.filter((indicator) => {
-        if (!indicator.date) return false;
-        const indicatorDate = new Date(indicator.date);
-        return indicatorDate >= cutoffDate;
+        // If no date, use createdAt as fallback
+        const dateToUse = indicator.date || indicator.createdAt;
+        if (!dateToUse) return false;
+
+        const indicatorDate = new Date(dateToUse);
+        const isValid = !isNaN(indicatorDate.getTime());
+        const isInRange = isValid && indicatorDate >= cutoffDate;
+
+        return isInRange;
       });
+
+      console.log(
+        "📅 After time filter:",
+        beforeFilter,
+        "→",
+        filteredIndicators.length,
+      );
     }
 
     // Converter para dados do gráfico
     const data: ChartDataPoint[] = filteredIndicators
-      .filter((indicator) => indicator.date) // Só incluir com data
       .map((indicator) => {
-        const date = new Date(indicator.date!);
+        // Use date if available, otherwise use createdAt
+        const dateToUse = indicator.date || indicator.createdAt;
+        if (!dateToUse) return null;
+
+        const date = new Date(dateToUse);
+        if (isNaN(date.getTime())) return null; // Skip invalid dates
+
         const value = parseFloat(indicator.value);
 
         return {
-          date: indicator.date!,
+          date: dateToUse,
           value: isNaN(value) ? 0 : value,
           formattedDate: date.toLocaleDateString("pt-BR"),
-          originalDate: indicator.date!,
+          originalDate: dateToUse,
           time: indicator.time,
         };
       })
+      .filter((item): item is ChartDataPoint => item !== null) // Remove null entries
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // Ordenar por data
+
+    console.log("📊 Final chart data points:", data.length);
+    console.log("📊 Sample chart data:", data.slice(0, 3));
 
     setChartData(data);
   };
