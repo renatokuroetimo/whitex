@@ -11,6 +11,7 @@ const Sidebar: React.FC = () => {
   const location = useLocation();
   const { logout, user } = useAuth();
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   // Log para debug SEMPRE
   console.log("🚨 SIDEBAR RENDER - User:", user);
