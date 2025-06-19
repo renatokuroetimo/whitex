@@ -184,6 +184,15 @@ class IndicatorAPI {
       unit: selectedUnit?.symbol || "un", // Include unit for NOT NULL constraint
       type: "custom", // Include type for NOT NULL constraint
       category: data.categoryId, // Include category for NOT NULL constraint
+      category_name:
+        selectedCategory?.name ||
+        this.mapCategoryIdToName(data.categoryId) ||
+        "Categoria",
+      subcategory_name:
+        selectedSubcategory?.name ||
+        this.mapSubcategoryIdToName(data.subcategoryId) ||
+        "Subcategoria",
+      parameter: data.parameter.trim(),
     };
 
     try {
