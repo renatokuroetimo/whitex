@@ -92,11 +92,14 @@ const AddIndicatorToPatient = () => {
           isStandard: true,
           displayName: `${ind.categoryName} - ${ind.subcategoryName} - ${ind.parameter} (${ind.unitSymbol})`,
         })),
-        ...customIndicators.map((ind) => ({
-          ...ind,
-          isStandard: false,
-          displayName: `${ind.categoryName || "Categoria"} - ${ind.subcategoryName || "Subcategoria"} - ${ind.parameter || ind.name || "Parâmetro"} (${ind.unitSymbol || ind.unitOfMeasureSymbol || "un"})`,
-        })),
+        ...customIndicators.map((ind) => {
+          console.log("🔍 DEBUG Custom Indicator:", ind);
+          return {
+            ...ind,
+            isStandard: false,
+            displayName: `${ind.categoryName || ind.category_name || "Categoria"} - ${ind.subcategoryName || ind.subcategory_name || "Subcategoria"} - ${ind.parameter || ind.name || "Parâmetro"} (${ind.unitSymbol || ind.unit_symbol || "un"})`,
+          };
+        }),
       ];
 
       setIndicators(allIndicators);
