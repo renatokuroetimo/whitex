@@ -186,10 +186,16 @@ class ProfileImageAPI {
         if (error && error.code !== "PGRST116") {
           // PGRST116 = não encontrado
           // PGRST204 = tabela não existe
+          // 42501 = violação de política RLS
           if (error.code === "PGRST204") {
             console.warn(
               "⚠️ Tabela profile_images não existe no Supabase. Execute o script create_profile_images_table.sql",
             );
+          } else if (error.code === "42501") {
+            console.warn(
+              "⚠️ Violação de política RLS ao carregar imagem - usuário não autorizado",
+            );
+            console.info("🔑 Usando localStorage como fallback");
           } else {
             console.error(
               "❌ Erro ao carregar imagem do Supabase:",
