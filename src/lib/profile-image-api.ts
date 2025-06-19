@@ -514,9 +514,38 @@ class ProfileImageAPI {
 
   // Migrar imagens do localStorage para Supabase
   // Migrar imagens do localStorage para Supabase
-  async migrateLocalImagesToSupabase(): Promise<void> {
+  async migrateLocalImagesToSupabase(): Promise<{
+    success: number;
+    skipped: number;
+    errors: number;
+    details: string[];
+  }> {
+    const result = {
+      success: 0,
+      skipped: 0,
+      errors: 0,
+      details: [] as string[],
+    };
+
     if (!isFeatureEnabled("useSupabaseIndicators") || !supabase) {
-      return;
+      result.details.push(
+        "❌ Supabase não configurado ou feature flag desabilitada",
+      );
+      return result;
+    }
+
+    // Verificar autenticação
+    const authStatus = await this.checkAuthenticationStatus();
+    if (!authStatus.isAuthenticated) {
+      result.details.push("❌ Usuário não autenticado no Supabase");
+      return result;
+    }
+
+    // Verificar se tabela existe
+    const tableExists = await this.checkTableExists();
+    if (!tableExists) {
+      result.details.push("❌ Tabela profile_images não existe");
+      return result;
     }
 
     console.log("🔄 Migrando imagens de perfil para Supabase...");
@@ -527,6 +556,10 @@ class ProfileImageAPI {
         key.startsWith(this.STORAGE_KEY_PREFIX),
       );
 
+      result.details.push(
+        `📋 Encontradas ${profileImageKeys.length} imagens no localStorage`,
+      );
+
       for (const key of profileImageKeys) {
         const userId = key.replace(this.STORAGE_KEY_PREFIX, "");
         const imageData = localStorage.getItem(key);
@@ -534,30 +567,85 @@ class ProfileImageAPI {
         if (imageData && imageData.startsWith("data:")) {
           try {
             // Verificar se já existe no Supabase
-            const { data: existing } = await supabase
+            const { data: existing, error: checkError } = await supabase
               .from("profile_images")
               .select("id")
               .eq("user_id", userId)
               .single();
 
-            if (!existing) {
-              // Não existe, migrar
-              await this.saveProfileImage(userId, imageData);
-              console.log(`✅ Imagem migrada para usuário ${userId}`);
+            if (checkError && checkError.code !== "PGRST116") {
+              result.errors++;
+              result.details.push(
+                `❌ Erro ao verificar usuário ${userId}: ${checkError.message}`,
+              );
+              continue;
+            }
+
+            if (existing) {
+              result.skipped++;
+              result.details.push(
+                `⏭️ Usuário ${userId} já tem imagem no Supabase`,
+              );
+              continue;
+            }
+
+            // Só migrar se o usuário atual for o dono da imagem
+            if (userId !== authStatus.userId) {
+              result.skipped++;
+              result.details.push(
+                `⏭️ Pulando usuário ${userId} (não é o usuário atual)`,
+              );
+              continue;
+            }
+
+            // Migrar usando insert direto para evitar loops
+            const base64Size = Math.floor(
+              imageData.length * (3 / 4) - (imageData.match(/=/g) || []).length,
+            );
+
+            const { error: insertError } = await supabase
+              .from("profile_images")
+              .insert({
+                user_id: userId,
+                image_data: imageData,
+                mime_type: this.getMimeTypeFromBase64(imageData),
+                file_size: base64Size,
+              });
+
+            if (insertError) {
+              result.errors++;
+              result.details.push(
+                `❌ Erro ao migrar usuário ${userId}: ${insertError.message}`,
+              );
+            } else {
+              result.success++;
+              result.details.push(`✅ Imagem migrada para usuário ${userId}`);
             }
           } catch (migrationError) {
-            console.warn(
-              `⚠️ Erro ao migrar imagem do usuário ${userId}:`,
-              migrationError,
+            result.errors++;
+            result.details.push(
+              `❌ Erro ao migrar usuário ${userId}: ${migrationError instanceof Error ? migrationError.message : "Unknown error"}`,
             );
           }
+        } else {
+          result.skipped++;
+          result.details.push(`⏭️ Dados inválidos para usuário ${userId}`);
         }
       }
 
-      console.log("✅ Migração de imagens concluída");
+      result.details.push(
+        `🎯 Migração concluída: ${result.success} sucesso, ${result.skipped} puladas, ${result.errors} erros`,
+      );
+      console.log("✅ Migração de imagens concluída:", result);
     } catch (error) {
+      result.errors++;
+      result.details.push(
+        `💥 Erro geral na migração: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
       console.error("💥 Erro na migração de imagens:", error);
     }
+
+    return result;
   }
 }
 
