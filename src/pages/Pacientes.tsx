@@ -112,6 +112,39 @@ const Pacientes = () => {
     }
   };
 
+  // Remover compartilhamento (médico para de receber dados)
+  const handleRemoveSharing = async (
+    patientId: string,
+    patientName: string,
+  ) => {
+    if (!user?.id) return;
+
+    console.log("🗑️ Médico removendo compartilhamento do paciente:", patientId);
+
+    try {
+      // Usar a API para remover compartilhamento
+      await patientAPI.removePatientSharing(patientId);
+
+      // Recarregar lista de pacientes
+      loadPatients(pagination.currentPage, searchTerm);
+
+      toast({
+        title: "Compartilhamento removido",
+        description: `Você não receberá mais dados de ${patientName}`,
+      });
+
+      console.log("✅ Compartilhamento removido com sucesso");
+    } catch (error) {
+      console.error("❌ Erro ao remover compartilhamento:", error);
+
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Erro ao remover compartilhamento",
+      });
+    }
+  };
+
   // Paginação
   const handlePageChange = (page: number) => {
     loadPatients(page, searchTerm);
