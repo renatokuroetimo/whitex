@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { phoneMask, removeMask } from "@/lib/masks";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import Sidebar from "@/components/Sidebar";
 import { useNavigate } from "react-router-dom";
 import { Camera, User } from "lucide-react";
 
