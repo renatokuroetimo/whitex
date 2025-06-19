@@ -4,6 +4,7 @@ import { Home, Users, BarChart3, LogOut, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContextHybrid";
 import { Button } from "@/components/ui/button";
 import { profileImageAPI } from "@/lib/profile-image-api";
+import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
