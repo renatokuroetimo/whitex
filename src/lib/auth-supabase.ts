@@ -50,13 +50,13 @@ class AuthSupabaseAPI {
       createdAt: new Date().toISOString(),
     };
 
-    // Inserir no Supabase
+    // Inserir no Supabase - USANDO ESTRUTURA REAL DA TABELA
     console.log("📝 Inserindo no Supabase:", {
       id: newUser.id,
       email: newUser.email,
       profession: newUser.profession,
       crm: newUser.crm,
-      full_name: newUser.fullName,
+      name: newUser.fullName, // CORRIGIDO: usar 'name' ao invés de 'full_name'
       city: newUser.city,
       state: newUser.state,
       specialty: newUser.specialty,
@@ -70,7 +70,7 @@ class AuthSupabaseAPI {
         email: newUser.email,
         profession: newUser.profession,
         crm: newUser.crm,
-        full_name: newUser.fullName,
+        name: newUser.fullName, // CORRIGIDO: usar 'name' ao invés de 'full_name'
         city: newUser.city,
         state: newUser.state,
         specialty: newUser.specialty,
