@@ -133,6 +133,13 @@ const SidebarContent: React.FC<SidebarContentProps> = ({ onItemClick }) => {
           <span className="truncate">Sair</span>
         </Button>
       </div>
+
+      <LogoutConfirmDialog
+        open={showLogoutDialog}
+        onOpenChange={setShowLogoutDialog}
+        onConfirm={confirmLogout}
+        userType={user?.profession === "paciente" ? "paciente" : "médico"}
+      />
     </div>
   );
 };
