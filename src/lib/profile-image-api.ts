@@ -668,6 +668,7 @@ declare global {
     migrateImages: () => Promise<any>;
     checkImageAuth: () => Promise<any>;
     testImageSave: () => Promise<any>;
+    forceMigrateImages: () => Promise<any>;
   }
 }
 
