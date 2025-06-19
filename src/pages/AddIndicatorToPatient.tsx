@@ -112,29 +112,43 @@ const AddIndicatorToPatient = () => {
 
       setPatient(patientData);
 
-      // Combine standard and custom indicators
+      console.log("📊 DADOS CARREGADOS:");
+      console.log("- Indicadores Padrão:", standardIndicators.length);
+      console.log("- Indicadores Customizados:", customIndicators.length);
+
+      // Filtrar indicadores customizados problemáticos (que não têm categoria correta)
+      const validCustomIndicators = customIndicators.filter((ind) => {
+        const hasValidCategory =
+          ind.categoryName &&
+          ind.categoryName !== "Categoria" &&
+          ind.categoryName !== "Indicadores Gerais" &&
+          !ind.categoryName.startsWith("cat");
+
+        if (!hasValidCategory) {
+          console.warn("❌ Indicador customizado inválido removido:", ind);
+        }
+
+        return hasValidCategory;
+      });
+
+      console.log(
+        "✅ Indicadores customizados válidos:",
+        validCustomIndicators.length,
+      );
+
+      // Combine standard and valid custom indicators
       const allIndicators = [
         ...standardIndicators.map((ind) => ({
           ...ind,
           isStandard: true,
           displayName: `${ind.categoryName} - ${ind.subcategoryName} - ${ind.parameter} (${ind.unitSymbol})`,
         })),
-        ...customIndicators.map((ind) => {
-          console.log("🔍 DEBUG Custom Indicator:", ind);
+        ...validCustomIndicators.map((ind) => {
+          console.log("🔍 DEBUG Valid Custom Indicator:", ind);
 
-          // Use already processed names from the API (they should be correct now)
-          let categoryName = ind.categoryName;
-          let subcategoryName = ind.subcategoryName;
-
-          // Only fallback if truly empty (the API should handle most cases now)
-          if (!categoryName) {
-            categoryName = "Indicadores Customizados";
-          }
-
-          if (!subcategoryName) {
-            subcategoryName = "Parâmetro Personalizado";
-          }
-
+          const categoryName = ind.categoryName || "Indicadores Customizados";
+          const subcategoryName =
+            ind.subcategoryName || "Parâmetro Personalizado";
           const parameter = ind.parameter || ind.name || "Parâmetro";
           const unit = ind.unitSymbol || ind.unit_symbol || ind.unit || "un";
 
@@ -148,6 +162,9 @@ const AddIndicatorToPatient = () => {
           };
         }),
       ];
+
+      console.log("📋 TOTAL DE INDICADORES VÁLIDOS:", allIndicators.length);
+      allIndicators.forEach((ind) => console.log("  -", ind.displayName));
 
       setIndicators(allIndicators);
     } catch (error) {
