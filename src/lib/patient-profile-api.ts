@@ -282,7 +282,7 @@ class PatientProfileAPI {
 
     // Se Supabase estiver ativo, usar Supabase
     if (isFeatureEnabled("useSupabaseProfiles") && supabase) {
-      console.log("�� Buscando dados médicos no Supabase");
+      console.log("🚀 Buscando dados médicos no Supabase");
 
       try {
         // Buscar múltiplos registros e pegar o mais recente
@@ -915,23 +915,10 @@ class PatientProfileAPI {
 
         for (const share of shares) {
           try {
-            // USAR ESTRUTURA REAL DA TABELA USERS
+            // USAR ESTRUTURA REAL DA TABELA USERS (SEM CAMPO NAME)
             const { data: doctorUser, error: doctorError } = await supabase
               .from("users")
-              .select(
-                `
-                id,
-                email,
-                profession,
-                name,
-                crm,
-                specialty,
-                state,
-                city,
-                phone,
-                created_at
-              `,
-              )
+              .select("*") // Buscar todos os campos disponíveis
               .eq("id", share.doctor_id)
               .eq("profession", "medico")
               .single();
@@ -949,23 +936,23 @@ class PatientProfileAPI {
                 `🔍 DEBUG - Dados brutos do médico no getSharedDoctors:`,
                 doctorUser,
               );
-              console.log(
-                `👤 Nome do médico na tabela users:`,
-                doctorUser.name,
-              );
               console.log(`📧 Email do médico:`, doctorUser.email);
 
-              // Usar campo 'name' da tabela users, ou mostrar "Sem nome definido"
+              // Como não há campo 'name', usar fallback
               let doctorName = "Sem nome definido";
 
-              if (doctorUser.name && doctorUser.name.trim()) {
-                doctorName = doctorUser.name.trim();
-                console.log(
-                  `✅ Usando nome real da tabela users: "${doctorName}"`,
-                );
+              if (doctorUser.fullName && doctorUser.fullName.trim()) {
+                doctorName = doctorUser.fullName.trim();
+                console.log(`✅ Usando fullName: "${doctorName}"`);
+              } else if (doctorUser.full_name && doctorUser.full_name.trim()) {
+                doctorName = doctorUser.full_name.trim();
+                console.log(`✅ Usando full_name: "${doctorName}"`);
+              } else if (doctorUser.email) {
+                doctorName = `Dr. ${doctorUser.email.split("@")[0]}`;
+                console.log(`⚠️ Usando email como fallback: "${doctorName}"`);
               } else {
                 console.log(
-                  `⚠️ Campo name vazio ou nulo, usando: "${doctorName}"`,
+                  `⚠️ Nenhum nome disponível, usando: "${doctorName}"`,
                 );
               }
 
