@@ -346,6 +346,14 @@ class PatientAPI {
     const currentUser = JSON.parse(currentUserStr);
 
     try {
+      console.log("🔍 Attempting to insert diagnosis:", {
+        patient_id: patientId,
+        doctor_id: currentUser.id,
+        diagnosis: diagnosisData.status,
+        code: diagnosisData.code,
+        date: diagnosisData.date,
+      });
+
       const { error } = await supabase.from("diagnoses").insert([
         {
           id: this.generateId(),
