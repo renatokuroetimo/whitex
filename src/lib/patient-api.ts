@@ -121,6 +121,8 @@ class PatientAPI {
             }
 
             if (patientUser) {
+              console.log(`🔍 DEBUG - Dados brutos do paciente:`, patientUser);
+
               // Tentar buscar dados pessoais mais detalhados
               let patientName =
                 patientUser.name || patientUser.email || "Paciente";
@@ -128,6 +130,10 @@ class PatientAPI {
               let city = "N/A";
               let state = "N/A";
               let weight = null;
+
+              console.log(
+                `🎯 Nome inicial do paciente (tabela users): "${patientName}"`,
+              );
 
               try {
                 const { data: personalData } = await supabase
