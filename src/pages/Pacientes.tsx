@@ -198,12 +198,6 @@ const Pacientes = () => {
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-semibold text-gray-900">Pacientes</h1>
-            <button
-              onClick={() => navigate(-1)}
-              className="text-sm text-blue-600 hover:text-blue-800"
-            >
-              ← Voltar
-            </button>
           </div>
 
           <div className="bg-white rounded-lg border border-gray-200 min-w-0">
