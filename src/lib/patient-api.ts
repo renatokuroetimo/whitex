@@ -51,18 +51,18 @@ class PatientAPI {
 
       // Buscar pacientes compartilhados
       const { data: sharedData, error: sharedError } = await supabase
-        .from("shared_data")
+        .from("doctor_patient_sharing")
         .select(
           `
           id,
           patient_id,
-          shared_with_doctor_id,
+          doctor_id,
           patients:patient_id (
             id, name, age, city, state, weight, status, notes, created_at, doctor_id
           )
         `,
         )
-        .eq("shared_with_doctor_id", currentUser.id);
+        .eq("doctor_id", currentUser.id);
 
       if (sharedError) {
         console.warn(
