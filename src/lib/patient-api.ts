@@ -180,14 +180,35 @@ class PatientAPI {
 
     const currentUser = JSON.parse(currentUserStr);
 
+    // Validar dados obrigatórios
+    if (!data.name || typeof data.name !== "string" || !data.name.trim()) {
+      throw new Error("❌ Nome é obrigatório e não pode estar vazio");
+    }
+
+    if (!data.age || data.age <= 0) {
+      throw new Error("❌ Idade é obrigatória e deve ser maior que 0");
+    }
+
+    if (!data.state || typeof data.state !== "string" || !data.state.trim()) {
+      throw new Error("❌ Estado é obrigatório");
+    }
+
+    if (!data.city || typeof data.city !== "string" || !data.city.trim()) {
+      throw new Error("❌ Cidade é obrigatória");
+    }
+
+    if (!data.weight || data.weight <= 0) {
+      throw new Error("❌ Peso é obrigatório e deve ser maior que 0");
+    }
+
     const newPatient = {
       id: this.generateId(),
-      name: data.name,
+      name: data.name.trim(),
       age: data.age,
-      city: data.city,
-      state: data.state,
+      city: data.city.trim(),
+      state: data.state.trim(),
       weight: data.weight,
-      notes: data.notes || "",
+      notes: data.notes ? data.notes.trim() : "",
       status: "ativo",
       doctor_id: currentUser.id,
       created_at: new Date().toISOString(),
