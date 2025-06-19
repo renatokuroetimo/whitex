@@ -845,12 +845,19 @@ if (typeof window !== "undefined") {
           imageData.length * (3 / 4) - (imageData.match(/=/g) || []).length,
         );
 
+        // Detectar MIME type
+        let mimeType = "image/jpeg";
+        if (imageData.startsWith("data:image/png")) mimeType = "image/png";
+        else if (imageData.startsWith("data:image/gif")) mimeType = "image/gif";
+        else if (imageData.startsWith("data:image/webp"))
+          mimeType = "image/webp";
+
         // Inserir diretamente sem verificação de autenticação RLS
         const { error } = await supabase.from("profile_images").upsert(
           {
             user_id: userId,
             image_data: imageData,
-            mime_type: profileImageAPI.getMimeTypeFromBase64(imageData),
+            mime_type: mimeType,
             file_size: base64Size,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
