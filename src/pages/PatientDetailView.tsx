@@ -263,9 +263,6 @@ const PatientDetailView = () => {
                     <thead>
                       <tr className="border-b border-gray-200">
                         <th className="text-left py-3 text-sm font-medium text-gray-500">
-                          Status
-                        </th>
-                        <th className="text-left py-3 text-sm font-medium text-gray-500">
                           Data
                         </th>
                         <th className="text-left py-3 text-sm font-medium text-gray-500">
@@ -280,7 +277,7 @@ const PatientDetailView = () => {
                       {diagnoses.length === 0 ? (
                         <tr>
                           <td
-                            colSpan={4}
+                            colSpan={3}
                             className="py-8 text-center text-gray-500"
                           >
                             Nenhum diagnóstico registrado
@@ -292,19 +289,11 @@ const PatientDetailView = () => {
                             key={diagnosis.id}
                             className="border-b border-gray-100"
                           >
-                            <td className="py-3">
-                              <Badge
-                                variant="secondary"
-                                className="bg-green-100 text-green-800"
-                              >
-                                Atualizado
-                              </Badge>
-                            </td>
                             <td className="py-3 text-sm text-gray-600">
                               {diagnosis.date}
                             </td>
-                            <td className="py-3 text-sm text-gray-600">
-                              {diagnosis.status}
+                            <td className="py-3 text-sm text-gray-900">
+                              {diagnosis.diagnosis}
                             </td>
                             <td className="py-3 text-sm text-gray-600">
                               {diagnosis.code}
