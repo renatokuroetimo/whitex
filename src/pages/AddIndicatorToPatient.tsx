@@ -66,18 +66,45 @@ const AddIndicatorToPatient = () => {
 
     setIsLoading(true);
     try {
-      const [patientData, standardIndicators, customIndicators] =
-        await Promise.all([
-          patientAPI.getPatientById(patientId),
-          indicatorAPI.getStandardIndicators(), // Médicos veem todos os indicadores padrão ao adicionar para pacientes
-          indicatorAPI.getIndicators(user.id),
-        ]);
+      console.log("🚀 Carregando dados para paciente:", patientId);
+
+      // Load data with individual error handling
+      let patientData = null;
+      let standardIndicators = [];
+      let customIndicators = [];
+
+      try {
+        patientData = await patientAPI.getPatientById(patientId);
+      } catch (error) {
+        console.error("❌ Erro ao buscar paciente:", error);
+        toast({
+          variant: "destructive",
+          title: "Erro de Conexão",
+          description:
+            "Não foi possível carregar os dados do paciente. Verifique sua conexão.",
+        });
+        return;
+      }
+
+      try {
+        standardIndicators = await indicatorAPI.getStandardIndicators();
+      } catch (error) {
+        console.error("❌ Erro ao buscar indicadores padrão:", error);
+        // Continue mesmo se indicadores padrão falharem
+      }
+
+      try {
+        customIndicators = await indicatorAPI.getIndicators(user.id);
+      } catch (error) {
+        console.error("❌ Erro ao buscar indicadores customizados:", error);
+        // Continue mesmo se indicadores customizados falharem
+      }
 
       if (!patientData) {
         toast({
           variant: "destructive",
           title: "Erro",
-          description: "Paciente não encontrado",
+          description: "Paciente não encontrado ou erro de conexão",
         });
         navigate("/pacientes");
         return;
