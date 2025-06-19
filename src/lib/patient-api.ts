@@ -94,10 +94,23 @@ class PatientAPI {
           try {
             console.log(`🔍 Processando paciente: ${share.patient_id}`);
 
-            // 2.1 Buscar dados básicos do usuário paciente (SEM CAMPO NAME)
+            // 2.1 Buscar dados básicos do usuário paciente (COM CAMPO full_name)
             const { data: patientUser, error: patientError } = await supabase
               .from("users")
-              .select("*") // Buscar todos os campos disponíveis
+              .select(
+                `
+                id,
+                email,
+                profession,
+                full_name,
+                crm,
+                city,
+                state,
+                specialty,
+                phone,
+                created_at
+              `,
+              )
               .eq("id", share.patient_id)
               .eq("profession", "paciente")
               .single();
