@@ -171,7 +171,13 @@ class ProfileImageAPI {
         } catch (bypassError) {
           console.error("💥 Erro no bypass RLS:", bypassError);
           throw new Error(
-            `❌ Erro de RLS - Execute o script fix_profile_images_rls.sql no Supabase para corrigir as políticas de segurança. Erro original: ${error.message}`,
+            `❌ ERRO DE POLÍTICA DE SEGURANÇA: A tabela profile_images está bloqueando a operação.
+
+SOLUÇÕES:
+1. Execute o script fix_profile_images_rls_final.sql no Supabase SQL Editor
+2. Ou desabilite RLS temporariamente: ALTER TABLE profile_images DISABLE ROW LEVEL SECURITY;
+
+Erro original: ${error.message}`,
           );
         }
       } else if (error) {
