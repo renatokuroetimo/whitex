@@ -122,40 +122,47 @@ const AddIndicatorToPatient = () => {
         ...customIndicators.map((ind) => {
           console.log("🔍 DEBUG Custom Indicator:", ind);
 
-          // Category name (this is working correctly)
-          const categoryName = ind.categoryName || "Categoria";
+          // FORCE correct names - no more "Categoria - Subcategoria"!
+          let categoryName = ind.categoryName;
+          let subcategoryName = ind.subcategoryName;
 
-          // Subcategory ID to name mapping
-          const subcategoryMap: { [key: string]: string } = {
-            sub1: "Pressão Arterial",
-            sub2: "Frequência Cardíaca",
-            sub3: "Temperatura",
-            sub4: "Glicemia",
-            sub5: "Colesterol",
-            sub6: "Peso",
-            sub7: "Altura",
-            sub8: "IMC",
-          };
-
-          // Get subcategory name, map ID to name if needed
-          let subcategoryName = ind.subcategoryName || "Subcategoria";
-          if (subcategoryMap[subcategoryName]) {
-            subcategoryName = subcategoryMap[subcategoryName];
+          // If we don't have proper names, force them based on standard categories
+          if (!categoryName || categoryName === "Categoria") {
+            categoryName = "Custom Category";
           }
 
-          // Parameter and unit
+          if (
+            !subcategoryName ||
+            subcategoryName === "Subcategoria" ||
+            subcategoryName === "sub1" ||
+            subcategoryName === "sub2" ||
+            subcategoryName === "sub3"
+          ) {
+            // Map subcategory IDs to real names
+            const subcategoryMap: { [key: string]: string } = {
+              sub1: "Pressão Arterial",
+              sub2: "Frequência Cardíaca",
+              sub3: "Temperatura",
+              sub4: "Glicemia",
+              sub5: "Colesterol",
+              sub6: "Peso",
+              sub7: "Altura",
+              sub8: "IMC",
+            };
+            subcategoryName =
+              subcategoryMap[subcategoryName] || "Custom Subcategory";
+          }
+
           const parameter = ind.parameter || ind.name || "Parâmetro";
           const unit = ind.unitSymbol || ind.unit_symbol || ind.unit || "un";
 
-          console.log(
-            "🎯 FINAL DISPLAY:",
-            `${categoryName} - ${subcategoryName} - ${parameter} (${unit})`,
-          );
+          const finalDisplay = `${categoryName} - ${subcategoryName} - ${parameter} (${unit})`;
+          console.log("🎯 FINAL DISPLAY:", finalDisplay);
 
           return {
             ...ind,
             isStandard: false,
-            displayName: `${categoryName} - ${subcategoryName} - ${parameter} (${unit})`,
+            displayName: finalDisplay,
           };
         }),
       ];
