@@ -40,8 +40,15 @@ const PatientDetailView = () => {
     setIsLoading(true);
     try {
       // Carregar dados básicos do paciente (usando getPatientById para incluir observações médicas)
-      console.log("🔍 Carregando dados do paciente ID:", patientId);
+      console.log("🔍 ===== PATIENT DETAIL VIEW DEBUG =====");
+      console.log("🔍 Patient ID da URL:", patientId);
+      console.log("🔍 Médico logado ID:", user.id);
+      console.log("🔍 Médico logado email:", user.email);
+      console.log("🔍 Chamando patientAPI.getPatientById...");
+
       const foundPatient = await patientAPI.getPatientById(patientId);
+
+      console.log("📊 RESULTADO do getPatientById:", foundPatient);
 
       if (foundPatient) {
         console.log("✅ ===== PACIENTE CARREGADO NA PÁGINA DE DETALHES =====");
