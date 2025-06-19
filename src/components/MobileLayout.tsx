@@ -111,6 +111,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
   };
 
   const currentUser = getUserData();
+  const userProfession = currentUser?.profession || "médico";
   const sidebarItems = getSidebarItems(currentUser?.profession);
 
   console.log("🚨 MOBILE LAYOUT - Current user:", currentUser);
