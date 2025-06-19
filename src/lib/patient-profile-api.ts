@@ -829,8 +829,97 @@ class PatientProfileAPI {
   }
 
   async getSharedDoctors(patientId: string): Promise<Doctor[]> {
+    console.log(
+      "🔍 getSharedDoctors - Buscando médicos compartilhados para paciente:",
+      patientId,
+    );
+
     await this.delay(200);
 
+    if (isFeatureEnabled("useSupabaseProfiles") && supabase) {
+      console.log("🚀 Usando Supabase para buscar médicos compartilhados");
+
+      try {
+        // Buscar compartilhamentos do paciente
+        const { data: shares, error: sharesError } = await supabase
+          .from("doctor_patient_sharing")
+          .select("*")
+          .eq("patient_id", patientId);
+
+        console.log("📊 Compartilhamentos encontrados:", {
+          total: shares?.length || 0,
+          error: sharesError?.message || "nenhum",
+          data: shares,
+        });
+
+        if (sharesError) {
+          console.error("❌ Erro ao buscar compartilhamentos:", sharesError);
+          return [];
+        }
+
+        if (!shares || shares.length === 0) {
+          console.log("📝 Nenhum compartilhamento encontrado");
+          return [];
+        }
+
+        // Para cada compartilhamento, buscar dados do médico
+        const doctors: Doctor[] = [];
+
+        for (const share of shares) {
+          try {
+            const { data: doctorUser, error: doctorError } = await supabase
+              .from("users")
+              .select("*")
+              .eq("id", share.doctor_id)
+              .eq("profession", "medico")
+              .single();
+
+            if (doctorError) {
+              console.warn(
+                `⚠️ Erro ao buscar médico ${share.doctor_id}:`,
+                doctorError,
+              );
+              continue;
+            }
+
+            if (doctorUser) {
+              doctors.push({
+                id: doctorUser.id,
+                name: doctorUser.name || doctorUser.email || "Médico",
+                crm: doctorUser.crm || "N/A",
+                state: doctorUser.state || "N/A",
+                specialty: doctorUser.specialty || "Clínico Geral",
+                email: doctorUser.email,
+                city: doctorUser.city,
+                createdAt: doctorUser.created_at || new Date().toISOString(),
+              });
+
+              console.log(
+                `✅ Médico adicionado: ${doctorUser.name || doctorUser.email}`,
+              );
+            }
+          } catch (error) {
+            console.warn(
+              `⚠️ Erro ao processar médico ${share.doctor_id}:`,
+              error,
+            );
+          }
+        }
+
+        console.log(`✅ Total de médicos compartilhados: ${doctors.length}`);
+        return doctors;
+      } catch (error) {
+        console.error(
+          "💥 Erro crítico ao buscar médicos compartilhados:",
+          error,
+        );
+        console.log("🔄 Fallback para localStorage");
+      }
+    } else {
+      console.log("⚠️ Supabase não ativo, usando localStorage");
+    }
+
+    // Fallback para localStorage
     const shares = this.getStoredSharedData();
     const doctors = this.getStoredDoctors();
 
