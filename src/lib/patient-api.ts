@@ -17,12 +17,12 @@ class PatientAPI {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
   }
 
-  // MÉTODO FORÇADO PARA TESTE - mostra pacientes compartilhados
+  // MÉTODO ULTRA-SIMPLES PARA TESTE
   async getPatients(): Promise<{
     patients: Patient[];
     pagination: PaginationData;
   }> {
-    console.log("🚀🚀🚀 MÉTODO GETPATIENTS CHAMADO - VERSÃO FORÇADA");
+    console.log("🚀🚀🚀 MÉTODO GETPATIENTS CHAMADO - VERSÃO ULTRA-SIMPLES");
 
     await this.delay(200);
 
@@ -457,7 +457,7 @@ class PatientAPI {
         throw new Error(`Erro ao deletar paciente: ${error.message}`);
       }
 
-      console.log("��� Paciente deletado do Supabase:", id);
+      console.log("✅ Paciente deletado do Supabase:", id);
     } catch (error) {
       console.error("💥 Erro ao deletar paciente:", error);
       throw error;
