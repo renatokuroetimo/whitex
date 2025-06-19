@@ -921,43 +921,24 @@ class PatientProfileAPI {
                 `🔍 DEBUG - Dados brutos do médico no getSharedDoctors:`,
                 doctorUser,
               );
+              console.log(
+                `👤 Nome do médico na tabela users:`,
+                doctorUser.name,
+              );
               console.log(`📧 Email do médico:`, doctorUser.email);
 
-              // Agora vou tentar buscar dados mais detalhados do médico
-              let doctorName = doctorUser.email?.split("@")[0] || "Médico";
+              // Usar campo name da tabela users, ou mostrar "Sem nome definido"
+              let doctorName;
 
-              // Estratégia inteligente para nome do médico
-              if (doctorUser.email) {
-                const emailUser = doctorUser.email.split("@")[0];
-
-                // Se email contém nome real (não é genérico), usar ele formatado
-                if (
-                  emailUser &&
-                  emailUser !== "medico" &&
-                  emailUser !== "doctor" &&
-                  emailUser !== "admin"
-                ) {
-                  // Capitalizar primeira letra de cada palavra
-                  doctorName = emailUser
-                    .split(".")
-                    .map(
-                      (part) =>
-                        part.charAt(0).toUpperCase() +
-                        part.slice(1).toLowerCase(),
-                    )
-                    .join(" ");
-
-                  console.log(
-                    `✅ Nome do médico formatado do email: "${doctorName}"`,
-                  );
-                } else {
-                  doctorName = "Dr. " + emailUser;
-                  console.log(`⚠️ Email genérico, usando: "${doctorName}"`);
-                }
-              } else {
-                doctorName = "Médico";
+              if (doctorUser.name && doctorUser.name.trim()) {
+                doctorName = doctorUser.name.trim();
                 console.log(
-                  `⚠️ Sem email, usando nome genérico: "${doctorName}"`,
+                  `✅ Usando nome real da tabela users: "${doctorName}"`,
+                );
+              } else {
+                doctorName = "Sem nome definido";
+                console.log(
+                  `⚠️ Campo name vazio ou nulo, usando: "${doctorName}"`,
                 );
               }
 
