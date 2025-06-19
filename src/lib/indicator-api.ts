@@ -359,6 +359,23 @@ class IndicatorAPI {
     ];
   }
 
+  // Criar nova subcategoria (método simplificado)
+  async createSubcategory(
+    name: string,
+    categoryId: string,
+  ): Promise<Subcategory> {
+    await this.delay(300);
+
+    const newSubcategory: Subcategory = {
+      id: `sub_${Date.now().toString(36)}`,
+      categoryId: categoryId,
+      name: name.trim(),
+    };
+
+    console.log("✅ Subcategoria criada (local):", newSubcategory);
+    return newSubcategory;
+  }
+
   // Unidades de medida básicas
   async getUnits(): Promise<UnitOfMeasure[]> {
     return [
