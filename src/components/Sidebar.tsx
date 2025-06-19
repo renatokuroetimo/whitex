@@ -100,7 +100,6 @@ const Sidebar: React.FC = () => {
         path: "/",
       },
     ];
-    console.log("🚨 RETURNING FALLBACK ITEMS:", fallbackItems);
     return fallbackItems;
   };
 
