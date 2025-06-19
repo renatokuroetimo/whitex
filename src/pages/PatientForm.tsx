@@ -228,7 +228,7 @@ const PatientForm = () => {
         navigate(`/pacientes/${id}`);
       } else {
         if (!user?.id) return;
-        const newPatient = await patientAPI.createPatient(user.id, formData);
+        const newPatient = await patientAPI.createPatient(formData);
         toast({
           title: "Sucesso",
           description: "Paciente criado com sucesso",
