@@ -97,7 +97,7 @@ const PatientDetailView = () => {
     if (!patientId || !user?.id) return;
 
     try {
-      await patientAPI.removePatientSharing(patientId, user.id);
+      await patientAPI.removePatientSharing(patientId);
       toast({
         title: "Sucesso",
         description: "Compartilhamento removido com sucesso",
