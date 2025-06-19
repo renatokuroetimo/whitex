@@ -573,7 +573,8 @@ if (typeof window !== 'undefined') {
       console.log("   - Usuário autenticado:", authStatus.isAuthenticated);
       console.log("   - User ID:", authStatus.userId);
       console.log("   - Erro:", authStatus.error);
-        console.log("3️⃣ TABELA SUPABASE:");
+
+      console.log("\n3️⃣ TABELA SUPABASE:");
         try {
           const { data, error: tableError } = await supabase
             .from('profile_images')
