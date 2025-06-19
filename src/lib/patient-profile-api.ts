@@ -919,24 +919,9 @@ class PatientProfileAPI {
             if (doctorUser) {
               console.log(`🔍 DEBUG - Dados brutos do médico:`, doctorUser);
 
-              // Priorizar nome real, mas se for genérico, usar email
-              let doctorName = doctorUser.name;
-
-              // Se nome está vazio, é "medico", ou outros valores genéricos, usar email
-              if (
-                !doctorName ||
-                doctorName.trim() === "" ||
-                doctorName.toLowerCase() === "medico" ||
-                doctorName.toLowerCase() === "doctor" ||
-                doctorName.toLowerCase() === "dr"
-              ) {
-                doctorName = doctorUser.email?.split("@")[0] || "Médico";
-                console.log(
-                  `⚠️ Nome genérico detectado, usando email: ${doctorName}`,
-                );
-              } else {
-                console.log(`✅ Usando nome real: ${doctorName}`);
-              }
+              // Como não há coluna name, usar email como nome base
+              const doctorName = doctorUser.email?.split("@")[0] || "Médico";
+              console.log(`✅ Usando nome baseado no email: ${doctorName}`);
 
               doctors.push({
                 id: doctorUser.id,
