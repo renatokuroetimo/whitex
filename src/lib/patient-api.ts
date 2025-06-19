@@ -534,10 +534,91 @@ class PatientAPI {
     id: string,
     data: Partial<PatientFormData>,
   ): Promise<Patient> {
-    // Por ora, método simplificado que sempre falha com mensagem clara
-    throw new Error(
-      "SISTEMA TEMPORARIAMENTE INDISPONÍVEL: Execute primeiro o script SQL 'check_medical_data_table.sql' no Supabase para configurar as tabelas necessárias. Após executar o script, tente novamente.",
-    );
+    await this.delay(300);
+
+    if (!supabase) {
+      throw new Error("Sistema de banco de dados não configurado");
+    }
+
+    // Obter usuário atual do contexto (SEM localStorage)
+    const currentUserStr = localStorage.getItem("medical_app_current_user");
+    if (!currentUserStr) {
+      throw new Error("Usuário não autenticado");
+    }
+    const currentUser = JSON.parse(currentUserStr);
+
+    // Verificar se é paciente compartilhado
+    const { data: shareData, error: shareError } = await supabase
+      .from("doctor_patient_sharing")
+      .select("*")
+      .eq("doctor_id", currentUser.id)
+      .eq("patient_id", id)
+      .single();
+
+    if (shareError && shareError.code !== "PGRST116") {
+      throw new Error(`Erro ao verificar permissões: ${shareError.message}`);
+    }
+
+    if (!shareData) {
+      throw new Error("Você não tem permissão para editar este paciente");
+    }
+
+    // Salvar observações médicas se houver
+    if (data.notes && data.notes.trim()) {
+      // Verificar se já existe observação
+      const { data: existingObs } = await supabase
+        .from("patient_medical_observations")
+        .select("*")
+        .eq("patient_id", id)
+        .eq("doctor_id", currentUser.id)
+        .single();
+
+      if (existingObs) {
+        // Atualizar existente
+        const { error: updateError } = await supabase
+          .from("patient_medical_observations")
+          .update({
+            observations: data.notes,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", existingObs.id);
+
+        if (updateError) {
+          throw new Error(
+            `Erro ao atualizar observações: ${updateError.message}`,
+          );
+        }
+      } else {
+        // Criar nova
+        const { error: insertError } = await supabase
+          .from("patient_medical_observations")
+          .insert([
+            {
+              id: this.generateId(),
+              patient_id: id,
+              doctor_id: currentUser.id,
+              observations: data.notes,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            },
+          ]);
+
+        if (insertError) {
+          throw new Error(`Erro ao salvar observações: ${insertError.message}`);
+        }
+      }
+    }
+
+    // Retornar paciente atualizado
+    const currentPatient = await this.getPatientById(id);
+    if (!currentPatient) {
+      throw new Error("Paciente não encontrado");
+    }
+
+    return {
+      ...currentPatient,
+      notes: data.notes || currentPatient.notes,
+    };
   }
   async deletePatients(ids: string[]): Promise<void> {
     throw new Error("Método não implementado para teste");
