@@ -15,7 +15,10 @@ import {
 import { useAuth } from "@/contexts/AuthContextHybrid";
 import { indicatorAPI } from "@/lib/indicator-api";
 import { patientIndicatorAPI } from "@/lib/patient-indicator-api";
-import { PatientIndicatorFormData } from "@/lib/patient-indicator-types";
+import {
+  PatientIndicatorFormData,
+  PatientIndicatorValue,
+} from "@/lib/patient-indicator-types";
 import { toast } from "@/hooks/use-toast";
 
 const PatientAddIndicator = () => {
