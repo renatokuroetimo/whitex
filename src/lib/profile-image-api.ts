@@ -393,6 +393,27 @@ class ProfileImageAPI {
     return false;
   }
 
+  // Debug method para testar autenticação (manual para desenvolvimento)
+  async debugAuthentication(): Promise<void> {
+    console.log("🔍 ===== DEBUG AUTENTICAÇÃO SUPABASE =====");
+
+    const authStatus = await this.checkAuthenticationStatus();
+    console.log("🔑 Status de autenticação:", authStatus);
+
+    const tableExists = await this.checkTableExists();
+    console.log("📊 Tabela profile_images existe:", tableExists);
+
+    if (authStatus.isAuthenticated && authStatus.userId) {
+      console.log("✅ Usuário autenticado:", authStatus.userId);
+      console.log("💡 Pronto para salvar imagens no Supabase");
+    } else {
+      console.log("❌ Usuário não autenticado");
+      console.log("💡 Imagens serão salvas no localStorage");
+    }
+
+    console.log("🔍 ===== FIM DEBUG =====");
+  }
+
   // Migrar imagens do localStorage para Supabase
   // Migrar imagens do localStorage para Supabase
   async migrateLocalImagesToSupabase(): Promise<void> {
