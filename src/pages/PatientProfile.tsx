@@ -658,7 +658,12 @@ const PatientProfile = () => {
                   </div>
 
                   <div className="flex justify-end gap-3 mt-8">
-                    <Button variant="outline">Cancelar</Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => navigate("/patient/dashboard")}
+                    >
+                      Cancelar
+                    </Button>
                     <Button
                       onClick={handlePersonalDataSave}
                       disabled={isLoading}
@@ -870,10 +875,15 @@ const PatientProfile = () => {
                   </div>
 
                   <div className="flex justify-end gap-3 mt-8">
-                    <Button variant="outline">Cancelar</Button>
                     <Button
-                      onClick={handleMedicalDataSave}
-                      disabled={isLoading}
+                      variant="outline"
+                      onClick={() => navigate("/patient/dashboard")}
+                    >
+                      Cancelar
+                    </Button>
+                    <Button
+                      onClick={handleSaveMedicalData}
+                      disabled={isSavingMedicalData}
                       className="bg-blue-600 hover:bg-blue-700"
                     >
                       {isLoading ? "Salvando..." : "Salvar"}
