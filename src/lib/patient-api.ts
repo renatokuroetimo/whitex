@@ -303,7 +303,7 @@ class PatientAPI {
         },
       };
     } catch (error) {
-      console.error("💥 ERRO CRÍTICO no getPatients:", error);
+      console.error("��� ERRO CRÍTICO no getPatients:", error);
       return {
         patients: [],
         pagination: {
@@ -609,13 +609,14 @@ class PatientAPI {
 
             if (existingObs) {
               // Atualizar observação existente
-              const { error: updateError } = await supabase
+              const { data: updatedData, error: updateError } = await supabase
                 .from("patient_medical_observations")
                 .update({
                   observations: data.notes,
                   updated_at: new Date().toISOString(),
                 })
-                .eq("id", existingObs.id);
+                .eq("id", existingObs.id)
+                .select();
 
               if (updateError) {
                 console.error("❌ Erro ao atualizar observação:", updateError);
@@ -624,21 +625,30 @@ class PatientAPI {
                 );
               }
 
-              console.log("✅ Observação atualizada com sucesso!");
+              if (!updatedData || updatedData.length === 0) {
+                console.error("❌ Nenhum registro foi atualizado");
+                throw new Error(
+                  "Falha ao atualizar observações - nenhum registro modificado",
+                );
+              }
+
+              console.log("✅ Observação atualizada com sucesso:", updatedData);
             } else {
               // Criar nova observação
-              const { error: insertError } = await supabase
+              const newObservationId = this.generateId();
+              const { data: insertedData, error: insertError } = await supabase
                 .from("patient_medical_observations")
                 .insert([
                   {
-                    id: this.generateId(),
+                    id: newObservationId,
                     patient_id: id,
                     doctor_id: currentUser.id,
                     observations: data.notes,
                     created_at: new Date().toISOString(),
                     updated_at: new Date().toISOString(),
                   },
-                ]);
+                ])
+                .select();
 
               if (insertError) {
                 console.error("❌ Erro ao criar observação:", insertError);
@@ -647,7 +657,39 @@ class PatientAPI {
                 );
               }
 
-              console.log("✅ Nova observação criada com sucesso!");
+              if (!insertedData || insertedData.length === 0) {
+                console.error("❌ Nenhum registro foi inserido");
+                throw new Error(
+                  "Falha ao criar observações - nenhum registro inserido",
+                );
+              }
+
+              console.log(
+                "✅ Nova observação criada com sucesso:",
+                insertedData,
+              );
+
+              // VALIDAÇÃO ADICIONAL: Verificar se realmente foi salvo
+              const { data: verifyData, error: verifyError } = await supabase
+                .from("patient_medical_observations")
+                .select("*")
+                .eq("id", newObservationId)
+                .single();
+
+              if (verifyError || !verifyData) {
+                console.error(
+                  "❌ VALIDAÇÃO FALHOU - Dados não foram salvos:",
+                  verifyError,
+                );
+                throw new Error(
+                  "Validação falhou - observações não foram salvas no banco",
+                );
+              }
+
+              console.log(
+                "✅ VALIDAÇÃO OK - Dados confirmados no banco:",
+                verifyData,
+              );
             }
           } catch (error) {
             console.error("💥 Erro ao salvar observações médicas:", error);
