@@ -402,36 +402,122 @@ Erro fallback: ${fallbackError.message}`);
 
       // Mapear dados do banco para o formato esperado
       const indicators = data.map((indicator: any): IndicatorWithDetails => {
-        // Find actual category and subcategory names
-        const category = categories.find(
-          (cat) => cat.id === indicator.category_id,
-        );
-        const subcategory = subcategories.find(
-          (sub) => sub.id === indicator.subcategory_id,
-        );
+        console.log("🔍 DEBUG Standard Indicator from DB:", indicator);
 
-        return {
+        // Enhanced mapping for category and subcategory names
+        let categoryName = indicator.category_name || indicator.categoryName;
+        let subcategoryName =
+          indicator.subcategory_name || indicator.subcategoryName;
+
+        // If names are stored directly in the database, use them
+        if (!categoryName || categoryName === "Categoria") {
+          // Try to find by ID first
+          const category = categories.find(
+            (cat) => cat.id === indicator.category_id,
+          );
+          if (category) {
+            categoryName = category.name;
+          } else {
+            // Use mapping function as fallback
+            categoryName = this.mapCategoryIdToName(indicator.category_id);
+          }
+        }
+
+        if (!subcategoryName || subcategoryName === "Subcategoria") {
+          // Try to find by ID first
+          const subcategory = subcategories.find(
+            (sub) => sub.id === indicator.subcategory_id,
+          );
+          if (subcategory) {
+            subcategoryName = subcategory.name;
+          } else {
+            // Use mapping function as fallback
+            subcategoryName = this.mapSubcategoryIdToName(
+              indicator.subcategory_id,
+            );
+          }
+        }
+
+        // Enhanced mapping based on parameter name if still generic
+        if (categoryName === "Categoria" || !categoryName) {
+          const param = (
+            indicator.parameter ||
+            indicator.name ||
+            ""
+          ).toLowerCase();
+          if (
+            param.includes("pressão") ||
+            param.includes("pressure") ||
+            param.includes("sistólica") ||
+            param.includes("diastólica")
+          ) {
+            categoryName = "Sinais Vitais";
+            subcategoryName = "Pressão Arterial";
+          } else if (
+            param.includes("frequência") ||
+            param.includes("cardíaca") ||
+            param.includes("heart") ||
+            param.includes("bpm")
+          ) {
+            categoryName = "Sinais Vitais";
+            subcategoryName = "Frequência Cardíaca";
+          } else if (
+            param.includes("temperatura") ||
+            param.includes("temp") ||
+            param.includes("corporal")
+          ) {
+            categoryName = "Sinais Vitais";
+            subcategoryName = "Temperatura";
+          } else if (
+            param.includes("peso") ||
+            param.includes("weight") ||
+            param.includes("corporal")
+          ) {
+            categoryName = "Medidas Antropométricas";
+            subcategoryName = "Peso";
+          } else if (
+            param.includes("altura") ||
+            param.includes("height") ||
+            param.includes("estatura")
+          ) {
+            categoryName = "Medidas Antropométricas";
+            subcategoryName = "Altura";
+          } else if (
+            param.includes("glicemia") ||
+            param.includes("glucose") ||
+            param.includes("glicose")
+          ) {
+            categoryName = "Exames Laboratoriais";
+            subcategoryName = "Glicemia";
+          } else {
+            categoryName = "Indicadores Gerais";
+            subcategoryName = "Parâmetro Geral";
+          }
+        }
+
+        const finalIndicator = {
           id: indicator.id,
           name: indicator.name || indicator.parameter || "Indicador",
           categoryId: indicator.category_id || "cat1",
-          categoryName:
-            category?.name ||
-            this.mapCategoryIdToName(indicator.category_id) ||
-            "Categoria",
+          categoryName: categoryName,
           subcategoryId: indicator.subcategory_id || "sub1",
-          subcategoryName:
-            subcategory?.name ||
-            this.mapSubcategoryIdToName(indicator.subcategory_id) ||
-            "Subcategoria",
+          subcategoryName: subcategoryName,
           parameter: indicator.parameter || indicator.name || "Parâmetro",
           unitId: indicator.unit_id || "unit_un",
-          unitSymbol: indicator.unit_symbol || "un",
+          unitSymbol: indicator.unit_symbol || indicator.unit || "un",
           isMandatory: indicator.is_mandatory || false,
           requiresTime: indicator.requires_time || false,
           requiresDate: indicator.requires_date || false,
           doctorId: indicator.doctor_id || "",
           createdAt: indicator.created_at || new Date().toISOString(),
         };
+
+        console.log(
+          "✅ Processed Standard Indicator:",
+          `${finalIndicator.categoryName} - ${finalIndicator.subcategoryName} - ${finalIndicator.parameter} (${finalIndicator.unitSymbol})`,
+        );
+
+        return finalIndicator;
       });
 
       console.log(
