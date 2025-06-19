@@ -449,7 +449,7 @@ class PatientProfileAPI {
               2,
             ),
           );
-          throw error; // For��ar fallback
+          throw error; // Forçar fallback
         } else {
           console.log("✅ Dados médicos salvos no Supabase!");
           return resultData;
@@ -932,10 +932,23 @@ class PatientProfileAPI {
 
         for (const share of shares) {
           try {
-            // USAR ESTRUTURA REAL DA TABELA USERS (SEM CAMPO NAME)
+            // USAR ESTRUTURA REAL DA TABELA public.users (COM CAMPO full_name)
             const { data: doctorUser, error: doctorError } = await supabase
               .from("users")
-              .select("*") // Buscar todos os campos disponíveis
+              .select(
+                `
+                id,
+                email,
+                profession,
+                full_name,
+                crm,
+                specialty,
+                state,
+                city,
+                phone,
+                created_at
+              `,
+              )
               .eq("id", share.doctor_id)
               .eq("profession", "medico")
               .single();
@@ -954,16 +967,16 @@ class PatientProfileAPI {
                 doctorUser,
               );
               console.log(`📧 Email do médico:`, doctorUser.email);
+              console.log(`👤 Campo full_name:`, doctorUser.full_name);
 
-              // Como não há campo 'name', usar fallback
+              // Usar campo full_name da tabela public.users
               let doctorName = "Sem nome definido";
 
-              if (doctorUser.fullName && doctorUser.fullName.trim()) {
-                doctorName = doctorUser.fullName.trim();
-                console.log(`✅ Usando fullName: "${doctorName}"`);
-              } else if (doctorUser.full_name && doctorUser.full_name.trim()) {
+              if (doctorUser.full_name && doctorUser.full_name.trim()) {
                 doctorName = doctorUser.full_name.trim();
-                console.log(`✅ Usando full_name: "${doctorName}"`);
+                console.log(
+                  `✅ Usando full_name da tabela users: "${doctorName}"`,
+                );
               } else if (doctorUser.email) {
                 doctorName = `Dr. ${doctorUser.email.split("@")[0]}`;
                 console.log(`⚠️ Usando email como fallback: "${doctorName}"`);
