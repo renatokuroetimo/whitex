@@ -124,20 +124,26 @@ const PatientAddIndicator = () => {
     if (!user?.id) return;
 
     try {
-      const formData: PatientIndicatorFormData = {
+      const newIndicatorValue: PatientIndicatorValue = {
+        id: Date.now().toString(36) + Math.random().toString(36).substr(2),
+        patientId: user.id,
         indicatorId: selectedIndicator,
         indicatorType: "standard", // Pacientes só podem usar indicadores padrão
+        categoryName: selectedIndicatorData?.categoryName || "Categoria",
+        subcategoryName:
+          selectedIndicatorData?.subcategoryName || "Subcategoria",
+        parameter: selectedIndicatorData?.parameter || "Parâmetro",
+        unitSymbol: selectedIndicatorData?.unitSymbol || "un",
         value: value.trim(),
         date: selectedIndicatorData?.requiresDate ? date : undefined,
         time: selectedIndicatorData?.requiresTime ? time : undefined,
         visibleToMedics: true, // Sempre visível para médicos para pacientes
+        doctorId: user.id, // Para pacientes, doctorId = userId
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
-      await patientIndicatorAPI.createPatientIndicatorValue(
-        user.id,
-        user.id, // Para pacientes, doctorId = userId
-        formData,
-      );
+      await patientIndicatorAPI.createPatientIndicatorValue(newIndicatorValue);
 
       toast({
         title: "Sucesso",
