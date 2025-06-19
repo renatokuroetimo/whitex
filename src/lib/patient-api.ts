@@ -73,19 +73,37 @@ class PatientAPI {
       if (sharedData && sharedData.length > 0) {
         for (const share of sharedData) {
           try {
+            console.log(
+              `🔍 Buscando dados para paciente compartilhado: ${share.patient_id}`,
+            );
+
             // Buscar dados pessoais do paciente
-            const { data: personalData } = await supabase
+            const { data: personalData, error: personalError } = await supabase
               .from("patient_personal_data")
               .select("*")
               .eq("user_id", share.patient_id)
               .single();
 
+            if (personalError) {
+              console.warn(
+                `⚠️ Erro ao buscar dados pessoais do paciente ${share.patient_id}:`,
+                personalError,
+              );
+            }
+
             // Buscar dados médicos do paciente
-            const { data: medicalData } = await supabase
+            const { data: medicalData, error: medicalError } = await supabase
               .from("patient_medical_data")
               .select("*")
               .eq("user_id", share.patient_id)
               .single();
+
+            if (medicalError) {
+              console.warn(
+                `⚠️ Erro ao buscar dados médicos do paciente ${share.patient_id}:`,
+                medicalError,
+              );
+            }
 
             if (personalData) {
               sharedPatients.push({
