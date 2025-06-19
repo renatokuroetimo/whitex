@@ -496,21 +496,39 @@ class PatientProfileAPI {
     localStorage.setItem(this.STORAGE_KEYS.DOCTORS, JSON.stringify(doctors));
   }
 
-  // Get doctors from registered users instead of mock data
+  // Get doctors from registered users baseado na estrutura real
   private async getRegisteredDoctors(): Promise<Doctor[]> {
-    console.log("🔍 Buscando médicos registrados...");
+    console.log("🔍 Buscando médicos registrados baseado na estrutura real...");
 
     // Try Supabase first if feature is enabled
     if (isFeatureEnabled("useSupabaseProfiles") && supabase) {
       console.log("🚀 Buscando médicos no Supabase");
 
       try {
+        // USAR A ESTRUTURA REAL DA TABELA USERS
         const { data: supabaseUsers, error } = await supabase
           .from("users")
-          .select("*")
+          .select(
+            `
+            id,
+            email,
+            profession,
+            name,
+            crm,
+            specialty,
+            state,
+            city,
+            phone,
+            created_at
+          `,
+          )
           .eq("profession", "medico");
 
-        console.log("📊 Médicos do Supabase:", { data: supabaseUsers, error });
+        console.log("📊 Médicos do Supabase:", {
+          data: supabaseUsers,
+          error,
+          total: supabaseUsers?.length || 0,
+        });
 
         if (error) {
           console.error(
@@ -576,14 +594,16 @@ class PatientProfileAPI {
     }
   }
 
-  // Helper function to map user data to doctor format
-  private mapUserToDoctor(user: any, source: "supabase" | "localStorage"): any {
-    // Use existing name or show "Sem nome cadastrado"
-    // Support both fullName and full_name (localStorage vs Supabase format)
-    let doctorName = user.fullName || user.full_name || user.name;
+  // Helper function corrigido para mapear baseado na estrutura real
+  private mapUserToDoctor(
+    user: any,
+    source: "supabase" | "localStorage",
+  ): Doctor {
+    // CORRIGIDO: usar campo 'name' da tabela users (não full_name)
+    let doctorName = user.name;
 
     if (!doctorName || doctorName.trim() === "") {
-      doctorName = "Sem nome cadastrado";
+      doctorName = "Sem nome definido";
     }
 
     console.log(`🔍 Dados originais do usuário médico (${source}):`, {
@@ -689,7 +709,10 @@ class PatientProfileAPI {
   ): Promise<SharedData> {
     await this.delay(300);
 
-    console.log("🤝 COMPARTILHANDO DADOS:", { patientId, doctorId });
+    console.log("🤝 COMPARTILHANDO DADOS - VERSÃO CORRIGIDA:", {
+      patientId,
+      doctorId,
+    });
 
     // Se Supabase estiver ativo, usar Supabase
     if (isFeatureEnabled("useSupabaseProfiles") && supabase) {
@@ -704,7 +727,7 @@ class PatientProfileAPI {
           .eq("patient_id", patientId)
           .maybeSingle();
 
-        console.log("📊 Compartilhamento existente:", {
+        console.log("📊 Verificação de compartilhamento existente:", {
           data: existingShare,
           error: checkError,
         });
@@ -718,7 +741,7 @@ class PatientProfileAPI {
             sharedAt: existingShare.shared_at,
             isActive: true,
           };
-          console.log("✅ Compartilhamento já existe");
+          console.log("✅ Compartilhamento já existe:", sharedData);
           return sharedData;
         }
 
@@ -728,6 +751,8 @@ class PatientProfileAPI {
           patient_id: patientId,
           shared_at: new Date().toISOString(),
         };
+
+        console.log("📝 Criando novo compartilhamento:", newShare);
 
         const { data: supabaseData, error } = await supabase
           .from("doctor_patient_sharing")
@@ -816,7 +841,7 @@ class PatientProfileAPI {
     patientId: string,
     doctorId: string,
   ): Promise<void> {
-    console.log("🗑️ stopSharingWithDoctor - Removendo compartilhamento:", {
+    console.log("🗑️ stopSharingWithDoctor - VERSÃO CORRIGIDA:", {
       patientId,
       doctorId,
     });
@@ -862,7 +887,7 @@ class PatientProfileAPI {
 
   async getSharedDoctors(patientId: string): Promise<Doctor[]> {
     console.log(
-      "🔍 getSharedDoctors - Buscando médicos compartilhados para paciente:",
+      "🔍 getSharedDoctors - VERSÃO CORRIGIDA para paciente:",
       patientId,
     );
 
@@ -885,7 +910,7 @@ class PatientProfileAPI {
         });
 
         if (sharesError) {
-          console.error("❌ Erro ao buscar compartilhamentos:", sharesError);
+          console.error("�� Erro ao buscar compartilhamentos:", sharesError);
           return [];
         }
 
@@ -894,15 +919,27 @@ class PatientProfileAPI {
           return [];
         }
 
-        // Para cada compartilhamento, buscar dados do médico
+        // Para cada compartilhamento, buscar dados do médico usando a estrutura real
         const doctors: Doctor[] = [];
 
         for (const share of shares) {
           try {
+            // USAR ESTRUTURA REAL DA TABELA USERS
             const { data: doctorUser, error: doctorError } = await supabase
               .from("users")
               .select(
-                "id, name, email, profession, crm, specialty, state, city, created_at",
+                `
+                id,
+                email,
+                profession,
+                name,
+                crm,
+                specialty,
+                state,
+                city,
+                phone,
+                created_at
+              `,
               )
               .eq("id", share.doctor_id)
               .eq("profession", "medico")
@@ -927,8 +964,8 @@ class PatientProfileAPI {
               );
               console.log(`📧 Email do médico:`, doctorUser.email);
 
-              // Usar campo name da tabela users, ou mostrar "Sem nome definido"
-              let doctorName;
+              // Usar campo 'name' da tabela users, ou mostrar "Sem nome definido"
+              let doctorName = "Sem nome definido";
 
               if (doctorUser.name && doctorUser.name.trim()) {
                 doctorName = doctorUser.name.trim();
@@ -936,7 +973,6 @@ class PatientProfileAPI {
                   `✅ Usando nome real da tabela users: "${doctorName}"`,
                 );
               } else {
-                doctorName = "Sem nome definido";
                 console.log(
                   `⚠️ Campo name vazio ou nulo, usando: "${doctorName}"`,
                 );
