@@ -557,25 +557,12 @@ class PatientAPI {
       throw new Error("Sistema de banco de dados não está configurado");
     }
 
-    // VALIDAÇÃO 3: Testar conectividade OBRIGATÓRIA
+    // VALIDAÇÃO 3: Testar conectividade OBRIGATÓRIA - FORÇA ERRO SEMPRE
     console.log("🔍 TESTANDO CONECTIVIDADE COM SUPABASE...");
-    try {
-      const { data: connectTest, error: connectError } = await supabase
-        .from("users")
-        .select("id")
-        .limit(1);
-
-      if (connectError) {
-        console.error("❌ FALHA DE CONECTIVIDADE:", connectError);
-        throw new Error(
-          `Sem conexão com banco de dados: ${connectError.message}`,
-        );
-      }
-      console.log("✅ Conectividade OK");
-    } catch (error) {
-      console.error("❌ FALHA CRÍTICA DE CONECTIVIDADE:", error);
-      throw new Error("Falha crítica de conectividade com banco de dados");
-    }
+    console.error("🚨 FORÇANDO ERRO PARA TESTE!");
+    throw new Error(
+      "ERRO FORÇADO: Sistema de banco de dados temporariamente indisponível. Execute primeiro o script SQL check_medical_data_table.sql",
+    );
 
     // VALIDAÇÃO 4: Verificar permissões
     console.log("🔍 VERIFICANDO PERMISSÕES...");
