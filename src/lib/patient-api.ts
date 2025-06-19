@@ -37,9 +37,6 @@ class PatientAPI {
     const currentUser = JSON.parse(currentUserStr);
     console.log("🚀 Buscando pacientes no Supabase para:", currentUser.id);
 
-    console.log("💾 Criando paciente no Supabase");
-    console.log("📋 Dados recebidos:", JSON.stringify(data, null, 2));
-
     try {
       // Buscar pacientes criados pelo médico
       const { data: ownPatients, error: patientsError } = await supabase
