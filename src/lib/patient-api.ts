@@ -123,27 +123,34 @@ class PatientAPI {
             if (patientUser) {
               console.log(`🔍 DEBUG - Dados brutos do paciente:`, patientUser);
 
-              // Tentar buscar dados pessoais mais detalhados
-              let patientName =
-                patientUser.name || patientUser.email || "Paciente";
+              // Como não há coluna name na users, começar com email
+              let patientName = patientUser.email?.split("@")[0] || "Paciente";
               let age = null;
               let city = "N/A";
               let state = "N/A";
               let weight = null;
 
               console.log(
-                `🎯 Nome inicial do paciente (tabela users): "${patientName}"`,
+                `🎯 Nome inicial do paciente (email): "${patientName}"`,
               );
 
               try {
-                const { data: personalData } = await supabase
-                  .from("patient_personal_data")
-                  .select("*")
-                  .eq("user_id", share.patient_id)
-                  .single();
+                const { data: personalData, error: personalError } =
+                  await supabase
+                    .from("patient_personal_data")
+                    .select("*")
+                    .eq("user_id", share.patient_id)
+                    .single();
 
-                if (personalData) {
-                  patientName = personalData.full_name || patientName;
+                console.log(`🔍 Dados pessoais encontrados:`, personalData);
+                console.log(
+                  `🔍 Erro na busca de dados pessoais:`,
+                  personalError,
+                );
+
+                if (personalData && personalData.full_name) {
+                  patientName = personalData.full_name;
+                  console.log(`✅ Usando nome completo: ${patientName}`);
                   city = personalData.city || city;
                   state = personalData.state || state;
 
@@ -152,6 +159,10 @@ class PatientAPI {
                     const birthDate = new Date(personalData.birth_date);
                     age = today.getFullYear() - birthDate.getFullYear();
                   }
+                } else {
+                  console.log(
+                    `⚠️ Sem dados pessoais, usando nome baseado no email: ${patientName}`,
+                  );
                 }
 
                 const { data: medicalData } = await supabase
