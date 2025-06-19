@@ -141,7 +141,12 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
     setIsMobileMenuOpen(false);
   };
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
+    setShowLogoutDialog(true);
+  };
+
+  const confirmLogout = async () => {
+    setShowLogoutDialog(false);
     await logout();
     navigate("/login");
     setIsMobileMenuOpen(false);
