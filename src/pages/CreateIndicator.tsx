@@ -210,7 +210,7 @@ const CreateIndicator = () => {
       console.log("🔍 FormData enviado:", formData);
       console.log("🔍 User ID:", user.id);
 
-      await indicatorAPI.createIndicator(user.id, formData);
+      await indicatorAPI.createIndicator(formData);
       toast({
         title: "Sucesso",
         description: "Indicador criado com sucesso",
