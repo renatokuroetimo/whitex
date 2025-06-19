@@ -898,9 +898,18 @@ if (typeof window !== "undefined") {
     return result;
   };
 
+  // Função simples para testar a correção da autenticação
+  window.testAuthFix = async () => {
+    console.log("🧪 Testando correção de autenticação...");
+    const authStatus = await profileImageAPI.checkAuthenticationStatus();
+    console.log("✅ Nova verificação de autenticação:", authStatus);
+    return authStatus;
+  };
+
   console.log("🔧 Funções de debug disponíveis:");
   console.log("   - debugImages() - Diagnóstico completo");
   console.log("   - migrateImages() - Migrar imagens para Supabase");
   console.log("   - checkImageAuth() - Verificar autenticação");
   console.log("   - testImageSave() - Testar salvamento");
+  console.log("   - testAuthFix() - Testar correção de autenticação");
 }
