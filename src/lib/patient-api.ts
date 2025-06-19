@@ -598,15 +598,22 @@ class PatientAPI {
         .eq("patient_id", id)
         .single();
 
-      console.error("🔥 PASSO 5 - Resultado da consulta:", {
-        shareData,
-        shareError: shareError?.message || "nenhum",
-        code: shareError?.code,
-      });
+      console.error("🔥 PASSO 5 - Resultado da consulta:");
+      console.error("🔥 shareData:", shareData);
+      console.error("🔥 shareError completo:", shareError);
+      console.error("🔥 shareError.message:", shareError?.message);
+      console.error("🔥 shareError.code:", shareError?.code);
+      console.error("🔥 shareError.details:", shareError?.details);
 
       if (shareError && shareError.code !== "PGRST116") {
-        console.error("❌ FALHA AO VERIFICAR PERMISSÕES:", shareError);
-        throw new Error(`Erro ao verificar permissões: ${shareError.message}`);
+        console.error("❌ FALHA AO VERIFICAR PERMISSÕES:");
+        console.error("❌ Erro completo:", JSON.stringify(shareError, null, 2));
+        console.error("❌ Mensagem:", shareError.message);
+        console.error("❌ Código:", shareError.code);
+        console.error("❌ Detalhes:", shareError.details);
+        throw new Error(
+          `Erro ao verificar permissões: ${shareError.message} (Código: ${shareError.code})`,
+        );
       }
 
       if (!shareData) {
@@ -638,7 +645,7 @@ class PatientAPI {
 
     console.error("🔥 PASSO 6B: Há observações para salvar, continuando...");
 
-    // VALIDAÇÃO 6: Testar tabela de observações
+    // VALIDA��ÃO 6: Testar tabela de observações
     try {
       const { data: tableTest, error: tableError } = await supabase
         .from("patient_medical_observations")
