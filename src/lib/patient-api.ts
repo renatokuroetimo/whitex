@@ -43,32 +43,14 @@ class PatientAPI {
       currentUser.profession,
     );
 
-    // PACIENTE DE TESTE - sempre aparece para garantir que a interface funciona
-    const testPatient: Patient = {
-      id: "teste-compartilhado-123",
-      name: "🧪 PACIENTE COMPARTILHADO TESTE",
-      age: 35,
-      city: "São Paulo",
-      state: "SP",
-      weight: 70,
-      status: "compartilhado",
-      notes: "Este é um paciente de teste para verificar se aparece na lista",
-      createdAt: new Date().toISOString(),
-      doctorId: null,
-      isShared: true,
-      sharedId: "share-123",
-    };
-
     if (!supabase) {
-      console.warn(
-        "⚠️ Supabase não configurado - retornando apenas paciente teste",
-      );
+      console.warn("⚠️ Supabase não configurado - retornando lista vazia");
       return {
-        patients: [testPatient],
+        patients: [],
         pagination: {
           currentPage: 1,
           totalPages: 1,
-          totalItems: 1,
+          totalItems: 0,
           itemsPerPage: 10,
         },
       };
