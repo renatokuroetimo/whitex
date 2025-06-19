@@ -47,8 +47,9 @@ class ProfileImageAPI {
 
       try {
         // Calcular tamanho da imagem em bytes (aproximado)
-        const base64Size =
-          imageData.length * (3 / 4) - (imageData.match(/=/g) || []).length;
+        const base64Size = Math.floor(
+          imageData.length * (3 / 4) - (imageData.match(/=/g) || []).length,
+        );
 
         // Tentar fazer upsert (insert ou update)
         const { error } = await supabase.from("profile_images").upsert(
@@ -351,7 +352,7 @@ class ProfileImageAPI {
 
       console.log("✅ Migração de imagens concluída");
     } catch (error) {
-      console.error("���� Erro na migração de imagens:", error);
+      console.error("💥 Erro na migração de imagens:", error);
     }
   }
 }
