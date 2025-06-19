@@ -158,15 +158,7 @@ class IndicatorAPI {
       name: data.parameter, // Usar o parâmetro como nome
       category_id: data.categoryId,
       category: data.categoryId, // Add category field for NOT NULL constraint
-      category_name:
-        selectedCategory?.name ||
-        this.mapCategoryIdToName(data.categoryId) ||
-        "Categoria",
       subcategory_id: data.subcategoryId,
-      subcategory_name:
-        selectedSubcategory?.name ||
-        this.mapSubcategoryIdToName(data.subcategoryId) ||
-        "Subcategoria",
       parameter: data.parameter.trim(),
       unit_id: data.unitOfMeasureId,
       unit: selectedUnit?.symbol || "un", // Add unit field for NOT NULL constraint
@@ -184,14 +176,6 @@ class IndicatorAPI {
       unit: selectedUnit?.symbol || "un", // Include unit for NOT NULL constraint
       type: "custom", // Include type for NOT NULL constraint
       category: data.categoryId, // Include category for NOT NULL constraint
-      category_name:
-        selectedCategory?.name ||
-        this.mapCategoryIdToName(data.categoryId) ||
-        "Categoria",
-      subcategory_name:
-        selectedSubcategory?.name ||
-        this.mapSubcategoryIdToName(data.subcategoryId) ||
-        "Subcategoria",
       parameter: data.parameter.trim(),
     };
 
