@@ -115,17 +115,13 @@ const Sidebar: React.FC = () => {
             setProfileImage(image);
           }
         })
-        .catch((error) => {
-          console.warn(
-            "⚠️ Erro ao carregar imagem de perfil (usando fallback localStorage):",
-            error?.message || error,
-          );
+        .catch(() => {
+          // Silencioso
         });
     }
   }, [currentUser?.id]);
 
   const handleNavigation = (path: string) => {
-    console.log("🚨 NAVIGATING TO:", path);
     navigate(path);
   };
 
@@ -140,15 +136,11 @@ const Sidebar: React.FC = () => {
   };
 
   const isActive = (path: string) => {
-    const active = location.pathname === path;
-    console.log(`🚨 IS ACTIVE: ${path} === ${location.pathname} = ${active}`);
-    return active;
+    return location.pathname === path;
   };
 
   const profilePath =
     userProfession === "paciente" ? "/patient-profile" : "/profile";
-
-  console.log("🚨 FINAL SIDEBAR ITEMS:", sidebarItems);
 
   return (
     <div className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col">
