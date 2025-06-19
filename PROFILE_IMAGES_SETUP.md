@@ -1,8 +1,10 @@
 # Profile Images Setup Guide
 
-## Problem Fixed
+## Problems Fixed
 
-The error `❌ Erro ao carregar imagem do Supabase: [object Object]` has been resolved with better error logging and handling.
+1. **Error Logging**: The error `❌ Erro ao carregar imagem do Supabase: [object Object]` has been resolved with better error logging and handling.
+
+2. **Data Type Error**: Fixed `invalid input syntax for type integer: "5181.25"` error by ensuring file_size calculation returns an integer value using `Math.floor()`.
 
 ## Current Status
 
