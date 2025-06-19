@@ -219,7 +219,42 @@ class PatientAPI {
   }
 
   async removePatientSharing(patientId: string): Promise<void> {
-    throw new Error("Método não implementado para teste");
+    console.log(
+      "🗑️ removePatientSharing - Removendo compartilhamento do paciente:",
+      patientId,
+    );
+
+    if (!supabase) {
+      throw new Error("❌ Supabase não está configurado");
+    }
+
+    // Verificar se usuário está logado (médico)
+    const currentUserStr = localStorage.getItem("medical_app_current_user");
+    if (!currentUserStr) {
+      throw new Error("❌ Usuário não autenticado");
+    }
+
+    const currentUser = JSON.parse(currentUserStr);
+    console.log("👤 Médico removendo compartilhamento:", currentUser.id);
+
+    try {
+      // Deletar o compartilhamento específico
+      const { error } = await supabase
+        .from("doctor_patient_sharing")
+        .delete()
+        .eq("doctor_id", currentUser.id)
+        .eq("patient_id", patientId);
+
+      if (error) {
+        console.error("❌ Erro ao deletar compartilhamento:", error);
+        throw new Error(`Erro ao remover compartilhamento: ${error.message}`);
+      }
+
+      console.log("✅ Compartilhamento removido com sucesso do banco");
+    } catch (error) {
+      console.error("💥 Erro crítico ao remover compartilhamento:", error);
+      throw error;
+    }
   }
 }
 
