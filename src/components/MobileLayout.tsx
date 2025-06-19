@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContextHybrid";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { profileImageAPI } from "@/lib/profile-image-api";
+import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
 
 interface SidebarItem {
   id: string;
