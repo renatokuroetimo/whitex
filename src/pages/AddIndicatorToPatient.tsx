@@ -95,7 +95,7 @@ const AddIndicatorToPatient = () => {
         ...customIndicators.map((ind) => ({
           ...ind,
           isStandard: false,
-          displayName: `${ind.categoryName} - ${ind.subcategoryName} - ${ind.parameter} (${ind.unitOfMeasureSymbol})`,
+          displayName: `${ind.categoryName || "Categoria"} - ${ind.subcategoryName || "Subcategoria"} - ${ind.parameter || ind.name || "Parâmetro"} (${ind.unitSymbol || ind.unitOfMeasureSymbol || "un"})`,
         })),
       ];
 
