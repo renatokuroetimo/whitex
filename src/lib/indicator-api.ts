@@ -145,6 +145,7 @@ class IndicatorAPI {
     const fallbackIndicator = {
       id: newIndicator.id,
       name: newIndicator.name,
+      unit: selectedUnit?.symbol || "un", // Include unit for NOT NULL constraint
     };
 
     try {
