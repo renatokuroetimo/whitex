@@ -667,6 +667,7 @@ declare global {
     debugImages: () => Promise<void>;
     migrateImages: () => Promise<any>;
     checkImageAuth: () => Promise<any>;
+    testImageSave: () => Promise<any>;
   }
 }
 
@@ -674,7 +675,7 @@ declare global {
 if (typeof window !== "undefined") {
   // Função de diagnóstico completo
   window.debugImages = async () => {
-    console.log("��� ===== DIAGNÓSTICO DE IMAGENS =====");
+    console.log("🔍 ===== DIAGNÓSTICO DE IMAGENS =====");
 
     // 1. Configuração básica
     console.log("1️⃣ CONFIGURAÇÃO:");
