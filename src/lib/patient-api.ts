@@ -122,21 +122,29 @@ class PatientAPI {
 
             if (patientUser) {
               console.log(`🔍 DEBUG - Dados brutos do paciente:`, patientUser);
+              console.log(
+                `👤 Nome do paciente na tabela users:`,
+                patientUser.name,
+              );
 
-              // Como não há coluna name na users, começar com email
-              let patientName = patientUser.email?.split("@")[0] || "Paciente";
+              // Priorizar campo name da tabela users
+              let patientName;
+              if (patientUser.name && patientUser.name.trim()) {
+                patientName = patientUser.name.trim();
+                console.log(`✅ Usando nome da tabela users: "${patientName}"`);
+              } else {
+                patientName = "Sem nome definido";
+                console.log(`⚠️ Campo name vazio, usando: "${patientName}"`);
+              }
+
               let age = null;
               let city = "N/A";
               let state = "N/A";
               let weight = null;
 
-              console.log(
-                `🎯 Nome inicial do paciente (email): "${patientName}"`,
-              );
-
               try {
                 console.log(
-                  `🔍 Buscando dados pessoais para user_id: ${share.patient_id}`,
+                  `🔍 Buscando dados pessoais detalhados para user_id: ${share.patient_id}`,
                 );
 
                 const { data: personalData, error: personalError } =
@@ -153,14 +161,15 @@ class PatientAPI {
                 console.log(`- Erro:`, personalError?.message || "nenhum");
 
                 if (personalData) {
-                  if (personalData.full_name && personalData.full_name.trim()) {
+                  // Se há nome mais detalhado nos dados pessoais, usar ele
+                  if (
+                    personalData.full_name &&
+                    personalData.full_name.trim() &&
+                    personalData.full_name.trim() !== patientName
+                  ) {
                     patientName = personalData.full_name.trim();
                     console.log(
-                      `✅ SUCESSO - Usando nome completo real: "${patientName}"`,
-                    );
-                  } else {
-                    console.log(
-                      `⚠️ full_name vazio ou nulo, mantendo nome baseado no email: "${patientName}"`,
+                      `✅ Atualizando para nome completo dos dados pessoais: "${patientName}"`,
                     );
                   }
 
@@ -175,10 +184,7 @@ class PatientAPI {
                   }
                 } else {
                   console.log(
-                    `❌ PROBLEMA: Nenhum dado pessoal encontrado para user_id: ${share.patient_id}`,
-                  );
-                  console.log(
-                    `⚠️ Usando nome baseado no email: "${patientName}"`,
+                    `ℹ️ Sem dados pessoais detalhados, usando nome da tabela users: "${patientName}"`,
                   );
                 }
 
