@@ -131,6 +131,7 @@ class IndicatorAPI {
       id: Date.now().toString(36) + Math.random().toString(36).substr(2),
       name: data.parameter, // Usar o parâmetro como nome
       category_id: data.categoryId,
+      category: data.categoryId, // Add category field for NOT NULL constraint
       subcategory_id: data.subcategoryId,
       parameter: data.parameter.trim(),
       unit_id: data.unitOfMeasureId,
@@ -148,6 +149,7 @@ class IndicatorAPI {
       name: newIndicator.name,
       unit: selectedUnit?.symbol || "un", // Include unit for NOT NULL constraint
       type: "custom", // Include type for NOT NULL constraint
+      category: data.categoryId, // Include category for NOT NULL constraint
     };
 
     try {
