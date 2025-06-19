@@ -100,25 +100,24 @@ class ProfileImageAPI {
         return;
       }
 
-      // Verificar se o usuário está autenticado no Supabase
-      const {
-        data: { user: supabaseUser },
-        error: authError,
-      } = await supabase.auth.getUser();
-      if (authError || !supabaseUser) {
+      // Verificar se o usuário está autenticado na aplicação
+      const authStatus = await this.checkAuthenticationStatus();
+      if (!authStatus.isAuthenticated) {
         console.warn(
-          "⚠️ Usuário não autenticado no Supabase. Usando localStorage como fallback.",
+          "⚠️ Usuário não autenticado na aplicação. Usando localStorage como fallback.",
         );
-        console.info("🔑 Para usar o Supabase, faça login primeiro.");
+        console.info(
+          "🔑 Para usar o Supabase, faça login na aplicação primeiro.",
+        );
         localStorage.setItem(`${this.STORAGE_KEY_PREFIX}${userId}`, imageData);
         return;
       }
 
-      // Verificar se o userId corresponde ao usuário autenticado
-      if (supabaseUser.id !== userId) {
+      // Verificar se o userId corresponde ao usuário autenticado na aplicação
+      if (authStatus.userId !== userId) {
         console.warn(
-          "⚠️ User ID mismatch - Supabase User:",
-          supabaseUser.id,
+          "⚠️ User ID mismatch - App User:",
+          authStatus.userId,
           "Requested User:",
           userId,
         );
