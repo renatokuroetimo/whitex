@@ -13,10 +13,6 @@ const Sidebar: React.FC = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
-  // Log para debug SEMPRE
-  console.log("🚨 SIDEBAR RENDER - User:", user);
-  console.log("🚨 SIDEBAR RENDER - Path:", location.pathname);
-
   // Obter dados do usuário com fallback duplo
   const getUserData = () => {
     // Primeiro: usar contexto
@@ -32,23 +28,19 @@ const Sidebar: React.FC = () => {
         return { ...parsed, source: "localStorage" };
       }
     } catch (e) {
-      console.error("🚨 Erro localStorage:", e);
+      // Silencioso
     }
 
     return null;
   };
 
   const currentUser = getUserData();
-  console.log("🚨 CURRENT USER:", currentUser);
 
-  // Determinar profissão SEMPRE
+  // Determinar profissão
   const userProfession = currentUser?.profession || "unknown";
-  console.log("🚨 USER PROFESSION:", userProfession);
 
-  // Função para gerar itens da sidebar - SEMPRE
+  // Função para gerar itens da sidebar
   const generateSidebarItems = () => {
-    console.log("🚨 GENERATING ITEMS FOR:", userProfession);
-
     // FORÇAR items corretos baseado na profissão
     if (userProfession === "paciente") {
       const items = [
@@ -71,7 +63,6 @@ const Sidebar: React.FC = () => {
           path: "/patient/indicadores",
         },
       ];
-      console.log("🚨 RETURNING PACIENTE ITEMS:", items);
       return items;
     }
 
@@ -96,7 +87,7 @@ const Sidebar: React.FC = () => {
           path: "/indicadores",
         },
       ];
-      console.log("🚨 RETURNING MEDICO ITEMS:", items);
+      return items;
       return items;
     }
 
