@@ -5,15 +5,9 @@ import {
   PaginationData,
 } from "./patient-types";
 import { supabase } from "./supabase";
-import { isFeatureEnabled } from "./feature-flags";
 
 class PatientAPI {
-  private readonly STORAGE_KEYS = {
-    PATIENTS: "medical_app_patients",
-    DIAGNOSES: "medical_app_diagnoses",
-  };
-
-  // Simula delay de rede
+  // Delay para simular operação real
   private delay(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
@@ -23,1696 +17,382 @@ class PatientAPI {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
   }
 
-  // Pega todos os pacientes
-  private getStoredPatients(): Patient[] {
-    try {
-      const patients = localStorage.getItem(this.STORAGE_KEYS.PATIENTS);
-      return patients ? JSON.parse(patients) : [];
-    } catch {
-      return [];
-    }
-  }
-
-  // Salva pacientes
-  private savePatients(patients: Patient[]): void {
-    localStorage.setItem(this.STORAGE_KEYS.PATIENTS, JSON.stringify(patients));
-  }
-
-  // Pega diagnósticos
-  private getStoredDiagnoses(): Diagnosis[] {
-    try {
-      const diagnoses = localStorage.getItem(this.STORAGE_KEYS.DIAGNOSES);
-      return diagnoses ? JSON.parse(diagnoses) : [];
-    } catch {
-      return [];
-    }
-  }
-
-  // Salva diagnósticos
-  private saveDiagnoses(diagnoses: Diagnosis[]): void {
-    localStorage.setItem(
-      this.STORAGE_KEYS.DIAGNOSES,
-      JSON.stringify(diagnoses),
-    );
-  }
-
-  // Inicializar dados mock se não existirem
-  initializeMockData(doctorId: string, forceEmpty: boolean = false): void {
-    const patients = this.getStoredPatients();
-    if (patients.length === 0 && !forceEmpty) {
-      const mockPatients: Patient[] = [
-        {
-          id: "1",
-          name: "Paciente 1",
-          age: 45,
-          city: "São Paulo",
-          state: "SP",
-          weight: 70.5,
-          status: "ativo",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          doctorId,
-        },
-        {
-          id: "2",
-          name: "Paciente 2",
-          age: 32,
-          city: "Rio de Janeiro",
-          state: "RJ",
-          weight: 68.2,
-          status: "ativo",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          doctorId,
-        },
-        {
-          id: "3",
-          name: "Paciente 3",
-          age: 58,
-          city: "Belo Horizonte",
-          state: "MG",
-          weight: 85.0,
-          status: "ativo",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          doctorId,
-        },
-        {
-          id: "4",
-          name: "Paciente 4",
-          age: 29,
-          city: "Curitiba",
-          state: "PR",
-          weight: 62.8,
-          status: "ativo",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          doctorId,
-        },
-        {
-          id: "5",
-          name: "Paciente 5",
-          age: 41,
-          city: "Porto Alegre",
-          state: "RS",
-          weight: 78.3,
-          status: "ativo",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          doctorId,
-        },
-        {
-          id: "6",
-          name: "Paciente 6",
-          age: 36,
-          city: "Salvador",
-          state: "BA",
-          weight: 71.9,
-          status: "ativo",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          doctorId,
-        },
-        {
-          id: "7",
-          name: "Paciente 7",
-          age: 52,
-          city: "Recife",
-          state: "PE",
-          weight: 88.7,
-          status: "ativo",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          doctorId,
-        },
-        {
-          id: "8",
-          name: "Lenora Robison",
-          age: 56,
-          city: "Londrina",
-          state: "PR",
-          weight: 54.0,
-          status: "ativo",
-          notes: "Paciente precisa ficar em repouso.",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          doctorId,
-        },
-      ];
-
-      this.savePatients(mockPatients);
-
-      // Diagnósticos mock
-      const mockDiagnoses: Diagnosis[] = [
-        {
-          id: "d1",
-          patientId: "8",
-          date: "01/08/2024",
-          status: "Hipertensão",
-          code: "I10.0",
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: "d2",
-          patientId: "8",
-          date: "05/03/2022",
-          status: "Pré-diabetes",
-          code: "R73.0",
-          createdAt: new Date().toISOString(),
-        },
-      ];
-
-      this.saveDiagnoses(mockDiagnoses);
-    }
-  }
-
-  // Get patients who shared data with this doctor
-  private getSharedPatients(doctorId: string): Patient[] {
-    try {
-      const sharedData = localStorage.getItem("medical_app_shared_data");
-      const personalData = localStorage.getItem("medical_app_patient_personal");
-      const users = localStorage.getItem("medical_app_users");
-
-      console.log("🔍 getSharedPatients para doctorId:", doctorId);
-      console.log("📊 Dados encontrados:", {
-        hasSharedData: !!sharedData,
-        hasPersonalData: !!personalData,
-        hasUsers: !!users,
-      });
-
-      if (!sharedData || !personalData || !users) return [];
-
-      const shares = JSON.parse(sharedData);
-      const patients = JSON.parse(personalData);
-      const userList = JSON.parse(users);
-
-      console.log("📋 Todos os compartilhamentos:", shares);
-      console.log("👥 Todos os usuários:", userList);
-
-      // Get active shares for this doctor
-      const activeShares = shares.filter(
-        (share: any) => share.doctorId === doctorId && share.isActive,
-      );
-
-      console.log(
-        "✅ Compartilhamentos ativos para este médico:",
-        activeShares,
-      );
-
-      // Convert shared patients to Patient format
-      const sharedPatients = activeShares
-        .map((share: any) => {
-          console.log("🔄 Processando compartilhamento:", share);
-
-          const patientData = patients.find(
-            (p: any) => p.userId === share.patientId,
-          );
-          const userData = userList.find((u: any) => u.id === share.patientId);
-
-          console.log("📋 Dados encontrados para paciente:", {
-            patientId: share.patientId,
-            hasPatientData: !!patientData,
-            hasUserData: !!userData,
-            patientData,
-            userData,
-          });
-
-          if (!patientData && !userData) {
-            console.log(
-              "❌ Nenhum dado encontrado para paciente:",
-              share.patientId,
-            );
-            return null;
-          }
-
-          const patient = {
-            id: share.patientId,
-            name:
-              patientData?.fullName ||
-              userData?.email?.split("@")[0] ||
-              "Paciente",
-            email: userData?.email || "",
-            age: patientData?.birthDate
-              ? this.calculateAge(patientData.birthDate)
-              : undefined,
-            city: patientData?.city || "",
-            state: patientData?.state || "",
-            weight: undefined,
-            status: "compartilhado" as const,
-            doctorId: doctorId,
-            createdAt: share.sharedAt,
-            notes: "Dados compartilhados pelo paciente",
-          };
-
-          console.log("✅ Paciente mapeado:", patient);
-          return patient;
-        })
-        .filter(Boolean);
-
-      console.log(
-        "🎯 Total de pacientes compartilhados:",
-        sharedPatients.length,
-      );
-
-      return sharedPatients;
-    } catch (error) {
-      console.error(
-        "Error getting shared patients:",
-        JSON.stringify(
-          {
-            message: error instanceof Error ? error.message : "Unknown error",
-            stack: error instanceof Error ? error.stack : undefined,
-            error: error,
-          },
-          null,
-          2,
-        ),
-      );
-      return [];
-    }
-  }
-
-  private calculateAge(birthDate: string): number {
-    const today = new Date();
-    const birth = new Date(birthDate);
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < birth.getDate())
-    ) {
-      age--;
-    }
-
-    return age;
-  }
-
-  // Buscar pacientes com paginação e filtro
-  async getPatients(
-    doctorId: string,
-    page: number = 1,
-    limit: number = 10,
-    search?: string,
-  ): Promise<{ patients: Patient[]; pagination: PaginationData }> {
-    await this.delay(300);
-
-    console.log("🔍 getPatients chamado para doctorId:", doctorId);
-    console.log("🔍 Feature flags:", {
-      useSupabasePatients: isFeatureEnabled("useSupabasePatients"),
-      supabaseAvailable: !!supabase,
-    });
-
-    // Se Supabase estiver ativo, usar Supabase
-    if (isFeatureEnabled("useSupabasePatients") && supabase) {
-      console.log("🚀 Buscando pacientes no Supabase");
-
-      try {
-        // Buscar pacientes criados pelo médico
-        const { data: supabasePatients, error: patientsError } = await supabase
-          .from("patients")
-          .select("*")
-          .eq("doctor_id", doctorId);
-
-        console.log("📊 Pacientes criados pelo médico:", {
-          data: supabasePatients,
-          error: patientsError,
-        });
-
-        // Buscar pacientes compartilhados com o médico - query simplificada
-        const { data: sharedData, error: sharedError } = await supabase
-          .from("doctor_patient_sharing")
-          .select("patient_id, shared_at")
-          .eq("doctor_id", doctorId);
-
-        console.log("🤝 Buscando compartilhamentos para doctorId:", doctorId);
-
-        if (sharedError) {
-          console.error(
-            "❌ Erro na query de compartilhamentos:",
-            JSON.stringify(
-              {
-                message: sharedError.message,
-                details: sharedError.details,
-                hint: sharedError.hint,
-                code: sharedError.code,
-              },
-              null,
-              2,
-            ),
-          );
-        }
-
-        if (sharedData && sharedData.length > 0) {
-          console.log("📋 Compartilhamentos encontrados:", sharedData.length);
-        }
-
-        if (patientsError) {
-          console.error(
-            "❌ Erro ao buscar pacientes criados:",
-            JSON.stringify(
-              {
-                message: patientsError.message,
-                details: patientsError.details,
-                hint: patientsError.hint,
-                code: patientsError.code,
-              },
-              null,
-              2,
-            ),
-          );
-          // Fallback para localStorage
-        } else {
-          // Converter pacientes criados pelo médico
-          let allPatients = (supabasePatients || []).map(
-            (p: any): Patient => ({
-              id: p.id,
-              name: p.name,
-              age: p.age,
-              city: p.city,
-              state: p.state,
-              weight: p.weight,
-              status: p.status || "ativo",
-              notes: p.notes,
-              doctorId: p.doctor_id,
-              createdAt: p.created_at,
-              updatedAt: p.updated_at,
-            }),
-          );
-
-          // Converter pacientes compartilhados
-          if (!sharedError && sharedData && sharedData.length > 0) {
-            console.log("🔄 Processando pacientes compartilhados...");
-
-            const sharedPatients = [];
-
-            for (const share of sharedData) {
-              // Buscar dados do usuário
-              const { data: userData, error: userError } = await supabase
-                .from("users")
-                .select("id, email, full_name")
-                .eq("id", share.patient_id)
-                .maybeSingle();
-
-              if (userError) {
-                console.error(
-                  `❌ Erro ao buscar usuário ${share.patient_id}:`,
-                  userError,
-                );
-                continue;
-              }
-
-              if (!userData) {
-                console.warn(`⚠️ Usuário ${share.patient_id} não encontrado`);
-                continue;
-              }
-
-              // Buscar dados pessoais do paciente
-              const { data: personalDataArray } = await supabase
-                .from("patient_personal_data")
-                .select("*")
-                .eq("user_id", share.patient_id)
-                .order("updated_at", { ascending: false })
-                .limit(1);
-
-              const personalData = personalDataArray?.[0];
-
-              const sharedPatient: Patient = {
-                id: share.patient_id,
-                name:
-                  personalData?.full_name ||
-                  userData?.full_name ||
-                  userData?.email?.split("@")[0] ||
-                  "Paciente",
-                email: userData?.email || "",
-                age: personalData?.birth_date
-                  ? this.calculateAge(personalData.birth_date)
-                  : undefined,
-                city: personalData?.city || "",
-                state: personalData?.state || "",
-                weight: undefined,
-                status: "compartilhado" as const,
-                doctorId: doctorId,
-                createdAt: share.shared_at,
-                notes: "Dados compartilhados pelo paciente",
-              };
-
-              console.log(
-                `✅ Paciente compartilhado criado: ${sharedPatient.name}`,
-              );
-              sharedPatients.push(sharedPatient);
-            }
-
-            console.log(
-              "✅ Total de pacientes compartilhados:",
-              sharedPatients.length,
-            );
-            allPatients = [...allPatients, ...sharedPatients];
-          } else {
-            console.log("ℹ️ Nenhum paciente compartilhado encontrado");
-          }
-
-          console.log("✅ ===== RESULTADO FINAL =====");
-          console.log(
-            "✅ Pacientes criados pelo médico:",
-            (supabasePatients || []).length,
-          );
-          console.log(
-            "✅ Pacientes compartilhados:",
-            allPatients.length - (supabasePatients || []).length,
-          );
-          console.log("✅ Total de pacientes:", allPatients.length);
-          console.log(
-            "✅ Lista completa:",
-            allPatients.map((p) => ({
-              id: p.id,
-              name: p.name,
-              status: p.status,
-              doctorId: p.doctorId,
-            })),
-          );
-
-          // Aplicar filtro de busca se necessário
-          let filteredPatients = allPatients;
-          if (search && search.trim()) {
-            const searchLower = search.toLowerCase().trim();
-            filteredPatients = allPatients.filter(
-              (patient) =>
-                patient.name.toLowerCase().includes(searchLower) ||
-                (patient.city &&
-                  patient.city.toLowerCase().includes(searchLower)) ||
-                (patient.email &&
-                  patient.email.toLowerCase().includes(searchLower)),
-            );
-          }
-
-          // Paginação
-          const totalItems = filteredPatients.length;
-          const totalPages = Math.ceil(totalItems / limit);
-          const startIndex = (page - 1) * limit;
-          const endIndex = startIndex + limit;
-          const paginatedPatients = filteredPatients.slice(
-            startIndex,
-            endIndex,
-          );
-
-          return {
-            patients: paginatedPatients,
-            pagination: {
-              currentPage: page,
-              totalPages,
-              totalItems,
-              itemsPerPage: limit,
-            },
-          };
-        }
-      } catch (supabaseError) {
-        console.error(
-          "💥 Erro no Supabase getPatients:",
-          JSON.stringify(
-            {
-              message:
-                supabaseError instanceof Error
-                  ? supabaseError.message
-                  : "Unknown error",
-              stack:
-                supabaseError instanceof Error
-                  ? supabaseError.stack
-                  : undefined,
-              error: supabaseError,
-            },
-            null,
-            2,
-          ),
-        );
-        // Continuar para fallback localStorage
-      }
-    }
-
-    console.log("⚠️ ===== USANDO LOCALSTORAGE FALLBACK =====");
-
-    let patients = this.getStoredPatients().filter(
-      (p) => p.doctorId === doctorId,
-    );
-
-    console.log("📁 Pacientes do localStorage (criados):", patients.length);
-
-    // Add shared patients
-    const sharedPatients = this.getSharedPatients(doctorId);
-    console.log(
-      "📁 Pacientes compartilhados (localStorage):",
-      sharedPatients.length,
-    );
-
-    patients = [...patients, ...sharedPatients];
-
-    console.log(
-      "📁 Total localStorage (criados + compartilhados):",
-      patients.length,
-    );
-    console.log(
-      "📁 Lista localStorage:",
-      patients.map((p) => ({
-        id: p.id,
-        name: p.name,
-        status: p.status,
-        doctorId: p.doctorId,
-      })),
-    );
-
-    // Filtro de busca
-    if (search && search.trim()) {
-      const searchLower = search.toLowerCase().trim();
-      patients = patients.filter(
-        (patient) =>
-          patient.name.toLowerCase().includes(searchLower) ||
-          (patient.city && patient.city.toLowerCase().includes(searchLower)) ||
-          (patient.email && patient.email.toLowerCase().includes(searchLower)),
-      );
-    }
-
-    // Paginação
-    const totalItems = patients.length;
-    const totalPages = Math.ceil(totalItems / limit);
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    const paginatedPatients = patients.slice(startIndex, endIndex);
-
-    return {
-      patients: paginatedPatients,
-      pagination: {
-        currentPage: page,
-        totalPages,
-        totalItems,
-        itemsPerPage: limit,
-      },
-    };
-  }
-
-  // Buscar diagnósticos de um paciente
-  async getPatientDiagnoses(patientId: string): Promise<Diagnosis[]> {
-    await this.delay(200);
-
-    console.log("🔍 getPatientDiagnoses chamado para patientId:", patientId);
-
-    // Se Supabase estiver ativo, usar Supabase
-    if (isFeatureEnabled("useSupabasePatients") && supabase) {
-      console.log("🚀 Buscando paciente por ID no Supabase");
-
-      try {
-        const { data: supabasePatient, error } = await supabase
-          .from("patients")
-          .select("*")
-          .eq("id", id)
-          .maybeSingle();
-
-        console.log("📊 Resultado do Supabase:", {
-          data: supabasePatient,
-          error,
-        });
-
-        if (error) {
-          console.error(
-            "❌ Erro ao buscar paciente no Supabase:",
-            JSON.stringify(
-              {
-                message: error.message,
-                details: error.details,
-                hint: error.hint,
-                code: error.code,
-              },
-              null,
-              2,
-            ),
-          );
-          // Continuar para localStorage fallback
-        } else if (supabasePatient) {
-          // Converter dados do Supabase para formato local
-          const patient: Patient = {
-            id: supabasePatient.id,
-            name: supabasePatient.name,
-            age: supabasePatient.age,
-            city: supabasePatient.city,
-            state: supabasePatient.state,
-            weight: supabasePatient.weight,
-            status: supabasePatient.status,
-            notes: supabasePatient.notes,
-            doctorId: supabasePatient.doctor_id,
-            createdAt: supabasePatient.created_at,
-            updatedAt: supabasePatient.updated_at,
-          };
-
-          console.log("✅ Paciente encontrado no Supabase:", patient);
-          return patient;
-        }
-      } catch (supabaseError) {
-        console.error(
-          "💥 Erro no Supabase getPatientById:",
-          JSON.stringify(
-            {
-              message:
-                supabaseError instanceof Error
-                  ? supabaseError.message
-                  : "Unknown error",
-              stack:
-                supabaseError instanceof Error
-                  ? supabaseError.stack
-                  : undefined,
-              error: supabaseError,
-            },
-            null,
-            2,
-          ),
-        );
-
-        // Identificar tipo de erro para melhor feedback
-        if (
-          supabaseError instanceof Error &&
-          supabaseError.message.includes("Failed to fetch")
-        ) {
-          console.log(
-            "🌐 Problema de conectividade com Supabase - usando localStorage",
-          );
-        } else if (
-          supabaseError instanceof Error &&
-          supabaseError.message === "NETWORK_ERROR"
-        ) {
-          console.log("🌐 Erro de rede sinalizado - usando localStorage");
-        } else {
-          console.log("⚠️ Erro desconhecido do Supabase - usando localStorage");
-        }
-
-        // Continuar para fallback localStorage
-      }
-    }
-
-    console.log("⚠️ Buscando no localStorage fallback");
-
-    // Fallback para localStorage
-    const patients = this.getStoredPatients();
-    const found = patients.find((p) => p.id === id) || null;
-
-    console.log("📋 Resultado localStorage:", found);
-    return found;
-  }
-
-  // Criar paciente
-  async createPatient(
-    doctorId: string,
-    data: PatientFormData,
-  ): Promise<Patient> {
-    console.log("🔥 FUNÇÃO createPatient CHAMADA!", { doctorId, data });
+  // Buscar pacientes (apenas Supabase)
+  async getPatients(): Promise<{
+    patients: Patient[];
+    pagination: PaginationData;
+  }> {
     await this.delay(500);
 
-    const newPatient: Patient = {
-      id: this.generateId(),
-      ...data,
-      doctorId,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    // Se Supabase estiver ativo, usar Supabase
-    if (isFeatureEnabled("useSupabasePatients") && supabase) {
-      console.log("🚀 Criando paciente no Supabase:", newPatient);
-      console.log(
-        "🔧 Feature flag useSupabasePatients:",
-        isFeatureEnabled("useSupabasePatients"),
-      );
-      console.log("🔗 Supabase client:", !!supabase);
-
-      try {
-        const insertData = {
-          id: newPatient.id,
-          name: newPatient.name,
-          age: newPatient.age,
-          city: newPatient.city,
-          state: newPatient.state,
-          weight: newPatient.weight,
-          status: newPatient.status,
-          notes: newPatient.notes,
-          doctor_id: newPatient.doctorId,
-          created_at: newPatient.createdAt,
-          updated_at: newPatient.updatedAt,
-        };
-
-        console.log("📝 Dados sendo inseridos:", insertData);
-
-        const { data, error } = await supabase
-          .from("patients")
-          .insert([insertData]);
-
-        console.log("📊 Resposta do Supabase:", { data, error });
-
-        if (error) {
-          console.error("❌ Erro detalhado:", {
-            message: error.message,
-            details: error.details,
-            hint: error.hint,
-            code: error.code,
-          });
-          throw error; // Forçar fallback
-        } else {
-          console.log("✅ Paciente criado no Supabase com sucesso!");
-          return newPatient;
-        }
-      } catch (supabaseError) {
-        console.error(
-          "💥 Erro no try/catch:",
-          JSON.stringify(
-            {
-              message:
-                supabaseError instanceof Error
-                  ? supabaseError.message
-                  : "Unknown error",
-              stack:
-                supabaseError instanceof Error
-                  ? supabaseError.stack
-                  : undefined,
-              error: supabaseError,
-            },
-            null,
-            2,
-          ),
-        );
-        // Continuar para fallback
-      }
-    } else {
-      console.log(
-        "⚠️ Supabase não ativo - useSupabasePatients:",
-        isFeatureEnabled("useSupabasePatients"),
-        "supabase:",
-        !!supabase,
-      );
+    if (!supabase) {
+      throw new Error("❌ Supabase não está configurado");
     }
 
-    // Fallback para localStorage
-    const patients = this.getStoredPatients();
-    patients.push(newPatient);
-    this.savePatients(patients);
+    // Verificar se usuário está logado
+    const currentUserStr = localStorage.getItem("medical_app_current_user");
+    if (!currentUserStr) {
+      throw new Error("❌ Usuário não autenticado");
+    }
 
-    return newPatient;
+    const currentUser = JSON.parse(currentUserStr);
+    console.log("🚀 Buscando pacientes no Supabase para:", currentUser.id);
+
+    try {
+      // Buscar pacientes criados pelo médico
+      const { data: ownPatients, error: patientsError } = await supabase
+        .from("patients")
+        .select("*")
+        .eq("doctor_id", currentUser.id)
+        .order("created_at", { ascending: false });
+
+      if (patientsError) {
+        throw new Error(`Erro ao buscar pacientes: ${patientsError.message}`);
+      }
+
+      // Buscar pacientes compartilhados
+      const { data: sharedData, error: sharedError } = await supabase
+        .from("shared_data")
+        .select(
+          `
+          id,
+          patient_id,
+          shared_with_doctor_id,
+          patients:patient_id (
+            id, name, age, city, state, weight, status, notes, created_at, doctor_id
+          )
+        `,
+        )
+        .eq("shared_with_doctor_id", currentUser.id);
+
+      if (sharedError) {
+        console.warn(
+          "⚠️ Erro ao buscar compartilhamentos:",
+          sharedError.message,
+        );
+      }
+
+      // Combinar pacientes próprios e compartilhados
+      const allPatients: Patient[] = [
+        ...(ownPatients || []).map(
+          (p: any): Patient => ({
+            id: p.id,
+            name: p.name,
+            age: p.age,
+            city: p.city,
+            state: p.state,
+            weight: p.weight,
+            status: p.status || "ativo",
+            notes: p.notes || "",
+            createdAt: p.created_at,
+            doctorId: p.doctor_id,
+            isShared: false,
+          }),
+        ),
+        ...(sharedData || []).map(
+          (shared: any): Patient => ({
+            id: shared.patients.id,
+            name: shared.patients.name,
+            age: shared.patients.age,
+            city: shared.patients.city,
+            state: shared.patients.state,
+            weight: shared.patients.weight,
+            status: shared.patients.status || "ativo",
+            notes: shared.patients.notes || "",
+            createdAt: shared.patients.created_at,
+            doctorId: shared.patients.doctor_id,
+            isShared: true,
+            sharedId: shared.id,
+          }),
+        ),
+      ];
+
+      console.log(`✅ ${allPatients.length} pacientes carregados do Supabase`);
+
+      return {
+        patients: allPatients,
+        pagination: {
+          currentPage: 1,
+          totalPages: 1,
+          totalItems: allPatients.length,
+          itemsPerPage: allPatients.length,
+        },
+      };
+    } catch (error) {
+      console.error("💥 Erro ao buscar pacientes:", error);
+      throw error;
+    }
   }
 
-  // Atualizar paciente
+  // Buscar paciente por ID (apenas Supabase)
+  async getPatientById(id: string): Promise<Patient | null> {
+    await this.delay(300);
+
+    if (!supabase) {
+      throw new Error("❌ Supabase não está configurado");
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("patients")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (error) {
+        if (error.code === "PGRST116") {
+          return null; // Não encontrado
+        }
+        throw new Error(`Erro ao buscar paciente: ${error.message}`);
+      }
+
+      return {
+        id: data.id,
+        name: data.name,
+        age: data.age,
+        city: data.city,
+        state: data.state,
+        weight: data.weight,
+        status: data.status || "ativo",
+        notes: data.notes || "",
+        createdAt: data.created_at,
+        doctorId: data.doctor_id,
+        isShared: false,
+      };
+    } catch (error) {
+      console.error("💥 Erro ao buscar paciente por ID:", error);
+      throw error;
+    }
+  }
+
+  // Criar paciente (apenas Supabase)
+  async createPatient(data: PatientFormData): Promise<Patient> {
+    await this.delay(500);
+
+    if (!supabase) {
+      throw new Error("❌ Supabase não está configurado");
+    }
+
+    // Verificar se usuário está logado
+    const currentUserStr = localStorage.getItem("medical_app_current_user");
+    if (!currentUserStr) {
+      throw new Error("❌ Usuário não autenticado");
+    }
+
+    const currentUser = JSON.parse(currentUserStr);
+
+    const newPatient = {
+      id: this.generateId(),
+      name: data.name,
+      age: data.age,
+      city: data.city,
+      state: data.state,
+      weight: data.weight,
+      notes: data.notes || "",
+      status: "ativo",
+      doctor_id: currentUser.id,
+      created_at: new Date().toISOString(),
+    };
+
+    try {
+      const { error } = await supabase.from("patients").insert([newPatient]);
+
+      if (error) {
+        throw new Error(`Erro ao criar paciente: ${error.message}`);
+      }
+
+      console.log("✅ Paciente criado no Supabase:", newPatient.id);
+
+      return {
+        id: newPatient.id,
+        name: newPatient.name,
+        age: newPatient.age,
+        city: newPatient.city,
+        state: newPatient.state,
+        weight: newPatient.weight,
+        status: newPatient.status,
+        notes: newPatient.notes,
+        createdAt: newPatient.created_at,
+        doctorId: newPatient.doctor_id,
+        isShared: false,
+      };
+    } catch (error) {
+      console.error("💥 Erro ao criar paciente:", error);
+      throw error;
+    }
+  }
+
+  // Atualizar paciente (apenas Supabase)
   async updatePatient(
     id: string,
     data: Partial<PatientFormData>,
-  ): Promise<Patient | null> {
+  ): Promise<Patient> {
     await this.delay(500);
 
-    console.log("🔄 ===== INÍCIO UPDATE PATIENT =====");
-    console.log("🔄 updatePatient chamado para ID:", id);
-    console.log("🔄 Dados para atualizar:", JSON.stringify(data, null, 2));
-    console.log("🔄 Feature flags:", {
-      useSupabasePatients: isFeatureEnabled("useSupabasePatients"),
-      supabaseAvailable: !!supabase,
-    });
-
-    // Se Supabase estiver ativo, usar Supabase
-    if (isFeatureEnabled("useSupabasePatients") && supabase) {
-      console.log("🚀 Atualizando paciente no Supabase");
-
-      try {
-        // Primeiro, verificar se é um paciente próprio (na tabela patients)
-        const { data: existingPatient, error: checkError } = await supabase
-          .from("patients")
-          .select("id, status")
-          .eq("id", id)
-          .maybeSingle();
-
-        console.log("🔍 Verificando se paciente existe na tabela patients:", {
-          data: existingPatient,
-          error: checkError,
-        });
-
-        if (checkError && checkError.code !== "PGRST116") {
-          throw checkError;
-        }
-
-        if (existingPatient) {
-          // É um paciente próprio - atualizar na tabela patients
-          console.log("📝 Atualizando paciente próprio");
-
-          const updateData: any = {
-            updated_at: new Date().toISOString(),
-          };
-
-          if (data.name !== undefined) updateData.name = data.name;
-          if (data.age !== undefined) updateData.age = data.age;
-          if (data.city !== undefined) updateData.city = data.city;
-          if (data.state !== undefined) updateData.state = data.state;
-          if (data.weight !== undefined) updateData.weight = data.weight;
-          if (data.status !== undefined) updateData.status = data.status;
-          if (data.notes !== undefined) updateData.notes = data.notes;
-
-          console.log("📝 Dados para atualizar paciente próprio:", updateData);
-
-          const { data: updatedPatient, error } = await supabase
-            .from("patients")
-            .update(updateData)
-            .eq("id", id)
-            .select()
-            .single();
-
-          if (error) {
-            console.error("❌ Erro ao atualizar paciente próprio:", error);
-            throw error;
-          }
-
-          if (updatedPatient) {
-            const patient: Patient = {
-              id: updatedPatient.id,
-              name: updatedPatient.name,
-              age: updatedPatient.age,
-              city: updatedPatient.city,
-              state: updatedPatient.state,
-              weight: updatedPatient.weight,
-              status: updatedPatient.status || "ativo",
-              notes: updatedPatient.notes,
-              doctorId: updatedPatient.doctor_id,
-              createdAt: updatedPatient.created_at,
-              updatedAt: updatedPatient.updated_at,
-            };
-
-            console.log("✅ Paciente próprio atualizado:", patient);
-            return patient;
-          }
-        } else {
-          // Verificar se é um paciente compartilhado
-          console.log("🤝 Verificando se é paciente compartilhado");
-
-          const { data: sharedCheck, error: sharedError } = await supabase
-            .from("doctor_patient_sharing")
-            .select("patient_id")
-            .eq("patient_id", id)
-            .maybeSingle();
-
-          if (sharedError && sharedError.code !== "PGRST116") {
-            throw sharedError;
-          }
-
-          if (sharedCheck) {
-            console.log("📝 ===== PACIENTE COMPARTILHADO DETECTADO =====");
-            console.log("📝 Dados do sharedCheck:", sharedCheck);
-            console.log("📝 data.notes valor:", data.notes);
-            console.log(
-              "📝 data.notes !== undefined:",
-              data.notes !== undefined,
-            );
-
-            // Para pacientes compartilhados, salvar observações na tabela medical_notes
-            if (data.notes !== undefined) {
-              console.log("🚀 ===== INICIANDO SALVAMENTO DE OBSERVAÇÕES =====");
-
-              // Primeiro, verificar se a tabela medical_notes existe
-              try {
-                const { data: tableTest, error: tableError } = await supabase
-                  .from("medical_notes")
-                  .select("id")
-                  .limit(1);
-                console.log("🏥 Teste de conectividade com medical_notes:", {
-                  data: tableTest,
-                  error: tableError,
-                });
-
-                if (tableError) {
-                  console.error(
-                    "❌ Tabela medical_notes não encontrada ou sem permissão:",
-                    tableError,
-                  );
-                  throw new Error(
-                    `Tabela medical_notes não acessível: ${tableError.message}`,
-                  );
-                }
-              } catch (testError) {
-                console.error(
-                  "💥 Erro ao testar tabela medical_notes:",
-                  testError,
-                );
-                throw testError;
-              }
-
-              // Obter o ID do médico atual (precisamos passar isso do contexto)
-              // Por enquanto, vamos usar o localStorage para pegar o usuário atual
-              const currentUserStr = localStorage.getItem(
-                "medical_app_current_user",
-              );
-              const currentUser = currentUserStr
-                ? JSON.parse(currentUserStr)
-                : null;
-
-              if (!currentUser?.id) {
-                throw new Error("Usuário atual não encontrado");
-              }
-
-              console.log("💾 ===== SALVANDO OBSERVAÇÃO MÉDICA =====");
-              console.log(
-                "👨‍⚕️ Médico ID (SALVAMENTO):",
-                currentUser.id,
-                typeof currentUser.id,
-              );
-              console.log("🤒 Paciente ID (SALVAMENTO):", id, typeof id);
-              console.log("📝 Observação:", data.notes);
-
-              // Verificar se já existe uma observação deste médico para este paciente
-              const { data: existingNote, error: checkNoteError } =
-                await supabase
-                  .from("medical_notes")
-                  .select("id")
-                  .eq("patient_id", id)
-                  .eq("doctor_id", currentUser.id)
-                  .maybeSingle();
-
-              if (checkNoteError && checkNoteError.code !== "PGRST116") {
-                throw checkNoteError;
-              }
-
-              if (existingNote) {
-                // Atualizar observação existente
-                console.log("🔄 Atualizando observação existente");
-                const { error: updateNoteError } = await supabase
-                  .from("medical_notes")
-                  .update({
-                    notes: data.notes,
-                    updated_at: new Date().toISOString(),
-                  })
-                  .eq("id", existingNote.id);
-
-                if (updateNoteError) {
-                  console.error(
-                    "❌ Erro ao atualizar observação:",
-                    JSON.stringify(updateNoteError, null, 2),
-                  );
-                  throw updateNoteError;
-                } else {
-                  console.log("✅ Observação atualizada com sucesso!");
-                }
-              } else {
-                // Criar nova observação
-                console.log("➕ Criando nova observação");
-                console.log("📝 Dados para inserir:", {
-                  patient_id: id,
-                  doctor_id: currentUser.id,
-                  notes: data.notes,
-                });
-
-                const insertResult = await supabase
-                  .from("medical_notes")
-                  .insert([
-                    {
-                      patient_id: id,
-                      doctor_id: currentUser.id,
-                      notes: data.notes,
-                    },
-                  ])
-                  .select();
-
-                console.log("📊 ===== RESULTADO COMPLETO DA INSERÇÃO =====");
-                console.log("📊 Status:", insertResult.status);
-                console.log("📊 StatusText:", insertResult.statusText);
-                console.log("📊 Data:", insertResult.data);
-                console.log("📊 Error:", insertResult.error);
-                console.log("📊 Count:", insertResult.count);
-
-                if (insertResult.error) {
-                  console.error(
-                    "❌ Erro ao inserir observação:",
-                    JSON.stringify(insertResult.error, null, 2),
-                  );
-                  throw insertResult.error;
-                }
-
-                if (!insertResult.data || insertResult.data.length === 0) {
-                  console.error(
-                    "❌ Insert retornou sucesso mas sem dados - possível problema de RLS/permissões",
-                  );
-                  throw new Error(
-                    "Falha silenciosa no insert - dados não foram salvos",
-                  );
-                }
-
-                console.log(
-                  "✅ Nova observação criada com sucesso!",
-                  insertResult.data,
-                );
-
-                // Também salvar no localStorage como backup
-                try {
-                  const notesKey = `medical_notes_${id}_${currentUser.id}`;
-                  localStorage.setItem(notesKey, data.notes);
-                  console.log(
-                    "💾 Observações também salvas no localStorage como backup",
-                  );
-                } catch (e) {
-                  console.warn("⚠️ Erro ao salvar backup no localStorage:", e);
-                }
-
-                // Retornar o paciente atualizado com as novas observações
-                const currentPatient = await this.getPatientById(id);
-                if (currentPatient) {
-                  const updatedPatient: Patient = {
-                    ...currentPatient,
-                    notes: data.notes,
-                    updatedAt: new Date().toISOString(),
-                  };
-                  console.log(
-                    "✅ Observações do paciente compartilhado salvas no Supabase:",
-                    updatedPatient,
-                  );
-                  return updatedPatient;
-                }
-              }
-            } else {
-              // Para pacientes compartilhados, apenas observações podem ser editadas
-              console.log(
-                "⚠️ Tentativa de editar dados pessoais de paciente compartilhado - ignorando",
-              );
-              const currentPatient = await this.getPatientById(id);
-              return currentPatient;
-            }
-          }
-        }
-
-        console.log("❓ Paciente não encontrado no Supabase");
-      } catch (supabaseError) {
-        console.error(
-          "💥 Erro no Supabase updatePatient:",
-          JSON.stringify(
-            {
-              message:
-                supabaseError instanceof Error
-                  ? supabaseError.message
-                  : "Unknown error",
-              stack:
-                supabaseError instanceof Error
-                  ? supabaseError.stack
-                  : undefined,
-              error: supabaseError,
-            },
-            null,
-            2,
-          ),
-        );
-        throw supabaseError; // Falhar sem fallback
-      }
+    if (!supabase) {
+      throw new Error("❌ Supabase não está configurado");
     }
 
-    throw new Error(
-      "Não foi possível atualizar paciente - Supabase não disponível",
-    );
-  }
-
-  // Buscar paciente por ID
-  async getPatientById(id: string): Promise<Patient | null> {
-    await this.delay(200);
-
-    console.log("🔍 getPatientById chamado para ID:", id);
-
-    // Se Supabase estiver ativo, usar Supabase
-    if (isFeatureEnabled("useSupabasePatients") && supabase) {
-      console.log("🚀 Buscando paciente no Supabase");
-
-      try {
-        // Primeiro, verificar se é um paciente criado pelo médico
-        const { data: ownPatient, error: ownError } = await supabase
-          .from("patients")
-          .select("*")
-          .eq("id", id)
-          .maybeSingle();
-
-        console.log("📊 Paciente próprio:", {
-          data: ownPatient,
-          error: ownError,
-        });
-
-        if (ownError && ownError.code !== "PGRST116") {
-          console.error(
-            "❌ Erro ao buscar paciente próprio:",
-            JSON.stringify(
-              {
-                message: ownError.message,
-                details: ownError.details,
-                hint: ownError.hint,
-                code: ownError.code,
-              },
-              null,
-              2,
-            ),
-          );
-          throw ownError;
-        }
-
-        if (ownPatient) {
-          // Converter dados do Supabase para formato local
-          const patient: Patient = {
-            id: ownPatient.id,
-            name: ownPatient.name,
-            age: ownPatient.age,
-            city: ownPatient.city,
-            state: ownPatient.state,
-            weight: ownPatient.weight,
-            status: ownPatient.status || "ativo",
-            notes: ownPatient.notes,
-            doctorId: ownPatient.doctor_id,
-            createdAt: ownPatient.created_at,
-            updatedAt: ownPatient.updated_at,
-          };
-
-          console.log("✅ Paciente próprio encontrado:", patient);
-          return patient;
-        }
-
-        // Se não encontrou como paciente próprio, verificar se é compartilhado
-        const { data: sharedData, error: sharedError } = await supabase
-          .from("doctor_patient_sharing")
-          .select("patient_id, shared_at")
-          .eq("patient_id", id)
-          .maybeSingle();
-
-        console.log("🤝 Verificando compartilhamento:", {
-          data: sharedData,
-          error: sharedError,
-        });
-
-        if (sharedError && sharedError.code !== "PGRST116") {
-          console.error(
-            "❌ Erro ao verificar compartilhamento:",
-            JSON.stringify(
-              {
-                message: sharedError.message,
-                details: sharedError.details,
-                hint: sharedError.hint,
-                code: sharedError.code,
-              },
-              null,
-              2,
-            ),
-          );
-
-          // Se é erro de rede (Failed to fetch), usar fallback localStorage
-          if (
-            sharedError.message &&
-            sharedError.message.includes("Failed to fetch")
-          ) {
-            console.log(
-              "🌐 Erro de rede detectado - usando fallback localStorage",
-            );
-            throw new Error("NETWORK_ERROR"); // Sinalizar para usar fallback
-          }
-
-          throw sharedError;
-        }
-
-        if (sharedData) {
-          // Buscar dados do usuário/paciente
-          const { data: userData, error: userError } = await supabase
-            .from("users")
-            .select("id, email, full_name")
-            .eq("id", id)
-            .maybeSingle();
-
-          if (userError && userError.code !== "PGRST116") {
-            console.error("❌ Erro ao buscar dados do usuário:", userError);
-            throw userError;
-          }
-
-          // Buscar dados pessoais do paciente
-          const { data: personalDataArray } = await supabase
-            .from("patient_personal_data")
-            .select("*")
-            .eq("user_id", id)
-            .order("updated_at", { ascending: false })
-            .limit(1);
-
-          const personalData = personalDataArray?.[0];
-
-          if (userData || personalData) {
-            // Buscar observações médicas deste médico para este paciente
-            const currentUserStr = localStorage.getItem(
-              "medical_app_current_user",
-            );
-            const currentUser = currentUserStr
-              ? JSON.parse(currentUserStr)
-              : null;
-
-            let medicalNotes = "";
-            if (currentUser?.id) {
-              console.log("🔍 ===== BUSCANDO OBSERVAÇÕES MÉDICAS =====");
-              console.log("🔍 Patient ID:", id, typeof id);
-              console.log(
-                "🔍 Doctor ID:",
-                currentUser.id,
-                typeof currentUser.id,
-              );
-
-              // Primeiro, verificar se há dados na tabela
-              const { data: allNotes, error: allNotesError } = await supabase
-                .from("medical_notes")
-                .select("*")
-                .limit(5);
-
-              console.log("📋 Todas as observações na tabela (amostra):", {
-                data: allNotes,
-                error: allNotesError,
-              });
-
-              // Agora buscar especificamente para este paciente/médico
-              const { data: noteData, error: noteError } = await supabase
-                .from("medical_notes")
-                .select("notes, updated_at, patient_id, doctor_id")
-                .eq("patient_id", id)
-                .eq("doctor_id", currentUser.id)
-                .order("updated_at", { ascending: false })
-                .limit(1);
-
-              console.log("📊 Resultado da busca específica:", {
-                data: noteData,
-                error: noteError,
-              });
-
-              if (noteError) {
-                console.error(
-                  "❌ Erro ao buscar observações médicas:",
-                  noteError,
-                );
-              } else if (noteData && noteData.length > 0) {
-                medicalNotes = noteData[0].notes;
-                console.log(
-                  "📋 ✅ Observações médicas encontradas:",
-                  medicalNotes,
-                );
-              } else {
-                console.log(
-                  "ℹ️ Nenhuma observação médica encontrada - verificar IDs:",
-                );
-                console.log("   - Patient ID buscado:", id);
-                console.log("   - Doctor ID buscado:", currentUser.id);
-              }
-            } else {
-              console.log(
-                "⚠️ Usuário atual não encontrado para buscar observações",
-              );
-            }
-
-            const sharedPatient: Patient = {
-              id: id,
-              name:
-                personalData?.full_name ||
-                userData?.full_name ||
-                userData?.email?.split("@")[0] ||
-                "Paciente",
-              email: userData?.email || "",
-              age: personalData?.birth_date
-                ? this.calculateAge(personalData.birth_date)
-                : undefined,
-              city: personalData?.city || "",
-              state: personalData?.state || "",
-              weight: undefined,
-              status: "compartilhado" as const,
-              doctorId: "", // Paciente compartilhado não tem doctor específico
-              createdAt: sharedData.shared_at,
-              notes: medicalNotes || "Dados compartilhados pelo paciente",
-            };
-
-            console.log("✅ Paciente compartilhado encontrado:", sharedPatient);
-            return sharedPatient;
-          }
-        }
-
-        console.log("❓ Paciente não encontrado no Supabase");
-        // Continuar para fallback localStorage
-      } catch (supabaseError) {
-        console.error(
-          "💥 Erro no Supabase getPatientById:",
-          JSON.stringify(
-            {
-              message:
-                supabaseError instanceof Error
-                  ? supabaseError.message
-                  : "Unknown error",
-              stack:
-                supabaseError instanceof Error
-                  ? supabaseError.stack
-                  : undefined,
-              error: supabaseError,
-            },
-            null,
-            2,
-          ),
-        );
-        // Continuar para fallback localStorage
-      }
-    }
-
-    console.log("⚠️ Usando localStorage fallback para getPatientById");
-
-    // Fallback: buscar nos pacientes próprios
-    const patients = this.getStoredPatients();
-    let patient = patients.find((p) => p.id === id);
-
-    if (patient) {
-      console.log("📁 Paciente encontrado no localStorage (próprio):", patient);
-      return patient;
-    }
-
-    // Se não encontrou nos próprios, buscar nos compartilhados
     try {
-      const sharedData = localStorage.getItem("medical_app_shared_data");
-      const personalData = localStorage.getItem("medical_app_patient_personal");
-      const users = localStorage.getItem("medical_app_users");
+      const { error } = await supabase
+        .from("patients")
+        .update({
+          name: data.name,
+          age: data.age,
+          city: data.city,
+          state: data.state,
+          weight: data.weight,
+          notes: data.notes,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", id);
 
-      if (sharedData && personalData && users) {
-        const shares = JSON.parse(sharedData);
-        const patientsData = JSON.parse(personalData);
-        const userList = JSON.parse(users);
-
-        const share = shares.find((s: any) => s.patientId === id && s.isActive);
-
-        if (share) {
-          const patientData = patientsData.find((p: any) => p.userId === id);
-          const userData = userList.find((u: any) => u.id === id);
-
-          if (patientData || userData) {
-            // Buscar observações médicas no localStorage também
-            let localNotes = "Dados compartilhados pelo paciente";
-            try {
-              const notesKey = `medical_notes_${id}_${localStorage.getItem("medical_app_current_user") ? JSON.parse(localStorage.getItem("medical_app_current_user")).id : ""}`;
-              const savedNotes = localStorage.getItem(notesKey);
-              if (savedNotes) {
-                localNotes = savedNotes;
-                console.log(
-                  "📋 Observações médicas encontradas no localStorage:",
-                  localNotes,
-                );
-              }
-            } catch (e) {
-              console.log("⚠️ Erro ao buscar observações no localStorage:", e);
-            }
-
-            const sharedPatient: Patient = {
-              id: id,
-              name:
-                patientData?.fullName ||
-                userData?.email?.split("@")[0] ||
-                "Paciente",
-              email: userData?.email || "",
-              age: patientData?.birthDate
-                ? this.calculateAge(patientData.birthDate)
-                : undefined,
-              city: patientData?.city || "",
-              state: patientData?.state || "",
-              weight: undefined,
-              status: "compartilhado" as const,
-              doctorId: "",
-              createdAt: share.sharedAt,
-              notes: localNotes,
-            };
-
-            console.log(
-              "📁 Paciente compartilhado encontrado no localStorage:",
-              sharedPatient,
-            );
-            return sharedPatient;
-          }
-        }
+      if (error) {
+        throw new Error(`Erro ao atualizar paciente: ${error.message}`);
       }
+
+      console.log("✅ Paciente atualizado no Supabase:", id);
+
+      // Buscar o paciente atualizado
+      const updatedPatient = await this.getPatientById(id);
+      if (!updatedPatient) {
+        throw new Error("Erro: Paciente não encontrado após atualização");
+      }
+
+      return updatedPatient;
     } catch (error) {
-      console.error(
-        "❌ Erro ao buscar paciente compartilhado no localStorage:",
-        error,
-      );
+      console.error("💥 Erro ao atualizar paciente:", error);
+      throw error;
     }
-
-    console.log("❌ Paciente não encontrado");
-    return null;
   }
 
-  // Método para limpar todos os dados (útil para testes)
-  clearAllData(): void {
-    localStorage.removeItem(this.STORAGE_KEYS.PATIENTS);
-    localStorage.removeItem(this.STORAGE_KEYS.DIAGNOSES);
-  }
-  // Adicionar diagnóstico
-  async addDiagnosis(
-    patientId: string,
-    diagnosis: Omit<Diagnosis, "id" | "patientId" | "createdAt">,
-  ): Promise<Diagnosis> {
+  // Deletar paciente (apenas Supabase)
+  async deletePatient(id: string): Promise<void> {
     await this.delay(300);
 
-    const newDiagnosis: Diagnosis = {
-      id: this.generateId(),
-      patientId,
-      ...diagnosis,
-      createdAt: new Date().toISOString(),
-    };
-
-    console.log("🔥 CRIANDO DIAGNÓSTICO:", newDiagnosis);
-
-    // Se Supabase estiver ativo, usar Supabase
-    if (isFeatureEnabled("useSupabasePatients") && supabase) {
-      console.log("🚀 Criando diagnóstico no Supabase");
-
-      try {
-        const insertData = {
-          id: newDiagnosis.id,
-          patient_id: newDiagnosis.patientId,
-          date: newDiagnosis.date,
-          status: newDiagnosis.status,
-          code: newDiagnosis.code,
-          created_at: newDiagnosis.createdAt,
-        };
-
-        console.log("📝 Dados do diagnóstico:", insertData);
-
-        const { data: supabaseData, error } = await supabase
-          .from("patient_diagnoses")
-          .insert([insertData]);
-
-        console.log("📊 Resposta do Supabase:", { data: supabaseData, error });
-
-        if (error) {
-          console.error(
-            "❌ Erro ao criar diagnóstico:",
-            JSON.stringify(
-              {
-                message: error.message,
-                details: error.details,
-                hint: error.hint,
-                code: error.code,
-              },
-              null,
-              2,
-            ),
-          );
-          throw error; // Forçar fallback
-        } else {
-          console.log("✅ Diagnóstico criado no Supabase!");
-          return newDiagnosis;
-        }
-      } catch (supabaseError) {
-        console.error(
-          "💥 Erro no Supabase diagnóstico:",
-          JSON.stringify(
-            {
-              message:
-                supabaseError instanceof Error
-                  ? supabaseError.message
-                  : "Unknown error",
-              stack:
-                supabaseError instanceof Error
-                  ? supabaseError.stack
-                  : undefined,
-              error: supabaseError,
-            },
-            null,
-            2,
-          ),
-        );
-        // Continuar para fallback
-      }
-    } else {
-      console.log("⚠️ Supabase não ativo para diagnósticos");
+    if (!supabase) {
+      throw new Error("❌ Supabase não está configurado");
     }
 
-    console.log("📁 Salvando diagnóstico no localStorage");
-    const diagnoses = this.getStoredDiagnoses();
-    diagnoses.push(newDiagnosis);
-    this.saveDiagnoses(diagnoses);
-
-    return newDiagnosis;
-  }
-
-  // Deletar pacientes
-  async deletePatients(ids: string[]): Promise<void> {
-    await this.delay(300);
-
-    console.log("🗑️ DELETANDO PACIENTES:", ids);
-
-    // Se Supabase estiver ativo, usar Supabase
-    if (isFeatureEnabled("useSupabasePatients") && supabase) {
-      console.log("🚀 Deletando pacientes no Supabase");
-
-      try {
-        const { error } = await supabase
-          .from("patients")
-          .delete()
-          .in("id", ids);
-
-        console.log("📊 Resultado da deleção no Supabase:", { error });
-
-        if (error) {
-          console.error(
-            "❌ Erro ao deletar pacientes:",
-            JSON.stringify(
-              {
-                message: error.message,
-                details: error.details,
-                hint: error.hint,
-                code: error.code,
-              },
-              null,
-              2,
-            ),
-          );
-          throw error; // Forçar fallback
-        } else {
-          console.log("✅ Pacientes deletados no Supabase!");
-          return;
-        }
-      } catch (supabaseError) {
-        console.error(
-          "💥 Erro no Supabase deletePatients:",
-          JSON.stringify(
-            {
-              message:
-                supabaseError instanceof Error
-                  ? supabaseError.message
-                  : "Unknown error",
-              stack:
-                supabaseError instanceof Error
-                  ? supabaseError.stack
-                  : undefined,
-              error: supabaseError,
-            },
-            null,
-            2,
-          ),
-        );
-        // Continuar para fallback
-      }
-    } else {
-      console.log("⚠️ Supabase não ativo para deleção");
-    }
-
-    console.log("📁 Deletando pacientes do localStorage");
-    const patients = this.getStoredPatients();
-    const updatedPatients = patients.filter((p) => !ids.includes(p.id));
-    this.savePatients(updatedPatients);
-  }
-
-  // Remover compartilhamento de paciente
-  async removePatientSharing(
-    patientId: string,
-    doctorId: string,
-  ): Promise<void> {
-    await this.delay(300);
-
-    console.log("🗑️ REMOVENDO COMPARTILHAMENTO:", { patientId, doctorId });
-
-    // Se Supabase estiver ativo, usar Supabase
-    if (isFeatureEnabled("useSupabasePatients") && supabase) {
-      console.log("🚀 Removendo compartilhamento no Supabase");
-
-      try {
-        // Remover da tabela doctor_patient_sharing
-        const { error: sharingError } = await supabase
-          .from("doctor_patient_sharing")
-          .delete()
-          .eq("patient_id", patientId)
-          .eq("doctor_id", doctorId);
-
-        if (sharingError) {
-          console.error(
-            "❌ Erro ao remover compartilhamento:",
-            JSON.stringify(
-              {
-                message: sharingError.message,
-                details: sharingError.details,
-                hint: sharingError.hint,
-                code: sharingError.code,
-              },
-              null,
-              2,
-            ),
-          );
-          throw sharingError;
-        }
-
-        // Remover observações médicas relacionadas
-        const { error: notesError } = await supabase
-          .from("medical_notes")
-          .delete()
-          .eq("patient_id", patientId)
-          .eq("doctor_id", doctorId);
-
-        if (notesError) {
-          console.warn("⚠️ Erro ao remover observações médicas:", notesError);
-          // Não falhar por causa disso, apenas avisar
-        }
-
-        console.log("✅ Compartilhamento removido do Supabase!");
-        return;
-      } catch (supabaseError) {
-        console.error(
-          "💥 Erro no Supabase removePatientSharing:",
-          JSON.stringify(
-            {
-              message:
-                supabaseError instanceof Error
-                  ? supabaseError.message
-                  : "Unknown error",
-              stack:
-                supabaseError instanceof Error
-                  ? supabaseError.stack
-                  : undefined,
-              error: supabaseError,
-            },
-            null,
-            2,
-          ),
-        );
-        // Continuar para fallback
-      }
-    } else {
-      console.log("⚠️ Supabase não ativo para remoção de compartilhamento");
-    }
-
-    console.log("📁 Removendo compartilhamento do localStorage");
-
-    // Fallback para localStorage
     try {
-      const sharedData = localStorage.getItem("medical_app_shared_data");
-      if (sharedData) {
-        const shares = JSON.parse(sharedData);
-        const updatedShares = shares.filter(
-          (share: any) =>
-            !(share.patientId === patientId && share.doctorId === doctorId),
-        );
-        localStorage.setItem(
-          "medical_app_shared_data",
-          JSON.stringify(updatedShares),
-        );
-        console.log("✅ Compartilhamento removido do localStorage");
+      const { error } = await supabase.from("patients").delete().eq("id", id);
+
+      if (error) {
+        throw new Error(`Erro ao deletar paciente: ${error.message}`);
       }
+
+      console.log("✅ Paciente deletado do Supabase:", id);
     } catch (error) {
-      console.error(
-        "❌ Erro ao remover compartilhamento do localStorage:",
-        error,
+      console.error("💥 Erro ao deletar paciente:", error);
+      throw error;
+    }
+  }
+
+  // Adicionar diagnóstico (apenas Supabase)
+  async addDiagnosis(patientId: string, diagnosis: string): Promise<void> {
+    await this.delay(300);
+
+    if (!supabase) {
+      throw new Error("❌ Supabase não está configurado");
+    }
+
+    // Verificar se usuário está logado
+    const currentUserStr = localStorage.getItem("medical_app_current_user");
+    if (!currentUserStr) {
+      throw new Error("❌ Usuário não autenticado");
+    }
+
+    const currentUser = JSON.parse(currentUserStr);
+
+    try {
+      const { error } = await supabase.from("diagnoses").insert([
+        {
+          id: this.generateId(),
+          patient_id: patientId,
+          doctor_id: currentUser.id,
+          diagnosis,
+          created_at: new Date().toISOString(),
+        },
+      ]);
+
+      if (error) {
+        throw new Error(`Erro ao adicionar diagnóstico: ${error.message}`);
+      }
+
+      console.log("✅ Diagnóstico adicionado no Supabase");
+    } catch (error) {
+      console.error("💥 Erro ao adicionar diagnóstico:", error);
+      throw error;
+    }
+  }
+
+  // Buscar diagnósticos (apenas Supabase)
+  async getDiagnoses(patientId: string): Promise<Diagnosis[]> {
+    await this.delay(300);
+
+    if (!supabase) {
+      throw new Error("❌ Supabase não está configurado");
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("diagnoses")
+        .select("*")
+        .eq("patient_id", patientId)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        throw new Error(`Erro ao buscar diagnósticos: ${error.message}`);
+      }
+
+      return (data || []).map(
+        (d: any): Diagnosis => ({
+          id: d.id,
+          patientId: d.patient_id,
+          diagnosis: d.diagnosis,
+          createdAt: d.created_at,
+          doctorId: d.doctor_id,
+        }),
       );
+    } catch (error) {
+      console.error("💥 Erro ao buscar diagnósticos:", error);
+      throw error;
+    }
+  }
+
+  // Remover compartilhamento (apenas Supabase)
+  async removePatientSharing(patientId: string): Promise<void> {
+    await this.delay(300);
+
+    if (!supabase) {
+      throw new Error("❌ Supabase não está configurado");
+    }
+
+    // Verificar se usuário está logado
+    const currentUserStr = localStorage.getItem("medical_app_current_user");
+    if (!currentUserStr) {
+      throw new Error("❌ Usuário não autenticado");
+    }
+
+    const currentUser = JSON.parse(currentUserStr);
+
+    try {
+      const { error } = await supabase
+        .from("shared_data")
+        .delete()
+        .eq("patient_id", patientId)
+        .eq("shared_with_doctor_id", currentUser.id);
+
+      if (error) {
+        throw new Error(`Erro ao remover compartilhamento: ${error.message}`);
+      }
+
+      console.log("✅ Compartilhamento removido do Supabase");
+    } catch (error) {
+      console.error("💥 Erro ao remover compartilhamento:", error);
       throw error;
     }
   }
 }
 
+// Instância singleton
 export const patientAPI = new PatientAPI();
