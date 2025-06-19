@@ -505,10 +505,23 @@ class PatientProfileAPI {
       console.log("🚀 Buscando médicos no Supabase");
 
       try {
-        // USAR A ESTRUTURA REAL DA TABELA USERS (SEM CAMPO NAME)
+        // USAR A ESTRUTURA REAL DA TABELA USERS (COM CAMPO full_name)
         const { data: supabaseUsers, error } = await supabase
           .from("users")
-          .select("*") // Buscar todos os campos disponíveis
+          .select(
+            `
+            id,
+            email,
+            profession,
+            full_name,
+            crm,
+            specialty,
+            state,
+            city,
+            phone,
+            created_at
+          `,
+          )
           .eq("profession", "medico");
 
         console.log("📊 Médicos do Supabase:", {
