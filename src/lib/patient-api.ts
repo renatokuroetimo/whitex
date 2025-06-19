@@ -542,8 +542,10 @@ class PatientAPI {
       data,
     });
 
+    console.error("🔥 PASSO 1: Delay...");
     await this.delay(300);
 
+    console.error("🔥 PASSO 2: Verificando usuário autenticado...");
     // VALIDAÇÃO 1: Usuário autenticado
     const currentUserStr = localStorage.getItem("medical_app_current_user");
     if (!currentUserStr) {
@@ -552,13 +554,19 @@ class PatientAPI {
     }
 
     const currentUser = JSON.parse(currentUserStr);
-    console.log("👤 Usuário:", currentUser.id, currentUser.profession);
+    console.error(
+      "🔥 PASSO 2 OK: Usuário autenticado:",
+      currentUser.id,
+      currentUser.profession,
+    );
 
+    console.error("🔥 PASSO 3: Verificando Supabase...");
     // VALIDAÇÃO 2: Supabase configurado
     if (!supabase) {
       console.error("❌ FALHA: Supabase não está configurado");
       throw new Error("Sistema de banco de dados não está configurado");
     }
+    console.error("🔥 PASSO 3 OK: Supabase configurado");
 
     // VALIDAÇÃO 3: Verificar se este código está executando
     console.error("🚨🚨🚨 CÓDIGO UPDATEPATIENT EXECUTANDO! ID:", id);
@@ -655,7 +663,7 @@ class PatientAPI {
         .single();
 
       if (searchError && searchError.code !== "PGRST116") {
-        console.error("❌ FALHA AO BUSCAR OBSERVAÇÃO:", searchError);
+        console.error("��� FALHA AO BUSCAR OBSERVAÇÃO:", searchError);
         throw new Error(`Erro ao buscar observações: ${searchError.message}`);
       }
 
@@ -688,7 +696,7 @@ class PatientAPI {
 
         if (!updatedData || updatedData.length === 0) {
           console.error("❌ FALHA: Nenhum registro atualizado");
-          throw new Error("Falha crítica: observaç��es não foram atualizadas");
+          throw new Error("Falha crítica: observações não foram atualizadas");
         }
 
         console.log("✅ Observação atualizada:", updatedData[0]);
