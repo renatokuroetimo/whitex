@@ -135,22 +135,35 @@ class PatientAPI {
               );
 
               try {
+                console.log(
+                  `🔍 Buscando dados pessoais para user_id: ${share.patient_id}`,
+                );
+
                 const { data: personalData, error: personalError } =
                   await supabase
                     .from("patient_personal_data")
-                    .select("*")
+                    .select(
+                      "full_name, email, birth_date, gender, state, city, health_plan",
+                    )
                     .eq("user_id", share.patient_id)
                     .single();
 
-                console.log(`🔍 Dados pessoais encontrados:`, personalData);
-                console.log(
-                  `🔍 Erro na busca de dados pessoais:`,
-                  personalError,
-                );
+                console.log(`📊 RESULTADO da busca de dados pessoais:`);
+                console.log(`- Dados encontrados:`, personalData);
+                console.log(`- Erro:`, personalError?.message || "nenhum");
 
-                if (personalData && personalData.full_name) {
-                  patientName = personalData.full_name;
-                  console.log(`✅ Usando nome completo: ${patientName}`);
+                if (personalData) {
+                  if (personalData.full_name && personalData.full_name.trim()) {
+                    patientName = personalData.full_name.trim();
+                    console.log(
+                      `✅ SUCESSO - Usando nome completo real: "${patientName}"`,
+                    );
+                  } else {
+                    console.log(
+                      `⚠️ full_name vazio ou nulo, mantendo nome baseado no email: "${patientName}"`,
+                    );
+                  }
+
                   city = personalData.city || city;
                   state = personalData.state || state;
 
@@ -158,10 +171,14 @@ class PatientAPI {
                     const today = new Date();
                     const birthDate = new Date(personalData.birth_date);
                     age = today.getFullYear() - birthDate.getFullYear();
+                    console.log(`✅ Idade calculada: ${age} anos`);
                   }
                 } else {
                   console.log(
-                    `⚠️ Sem dados pessoais, usando nome baseado no email: ${patientName}`,
+                    `❌ PROBLEMA: Nenhum dado pessoal encontrado para user_id: ${share.patient_id}`,
+                  );
+                  console.log(
+                    `⚠️ Usando nome baseado no email: "${patientName}"`,
                   );
                 }
 
