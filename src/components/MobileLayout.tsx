@@ -370,6 +370,13 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
 
         {/* Main Content */}
         <div className="flex-1 overflow-auto">{children}</div>
+
+        <LogoutConfirmDialog
+          open={showLogoutDialog}
+          onOpenChange={setShowLogoutDialog}
+          onConfirm={confirmLogout}
+          userType={userProfession === "paciente" ? "paciente" : "médico"}
+        />
       </div>
     </div>
   );
