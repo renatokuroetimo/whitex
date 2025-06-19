@@ -69,6 +69,19 @@ class PatientAPI {
           "⚠️ Erro ao buscar compartilhamentos:",
           sharedError.message,
         );
+      } else {
+        console.log(
+          `📤 ${sharedData?.length || 0} compartilhamentos encontrados para médico:`,
+          currentUser.id,
+        );
+        sharedData?.forEach((share) => {
+          console.log("🤝 Compartilhamento:", {
+            id: share.id,
+            patient_id: share.patient_id,
+            doctor_id: share.doctor_id,
+            patient_name: share.patients?.name,
+          });
+        });
       }
 
       // Combinar pacientes próprios e compartilhados
