@@ -332,6 +332,19 @@ class IndicatorAPI {
     ];
   }
 
+  // Criar nova categoria (método simplificado)
+  async createCategory(name: string): Promise<Category> {
+    await this.delay(300);
+
+    const newCategory: Category = {
+      id: `cat_${Date.now().toString(36)}`,
+      name: name.trim(),
+    };
+
+    console.log("✅ Categoria criada (local):", newCategory);
+    return newCategory;
+  }
+
   // Subcategorias básicas
   async getSubcategories(): Promise<Subcategory[]> {
     return [
