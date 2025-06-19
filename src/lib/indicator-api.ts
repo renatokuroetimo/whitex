@@ -140,6 +140,12 @@ class IndicatorAPI {
       created_at: new Date().toISOString(),
     };
 
+    // Fallback: tentar com apenas colunas básicas se der erro de schema
+    const fallbackIndicator = {
+      id: newIndicator.id,
+      name: newIndicator.name,
+    };
+
     try {
       const { error } = await supabase
         .from("indicators")
