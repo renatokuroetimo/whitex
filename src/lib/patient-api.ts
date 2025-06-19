@@ -365,6 +365,16 @@ class PatientAPI {
         .order("created_at", { ascending: false });
 
       if (error) {
+        // Se a tabela não existir, retornar array vazio ao invés de erro
+        if (
+          error.message.includes("does not exist") ||
+          error.code === "42P01"
+        ) {
+          console.warn(
+            "⚠️ Tabela diagnoses não existe. Execute o script fix_all_database_errors.sql",
+          );
+          return [];
+        }
         throw new Error(`Erro ao buscar diagnósticos: ${error.message}`);
       }
 
@@ -379,6 +389,13 @@ class PatientAPI {
       );
     } catch (error) {
       console.error("💥 Erro ao buscar diagnósticos:", error);
+      // Se for erro de tabela não existir, retornar array vazio
+      if (error instanceof Error && error.message.includes("does not exist")) {
+        console.warn(
+          "⚠️ Retornando array vazio para diagnósticos - tabela não existe",
+        );
+        return [];
+      }
       throw error;
     }
   }
