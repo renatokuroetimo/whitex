@@ -124,7 +124,7 @@ class AuthSupabaseAPI {
       id: user.id,
       email: user.email,
       profession: user.profession,
-      full_name: user.full_name,
+      name: user.name, // CORRIGIDO: usar 'name' ao invés de 'full_name'
       city: user.city,
       state: user.state,
       phone: user.phone,
@@ -136,7 +136,7 @@ class AuthSupabaseAPI {
       email: user.email,
       profession: user.profession,
       crm: user.crm,
-      fullName: user.full_name,
+      fullName: user.name, // CORRIGIDO: usar 'name' ao invés de 'full_name'
       city: user.city,
       state: user.state,
       specialty: user.specialty,
