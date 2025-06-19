@@ -50,6 +50,7 @@ class PatientAPI {
       }
 
       // Buscar pacientes compartilhados
+      // Nota: patient_id referencia auth.users (não tabela patients)
       const { data: sharedData, error: sharedError } = await supabase
         .from("doctor_patient_sharing")
         .select(
@@ -57,12 +58,63 @@ class PatientAPI {
           id,
           patient_id,
           doctor_id,
-          patients:patient_id (
-            id, name, age, city, state, weight, status, notes, created_at, doctor_id
-          )
+          shared_at
         `,
         )
         .eq("doctor_id", currentUser.id);
+
+      console.log(
+        "🔍 Raw shared data from doctor_patient_sharing:",
+        sharedData,
+      );
+
+      // Buscar dados dos pacientes compartilhados nas tabelas de perfis
+      let sharedPatients: any[] = [];
+      if (sharedData && sharedData.length > 0) {
+        for (const share of sharedData) {
+          try {
+            // Buscar dados pessoais do paciente
+            const { data: personalData } = await supabase
+              .from("patient_personal_data")
+              .select("*")
+              .eq("user_id", share.patient_id)
+              .single();
+
+            // Buscar dados médicos do paciente
+            const { data: medicalData } = await supabase
+              .from("patient_medical_data")
+              .select("*")
+              .eq("user_id", share.patient_id)
+              .single();
+
+            if (personalData) {
+              sharedPatients.push({
+                ...share,
+                patientData: {
+                  id: share.patient_id,
+                  name: personalData.full_name,
+                  age: personalData.birth_date
+                    ? new Date().getFullYear() -
+                      new Date(personalData.birth_date).getFullYear()
+                    : null,
+                  city: personalData.city,
+                  state: personalData.state,
+                  weight: medicalData?.weight,
+                  status: "compartilhado",
+                  notes: "",
+                  created_at: share.shared_at,
+                  doctor_id: null, // Não tem doctor_id pois é um paciente real
+                },
+              });
+            }
+          } catch (error) {
+            console.warn(
+              `⚠️ Erro ao buscar dados do paciente compartilhado ${share.patient_id}:`,
+              error,
+            );
+          }
+        }
+      }
 
       if (sharedError) {
         console.warn(
