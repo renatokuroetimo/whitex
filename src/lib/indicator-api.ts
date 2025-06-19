@@ -134,6 +134,7 @@ class IndicatorAPI {
       subcategory_id: data.subcategoryId,
       parameter: data.parameter.trim(),
       unit_id: data.unitOfMeasureId,
+      unit: selectedUnit?.symbol || "un", // Add unit field for NOT NULL constraint
       unit_symbol: selectedUnit?.symbol || "un",
       is_mandatory: false, // Padrão como não obrigatório
       doctor_id: currentUser.id,
