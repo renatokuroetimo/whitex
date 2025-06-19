@@ -125,7 +125,7 @@ profileImageAPI.migrateLocalImagesToSupabase();
 - **PGRST204**: Table doesn't exist - run the SQL script above
 - **PGRST116**: Record not found - normal when no profile image exists yet
 - **42P01**: Relation does not exist - same as PGRST204
-- **22P02**: Data type error - now fixed (was caused by decimal file_size values)
+- **42501**: RLS policy violation OR data type error - now handled with graceful fallback to localStorage
 - **Network errors**: Connection issues - will fallback to localStorage
 
 ## Current Behavior
