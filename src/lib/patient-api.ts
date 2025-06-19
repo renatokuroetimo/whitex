@@ -135,51 +135,64 @@ class PatientAPI {
               continue;
             }
 
-            // 2.2 Determinar nome do paciente (buscar em patient_personal_data)
+            // 2.2 Determinar nome do paciente (prioridade: full_name da tabela users)
             let patientName = "Sem nome definido";
 
-            // Buscar nome em patient_personal_data
-            try {
-              const { data: personalData, error: personalError } =
-                await supabase
-                  .from("patient_personal_data")
-                  .select("full_name, email")
-                  .eq("user_id", share.patient_id)
-                  .single();
+            // PRIMEIRO: tentar usar full_name da tabela users
+            if (patientUser.full_name && patientUser.full_name.trim()) {
+              patientName = patientUser.full_name.trim();
+              console.log(
+                `✅ Nome do paciente obtido da tabela users.full_name: "${patientName}"`,
+              );
+            } else {
+              console.log(
+                `⚠️ Campo full_name vazio na tabela users, buscando em patient_personal_data...`,
+              );
 
-              console.log(`📋 DADOS PESSOAIS PARA NOME:`, {
-                dados: personalData,
-                erro: personalError?.message || "nenhum",
-              });
+              // SEGUNDO: buscar nome em patient_personal_data como fallback
+              try {
+                const { data: personalData, error: personalError } =
+                  await supabase
+                    .from("patient_personal_data")
+                    .select("full_name, email")
+                    .eq("user_id", share.patient_id)
+                    .single();
 
-              if (
-                !personalError &&
-                personalData?.full_name &&
-                personalData.full_name.trim()
-              ) {
-                patientName = personalData.full_name.trim();
-                console.log(
-                  `✅ Nome do paciente obtido de patient_personal_data: "${patientName}"`,
+                console.log(`📋 DADOS PESSOAIS PARA NOME:`, {
+                  dados: personalData,
+                  erro: personalError?.message || "nenhum",
+                });
+
+                if (
+                  !personalError &&
+                  personalData?.full_name &&
+                  personalData.full_name.trim()
+                ) {
+                  patientName = personalData.full_name.trim();
+                  console.log(
+                    `✅ Nome do paciente obtido de patient_personal_data: "${patientName}"`,
+                  );
+                } else {
+                  // TERCEIRO: fallback para email
+                  if (patientUser.email) {
+                    patientName = `Paciente ${patientUser.email.split("@")[0]}`;
+                  } else {
+                    patientName = `Paciente ${share.patient_id.substring(0, 8)}`;
+                  }
+                  console.log(`⚠️ Usando nome fallback: "${patientName}"`);
+                }
+              } catch (error) {
+                console.warn(
+                  `⚠️ Erro ao buscar dados pessoais do paciente:`,
+                  error,
                 );
-              } else {
-                // Fallback para email se não tiver nome
+                // Fallback para email se não conseguir buscar dados pessoais
                 if (patientUser.email) {
                   patientName = `Paciente ${patientUser.email.split("@")[0]}`;
                 } else {
                   patientName = `Paciente ${share.patient_id.substring(0, 8)}`;
                 }
-                console.log(`⚠️ Usando nome fallback: "${patientName}"`);
-              }
-            } catch (error) {
-              console.warn(
-                `⚠️ Erro ao buscar dados pessoais do paciente:`,
-                error,
-              );
-              // Fallback para email se não conseguir buscar dados pessoais
-              if (patientUser.email) {
-                patientName = `Paciente ${patientUser.email.split("@")[0]}`;
-              } else {
-                patientName = `Paciente ${share.patient_id.substring(0, 8)}`;
+                console.log(`⚠️ Usando nome fallback final: "${patientName}"`);
               }
             }
 
