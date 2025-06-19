@@ -93,12 +93,11 @@ const AddIndicatorToPatient = () => {
         // Continue mesmo se indicadores padrão falharem
       }
 
-      try {
-        customIndicators = await indicatorAPI.getIndicators(user.id);
-      } catch (error) {
-        console.error("❌ Erro ao buscar indicadores customizados:", error);
-        // Continue mesmo se indicadores customizados falharem
-      }
+      // TEMPORARIAMENTE: Não carregar indicadores customizados até limpar o banco
+      customIndicators = [];
+      console.log(
+        "⚠️ TEMPORÁRIO: Indicadores customizados desabilitados até limpeza do banco",
+      );
 
       if (!patientData) {
         toast({
