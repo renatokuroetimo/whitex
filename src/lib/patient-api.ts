@@ -306,7 +306,7 @@ class PatientAPI {
 
       console.log("✅ Paciente deletado do Supabase:", id);
     } catch (error) {
-      console.error("💥 Erro ao deletar paciente:", error);
+      console.error("�� Erro ao deletar paciente:", error);
       throw error;
     }
   }
@@ -339,6 +339,15 @@ class PatientAPI {
       ]);
 
       if (error) {
+        // Se a tabela não existir, dar erro mais claro
+        if (
+          error.message.includes("does not exist") ||
+          error.code === "42P01"
+        ) {
+          throw new Error(
+            "❌ Tabela diagnoses não existe. Execute o script fix_all_database_errors.sql no Supabase SQL Editor.",
+          );
+        }
         throw new Error(`Erro ao adicionar diagnóstico: ${error.message}`);
       }
 
