@@ -232,7 +232,7 @@ class PatientProfileAPI {
           return resultData;
         }
       } catch (supabaseError) {
-        console.error("�� Erro no Supabase dados pessoais:", {
+        console.error("💥 Erro no Supabase dados pessoais:", {
           message:
             supabaseError instanceof Error
               ? supabaseError.message
@@ -282,7 +282,7 @@ class PatientProfileAPI {
 
     // Se Supabase estiver ativo, usar Supabase
     if (isFeatureEnabled("useSupabaseProfiles") && supabase) {
-      console.log("🚀 Buscando dados médicos no Supabase");
+      console.log("�� Buscando dados médicos no Supabase");
 
       try {
         // Buscar múltiplos registros e pegar o mais recente
@@ -581,21 +581,25 @@ class PatientProfileAPI {
     }
   }
 
-  // Helper function corrigido para mapear baseado na estrutura real
+  // Helper function corrigido para mapear baseado na estrutura real (SEM CAMPO NAME)
   private mapUserToDoctor(
     user: any,
     source: "supabase" | "localStorage",
   ): Doctor {
-    // CORRIGIDO: usar campo 'name' da tabela users (não full_name)
-    let doctorName = user.name;
+    // Como não há campo 'name' na tabela users, usar fallback
+    let doctorName = "Sem nome definido";
 
-    if (!doctorName || doctorName.trim() === "") {
-      doctorName = "Sem nome definido";
+    // Tentar diferentes campos que podem existir
+    if (user.fullName && user.fullName.trim()) {
+      doctorName = user.fullName.trim();
+    } else if (user.full_name && user.full_name.trim()) {
+      doctorName = user.full_name.trim();
+    } else if (user.email) {
+      doctorName = `Dr. ${user.email.split("@")[0]}`;
     }
 
     console.log(`🔍 Dados originais do usuário médico (${source}):`, {
       id: user.id,
-      name: user.name,
       fullName: user.fullName || user.full_name,
       crm: user.crm,
       state: user.state,
