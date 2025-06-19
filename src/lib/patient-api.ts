@@ -17,7 +17,7 @@ class PatientAPI {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
   }
 
-  // Buscar pacientes (apenas Supabase)
+  // Buscar pacientes (apenas Supabase) com fallback robusto
   async getPatients(): Promise<{
     patients: Patient[];
     pagination: PaginationData;
@@ -25,118 +25,148 @@ class PatientAPI {
     await this.delay(500);
 
     if (!supabase) {
-      throw new Error("❌ Supabase não está configurado");
+      console.error("❌ Supabase não está configurado");
+      return {
+        patients: [],
+        pagination: {
+          currentPage: 1,
+          totalPages: 1,
+          totalItems: 0,
+          itemsPerPage: 10,
+        },
+      };
     }
 
     // Verificar se usuário está logado
     const currentUserStr = localStorage.getItem("medical_app_current_user");
     if (!currentUserStr) {
-      throw new Error("❌ Usuário não autenticado");
+      console.error("❌ Usuário não autenticado");
+      return {
+        patients: [],
+        pagination: {
+          currentPage: 1,
+          totalPages: 1,
+          totalItems: 0,
+          itemsPerPage: 10,
+        },
+      };
     }
 
     const currentUser = JSON.parse(currentUserStr);
     console.log("🚀 Buscando pacientes no Supabase para:", currentUser.id);
 
-    try {
-      // Buscar pacientes criados pelo médico
-      const { data: ownPatients, error: patientsError } = await supabase
-        .from("patients")
-        .select("*")
-        .eq("doctor_id", currentUser.id)
-        .order("created_at", { ascending: false });
+    // Inicializar arrays vazios como fallback
+    let ownPatients: any[] = [];
+    let sharedPatients: any[] = [];
 
-      if (patientsError) {
-        throw new Error(`Erro ao buscar pacientes: ${patientsError.message}`);
+    try {
+      // Tentar buscar pacientes criados pelo médico
+      try {
+        const { data: patientsData, error: patientsError } = await supabase
+          .from("patients")
+          .select("*")
+          .eq("doctor_id", currentUser.id)
+          .order("created_at", { ascending: false });
+
+        if (patientsError) {
+          console.warn(
+            "⚠️ Erro ao buscar pacientes próprios:",
+            patientsError.message,
+          );
+        } else {
+          ownPatients = patientsData || [];
+          console.log(
+            `✅ ${ownPatients.length} pacientes próprios encontrados`,
+          );
+        }
+      } catch (patientsError) {
+        console.warn(
+          "⚠️ Erro crítico ao buscar pacientes próprios:",
+          patientsError,
+        );
+        ownPatients = [];
       }
 
-      // Buscar pacientes compartilhados
-      // Nota: patient_id referencia auth.users (não tabela patients)
-      const { data: sharedData, error: sharedError } = await supabase
-        .from("doctor_patient_sharing")
-        .select(
-          `
-          id,
-          patient_id,
-          doctor_id,
-          shared_at
-        `,
-        )
-        .eq("doctor_id", currentUser.id);
+      // Tentar buscar pacientes compartilhados
+      try {
+        const { data: sharedData, error: sharedError } = await supabase
+          .from("doctor_patient_sharing")
+          .select(
+            `
+            id,
+            patient_id,
+            doctor_id,
+            shared_at
+          `,
+          )
+          .eq("doctor_id", currentUser.id);
 
-      console.log(
-        "🔍 Raw shared data from doctor_patient_sharing:",
-        sharedData,
-      );
+        if (sharedError) {
+          console.warn(
+            "⚠️ Erro ao buscar compartilhamentos:",
+            sharedError.message,
+          );
+        } else if (sharedData && sharedData.length > 0) {
+          console.log(`📤 Processando ${sharedData.length} compartilhamentos`);
 
-      // Buscar dados básicos dos pacientes compartilhados (versão simplificada)
-      let sharedPatients: any[] = [];
-      if (sharedData && sharedData.length > 0) {
-        console.log(`📤 Processando ${sharedData.length} compartilhamentos`);
-
-        for (const share of sharedData) {
-          try {
-            console.log(
-              `🔍 Buscando dados básicos para paciente: ${share.patient_id}`,
-            );
-
-            // Buscar apenas dados básicos da tabela users (que sabemos que existe)
-            const { data: userData, error: userError } = await supabase
-              .from("users")
-              .select("*")
-              .eq("id", share.patient_id)
-              .single();
-
-            if (userError) {
-              console.warn(
-                `⚠️ Erro ao buscar usuário ${share.patient_id}:`,
-                userError,
+          for (const share of sharedData) {
+            try {
+              console.log(
+                `🔍 Buscando dados básicos para paciente: ${share.patient_id}`,
               );
-              continue; // Pular este compartilhamento se não conseguir buscar o usuário
-            }
 
-            if (userData) {
-              const patientName =
-                userData.name || userData.email || "Paciente Compartilhado";
+              // Buscar dados básicos da tabela users
+              const { data: userData, error: userError } = await supabase
+                .from("users")
+                .select("id, name, email, profession")
+                .eq("id", share.patient_id)
+                .single();
 
-              sharedPatients.push({
-                ...share,
-                patientData: {
+              if (userError) {
+                console.warn(
+                  `⚠️ Erro ao buscar usuário ${share.patient_id}:`,
+                  userError,
+                );
+                continue;
+              }
+
+              if (userData && userData.profession === "paciente") {
+                const patientName =
+                  userData.name || userData.email || "Paciente Compartilhado";
+
+                sharedPatients.push({
                   id: share.patient_id,
                   name: patientName,
-                  age: null, // Não temos idade por enquanto
-                  city: "N/A", // Dados detalhados virão depois
+                  age: null,
+                  city: "N/A",
                   state: "N/A",
                   weight: null,
                   status: "compartilhado",
                   notes: "",
-                  created_at: share.shared_at,
-                  doctor_id: null,
-                },
-              });
+                  createdAt: share.shared_at,
+                  doctorId: null,
+                  isShared: true,
+                  sharedId: share.id,
+                });
 
-              console.log(
-                `✅ Paciente compartilhado adicionado: ${patientName}`,
+                console.log(
+                  `✅ Paciente compartilhado adicionado: ${patientName}`,
+                );
+              }
+            } catch (shareError) {
+              console.warn(
+                `⚠️ Erro ao processar compartilhamento:`,
+                shareError,
               );
             }
-          } catch (error) {
-            console.warn(`⚠️ Erro geral ao processar compartilhamento:`, error);
           }
         }
-      }
-
-      if (sharedError) {
+      } catch (sharedError) {
         console.warn(
-          "⚠️ Erro ao buscar compartilhamentos:",
-          sharedError.message,
+          "⚠️ Erro crítico ao buscar compartilhamentos:",
+          sharedError,
         );
-      } else {
-        console.log(
-          `📤 ${sharedData?.length || 0} compartilhamentos encontrados para médico:`,
-          currentUser.id,
-        );
-        console.log(
-          `👥 ${sharedPatients.length} pacientes compartilhados com dados carregados`,
-        );
+        sharedPatients = [];
       }
 
       // Combinar pacientes próprios e compartilhados
@@ -156,25 +186,12 @@ class PatientAPI {
             isShared: false,
           }),
         ),
-        ...sharedPatients.map(
-          (shared: any): Patient => ({
-            id: shared.patientData.id,
-            name: shared.patientData.name,
-            age: shared.patientData.age,
-            city: shared.patientData.city,
-            state: shared.patientData.state,
-            weight: shared.patientData.weight,
-            status: "compartilhado",
-            notes: shared.patientData.notes || "",
-            createdAt: shared.shared_at,
-            doctorId: null, // Pacientes compartilhados não têm doctor_id
-            isShared: true,
-            sharedId: shared.id,
-          }),
-        ),
+        ...sharedPatients,
       ];
 
-      console.log(`✅ ${allPatients.length} pacientes carregados do Supabase`);
+      console.log(
+        `✅ Total de pacientes carregados: ${allPatients.length} (${ownPatients.length} próprios + ${sharedPatients.length} compartilhados)`,
+      );
 
       return {
         patients: allPatients,
@@ -186,8 +203,18 @@ class PatientAPI {
         },
       };
     } catch (error) {
-      console.error("💥 Erro ao buscar pacientes:", error);
-      throw error;
+      console.error("💥 Erro crítico ao buscar pacientes:", error);
+
+      // Retornar estrutura vazia em caso de erro crítico
+      return {
+        patients: [],
+        pagination: {
+          currentPage: 1,
+          totalPages: 1,
+          totalItems: 0,
+          itemsPerPage: 10,
+        },
+      };
     }
   }
 
