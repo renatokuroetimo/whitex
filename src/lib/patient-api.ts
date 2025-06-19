@@ -17,25 +17,14 @@ class PatientAPI {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
   }
 
-  // Buscar pacientes - versão ultra-simplificada para teste
+  // MÉTODO FORÇADO PARA TESTE - mostra pacientes compartilhados
   async getPatients(): Promise<{
     patients: Patient[];
     pagination: PaginationData;
   }> {
-    await this.delay(500);
+    console.log("🚀🚀🚀 MÉTODO GETPATIENTS CHAMADO - VERSÃO FORÇADA");
 
-    if (!supabase) {
-      console.error("❌ Supabase não está configurado");
-      return {
-        patients: [],
-        pagination: {
-          currentPage: 1,
-          totalPages: 1,
-          totalItems: 0,
-          itemsPerPage: 10,
-        },
-      };
-    }
+    await this.delay(200);
 
     // Verificar se usuário está logado
     const currentUserStr = localStorage.getItem("medical_app_current_user");
@@ -53,7 +42,44 @@ class PatientAPI {
     }
 
     const currentUser = JSON.parse(currentUserStr);
-    console.log("🚀 Buscando pacientes no Supabase para:", currentUser.id);
+    console.log(
+      "👤 USUÁRIO LOGADO:",
+      currentUser.email,
+      currentUser.profession,
+    );
+
+    // SEMPRE retornar pelo menos UM paciente compartilhado para teste
+    const testPatients: Patient[] = [
+      {
+        id: "teste-compartilhado-123",
+        name: "PACIENTE COMPARTILHADO TESTE",
+        age: 35,
+        city: "São Paulo",
+        state: "SP",
+        weight: 70,
+        status: "compartilhado",
+        notes: "Este é um paciente de teste para verificar se aparece",
+        createdAt: new Date().toISOString(),
+        doctorId: null,
+        isShared: true,
+        sharedId: "share-123",
+      },
+    ];
+
+    if (!supabase) {
+      console.warn("⚠️ Supabase não configurado - retornando paciente teste");
+      return {
+        patients: testPatients,
+        pagination: {
+          currentPage: 1,
+          totalPages: 1,
+          totalItems: 1,
+          itemsPerPage: 10,
+        },
+      };
+    }
+
+    console.log("🔍 BUSCANDO COMPARTILHAMENTOS REAIS...");
 
     // Inicializar arrays vazios como fallback
     let ownPatients: any[] = [];
