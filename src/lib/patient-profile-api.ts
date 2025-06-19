@@ -232,7 +232,7 @@ class PatientProfileAPI {
           return resultData;
         }
       } catch (supabaseError) {
-        console.error("💥 Erro no Supabase dados pessoais:", {
+        console.error("�� Erro no Supabase dados pessoais:", {
           message:
             supabaseError instanceof Error
               ? supabaseError.message
@@ -505,23 +505,10 @@ class PatientProfileAPI {
       console.log("🚀 Buscando médicos no Supabase");
 
       try {
-        // USAR A ESTRUTURA REAL DA TABELA USERS
+        // USAR A ESTRUTURA REAL DA TABELA USERS (SEM CAMPO NAME)
         const { data: supabaseUsers, error } = await supabase
           .from("users")
-          .select(
-            `
-            id,
-            email,
-            profession,
-            name,
-            crm,
-            specialty,
-            state,
-            city,
-            phone,
-            created_at
-          `,
-          )
+          .select("*") // Buscar todos os campos disponíveis
           .eq("profession", "medico");
 
         console.log("📊 Médicos do Supabase:", {
@@ -910,7 +897,7 @@ class PatientProfileAPI {
         });
 
         if (sharesError) {
-          console.error("�� Erro ao buscar compartilhamentos:", sharesError);
+          console.error("❌ Erro ao buscar compartilhamentos:", sharesError);
           return [];
         }
 
