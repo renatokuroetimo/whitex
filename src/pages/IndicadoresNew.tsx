@@ -101,12 +101,6 @@ const IndicadoresNew = () => {
             <h1 className="text-2xl font-semibold text-gray-900">
               Indicadores
             </h1>
-            <button
-              onClick={() => navigate("/dashboard")}
-              className="text-sm text-blue-600 hover:text-blue-800"
-            >
-              ← Voltar
-            </button>
           </div>
 
           {/* Content Cards */}
