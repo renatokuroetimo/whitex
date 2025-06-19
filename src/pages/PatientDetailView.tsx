@@ -263,6 +263,139 @@ const PatientDetailView = () => {
                 </Button>
               </div>
 
+              {/* Dados Médicos Section */}
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-6">
+                  Dados Médicos
+                </h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Medidas Físicas */}
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-700 mb-3 border-b border-gray-100 pb-2">
+                      Medidas Físicas
+                    </h4>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600">Altura:</span>
+                        <span className="text-sm font-medium text-gray-900">
+                          {medicalData?.height
+                            ? `${medicalData.height} cm`
+                            : "Não informado"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600">Peso:</span>
+                        <span className="text-sm font-medium text-gray-900">
+                          {medicalData?.weight
+                            ? `${medicalData.weight} kg`
+                            : "Não informado"}
+                        </span>
+                      </div>
+                      {medicalData?.height && medicalData?.weight && (
+                        <div className="flex justify-between">
+                          <span className="text-sm text-gray-600">IMC:</span>
+                          <span className="text-sm font-medium text-gray-900">
+                            {(
+                              medicalData.weight /
+                              Math.pow(medicalData.height / 100, 2)
+                            ).toFixed(1)}{" "}
+                            kg/m²
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Condições de Saúde */}
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-700 mb-3 border-b border-gray-100 pb-2">
+                      Condições de Saúde
+                    </h4>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">Fumante:</span>
+                        <div className="flex items-center">
+                          <div
+                            className={`w-3 h-3 rounded-full mr-2 ${medicalData?.smoker ? "bg-red-500" : "bg-green-500"}`}
+                          ></div>
+                          <span className="text-sm font-medium text-gray-900">
+                            {medicalData?.smoker ? "Sim" : "Não"}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">
+                          Pressão alta:
+                        </span>
+                        <div className="flex items-center">
+                          <div
+                            className={`w-3 h-3 rounded-full mr-2 ${medicalData?.highBloodPressure ? "bg-red-500" : "bg-green-500"}`}
+                          ></div>
+                          <span className="text-sm font-medium text-gray-900">
+                            {medicalData?.highBloodPressure ? "Sim" : "Não"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Estilo de Vida */}
+                  <div className="md:col-span-2">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-3 border-b border-gray-100 pb-2">
+                      Estilo de Vida
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">
+                          Faz atividade física:
+                        </span>
+                        <div className="flex items-center">
+                          <div
+                            className={`w-3 h-3 rounded-full mr-2 ${medicalData?.physicalActivity ? "bg-green-500" : "bg-gray-400"}`}
+                          ></div>
+                          <span className="text-sm font-medium text-gray-900">
+                            {medicalData?.physicalActivity ? "Sim" : "Não"}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">
+                          Dieta saudável:
+                        </span>
+                        <div className="flex items-center">
+                          <div
+                            className={`w-3 h-3 rounded-full mr-2 ${medicalData?.healthyDiet ? "bg-green-500" : "bg-gray-400"}`}
+                          ></div>
+                          <span className="text-sm font-medium text-gray-900">
+                            {medicalData?.healthyDiet ? "Sim" : "Não"}
+                          </span>
+                        </div>
+                      </div>
+                      {medicalData?.exerciseFrequency && (
+                        <div className="flex justify-between">
+                          <span className="text-sm text-gray-600">
+                            Frequência de exercícios:
+                          </span>
+                          <span className="text-sm font-medium text-gray-900 capitalize">
+                            {medicalData.exerciseFrequency}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {!medicalData && (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500 text-sm">
+                      Dados médicos não compartilhados ou não preenchidos pelo
+                      paciente
+                    </p>
+                  </div>
+                )}
+              </div>
+
               {/* Diagnósticos Section */}
               <div className="bg-white rounded-lg border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
