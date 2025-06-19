@@ -17,18 +17,34 @@ class IndicatorAPI {
   // Mapear ID de categoria para nome real
   private mapCategoryIdToName(categoryId: string): string {
     const categoryMap: { [key: string]: string } = {
+      // Standard mappings
       cat1: "Sinais Vitais",
       cat2: "Exames Laboratoriais",
       cat3: "Medidas Antropométricas",
       cat4: "Medicamentos",
       cat5: "Sintomas",
+      // Additional possible mappings from database
+      vital_signs: "Sinais Vitais",
+      laboratory: "Exames Laboratoriais",
+      anthropometric: "Medidas Antropométricas",
+      medications: "Medicamentos",
+      symptoms: "Sintomas",
+      // UUID-like fallbacks
+      1: "Sinais Vitais",
+      2: "Exames Laboratoriais",
+      3: "Medidas Antropométricas",
+      4: "Medicamentos",
+      5: "Sintomas",
     };
-    return categoryMap[categoryId] || categoryId || "Categoria";
+
+    if (!categoryId) return "Indicadores Gerais";
+    return categoryMap[categoryId] || `Categoria ${categoryId}`;
   }
 
   // Mapear ID de subcategoria para nome real
   private mapSubcategoryIdToName(subcategoryId: string): string {
     const subcategoryMap: { [key: string]: string } = {
+      // Standard mappings
       sub1: "Pressão Arterial",
       sub2: "Frequência Cardíaca",
       sub3: "Temperatura",
@@ -37,8 +53,28 @@ class IndicatorAPI {
       sub6: "Peso",
       sub7: "Altura",
       sub8: "IMC",
+      // Additional possible mappings
+      blood_pressure: "Pressão Arterial",
+      heart_rate: "Frequência Cardíaca",
+      temperature: "Temperatura",
+      glucose: "Glicemia",
+      cholesterol: "Colesterol",
+      weight: "Peso",
+      height: "Altura",
+      bmi: "IMC",
+      // UUID-like fallbacks
+      1: "Pressão Arterial",
+      2: "Frequência Cardíaca",
+      3: "Temperatura",
+      4: "Glicemia",
+      5: "Colesterol",
+      6: "Peso",
+      7: "Altura",
+      8: "IMC",
     };
-    return subcategoryMap[subcategoryId] || subcategoryId || "Subcategoria";
+
+    if (!subcategoryId) return "Parâmetro Geral";
+    return subcategoryMap[subcategoryId] || `Subcategoria ${subcategoryId}`;
   }
 
   // Buscar indicadores (apenas Supabase)
