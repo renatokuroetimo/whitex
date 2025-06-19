@@ -58,22 +58,33 @@ const PatientForm = () => {
     try {
       const patient = await patientAPI.getPatientById(id);
       if (patient) {
+        // Set state first and load cities
+        setSelectedState(patient.state);
+        const cities = getCitiesByState(patient.state);
+        setAvailableCities(cities);
+
+        // Then set form data including city
         setFormData({
           name: patient.name,
-          age: patient.age,
-          city: patient.city,
-          state: patient.state,
-          weight: patient.weight,
+          age: patient.age || 0,
+          city: patient.city || "",
+          state: patient.state || "",
+          weight: patient.weight || 0,
           status: patient.status,
           notes: patient.notes || "",
         });
-        setSelectedState(patient.state);
-        setAvailableCities(getCitiesByState(patient.state));
 
         // Detectar se é paciente compartilhado
         setIsSharedPatient(patient.status === "compartilhado");
+
+        console.log("🔍 Patient data loaded:", {
+          state: patient.state,
+          city: patient.city,
+          availableCities: cities.length,
+        });
       }
     } catch (error) {
+      console.error("❌ Error loading patient:", error);
       toast({
         variant: "destructive",
         title: "Erro",
