@@ -108,15 +108,33 @@ class IndicatorAPI {
 
     const currentUser = JSON.parse(currentUserStr);
 
+    // Validar dados obrigatórios
+    if (!data.categoryId) {
+      throw new Error("❌ Categoria é obrigatória");
+    }
+    if (!data.subcategoryId) {
+      throw new Error("❌ Subcategoria é obrigatória");
+    }
+    if (!data.parameter?.trim()) {
+      throw new Error("❌ Parâmetro é obrigatório");
+    }
+    if (!data.unitOfMeasureId) {
+      throw new Error("❌ Unidade de medida é obrigatória");
+    }
+
+    // Buscar informações da unidade selecionada
+    const units = await this.getUnits();
+    const selectedUnit = units.find((unit) => unit.id === data.unitOfMeasureId);
+
     const newIndicator = {
       id: Date.now().toString(36) + Math.random().toString(36).substr(2),
-      name: data.name,
+      name: data.parameter, // Usar o parâmetro como nome
       category_id: data.categoryId,
       subcategory_id: data.subcategoryId,
-      parameter: data.parameter,
-      unit_id: data.unitId,
-      unit_symbol: data.unitSymbol || "un",
-      is_mandatory: data.isMandatory || false,
+      parameter: data.parameter.trim(),
+      unit_id: data.unitOfMeasureId,
+      unit_symbol: selectedUnit?.symbol || "un",
+      is_mandatory: false, // Padrão como não obrigatório
       doctor_id: currentUser.id,
       created_at: new Date().toISOString(),
     };
