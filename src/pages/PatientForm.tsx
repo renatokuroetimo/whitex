@@ -259,9 +259,18 @@ const PatientForm = () => {
     } catch (error) {
       console.error("💥 ERRO CAPTURADO no PatientForm:", error);
 
-      // Mostrar a mensagem de erro específica
-      const errorMessage =
-        error instanceof Error ? error.message : "Erro desconhecido";
+      // Mostrar a mensagem de erro específica com mais detalhes
+      let errorMessage = "Erro desconhecido";
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === "object" && error !== null) {
+        errorMessage = JSON.stringify(error, null, 2);
+      } else {
+        errorMessage = String(error);
+      }
+
+      console.error("🔍 Erro detalhado:", errorMessage);
 
       toast({
         variant: "destructive",
