@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,13 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+
 import { useAuth } from "@/contexts/AuthContextHybrid";
 import { indicatorAPI } from "@/lib/indicator-api";
 import {
@@ -45,10 +39,6 @@ const CreateIndicator = () => {
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [allSubcategories, setAllSubcategories] = useState<Subcategory[]>([]);
   const [units, setUnits] = useState<UnitOfMeasure[]>([]);
-  const [showCategoryDialog, setShowCategoryDialog] = useState(false);
-  const [showSubcategoryDialog, setShowSubcategoryDialog] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState("");
-  const [newSubcategoryName, setNewSubcategoryName] = useState("");
 
   const [formData, setFormData] = useState<IndicatorFormData>({
     categoryId: "",
@@ -110,55 +100,6 @@ const CreateIndicator = () => {
       ...prev,
       [field]: value,
     }));
-  };
-
-  const handleCreateCategory = async () => {
-    if (!newCategoryName.trim()) return;
-
-    try {
-      const newCategory = await indicatorAPI.createCategory(
-        newCategoryName.trim(),
-      );
-      setCategories((prev) => [...prev, newCategory]);
-      setFormData((prev) => ({ ...prev, categoryId: newCategory.id }));
-      setNewCategoryName("");
-      setShowCategoryDialog(false);
-      toast({
-        title: "Sucesso",
-        description: "Categoria criada com sucesso",
-      });
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Erro ao criar categoria",
-      });
-    }
-  };
-
-  const handleCreateSubcategory = async () => {
-    if (!newSubcategoryName.trim() || !formData.categoryId) return;
-
-    try {
-      const newSubcategory = await indicatorAPI.createSubcategory(
-        newSubcategoryName.trim(),
-        formData.categoryId,
-      );
-      setAllSubcategories((prev) => [...prev, newSubcategory]);
-      setFormData((prev) => ({ ...prev, subcategoryId: newSubcategory.id }));
-      setNewSubcategoryName("");
-      setShowSubcategoryDialog(false);
-      toast({
-        title: "Sucesso",
-        description: "Subcategoria criada com sucesso",
-      });
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Erro ao criar subcategoria",
-      });
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
