@@ -14,7 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { useAuth } from "@/contexts/AuthContextHybrid";
-import { patientAPI } from "@/lib/patient-api-clean";
+import { patientAPI } from "@/lib/patient-api";
 import { Patient, PaginationData } from "@/lib/patient-types";
 import { toast } from "@/hooks/use-toast";
 
