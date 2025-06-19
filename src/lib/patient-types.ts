@@ -17,10 +17,11 @@ export interface Diagnosis {
   id: string;
   patientId: string;
   date: string;
-  status: "Hipertensão" | "Pré-diabetes" | "Diabetes" | "Normal" | "Obesidade";
+  diagnosis: string;
   code: string;
   description?: string;
   createdAt: string;
+  doctorId?: string;
 }
 
 export interface PatientFormData {
