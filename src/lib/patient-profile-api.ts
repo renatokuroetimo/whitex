@@ -901,7 +901,9 @@ class PatientProfileAPI {
           try {
             const { data: doctorUser, error: doctorError } = await supabase
               .from("users")
-              .select("*")
+              .select(
+                "id, email, profession, crm, specialty, state, city, created_at",
+              )
               .eq("id", share.doctor_id)
               .eq("profession", "medico")
               .single();
