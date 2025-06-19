@@ -12,12 +12,12 @@ class PatientAPI {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  // MÉTODO CORRIGIDO BASEADO NA ARQUITETURA REAL DO BANCO
+  // MÉTODO CORRIGIDO BASEADO NA ESTRUTURA REAL DO BANCO (SEM CAMPO NAME)
   async getPatients(): Promise<{
     patients: Patient[];
     pagination: PaginationData;
   }> {
-    console.log("🔄 GETPATIENTS - VERSÃO CORRIGIDA PARA ARQUITETURA REAL");
+    console.log("🔄 GETPATIENTS - VERSÃO CORRIGIDA SEM CAMPO NAME");
 
     await this.delay(200);
 
@@ -94,21 +94,10 @@ class PatientAPI {
           try {
             console.log(`🔍 Processando paciente: ${share.patient_id}`);
 
-            // 2.1 Buscar dados básicos do usuário paciente na tabela users
+            // 2.1 Buscar dados básicos do usuário paciente (SEM CAMPO NAME)
             const { data: patientUser, error: patientError } = await supabase
               .from("users")
-              .select(
-                `
-                id,
-                email,
-                profession,
-                name,
-                city,
-                state,
-                phone,
-                created_at
-              `,
-              )
+              .select("*") // Buscar todos os campos disponíveis
               .eq("id", share.patient_id)
               .eq("profession", "paciente")
               .single();
@@ -133,68 +122,66 @@ class PatientAPI {
               continue;
             }
 
-            // 2.2 Determinar nome do paciente (prioridade: campo name da tabela users)
+            // 2.2 Determinar nome do paciente (buscar em patient_personal_data)
             let patientName = "Sem nome definido";
 
-            if (patientUser.name && patientUser.name.trim()) {
-              patientName = patientUser.name.trim();
-              console.log(
-                `✅ Nome do paciente obtido da tabela users: "${patientName}"`,
-              );
-            } else {
-              console.log(
-                `⚠️ Campo name vazio na tabela users, tentando buscar em patient_personal_data...`,
-              );
+            // Buscar nome em patient_personal_data
+            try {
+              const { data: personalData, error: personalError } =
+                await supabase
+                  .from("patient_personal_data")
+                  .select("full_name, email")
+                  .eq("user_id", share.patient_id)
+                  .single();
 
-              // Fallback: buscar nome em patient_personal_data
-              try {
-                const { data: personalData, error: personalError } =
-                  await supabase
-                    .from("patient_personal_data")
-                    .select("full_name")
-                    .eq("user_id", share.patient_id)
-                    .single();
+              console.log(`📋 DADOS PESSOAIS PARA NOME:`, {
+                dados: personalData,
+                erro: personalError?.message || "nenhum",
+              });
 
-                if (
-                  !personalError &&
-                  personalData?.full_name &&
-                  personalData.full_name.trim()
-                ) {
-                  patientName = personalData.full_name.trim();
-                  console.log(
-                    `✅ Nome do paciente obtido de patient_personal_data: "${patientName}"`,
-                  );
-                } else {
-                  console.log(`ℹ️ Mantendo nome padrão: "${patientName}"`);
-                }
-              } catch (error) {
-                console.warn(
-                  `⚠️ Erro ao buscar dados pessoais do paciente:`,
-                  error,
+              if (
+                !personalError &&
+                personalData?.full_name &&
+                personalData.full_name.trim()
+              ) {
+                patientName = personalData.full_name.trim();
+                console.log(
+                  `✅ Nome do paciente obtido de patient_personal_data: "${patientName}"`,
                 );
+              } else {
+                // Fallback para email se não tiver nome
+                if (patientUser.email) {
+                  patientName = `Paciente ${patientUser.email.split("@")[0]}`;
+                } else {
+                  patientName = `Paciente ${share.patient_id.substring(0, 8)}`;
+                }
+                console.log(`⚠️ Usando nome fallback: "${patientName}"`);
+              }
+            } catch (error) {
+              console.warn(
+                `⚠️ Erro ao buscar dados pessoais do paciente:`,
+                error,
+              );
+              // Fallback para email se não conseguir buscar dados pessoais
+              if (patientUser.email) {
+                patientName = `Paciente ${patientUser.email.split("@")[0]}`;
+              } else {
+                patientName = `Paciente ${share.patient_id.substring(0, 8)}`;
               }
             }
 
             // 2.3 Buscar dados adicionais (idade, peso, etc.)
             let age = null;
             let weight = null;
-            let city = patientUser.city || "N/A";
-            let state = patientUser.state || "N/A";
+            let city = "N/A";
+            let state = "N/A";
 
             // Buscar dados pessoais detalhados
             try {
               const { data: personalData, error: personalError } =
                 await supabase
                   .from("patient_personal_data")
-                  .select(
-                    `
-                  birth_date,
-                  city,
-                  state,
-                  gender,
-                  health_plan
-                `,
-                  )
+                  .select("*")
                   .eq("user_id", share.patient_id)
                   .single();
 
@@ -231,17 +218,7 @@ class PatientAPI {
             try {
               const { data: medicalData, error: medicalError } = await supabase
                 .from("patient_medical_data")
-                .select(
-                  `
-                  height,
-                  weight,
-                  smoker,
-                  high_blood_pressure,
-                  physical_activity,
-                  exercise_frequency,
-                  healthy_diet
-                `,
-                )
+                .select("*")
                 .eq("user_id", share.patient_id)
                 .single();
 
