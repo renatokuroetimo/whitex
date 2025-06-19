@@ -6,6 +6,8 @@
 
 2. **Data Type Error**: Fixed `invalid input syntax for type integer: "5181.25"` error by ensuring file_size calculation returns an integer value using `Math.floor()`.
 
+3. **RLS Policy Violation**: Fixed `new row violates row-level security policy` error by adding authentication checks and graceful fallback to localStorage when Supabase authentication isn't properly set up.
+
 ## Current Status
 
 ✅ **Error Logging**: Fixed - now shows detailed error information
