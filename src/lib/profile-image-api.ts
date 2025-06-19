@@ -106,6 +106,19 @@ class ProfileImageAPI {
               imageData,
             );
             return;
+          } else if (error.code === "42501") {
+            console.warn(
+              "⚠️ Violação de política RLS - usuário não autorizado a salvar esta imagem",
+            );
+            console.info(
+              "🔑 Isso pode indicar que o usuário não está autenticado ou há mismatch de IDs",
+            );
+            console.log("📁 Salvando imagem no localStorage como fallback");
+            localStorage.setItem(
+              `${this.STORAGE_KEY_PREFIX}${userId}`,
+              imageData,
+            );
+            return;
           } else {
             console.error(
               "❌ Erro ao salvar imagem no Supabase:",
