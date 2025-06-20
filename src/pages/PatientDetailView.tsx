@@ -227,42 +227,22 @@ const PatientDetailView = () => {
 
   // Função helper para formatar altura
   const getFormattedHeight = (height: any): string => {
-    console.log(
-      "🔍 getFormattedHeight - valor:",
-      height,
-      "tipo:",
-      typeof height,
-    );
     if (!height) return "Não informado";
     const numHeight = typeof height === "string" ? parseFloat(height) : height;
-    console.log("📏 Altura convertida:", numHeight);
     if (isNaN(numHeight) || numHeight <= 0 || numHeight > 300) {
-      console.log("⚠️ Altura inválida");
       return "Não informado";
     }
-    const result = `${numHeight} cm`;
-    console.log("✅ Altura formatada:", result);
-    return result;
+    return `${numHeight} cm`;
   };
 
   // Função helper para formatar peso
   const getFormattedWeight = (weight: any): string => {
-    console.log(
-      "🔍 getFormattedWeight - valor:",
-      weight,
-      "tipo:",
-      typeof weight,
-    );
     if (!weight) return "Não informado";
     const numWeight = typeof weight === "string" ? parseFloat(weight) : weight;
-    console.log("⚖️ Peso convertido:", numWeight);
     if (isNaN(numWeight) || numWeight <= 0 || numWeight > 1000) {
-      console.log("⚠️ Peso inválido");
       return "Não informado";
     }
-    const result = `${numWeight} kg`;
-    console.log("✅ Peso formatado:", result);
-    return result;
+    return `${numWeight} kg`;
   };
 
   // Função helper para calcular IMC
