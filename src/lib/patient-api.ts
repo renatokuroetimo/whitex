@@ -666,11 +666,15 @@ class PatientAPI {
           data.city ||
           data.state
         ) {
+          console.log("📋 Atualizando dados pessoais...");
+
           const { data: existingPersonal } = await supabase
             .from("patient_personal_data")
             .select("*")
             .eq("user_id", id)
             .single();
+
+          console.log("🔍 Dados pessoais existentes:", existingPersonal);
 
           if (existingPersonal) {
             const { error: updatePersonalError } = await supabase
