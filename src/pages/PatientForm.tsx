@@ -91,14 +91,14 @@ const PatientForm = () => {
 
         // Carregar dados pessoais adicionais do banco
         try {
-          const { data: personalData } = await patientAPI.supabase
-            ?.from("patient_personal_data")
+          const { data: personalData } = await supabase
+            .from("patient_personal_data")
             .select("*")
             .eq("user_id", id)
             .single();
 
-          const { data: medicalData } = await patientAPI.supabase
-            ?.from("patient_medical_data")
+          const { data: medicalData } = await supabase
+            .from("patient_medical_data")
             .select("*")
             .eq("user_id", id)
             .single();
