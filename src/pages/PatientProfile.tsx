@@ -116,6 +116,7 @@ const PatientProfile = () => {
           state: personal.state,
           city: personal.city,
           healthPlan: personal.healthPlan || "",
+          phone: personal.phone || "",
         });
       } else if (user?.email) {
         // Se não há dados pessoais salvos, usar email do usuário atual
