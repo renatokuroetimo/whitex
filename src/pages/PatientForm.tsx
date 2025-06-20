@@ -231,7 +231,6 @@ const PatientForm = () => {
           throw new Error("Operação retornou resultado vazio");
         }
 
-        console.log("✅ Atualização confirmada, mostrando sucesso");
         toast({
           title: "Sucesso",
           description: "Paciente atualizado com sucesso",
