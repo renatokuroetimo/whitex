@@ -79,151 +79,67 @@ const PatientForm = () => {
       console.log("📊 FORM: Dados do paciente recebidos:", patient);
 
       if (patient) {
-        // Buscar dados complementares das tabelas auxiliares SEMPRE
-        let complementaryData = {
-          phone: "",
-          birthDate: "",
-          gender: "",
-          healthPlan: "",
-          height: 0,
-          smoker: false,
-          highBloodPressure: false,
-          physicalActivity: false,
-        };
-
         console.log("🔍 FORM: Buscando dados auxiliares para paciente:", id);
 
-        // Buscar dados pessoais auxiliares
-        try {
-          const { data: personalData, error: personalError } = await supabase
-            .from("patient_personal_data")
-            .select("*")
-            .eq("user_id", id)
-            .single();
+        // Buscar dados pessoais auxiliares diretamente
+        const { data: personalData } = await supabase
+          .from("patient_personal_data")
+          .select("*")
+          .eq("user_id", id)
+          .maybeSingle(); // Use maybeSingle em vez de single para evitar erro se não encontrar
 
-          console.log("📊 FORM: Query dados pessoais - ID:", id);
-          console.log("📊 FORM: Dados pessoais encontrados:", personalData);
-          console.log("📊 FORM: Erro dados pessoais:", personalError);
+        // Buscar dados médicos auxiliares diretamente
+        const { data: medicalData } = await supabase
+          .from("patient_medical_data")
+          .select("*")
+          .eq("user_id", id)
+          .maybeSingle(); // Use maybeSingle em vez de single para evitar erro se não encontrar
 
-          if (personalData && !personalError) {
-            console.log("✅ FORM: Aplicando dados pessoais:");
-            console.log("  - phone:", personalData.phone);
-            console.log("  - birth_date:", personalData.birth_date);
-            console.log("  - gender:", personalData.gender);
-            console.log("  - health_plan:", personalData.health_plan);
+        console.log("📊 FORM: Dados pessoais encontrados:", personalData);
+        console.log("📊 FORM: Dados médicos encontrados:", medicalData);
 
-            complementaryData.phone = personalData.phone || "";
-            complementaryData.birthDate = personalData.birth_date || "";
-            complementaryData.gender = personalData.gender || "";
-            complementaryData.healthPlan = personalData.health_plan || "";
-
-            console.log(
-              "📝 FORM: complementaryData após aplicar pessoais:",
-              complementaryData,
-            );
-          } else {
-            console.log(
-              "❌ FORM: Nenhum dado pessoal encontrado para este paciente",
-            );
-          }
-        } catch (error) {
-          console.log("⚠️ FORM: Erro ao buscar dados pessoais:", error);
-        }
-
-        // Buscar dados médicos auxiliares
-        try {
-          const { data: medicalData, error: medicalError } = await supabase
-            .from("patient_medical_data")
-            .select("*")
-            .eq("user_id", id)
-            .single();
-
-          console.log("📊 FORM: Dados médicos encontrados:", medicalData);
-          console.log("📊 FORM: Erro dados médicos:", medicalError);
-
-          if (medicalData && !medicalError) {
-            complementaryData.height = medicalData.height || 0;
-            complementaryData.smoker = medicalData.smoker || false;
-            complementaryData.highBloodPressure =
-              medicalData.high_blood_pressure || false;
-            complementaryData.physicalActivity =
-              medicalData.physical_activity || false;
-          }
-        } catch (error) {
-          console.log("⚠️ FORM: Erro ao buscar dados médicos:", error);
-        }
-
-        // Combinar dados do patient com dados complementares
-        const combinedFormData = {
+        // Criar objeto final com todos os dados
+        const finalFormData: PatientFormData = {
+          // Dados básicos do patient
           name: patient.name || "",
           age: patient.age || 0,
           city: patient.city || "",
           state: patient.state || "",
           weight: patient.weight || 0,
-          status: patient.status as "ativo" | "inativo",
+          status: (patient.status as "ativo" | "inativo") || "ativo",
           notes: patient.notes || "",
           email: patient.email || "",
-          phone: complementaryData.phone,
-          birthDate: complementaryData.birthDate,
-          gender: complementaryData.gender,
-          healthPlan: complementaryData.healthPlan,
-          height: complementaryData.height,
-          smoker: complementaryData.smoker,
-          highBloodPressure: complementaryData.highBloodPressure,
-          physicalActivity: complementaryData.physicalActivity,
+
+          // Dados pessoais auxiliares
+          phone: personalData?.phone || "",
+          birthDate: personalData?.birth_date || "",
+          gender: personalData?.gender || "",
+          healthPlan: personalData?.health_plan || "",
+
+          // Dados médicos auxiliares
+          height: medicalData?.height || 0,
+          smoker: medicalData?.smoker || false,
+          highBloodPressure: medicalData?.high_blood_pressure || false,
+          physicalActivity: medicalData?.physical_activity || false,
         };
 
-        console.log("📝 FORM: Dados COMPLETOS definidos:", combinedFormData);
-        console.log("🔍 FORM: Dados complementares aplicados:", {
-          phone: complementaryData.phone,
-          birthDate: complementaryData.birthDate,
-          gender: complementaryData.gender,
-          healthPlan: complementaryData.healthPlan,
-        });
-
-        setFormData(combinedFormData);
-
-        console.log("✅ FORM: setFormData chamado com:", combinedFormData);
-
-        // Log adicional após um pequeno delay para ver se o estado foi atualizado
-        setTimeout(() => {
-          console.log(
-            "🔍 FORM: Estado atual do formData após setFormData:",
-            formData,
-          );
-          console.log("🔍 FORM: Verificação específica dos campos:");
-          console.log("  - email:", formData.email);
-          console.log("  - phone:", formData.phone);
-          console.log("  - birthDate:", formData.birthDate);
-          console.log("  - gender:", formData.gender);
-          console.log("  - healthPlan:", formData.healthPlan);
-        }, 100);
-
-        // Configurar estado e cidades se disponíveis
-        if (formData.state) {
-          setSelectedState(formData.state);
-          const cities = getCitiesByState(formData.state);
-          setAvailableCities(cities);
-          console.log(
-            "🏙️ FORM: Estado/cidade configurados:",
-            formData.state,
-            "/",
-            formData.city,
-          );
-        }
-
-        if (patient.state) {
-          setSelectedState(patient.state);
-          const cities = getCitiesByState(patient.state);
-          setAvailableCities(cities);
-        }
-
-        // Check if this is a shared patient
-        setIsSharedPatient(patient.isShared || false);
         console.log(
-          "✅ FORM: Carregamento concluído. isSharedPatient:",
-          patient.isShared || false,
+          "📝 FORM: Dados FINAIS que serão aplicados:",
+          finalFormData,
         );
+
+        // Aplicar todos os dados de uma vez
+        setFormData(finalFormData);
+
+        // Configurar estado/cidade
+        if (finalFormData.state) {
+          setSelectedState(finalFormData.state);
+          const cities = getCitiesByState(finalFormData.state);
+          setAvailableCities(cities);
+        }
+
+        setIsSharedPatient(patient.isShared || false);
+        console.log("✅ FORM: Carregamento concluído");
       }
     } catch (error) {
       console.error("❌ FORM: Erro ao carregar dados:", error);
@@ -234,7 +150,6 @@ const PatientForm = () => {
       });
     } finally {
       setIsLoading(false);
-      console.log("🏁 FORM: Estado de loading finalizado");
     }
   };
 
