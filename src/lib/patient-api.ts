@@ -41,7 +41,51 @@ class PatientAPI {
     const allPatients: Patient[] = [];
 
     try {
-      // Buscar compartilhamentos para este médico
+      // PRIMEIRO: Buscar pacientes criados pelo próprio médico
+      const { data: ownPatients, error: ownError } = await supabase
+        .from("patients")
+        .select("*")
+        .eq("doctor_id", currentUser.id);
+
+      if (!ownError && ownPatients && ownPatients.length > 0) {
+        for (const ownPatient of ownPatients) {
+          // Buscar observações médicas se existirem
+          let notes = ownPatient.notes || "";
+
+          try {
+            const { data: observations } = await supabase
+              .from("patient_medical_observations")
+              .select("observations")
+              .eq("patient_id", ownPatient.id)
+              .eq("doctor_id", currentUser.id)
+              .single();
+
+            if (observations?.observations) {
+              notes = observations.observations;
+            }
+          } catch (error) {
+            // Ignorar erro se não houver observações
+          }
+
+          const patient: Patient = {
+            id: ownPatient.id,
+            name: ownPatient.name,
+            age: null, // TODO: buscar de patient_personal_data se necessário
+            city: "N/A", // TODO: buscar de patient_personal_data se necessário
+            state: "N/A", // TODO: buscar de patient_personal_data se necess��rio
+            weight: null, // TODO: buscar de patient_medical_data se necessário
+            status: ownPatient.status || "ativo",
+            notes: notes,
+            createdAt: ownPatient.created_at || new Date().toISOString(),
+            doctorId: ownPatient.doctor_id,
+            isShared: false,
+          };
+
+          allPatients.push(patient);
+        }
+      }
+
+      // SEGUNDO: Buscar compartilhamentos para este médico
       const { data: shares, error: shareError } = await supabase
         .from("doctor_patient_sharing")
         .select("*")
