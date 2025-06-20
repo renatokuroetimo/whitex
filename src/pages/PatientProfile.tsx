@@ -548,7 +548,7 @@ const PatientProfile = () => {
                     </div>
 
                     {/* E-mail */}
-                    <div className="sm:col-span-2">
+                    <div>
                       <Label>E-mail</Label>
                       <Input
                         type="email"
@@ -560,6 +560,21 @@ const PatientProfile = () => {
                           }))
                         }
                         placeholder="Digite seu e-mail"
+                      />
+                    </div>
+
+                    {/* Telefone */}
+                    <div>
+                      <Label>Telefone</Label>
+                      <Input
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => {
+                          const maskedValue = phoneMask(e.target.value);
+                          setPhone(maskedValue);
+                        }}
+                        placeholder="(11) 99999-9999"
+                        maxLength={15}
                       />
                     </div>
 
