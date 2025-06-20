@@ -95,14 +95,30 @@ const PatientForm = () => {
             .eq("user_id", id)
             .single();
 
+          console.log("📊 FORM: Query dados pessoais - ID:", id);
           console.log("📊 FORM: Dados pessoais encontrados:", personalData);
           console.log("📊 FORM: Erro dados pessoais:", personalError);
 
           if (personalData && !personalError) {
+            console.log("✅ FORM: Aplicando dados pessoais:");
+            console.log("  - phone:", personalData.phone);
+            console.log("  - birth_date:", personalData.birth_date);
+            console.log("  - gender:", personalData.gender);
+            console.log("  - health_plan:", personalData.health_plan);
+
             complementaryData.phone = personalData.phone || "";
             complementaryData.birthDate = personalData.birth_date || "";
             complementaryData.gender = personalData.gender || "";
             complementaryData.healthPlan = personalData.health_plan || "";
+
+            console.log(
+              "📝 FORM: complementaryData após aplicar pessoais:",
+              complementaryData,
+            );
+          } else {
+            console.log(
+              "❌ FORM: Nenhum dado pessoal encontrado para este paciente",
+            );
           }
         } catch (error) {
           console.log("⚠️ FORM: Erro ao buscar dados pessoais:", error);
@@ -605,7 +621,7 @@ const PatientForm = () => {
                           }
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione o gênero" />
+                            <SelectValue placeholder="Selecione o g��nero" />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="masculino">Masculino</SelectItem>
