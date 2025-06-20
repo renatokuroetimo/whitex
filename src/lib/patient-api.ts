@@ -657,6 +657,54 @@ class PatientAPI {
             throw new Error(`Erro ao salvar observações: ${insertError.message}`);
           }
         }
+      } else {
+        // Para pacientes compartilhados, usar a tabela de observações médicas
+        console.log("💾 Salvando observações na tabela patient_medical_observations");
+
+        // Verificar se já existe observação
+        const { data: existingObs } = await supabase
+          .from("patient_medical_observations")
+          .select("*")
+          .eq("patient_id", id)
+          .eq("doctor_id", currentUser.id)
+          .single();
+
+        console.log("🔍 Observações existentes:", existingObs);
+
+        if (existingObs) {
+          // Atualizar existente
+          const { error: updateError } = await supabase
+            .from("patient_medical_observations")
+            .update({
+              observations: data.notes,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", existingObs.id);
+
+          if (updateError) {
+            throw new Error(
+              `Erro ao atualizar observações: ${updateError.message}`,
+            );
+          }
+        } else {
+          // Criar nova
+          const { error: insertError } = await supabase
+            .from("patient_medical_observations")
+            .insert([
+              {
+                id: this.generateId(),
+                patient_id: id,
+                doctor_id: currentUser.id,
+                observations: data.notes,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              },
+            ]);
+
+          if (insertError) {
+            throw new Error(`Erro ao salvar observações: ${insertError.message}`);
+          }
+        }
       }
     }
 
