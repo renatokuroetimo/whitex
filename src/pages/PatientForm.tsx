@@ -333,17 +333,17 @@ const PatientForm = () => {
     }
   };
 
-  // DEBUG: Log do estado atual do formulário
-  console.log("🎨 RENDER DEBUG:", {
-    formData,
-    isEditing,
-    id,
-    email: formData.email,
-    phone: formData.phone,
-    birthDate: formData.birthDate,
-    gender: formData.gender,
-    healthPlan: formData.healthPlan,
-  });
+  // Se ainda está carregando, mostrar loading
+  if (isLoading) {
+    return (
+      <div className="flex h-screen bg-gray-50 items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
+          <p className="text-gray-600">Carregando dados do paciente...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-gray-50">
