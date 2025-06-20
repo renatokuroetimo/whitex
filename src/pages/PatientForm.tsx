@@ -549,11 +549,14 @@ const PatientForm = () => {
                           Telefone
                         </label>
                         <Input
+                          type="tel"
                           value={formData.phone || ""}
-                          onChange={(e) =>
-                            handleInputChange("phone", e.target.value)
-                          }
+                          onChange={(e) => {
+                            const maskedValue = phoneMask(e.target.value);
+                            handleInputChange("phone", maskedValue);
+                          }}
                           placeholder="(11) 99999-9999"
+                          maxLength={15}
                           className="w-full"
                         />
                       </div>
