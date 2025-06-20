@@ -741,6 +741,7 @@ class PatientAPI {
     console.log("✅ UPDATEPATIENT CONCLUÍDO COM SUCESSO:", result);
     return result;
   }
+
   async deletePatients(ids: string[]): Promise<void> {
     await this.delay(300);
 
