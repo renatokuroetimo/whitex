@@ -576,6 +576,24 @@ class PatientAPI {
             ? parseFloat(data.weight.toString())
             : ownPatient.weight,
           status: data.status || ownPatient.status,
+          // Adicionar campos complementares se a tabela patients suportar
+          email: data.email || ownPatient.email,
+          phone: data.phone || ownPatient.phone,
+          birth_date: data.birthDate || ownPatient.birth_date,
+          gender: data.gender || ownPatient.gender,
+          health_plan: data.healthPlan || ownPatient.health_plan,
+          height: data.height
+            ? parseInt(data.height.toString())
+            : ownPatient.height,
+          smoker: data.smoker !== undefined ? data.smoker : ownPatient.smoker,
+          high_blood_pressure:
+            data.highBloodPressure !== undefined
+              ? data.highBloodPressure
+              : ownPatient.high_blood_pressure,
+          physical_activity:
+            data.physicalActivity !== undefined
+              ? data.physicalActivity
+              : ownPatient.physical_activity,
           updated_at: new Date().toISOString(),
         };
 
