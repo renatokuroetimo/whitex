@@ -481,65 +481,9 @@ class PatientAPI {
       throw new Error(`Erro ao criar paciente: ${createError.message}`);
     }
 
-    // Salvar dados pessoais se fornecidos
-    if (
-      data.birthDate ||
-      data.email ||
-      data.phone ||
-      data.gender ||
-      data.healthPlan
-    ) {
-      const { error: personalError } = await supabase
-        .from("patient_personal_data")
-        .insert([
-          {
-            id: this.generateId(),
-            user_id: newPatientId,
-            full_name: data.name,
-            birth_date: data.birthDate || null,
-            email: data.email || null,
-            phone: data.phone || null,
-            gender: data.gender || null,
-            health_plan: data.healthPlan || null,
-            city: data.city || null,
-            state: data.state || null,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          },
-        ]);
-
-      if (personalError) {
-        console.warn("Aviso: erro ao salvar dados pessoais:", personalError);
-      }
-    }
-
-    // Salvar dados médicos se fornecidos
-    if (
-      data.height ||
-      data.smoker !== undefined ||
-      data.highBloodPressure !== undefined ||
-      data.physicalActivity !== undefined
-    ) {
-      const { error: medicalError } = await supabase
-        .from("patient_medical_data")
-        .insert([
-          {
-            id: this.generateId(),
-            user_id: newPatientId,
-            height: data.height || null,
-            weight: data.weight || null,
-            smoker: data.smoker || false,
-            high_blood_pressure: data.highBloodPressure || false,
-            physical_activity: data.physicalActivity || false,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          },
-        ]);
-
-      if (medicalError) {
-        console.warn("Aviso: erro ao salvar dados médicos:", medicalError);
-      }
-    }
+    console.log("✅ Paciente criado com sucesso na tabela patients");
+    // NOTA: Para pacientes criados pelo médico, não utilizamos as tabelas
+    // patient_personal_data e patient_medical_data, pois essas são para usuários registrados
 
     // Retornar o paciente criado
     const newPatient: Patient = {
