@@ -224,11 +224,7 @@ const PatientForm = () => {
 
     try {
       if (isEditing && id) {
-        console.log("🚀 Chamando patientAPI.updatePatient...");
-
-        // AGUARDAR e VALIDAR a resposta
         const result = await patientAPI.updatePatient(id, formData);
-
         console.log("📊 RESULTADO do updatePatient:", result);
 
         if (!result) {
