@@ -317,17 +317,13 @@ const PatientDetailView = () => {
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-600">Altura:</span>
                         <span className="text-sm font-medium text-gray-900">
-                          {medicalData?.height
-                            ? `${medicalData.height} cm`
-                            : "Não informado"}
+                          {getFormattedHeight(medicalData?.height)}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-600">Peso:</span>
                         <span className="text-sm font-medium text-gray-900">
-                          {medicalData?.weight
-                            ? `${medicalData.weight} kg`
-                            : "Não informado"}
+                          {getFormattedWeight(medicalData?.weight)}
                         </span>
                       </div>
                       {medicalData?.height && medicalData?.weight && (
