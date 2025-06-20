@@ -119,12 +119,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response.success && response.data) {
         dispatch({ type: "AUTH_SUCCESS", payload: response.data });
 
-        const apiType = isFeatureEnabled("useSupabaseAuth")
-          ? "Supabase"
-          : "localStorage";
         toast({
           title: "Login realizado com sucesso!",
-          description: `Bem-vindo de volta, ${response.data.email} (${apiType})`,
+          description: `Bem-vindo de volta, ${response.data.full_name || response.data.email}`,
         });
         return true;
       } else {
