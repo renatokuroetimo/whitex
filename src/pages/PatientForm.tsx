@@ -164,8 +164,13 @@ const PatientForm = () => {
 
         // Check if this is a shared patient
         setIsSharedPatient(patient.isShared || false);
+        console.log(
+          "✅ FORM: Carregamento concluído. isSharedPatient:",
+          patient.isShared || false,
+        );
       }
     } catch (error) {
+      console.error("❌ FORM: Erro ao carregar dados:", error);
       toast({
         variant: "destructive",
         title: "Erro",
@@ -173,6 +178,7 @@ const PatientForm = () => {
       });
     } finally {
       setIsLoading(false);
+      console.log("🏁 FORM: Estado de loading finalizado");
     }
   };
 
