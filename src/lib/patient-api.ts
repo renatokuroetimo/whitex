@@ -803,6 +803,8 @@ class PatientAPI {
 
     // Salvar observações médicas se houver
     if (data.notes && data.notes.trim()) {
+      console.log("📝 Salvando observações médicas:", data.notes);
+
       // Verificar se já existe observação
       const { data: existingObs } = await supabase
         .from("patient_medical_observations")
@@ -810,6 +812,8 @@ class PatientAPI {
         .eq("patient_id", id)
         .eq("doctor_id", currentUser.id)
         .single();
+
+      console.log("🔍 Observações existentes:", existingObs);
 
       if (existingObs) {
         // Atualizar existente
