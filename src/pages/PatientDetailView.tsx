@@ -580,11 +580,24 @@ const PatientDetailView = () => {
 
                 {!medicalData && (
                   <div className="text-center py-8">
-                    <p className="text-gray-500 text-sm">
+                    <p className="text-gray-500 text-sm mb-4">
                       {patient?.isShared
                         ? "Dados médicos não compartilhados ou não preenchidos pelo paciente"
-                        : "Dados médicos não preenchidos. Use a opção 'Editar Paciente' para adicionar informações médicas."}
+                        : "Dados médicos não preenchidos."}
                     </p>
+                    {!patient?.isShared && (
+                      <Button
+                        onClick={() =>
+                          navigate(`/pacientes/${patient.id}/editar`)
+                        }
+                        variant="outline"
+                        size="sm"
+                        className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
+                        Preencher dados médicos
+                      </Button>
+                    )}
                   </div>
                 )}
               </div>
