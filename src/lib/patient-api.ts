@@ -384,15 +384,18 @@ class PatientAPI {
         // Para pacientes criados pelo médico, usar dados básicos da tabela patients
         console.log("📊 Dados base do paciente próprio:", ownPatient);
 
-        // Os dados estão todos na tabela patients para pacientes criados pelo médico
-        const age = null; // TODO: Implementar cálculo de idade se necessário
-        const city = "N/A"; // TODO: Adicionar campos à tabela patients se necessário
-        const state = "N/A"; // TODO: Adicionar campos à tabela patients se necessário
-        const weight = null; // TODO: Adicionar campos à tabela patients se necessário
+        // USAR OS DADOS REAIS DA TABELA PATIENTS em vez de valores padrão
+        const age = ownPatient.age;
+        const city = ownPatient.city;
+        const state = ownPatient.state;
+        const weight = ownPatient.weight;
 
-        console.log(
-          "⚠️ NOTA: Usando apenas dados da tabela patients (paciente criado pelo médico)",
-        );
+        console.log("✅ Usando dados reais da tabela patients:", {
+          age,
+          city,
+          state,
+          weight,
+        });
 
         const result = {
           id: ownPatient.id,
@@ -771,7 +774,7 @@ class PatientAPI {
     const currentUser = JSON.parse(currentUserStr);
 
     if (!supabase) {
-      throw new Error("❌ Supabase não est�� configurado");
+      throw new Error("❌ Supabase não está configurado");
     }
 
     try {
