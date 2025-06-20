@@ -747,7 +747,7 @@ class PatientAPI {
       console.log("💾 Salvando dados extras nas tabelas auxiliares...");
 
       // 1. SEMPRE salvar dados pessoais (mesmo que vazios) para garantir que existam
-      console.log("���� UPDATE: Verificando dados pessoais para salvar...");
+      console.log("📋 UPDATE: Verificando dados pessoais para salvar...");
       console.log("📊 UPDATE: Dados recebidos:", {
         email: data.email,
         phone: data.phone,
@@ -776,6 +776,17 @@ class PatientAPI {
         "📝 UPDATE: Dados pessoais que serão salvos:",
         personalDataToSave,
       );
+
+      // Validar dados antes de inserir
+      if (!personalDataToSave.user_id) {
+        console.error("❌ UPDATE: user_id está vazio!");
+        return;
+      }
+
+      if (!personalDataToSave.id) {
+        console.error("❌ UPDATE: id está vazio!");
+        return;
+      }
 
       try {
         // Deletar registros existentes e inserir novo
