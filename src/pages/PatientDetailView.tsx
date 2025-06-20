@@ -165,7 +165,7 @@ const PatientDetailView = () => {
         // Validar se a data é válida
         if (isNaN(birthDate.getTime())) {
           console.warn("Data de nascimento inválida:", personalData.birthDate);
-          return "N/A";
+          return "Não informado";
         }
 
         const age = today.getFullYear() - birthDate.getFullYear();
@@ -183,7 +183,7 @@ const PatientDetailView = () => {
         return age;
       } catch (error) {
         console.error("Erro ao calcular idade:", error);
-        return "N/A";
+        return "Não informado";
       }
     }
 
@@ -194,7 +194,7 @@ const PatientDetailView = () => {
     }
 
     console.log("⚠️ Nenhuma idade disponível");
-    return "N/A";
+    return "Não informado";
   };
 
   const getPatientLocation = () => {
@@ -506,7 +506,7 @@ const PatientDetailView = () => {
                           <span className="text-sm font-medium text-gray-900">
                             {getBooleanValue(medicalData?.smoker)
                               ? "Sim"
-                              : "Não"}
+                              : "N��o"}
                           </span>
                         </div>
                       </div>
