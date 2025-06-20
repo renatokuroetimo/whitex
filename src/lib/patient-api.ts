@@ -440,6 +440,11 @@ class PatientAPI {
       throw new Error("Apenas médicos podem criar pacientes");
     }
 
+    // Validar email obrigatório para criar conta de usuário
+    if (!data.email || !data.email.trim()) {
+      throw new Error("Email é obrigatório para criar conta do paciente");
+    }
+
     // Gerar ID único para o novo paciente
     const newPatientId = this.generateId();
 
@@ -449,6 +454,10 @@ class PatientAPI {
         id: newPatientId,
         doctor_id: currentUser.id,
         name: data.name,
+        age: data.age || null,
+        city: data.city || null,
+        state: data.state || null,
+        weight: data.weight || null,
         status: data.status || "ativo",
         notes: data.notes || "",
         created_at: new Date().toISOString(),
@@ -461,8 +470,137 @@ class PatientAPI {
     }
 
     console.log("✅ Paciente criado com sucesso na tabela patients");
-    // NOTA: Para pacientes criados pelo médico, não utilizamos as tabelas
-    // patient_personal_data e patient_medical_data, pois essas são para usuários registrados
+
+    // NOVO: Criar usuário na tabela users para que o paciente possa se logar
+    try {
+      console.log("👤 Criando conta de usuário para o paciente...");
+
+      // Verificar se email já existe
+      const { data: existingUser } = await supabase
+        .from("users")
+        .select("id")
+        .eq("email", data.email.toLowerCase())
+        .single();
+
+      if (existingUser) {
+        console.warn(
+          "⚠️ Email já existe na tabela users, pulando criação de usuário",
+        );
+      } else {
+        // Criar usuário com senha temporária
+        const { error: userCreateError } = await supabase.from("users").insert([
+          {
+            id: newPatientId, // Usar o mesmo ID do paciente
+            email: data.email.toLowerCase(),
+            profession: "paciente",
+            full_name: data.name,
+            city: data.city || null,
+            state: data.state || null,
+            phone: data.phone || null,
+            account_status: "pendente_ativacao", // Status especial para conta criada pelo médico
+            created_by_doctor: currentUser.id, // Referência ao médico que criou
+            created_at: new Date().toISOString(),
+          },
+        ]);
+
+        if (userCreateError) {
+          console.error("❌ Erro ao criar usuário:", userCreateError);
+          // Não falhar completamente, apenas avisar
+          console.warn(
+            "⚠️ Paciente criado mas conta de usuário não foi criada",
+          );
+        } else {
+          console.log("✅ Conta de usuário criada com sucesso para o paciente");
+        }
+      }
+    } catch (error) {
+      console.error("❌ Erro ao processar criação de usuário:", error);
+      console.warn(
+        "⚠️ Paciente criado mas conta de usuário pode não ter sido criada",
+      );
+    }
+
+    // Salvar dados extras nas tabelas auxiliares se fornecidos
+    try {
+      // 1. Salvar dados pessoais se fornecidos
+      if (
+        data.email ||
+        data.phone ||
+        data.birthDate ||
+        data.gender ||
+        data.healthPlan
+      ) {
+        console.log("📋 Salvando dados pessoais auxiliares");
+
+        const personalDataToSave = {
+          id: this.generateId(),
+          user_id: newPatientId,
+          full_name: data.name,
+          email: data.email || "",
+          phone: data.phone || "",
+          birth_date: data.birthDate || null,
+          gender: data.gender || null,
+          state: data.state || null,
+          city: data.city || null,
+          health_plan: data.healthPlan || "",
+          profile_image: null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+
+        const { error: personalError } = await supabase
+          .from("patient_personal_data")
+          .insert([personalDataToSave]);
+
+        if (personalError) {
+          console.warn(
+            "⚠️ Erro ao salvar dados pessoais auxiliares:",
+            personalError,
+          );
+        } else {
+          console.log("✅ Dados pessoais auxiliares salvos com sucesso");
+        }
+      }
+
+      // 2. Salvar dados médicos se fornecidos
+      if (
+        data.height ||
+        data.smoker !== undefined ||
+        data.highBloodPressure !== undefined ||
+        data.physicalActivity !== undefined
+      ) {
+        console.log("🏥 Salvando dados médicos auxiliares");
+
+        const medicalDataToSave = {
+          id: this.generateId(),
+          user_id: newPatientId,
+          height: data.height || null,
+          weight: data.weight || null,
+          smoker: data.smoker || false,
+          high_blood_pressure: data.highBloodPressure || false,
+          physical_activity: data.physicalActivity || false,
+          exercise_frequency: null,
+          healthy_diet: false,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+
+        const { error: medicalError } = await supabase
+          .from("patient_medical_data")
+          .insert([medicalDataToSave]);
+
+        if (medicalError) {
+          console.warn(
+            "⚠️ Erro ao salvar dados médicos auxiliares:",
+            medicalError,
+          );
+        } else {
+          console.log("✅ Dados médicos auxiliares salvos com sucesso");
+        }
+      }
+    } catch (error) {
+      console.warn("⚠️ Erro ao salvar dados auxiliares:", error);
+    }
 
     // Retornar o paciente criado
     const newPatient: Patient = {
