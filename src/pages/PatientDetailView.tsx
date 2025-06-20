@@ -188,6 +188,23 @@ const PatientDetailView = () => {
     return patient.name.charAt(0).toUpperCase();
   };
 
+  // Função helper para interpretar valores booleanos vindos do banco
+  const getBooleanValue = (value: any): boolean => {
+    if (value === null || value === undefined) return false;
+    if (typeof value === "boolean") return value;
+    if (typeof value === "string") {
+      const lowerValue = value.toLowerCase().trim();
+      return (
+        lowerValue === "true" ||
+        lowerValue === "1" ||
+        lowerValue === "sim" ||
+        lowerValue === "yes"
+      );
+    }
+    if (typeof value === "number") return value > 0;
+    return false;
+  };
+
   if (!user || user.profession !== "medico") {
     navigate("/dashboard");
     return null;
