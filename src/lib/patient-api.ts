@@ -735,11 +735,15 @@ class PatientAPI {
           data.highBloodPressure !== undefined ||
           data.physicalActivity !== undefined
         ) {
+          console.log("🏥 Atualizando dados médicos...");
+
           const { data: existingMedical } = await supabase
             .from("patient_medical_data")
             .select("*")
             .eq("user_id", id)
             .single();
+
+          console.log("🔍 Dados médicos existentes:", existingMedical);
 
           if (existingMedical) {
             const { error: updateMedicalError } = await supabase
