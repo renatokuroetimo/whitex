@@ -9,6 +9,7 @@ export interface PatientPersonalData {
   state: string;
   city: string;
   healthPlan?: string;
+  phone?: string;
   createdAt: string;
   updatedAt: string;
 }
