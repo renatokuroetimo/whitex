@@ -657,16 +657,7 @@ class PatientAPI {
             throw new Error(`Erro ao salvar observações: ${insertError.message}`);
           }
         }
-      } else {
-        // Para pacientes compartilhados, usar a tabela de observações médicas
-        console.log("💾 Salvando observações na tabela patient_medical_observations");
-
-        // Verificar se já existe observação
-        const { data: existingObs } = await supabase
-          .from("patient_medical_observations")
-          .select("*")
-          .eq("patient_id", id)
-          .eq("doctor_id", currentUser.id)
+      }
           .single();
 
         console.log("🔍 Observações existentes:", existingObs);
