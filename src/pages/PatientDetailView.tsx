@@ -152,16 +152,8 @@ const PatientDetailView = () => {
         const today = new Date();
         const birthDate = new Date(personalData.birthDate);
 
-        console.log(
-          "📅 Data de nascimento:",
-          personalData.birthDate,
-          "-> Date:",
-          birthDate,
-        );
-
         // Validar se a data é válida
         if (isNaN(birthDate.getTime())) {
-          console.warn("Data de nascimento inválida:", personalData.birthDate);
           return "Não informado";
         }
 
@@ -172,11 +164,8 @@ const PatientDetailView = () => {
           monthDiff < 0 ||
           (monthDiff === 0 && today.getDate() < birthDate.getDate())
         ) {
-          const finalAge = age - 1;
-          console.log("✅ Idade calculada:", finalAge);
-          return finalAge;
+          return age - 1;
         }
-        console.log("✅ Idade calculada:", age);
         return age;
       } catch (error) {
         console.error("Erro ao calcular idade:", error);
