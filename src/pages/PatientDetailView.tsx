@@ -127,22 +127,34 @@ const PatientDetailView = () => {
   const getPatientAge = () => {
     // Try personal data first, then fall back to patient age
     if (personalData?.birthDate) {
-      const today = new Date();
-      const birthDate = new Date(personalData.birthDate);
-      const age = today.getFullYear() - birthDate.getFullYear();
-      const monthDiff = today.getMonth() - birthDate.getMonth();
+      try {
+        const today = new Date();
+        const birthDate = new Date(personalData.birthDate);
 
-      if (
-        monthDiff < 0 ||
-        (monthDiff === 0 && today.getDate() < birthDate.getDate())
-      ) {
-        return age - 1;
+        // Validar se a data é válida
+        if (isNaN(birthDate.getTime())) {
+          console.warn("Data de nascimento inválida:", personalData.birthDate);
+          return "N/A";
+        }
+
+        const age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+
+        if (
+          monthDiff < 0 ||
+          (monthDiff === 0 && today.getDate() < birthDate.getDate())
+        ) {
+          return age - 1;
+        }
+        return age;
+      } catch (error) {
+        console.error("Erro ao calcular idade:", error);
+        return "N/A";
       }
-      return age;
     }
 
     // Fall back to patient.age if available
-    if (patient?.age) {
+    if (patient?.age && patient.age > 0) {
       return patient.age;
     }
 
@@ -152,12 +164,20 @@ const PatientDetailView = () => {
   const getPatientLocation = () => {
     // Try personal data first, then fall back to patient city/state
     if (personalData?.city && personalData?.state) {
-      return `${personalData.city}-${personalData.state}`;
+      const city = personalData.city.trim();
+      const state = personalData.state.trim();
+      if (city && state && city !== "N/A" && state !== "N/A") {
+        return `${city}-${state}`;
+      }
     }
 
     // Fall back to patient location
     if (patient?.city && patient?.state) {
-      return `${patient.city}-${patient.state}`;
+      const city = patient.city.trim();
+      const state = patient.state.trim();
+      if (city && state && city !== "N/A" && state !== "N/A") {
+        return `${city}-${state}`;
+      }
     }
 
     return "N/A";
