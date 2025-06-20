@@ -91,6 +91,14 @@ const PatientForm = () => {
         console.log("📊 FORM: Dados pessoais encontrados:", personalData);
         console.log("📊 FORM: Dados médicos encontrados:", medicalData);
 
+        if (!personalData) {
+          console.warn(
+            "⚠️ FORM: Nenhum dado pessoal encontrado - email será vazio",
+          );
+        } else {
+          console.log("✅ FORM: Email encontrado:", personalData.email);
+        }
+
         // Criar objeto final com todos os dados
         const finalFormData: PatientFormData = {
           // Dados básicos do patient
