@@ -324,25 +324,47 @@ class PatientAPI {
         // Nome do paciente (prioridade: patient_personal_data para compartilhados)
         let patientName = "Sem nome definido";
 
+        console.log("🔍 DEBUG COMPARTILHADO - patientUser dados:", {
+          id: patientUser.id,
+          email: patientUser.email,
+          full_name: patientUser.full_name,
+        });
+
         // PRIMEIRO: buscar nome em patient_personal_data (dados atualizados pelo paciente)
         try {
           const { data: personalData, error: personalError } = await supabase
             .from("patient_personal_data")
-            .select("full_name")
-            .eq("user_id", id)
-            .single();
+            .select("full_name, email")
+            .eq("user_id", id);
+
+          console.log("🔍 DEBUG COMPARTILHADO - patient_personal_data:", {
+            data: personalData,
+            error: personalError,
+            count: personalData?.length,
+          });
+
+          // Se há múltiplos registros, pegar o mais recente
+          const latestPersonalData =
+            personalData && personalData.length > 0
+              ? personalData.sort(
+                  (a, b) =>
+                    new Date(b.updated_at || b.created_at || "").getTime() -
+                    new Date(a.updated_at || a.created_at || "").getTime(),
+                )[0]
+              : null;
 
           if (
             !personalError &&
-            personalData?.full_name &&
-            personalData.full_name.trim()
+            latestPersonalData?.full_name &&
+            latestPersonalData.full_name.trim()
           ) {
-            patientName = personalData.full_name.trim();
+            patientName = latestPersonalData.full_name.trim();
             console.log(
               "✅ Nome compartilhado encontrado em patient_personal_data:",
               patientName,
             );
           } else {
+            console.log("❌ Dados pessoais não encontrados ou full_name vazio");
             // SEGUNDO: fallback para full_name da tabela users
             if (patientUser.full_name && patientUser.full_name.trim()) {
               patientName = patientUser.full_name.trim();
@@ -370,6 +392,11 @@ class PatientAPI {
             patientName = `Paciente ${patientUser.email.split("@")[0]}`;
           }
         }
+
+        console.log(
+          "🎯 DEBUG COMPARTILHADO - Nome final escolhido:",
+          patientName,
+        );
 
         // Buscar observações médicas salvas
         let notes = `Compartilhado em ${new Date(shareData.shared_at).toLocaleDateString("pt-BR")}`;
