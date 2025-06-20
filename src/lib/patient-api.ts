@@ -464,13 +464,14 @@ class PatientAPI {
     // Gerar ID único para o novo paciente
     const newPatientId = this.generateId();
 
-    // Criar paciente na tabela patients
+    // Criar paciente na tabela patients com dados básicos
     const { error: createError } = await supabase.from("patients").insert([
       {
         id: newPatientId,
         doctor_id: currentUser.id,
         name: data.name,
         status: data.status || "ativo",
+        notes: data.notes || "",
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       },
