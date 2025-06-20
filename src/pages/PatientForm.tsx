@@ -30,6 +30,7 @@ const PatientForm = () => {
   const [selectedState, setSelectedState] = useState("");
   const [availableCities, setAvailableCities] = useState<string[]>([]);
   const [isSharedPatient, setIsSharedPatient] = useState(false);
+  const [dataLoaded, setDataLoaded] = useState(false); // Flag para controlar carregamento
   const [formData, setFormData] = useState<PatientFormData>({
     name: "",
     age: 0,
@@ -57,16 +58,10 @@ const PatientForm = () => {
   const [isAddingDiagnosis, setIsAddingDiagnosis] = useState(false);
 
   useEffect(() => {
-    if (id && !formData.name) {
-      // Só carrega se ainda não tem dados
+    if (id && !dataLoaded) {
       loadPatientData();
     }
-  }, [id]);
-
-  // Segundo useEffect para debug - remover depois
-  useEffect(() => {
-    console.log("🔄 FORM: FormData atualizado:", formData);
-  }, [formData]);
+  }, [id, dataLoaded]);
 
   const loadPatientData = async () => {
     if (!id) return;
