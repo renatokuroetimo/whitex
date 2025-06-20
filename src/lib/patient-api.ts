@@ -716,6 +716,7 @@ class PatientAPI {
         weight: data.weight
           ? parseFloat(data.weight.toString())
           : ownPatient.weight,
+        phone: data.phone || null, // Adicionar phone na tabela patients
         status: data.status || ownPatient.status,
         updated_at: new Date().toISOString(),
       };
