@@ -673,48 +673,75 @@ class PatientAPI {
     if (data.notes && data.notes.trim()) {
       console.log("📝 Salvando observações médicas:", data.notes);
 
-      // Verificar se já existe observação
-      const { data: existingObs } = await supabase
-        .from("patient_medical_observations")
-        .select("*")
-        .eq("patient_id", id)
-        .eq("doctor_id", currentUser.id)
-        .single();
-
-      console.log("🔍 Observações existentes:", existingObs);
-
-      if (existingObs) {
-        // Atualizar existente
-        const { error: updateError } = await supabase
-          .from("patient_medical_observations")
+      // Para pacientes criados pelo médico, simplesmente atualizar o campo notes na tabela patients
+      if (ownPatient) {
+        console.log("💾 Salvando observações diretamente na tabela patients");
+        const { error: updateNotesError } = await supabase
+          .from("patients")
           .update({
-            observations: data.notes,
+            notes: data.notes,
             updated_at: new Date().toISOString(),
           })
-          .eq("id", existingObs.id);
+          .eq("id", id);
 
-        if (updateError) {
+        if (updateNotesError) {
+          console.error("❌ Erro ao salvar observações:", updateNotesError);
           throw new Error(
-            `Erro ao atualizar observações: ${updateError.message}`,
+            `Erro ao salvar observações: ${updateNotesError.message}`,
           );
         }
-      } else {
-        // Criar nova
-        const { error: insertError } = await supabase
-          .from("patient_medical_observations")
-          .insert([
-            {
-              id: this.generateId(),
-              patient_id: id,
-              doctor_id: currentUser.id,
-              observations: data.notes,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            },
-          ]);
+        console.log("✅ Observações salvas com sucesso");
+      } else if (shareData) {
+        // Para pacientes compartilhados, usar a tabela de observações médicas
+        console.log(
+          "💾 Salvando observações na tabela patient_medical_observations",
+        );
 
-        if (insertError) {
-          throw new Error(`Erro ao salvar observações: ${insertError.message}`);
+        // Verificar se já existe observação
+        const { data: existingObs } = await supabase
+          .from("patient_medical_observations")
+          .select("*")
+          .eq("patient_id", id)
+          .eq("doctor_id", currentUser.id)
+          .single();
+
+        console.log("🔍 Observações existentes:", existingObs);
+
+        if (existingObs) {
+          // Atualizar existente
+          const { error: updateError } = await supabase
+            .from("patient_medical_observations")
+            .update({
+              observations: data.notes,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", existingObs.id);
+
+          if (updateError) {
+            throw new Error(
+              `Erro ao atualizar observações: ${updateError.message}`,
+            );
+          }
+        } else {
+          // Criar nova
+          const { error: insertError } = await supabase
+            .from("patient_medical_observations")
+            .insert([
+              {
+                id: this.generateId(),
+                patient_id: id,
+                doctor_id: currentUser.id,
+                observations: data.notes,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              },
+            ]);
+
+          if (insertError) {
+            throw new Error(
+              `Erro ao salvar observações: ${insertError.message}`,
+            );
+          }
         }
       }
     }
