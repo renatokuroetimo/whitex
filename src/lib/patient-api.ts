@@ -394,7 +394,7 @@ class PatientAPI {
           "⚠️ NOTA: Usando apenas dados da tabela patients (paciente criado pelo médico)",
         );
 
-        return {
+        const result = {
           id: ownPatient.id,
           name: ownPatient.name,
           age: age,
@@ -407,6 +407,9 @@ class PatientAPI {
           doctorId: ownPatient.doctor_id,
           isShared: false,
         };
+
+        console.log("✅ Retornando paciente próprio:", result);
+        return result;
       }
 
       return null;
