@@ -407,12 +407,12 @@ const PatientDetailView = () => {
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-600">Peso:</span>
                         <span className="text-sm font-medium text-gray-900">
-                          {getFormattedWeight(medicalData?.weight)}
+                          {getFormattedWeight(patient?.weight)}
                         </span>
                       </div>
                       {getCalculatedIMC(
                         medicalData?.height,
-                        medicalData?.weight,
+                        patient?.weight,
                       ) && (
                         <div className="flex justify-between">
                           <span className="text-sm text-gray-600">IMC:</span>
