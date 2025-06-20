@@ -703,14 +703,12 @@ class PatientAPI {
       console.log("📊 Dados atuais no banco (ownPatient):", ownPatient);
       console.log("📊 Dados enviados pelo formulário (data):", data);
       console.log("🔍 Campos específicos do formulário:");
-      console.log("  - data.age:", data.age, "tipo:", typeof data.age);
       console.log("  - data.city:", data.city, "tipo:", typeof data.city);
       console.log("  - data.state:", data.state, "tipo:", typeof data.state);
       console.log("  - data.weight:", data.weight, "tipo:", typeof data.weight);
 
       const updateData = {
         name: data.name || ownPatient.name,
-        age: data.age ? parseInt(data.age.toString()) : ownPatient.age,
         city: data.city || ownPatient.city,
         state: data.state || ownPatient.state,
         weight: data.weight
