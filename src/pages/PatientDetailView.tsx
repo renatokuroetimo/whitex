@@ -175,11 +175,9 @@ const PatientDetailView = () => {
 
     // Fall back to patient.age if available
     if (patient?.age && patient.age > 0) {
-      console.log("✅ Usando idade do paciente:", patient.age);
       return patient.age;
     }
 
-    console.log("⚠️ Nenhuma idade disponível");
     return "Não informado";
   };
 
