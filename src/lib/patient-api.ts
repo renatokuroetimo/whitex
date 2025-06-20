@@ -746,53 +746,71 @@ class PatientAPI {
       // AGORA SALVAR DADOS EXTRAS NAS TABELAS AUXILIARES
       console.log("💾 Salvando dados extras nas tabelas auxiliares...");
 
-      // 1. Salvar dados pessoais extras se fornecidos
-      if (
-        data.email ||
-        data.phone ||
-        data.birthDate ||
-        data.gender ||
-        data.healthPlan
-      ) {
-        console.log("📋 Salvando dados pessoais auxiliares");
+      // 1. SEMPRE salvar dados pessoais (mesmo que vazios) para garantir que existam
+      console.log("📋 UPDATE: Verificando dados pessoais para salvar...");
+      console.log("📊 UPDATE: Dados recebidos:", {
+        email: data.email,
+        phone: data.phone,
+        birthDate: data.birthDate,
+        gender: data.gender,
+        healthPlan: data.healthPlan,
+      });
 
-        const personalDataToSave = {
-          id: this.generateId(),
-          user_id: id,
-          full_name: data.name || ownPatient.name,
-          email: data.email || "",
-          phone: data.phone || "",
-          birth_date: data.birthDate || null,
-          gender: data.gender || null,
-          state: data.state || ownPatient.state,
-          city: data.city || ownPatient.city,
-          health_plan: data.healthPlan || "",
-          profile_image: null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
+      const personalDataToSave = {
+        id: this.generateId(),
+        user_id: id,
+        full_name: data.name || ownPatient.name,
+        email: data.email || "",
+        phone: data.phone || "",
+        birth_date: data.birthDate || null,
+        gender: data.gender || null,
+        state: data.state || ownPatient.state,
+        city: data.city || ownPatient.city,
+        health_plan: data.healthPlan || "",
+        profile_image: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
 
-        try {
-          // Deletar registros existentes e inserir novo
-          await supabase
-            .from("patient_personal_data")
-            .delete()
-            .eq("user_id", id);
-          const { error: personalError } = await supabase
-            .from("patient_personal_data")
-            .insert([personalDataToSave]);
+      console.log(
+        "📝 UPDATE: Dados pessoais que serão salvos:",
+        personalDataToSave,
+      );
 
-          if (personalError) {
-            console.warn(
-              "⚠️ Erro ao salvar dados pessoais auxiliares:",
-              personalError,
-            );
-          } else {
-            console.log("✅ Dados pessoais auxiliares salvos com sucesso");
-          }
-        } catch (error) {
-          console.warn("⚠️ Erro ao processar dados pessoais:", error);
+      try {
+        // Deletar registros existentes e inserir novo
+        console.log("🗑️ UPDATE: Deletando dados pessoais existentes...");
+        const { error: deleteError } = await supabase
+          .from("patient_personal_data")
+          .delete()
+          .eq("user_id", id);
+
+        if (deleteError) {
+          console.warn(
+            "⚠️ UPDATE: Erro ao deletar dados pessoais existentes:",
+            deleteError,
+          );
+        } else {
+          console.log("✅ UPDATE: Dados pessoais existentes deletados");
         }
+
+        console.log("💾 UPDATE: Inserindo novos dados pessoais...");
+        const { error: personalError } = await supabase
+          .from("patient_personal_data")
+          .insert([personalDataToSave]);
+
+        if (personalError) {
+          console.error(
+            "❌ UPDATE: Erro ao salvar dados pessoais auxiliares:",
+            personalError,
+          );
+        } else {
+          console.log(
+            "✅ UPDATE: Dados pessoais auxiliares salvos com sucesso",
+          );
+        }
+      } catch (error) {
+        console.error("❌ UPDATE: Erro ao processar dados pessoais:", error);
       }
 
       // 2. Salvar dados médicos extras se fornecidos
@@ -1033,7 +1051,7 @@ class PatientAPI {
 
       return convertedDiagnoses;
     } catch (error) {
-      console.error("💥 Erro crítico ao buscar diagnósticos:", error);
+      console.error("��� Erro crítico ao buscar diagnósticos:", error);
       return [];
     }
   }
