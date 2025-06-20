@@ -573,34 +573,43 @@ class PatientAPI {
           "✅ Paciente próprio identificado, atualizando dados básicos...",
         );
 
-        // Atualizar dados básicos do paciente
-        if (data.name || data.status) {
-          console.log("📝 Atualizando dados básicos:", {
-            name: data.name || ownPatient.name,
-            status: data.status || ownPatient.status,
-          });
+        // Atualizar dados básicos do paciente (SEMPRE atualizar com os dados recebidos)
+        console.log("📝 Atualizando dados básicos completos:", {
+          currentData: ownPatient,
+          newData: data,
+        });
 
-          const { error: updatePatientError } = await supabase
+        const updateData = {
+          name: data.name || ownPatient.name,
+          status: data.status || ownPatient.status,
+          updated_at: new Date().toISOString(),
+        };
+
+        console.log("💾 Dados que serão salvos:", updateData);
+
+        const { data: updatedPatient, error: updatePatientError } =
+          await supabase
             .from("patients")
-            .update({
-              name: data.name || ownPatient.name,
-              status: data.status || ownPatient.status,
-              updated_at: new Date().toISOString(),
-            })
-            .eq("id", id);
+            .update(updateData)
+            .eq("id", id)
+            .eq("doctor_id", currentUser.id) // Garantir que só atualiza se for do médico
+            .select()
+            .single();
 
-          if (updatePatientError) {
-            console.error(
-              "❌ Erro ao atualizar dados básicos:",
-              updatePatientError,
-            );
-            throw new Error(
-              `Erro ao atualizar dados básicos: ${updatePatientError.message}`,
-            );
-          }
-
-          console.log("✅ Dados básicos atualizados com sucesso");
+        if (updatePatientError) {
+          console.error(
+            "❌ Erro ao atualizar dados básicos:",
+            updatePatientError,
+          );
+          throw new Error(
+            `Erro ao atualizar dados básicos: ${updatePatientError.message}`,
+          );
         }
+
+        console.log(
+          "✅ Dados básicos atualizados com sucesso:",
+          updatedPatient,
+        );
 
         // Para pacientes criados pelo médico (não usuários registrados),
         // não inserimos dados em patient_personal_data/patient_medical_data
