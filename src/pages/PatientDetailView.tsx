@@ -146,9 +146,6 @@ const PatientDetailView = () => {
   };
 
   const getPatientAge = () => {
-    console.log("🔍 getPatientAge - personalData:", personalData);
-    console.log("🔍 getPatientAge - patient.age:", patient?.age);
-
     // Try personal data first, then fall back to patient age
     if (personalData?.birthDate) {
       try {
