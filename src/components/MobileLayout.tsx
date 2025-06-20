@@ -15,8 +15,6 @@ interface SidebarItem {
 }
 
 const getSidebarItems = (userProfession?: string): SidebarItem[] => {
-  console.log("🚨 MOBILE LAYOUT - Getting items for:", userProfession);
-
   if (userProfession === "paciente") {
     const items = [
       {
