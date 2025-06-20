@@ -75,12 +75,12 @@ const PatientForm = () => {
         });
 
         // Detectar se é paciente compartilhado
-        setIsSharedPatient(patient.status === "compartilhado");
+        setIsSharedPatient(patient.status === 'compartilhado');
 
         console.log("🔍 Patient data loaded:", {
           state: patient.state,
           city: patient.city,
-          availableCities: cities.length,
+          availableCities: cities.length
         });
       }
     } catch (error) {
@@ -222,6 +222,8 @@ const PatientForm = () => {
 
     setIsLoading(true);
 
+
+
     try {
       if (isEditing && id) {
         const result = await patientAPI.updatePatient(id, formData);
@@ -253,7 +255,7 @@ const PatientForm = () => {
 
       if (error instanceof Error) {
         errorMessage = error.message;
-      } else if (typeof error === "object" && error !== null) {
+      } else if (typeof error === 'object' && error !== null) {
         errorMessage = JSON.stringify(error, null, 2);
       } else {
         errorMessage = String(error);
@@ -291,48 +293,49 @@ const PatientForm = () => {
         <div className="p-4 sm:p-6 lg:p-8">
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
               <button
-                onClick={handleCancel}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                onClick={() => navigate(-1)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 <ArrowLeft className="h-5 w-5 text-gray-600" />
               </button>
               <h1 className="text-2xl font-semibold text-gray-900">
                 {isEditing
-                  ? isSharedPatient
-                    ? "Adicionar Diagnósticos"
-                    : "Editar Paciente"
-                  : "Novo Paciente"}
+                  ? (isSharedPatient ? "Adicionar Diagnósticos" : "Editar Paciente")
+                  : "Novo Paciente"
+                }
               </h1>
             </div>
-            <button
-              onClick={() => navigate(-1)}
-              className="text-sm text-blue-600 hover:text-blue-800"
-            >
-              ← Voltar
-            </button>
+            {isEditing && !isSharedPatient && (
+              <Button
+                onClick={handleDeletePatient}
+                variant="destructive"
+                disabled={isLoading}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                🗑️ Apagar Paciente
+              </Button>
+            )}
           </div>
-
           <div className="max-w-2xl">
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <div className="mb-6">
                 <h2 className="text-lg font-medium text-gray-900 mb-1">
-                  {isSharedPatient
-                    ? "Diagnósticos e Observações"
-                    : "Dados do paciente"}
+                  {isSharedPatient ? "Diagnósticos e Observações" : "Dados do paciente"}
                 </h2>
                 <p className="text-sm text-gray-600">
                   {isSharedPatient
                     ? "Adicione diagnósticos e observações para este paciente compartilhado"
-                    : "Preencha as informações básicas do paciente"}
+                    : "Preencha as informações básicas do paciente"
+                  }
                 </p>
                 {isSharedPatient && (
                   <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                     <p className="text-sm text-blue-800">
-                      <strong>Paciente Compartilhado:</strong> Você pode apenas
-                      adicionar diagnósticos e observações. Os dados pessoais
-                      são gerenciados pelo paciente.
+                      <strong>Paciente Compartilhado:</strong> Você pode apenas adicionar diagnósticos e observações.
+                      Os dados pessoais são gerenciados pelo paciente.
                     </p>
                   </div>
                 )}
@@ -368,10 +371,7 @@ const PatientForm = () => {
                           type="number"
                           value={formData.age || ""}
                           onChange={(e) =>
-                            handleInputChange(
-                              "age",
-                              parseInt(e.target.value) || 0,
-                            )
+                            handleInputChange("age", parseInt(e.target.value) || 0)
                           }
                           placeholder="Idade"
                           className="w-full"
@@ -433,9 +433,7 @@ const PatientForm = () => {
                         </label>
                         <Select
                           value={formData.city}
-                          onValueChange={(value) =>
-                            handleInputChange("city", value)
-                          }
+                          onValueChange={(value) => handleInputChange("city", value)}
                           disabled={!selectedState}
                         >
                           <SelectTrigger>
@@ -492,10 +490,7 @@ const PatientForm = () => {
                                 <Input
                                   value={diagnosisForm.cid}
                                   onChange={(e) =>
-                                    handleDiagnosisInputChange(
-                                      "cid",
-                                      e.target.value,
-                                    )
+                                    handleDiagnosisInputChange("cid", e.target.value)
                                   }
                                   placeholder="Ex: I10.9"
                                   className="w-full"
@@ -510,10 +505,7 @@ const PatientForm = () => {
                                 <Input
                                   value={diagnosisForm.diagnosis}
                                   onChange={(e) =>
-                                    handleDiagnosisInputChange(
-                                      "diagnosis",
-                                      e.target.value,
-                                    )
+                                    handleDiagnosisInputChange("diagnosis", e.target.value)
                                   }
                                   placeholder="Ex: Hipertensão arterial"
                                   className="w-full"
@@ -549,8 +541,7 @@ const PatientForm = () => {
 
                       {!isAddingDiagnosis && (
                         <p className="text-sm text-gray-500">
-                          Os diagnósticos são exibidos no histórico do paciente
-                          após serem adicionados.
+                          Os diagnósticos são exibidos no histórico do paciente após serem adicionados.
                         </p>
                       )}
                     </div>
@@ -577,6 +568,8 @@ const PatientForm = () => {
                   </div>
                 </div>
 
+
+
                 {/* Buttons */}
                 <div className="flex justify-end gap-3 pt-6">
                   <Button
@@ -597,9 +590,7 @@ const PatientForm = () => {
                         ? "Salvando..."
                         : "Criando..."
                       : isEditing
-                        ? isSharedPatient
-                          ? "Salvar diagnósticos"
-                          : "Salvar alterações"
+                        ? (isSharedPatient ? "Salvar diagnósticos" : "Salvar alterações")
                         : "Criar paciente"}
                   </Button>
                 </div>
