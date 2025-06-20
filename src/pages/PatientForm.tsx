@@ -442,6 +442,182 @@ const PatientForm = () => {
                         </Select>
                       </div>
 
+                      {/* Email */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Email
+                        </label>
+                        <Input
+                          type="email"
+                          value={formData.email || ""}
+                          onChange={(e) =>
+                            handleInputChange("email", e.target.value)
+                          }
+                          placeholder="email@exemplo.com"
+                          className="w-full"
+                        />
+                      </div>
+
+                      {/* Telefone */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Telefone
+                        </label>
+                        <Input
+                          value={formData.phone || ""}
+                          onChange={(e) =>
+                            handleInputChange("phone", e.target.value)
+                          }
+                          placeholder="(11) 99999-9999"
+                          className="w-full"
+                        />
+                      </div>
+
+                      {/* Data de Nascimento */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Data de Nascimento *
+                        </label>
+                        <Input
+                          type="date"
+                          value={formData.birthDate || ""}
+                          onChange={(e) =>
+                            handleInputChange("birthDate", e.target.value)
+                          }
+                          className="w-full"
+                          required
+                        />
+                      </div>
+
+                      {/* Gênero */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Gênero
+                        </label>
+                        <Select
+                          value={formData.gender || ""}
+                          onValueChange={(value) =>
+                            handleInputChange("gender", value)
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o gênero" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="masculino">Masculino</SelectItem>
+                            <SelectItem value="feminino">Feminino</SelectItem>
+                            <SelectItem value="outro">Outro</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Plano de Saúde */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Plano de Saúde
+                        </label>
+                        <Input
+                          value={formData.healthPlan || ""}
+                          onChange={(e) =>
+                            handleInputChange("healthPlan", e.target.value)
+                          }
+                          placeholder="Nome do plano de saúde"
+                          className="w-full"
+                        />
+                      </div>
+
+                      {/* Altura */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Altura (cm)
+                        </label>
+                        <Input
+                          type="number"
+                          value={formData.height || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "height",
+                              parseInt(e.target.value) || 0,
+                            )
+                          }
+                          placeholder="Altura em cm"
+                          className="w-full"
+                          min="50"
+                          max="250"
+                        />
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">
+                          Condições Médicas
+                        </h3>
+
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                          {/* Fumante */}
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="smoker"
+                              checked={formData.smoker || false}
+                              onChange={(e) =>
+                                handleInputChange("smoker", e.target.checked)
+                              }
+                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            />
+                            <label
+                              htmlFor="smoker"
+                              className="text-sm font-medium text-gray-700"
+                            >
+                              Fumante
+                            </label>
+                          </div>
+
+                          {/* Pressão Alta */}
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="highBloodPressure"
+                              checked={formData.highBloodPressure || false}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "highBloodPressure",
+                                  e.target.checked,
+                                )
+                              }
+                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            />
+                            <label
+                              htmlFor="highBloodPressure"
+                              className="text-sm font-medium text-gray-700"
+                            >
+                              Pressão Alta
+                            </label>
+                          </div>
+
+                          {/* Atividade Física */}
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id="physicalActivity"
+                              checked={formData.physicalActivity || false}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "physicalActivity",
+                                  e.target.checked,
+                                )
+                              }
+                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            />
+                            <label
+                              htmlFor="physicalActivity"
+                              className="text-sm font-medium text-gray-700"
+                            >
+                              Pratica Atividade Física
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
                       {/* Status */}
                       <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
