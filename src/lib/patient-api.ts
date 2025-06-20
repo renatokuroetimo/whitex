@@ -747,7 +747,7 @@ class PatientAPI {
       console.log("💾 Salvando dados extras nas tabelas auxiliares...");
 
       // 1. SEMPRE salvar dados pessoais (mesmo que vazios) para garantir que existam
-      console.log("📋 UPDATE: Verificando dados pessoais para salvar...");
+      console.log("���� UPDATE: Verificando dados pessoais para salvar...");
       console.log("📊 UPDATE: Dados recebidos:", {
         email: data.email,
         phone: data.phone,
@@ -800,9 +800,14 @@ class PatientAPI {
           .insert([personalDataToSave]);
 
         if (personalError) {
+          console.error("❌ UPDATE: Erro ao salvar dados pessoais auxiliares:");
+          console.error("❌ UPDATE: Código do erro:", personalError.code);
+          console.error("❌ UPDATE: Mensagem do erro:", personalError.message);
+          console.error("❌ UPDATE: Detalhes do erro:", personalError.details);
+          console.error("❌ UPDATE: Hint do erro:", personalError.hint);
           console.error(
-            "❌ UPDATE: Erro ao salvar dados pessoais auxiliares:",
-            personalError,
+            "❌ UPDATE: Erro completo:",
+            JSON.stringify(personalError, null, 2),
           );
         } else {
           console.log(
@@ -1051,7 +1056,7 @@ class PatientAPI {
 
       return convertedDiagnoses;
     } catch (error) {
-      console.error("��� Erro crítico ao buscar diagnósticos:", error);
+      console.error("💥 Erro crítico ao buscar diagnósticos:", error);
       return [];
     }
   }
