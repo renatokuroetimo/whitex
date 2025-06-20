@@ -51,12 +51,6 @@ const PatientDetailView = () => {
       console.log("📊 RESULTADO do getPatientById:", foundPatient);
 
       if (foundPatient) {
-        console.log("✅ ===== PACIENTE CARREGADO NA PÁGINA DE DETALHES =====");
-        console.log("✅ ID:", foundPatient.id);
-        console.log("✅ Nome:", foundPatient.name);
-        console.log("✅ Status:", foundPatient.status);
-        console.log("✅ Observações (notes):", foundPatient.notes);
-        console.log("✅ Objeto completo:", foundPatient);
         setPatient(foundPatient);
 
         // Carregar dados pessoais detalhados
