@@ -98,6 +98,7 @@ class PatientProfileAPI {
             state: supabaseData.state,
             city: supabaseData.city,
             healthPlan: supabaseData.health_plan,
+            phone: supabaseData.phone,
             profileImage: supabaseData.profile_image,
             createdAt: supabaseData.created_at,
             updatedAt: supabaseData.updated_at,
