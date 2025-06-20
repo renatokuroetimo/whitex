@@ -1102,20 +1102,36 @@ class PatientAPI {
     }
 
     try {
-      // 1. VERIFICAR SE O PACIENTE ESTÁ COMPARTILHADO COM ESTE MÉDICO
-      const { data: shareData, error: shareError } = await supabase
-        .from("doctor_patient_sharing")
+      // 1. VERIFICAR SE O PACIENTE É PRÓPRIO OU COMPARTILHADO COM ESTE MÉDICO
+
+      // Primeiro: verificar se é paciente próprio
+      const { data: ownPatient, error: ownError } = await supabase
+        .from("patients")
         .select("*")
+        .eq("id", patientId)
         .eq("doctor_id", currentUser.id)
-        .eq("patient_id", patientId)
         .single();
 
-      if (shareError && shareError.code !== "PGRST116") {
-        console.error("❌ Erro ao verificar compartilhamento:", shareError);
-        throw new Error("Erro ao verificar permissões de acesso ao paciente");
+      // Segundo: se não é próprio, verificar se é compartilhado
+      let hasPermission = false;
+      if (ownPatient && !ownError) {
+        hasPermission = true;
+        console.log("✅ Diagnóstico para paciente próprio");
+      } else {
+        const { data: shareData, error: shareError } = await supabase
+          .from("doctor_patient_sharing")
+          .select("*")
+          .eq("doctor_id", currentUser.id)
+          .eq("patient_id", patientId)
+          .single();
+
+        if (shareData && !shareError) {
+          hasPermission = true;
+          console.log("✅ Diagnóstico para paciente compartilhado");
+        }
       }
 
-      if (!shareData) {
+      if (!hasPermission) {
         throw new Error(
           "Você não tem permissão para adicionar diagnósticos a este paciente",
         );
