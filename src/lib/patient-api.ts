@@ -630,14 +630,21 @@ class PatientAPI {
 
       // Para pacientes criados pelo médico, simplesmente atualizar o campo notes na tabela patients
       if (ownPatient) {
-        console.log("💾 Salvando observações diretamente na tabela patients");
-        const { error: updateNotesError } = await supabase
+        console.log(
+          "💾 Salvando observações diretamente na tabela patients:",
+          data.notes,
+        );
+
+        const { data: updatedNotes, error: updateNotesError } = await supabase
           .from("patients")
           .update({
             notes: data.notes,
             updated_at: new Date().toISOString(),
           })
-          .eq("id", id);
+          .eq("id", id)
+          .eq("doctor_id", currentUser.id)
+          .select("notes")
+          .single();
 
         if (updateNotesError) {
           console.error("❌ Erro ao salvar observações:", updateNotesError);
@@ -645,7 +652,7 @@ class PatientAPI {
             `Erro ao salvar observações: ${updateNotesError.message}`,
           );
         }
-        console.log("✅ Observações salvas com sucesso");
+        console.log("✅ Observações salvas com sucesso:", updatedNotes);
       } else {
         // Para pacientes compartilhados, usar a tabela de observações médicas
         console.log(
