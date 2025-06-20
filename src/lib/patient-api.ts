@@ -662,77 +662,10 @@ class PatientAPI {
           "⚠️ NOTA: Paciente criado pelo médico - dados pessoais/médicos são gerenciados na tabela patients",
         );
 
-        // Atualizar/inserir dados médicos
-        if (
-          data.height ||
-          data.weight ||
-          data.smoker !== undefined ||
-          data.highBloodPressure !== undefined ||
-          data.physicalActivity !== undefined
-        ) {
-          console.log("🏥 Atualizando dados médicos...");
-
-          const { data: existingMedical } = await supabase
-            .from("patient_medical_data")
-            .select("*")
-            .eq("user_id", id)
-            .single();
-
-          console.log("🔍 Dados médicos existentes:", existingMedical);
-
-          if (existingMedical) {
-            const { error: updateMedicalError } = await supabase
-              .from("patient_medical_data")
-              .update({
-                height: data.height || existingMedical.height,
-                weight: data.weight || existingMedical.weight,
-                smoker:
-                  data.smoker !== undefined
-                    ? data.smoker
-                    : existingMedical.smoker,
-                high_blood_pressure:
-                  data.highBloodPressure !== undefined
-                    ? data.highBloodPressure
-                    : existingMedical.high_blood_pressure,
-                physical_activity:
-                  data.physicalActivity !== undefined
-                    ? data.physicalActivity
-                    : existingMedical.physical_activity,
-                updated_at: new Date().toISOString(),
-              })
-              .eq("user_id", id);
-
-            if (updateMedicalError) {
-              console.warn(
-                "Aviso: erro ao atualizar dados médicos:",
-                updateMedicalError,
-              );
-            }
-          } else {
-            const { error: insertMedicalError } = await supabase
-              .from("patient_medical_data")
-              .insert([
-                {
-                  id: this.generateId(),
-                  user_id: id,
-                  height: data.height || null,
-                  weight: data.weight || null,
-                  smoker: data.smoker || false,
-                  high_blood_pressure: data.highBloodPressure || false,
-                  physical_activity: data.physicalActivity || false,
-                  created_at: new Date().toISOString(),
-                  updated_at: new Date().toISOString(),
-                },
-              ]);
-
-            if (insertMedicalError) {
-              console.warn(
-                "Aviso: erro ao inserir dados médicos:",
-                insertMedicalError,
-              );
-            }
-          }
-        }
+        // Para pacientes criados pelo médico, dados médicos são gerenciados na tabela patients
+        console.log(
+          "⚠️ NOTA: Dados médicos para pacientes criados pelo médico são gerenciados diretamente na tabela patients",
+        );
       }
     }
 
@@ -923,7 +856,7 @@ class PatientAPI {
         .single();
 
       if (shareError && shareError.code !== "PGRST116") {
-        console.error("��� Erro ao verificar compartilhamento:", shareError);
+        console.error("❌ Erro ao verificar compartilhamento:", shareError);
         throw new Error("Erro ao verificar permissões de acesso ao paciente");
       }
 
