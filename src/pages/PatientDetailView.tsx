@@ -182,33 +182,12 @@ const PatientDetailView = () => {
   };
 
   const getPatientLocation = () => {
-    console.log(
-      "🔍 getPatientLocation - personalData city/state:",
-      personalData?.city,
-      "/",
-      personalData?.state,
-    );
-    console.log(
-      "🔍 getPatientLocation - patient city/state:",
-      patient?.city,
-      "/",
-      patient?.state,
-    );
-
     // Try personal data first, then fall back to patient city/state
     if (personalData?.city && personalData?.state) {
       const city = personalData.city.trim();
       const state = personalData.state.trim();
-      console.log(
-        "📍 Personal data - city/state processados:",
-        city,
-        "/",
-        state,
-      );
       if (city && state && city !== "N/A" && state !== "N/A") {
-        const location = `${city}-${state}`;
-        console.log("✅ Localização dos dados pessoais:", location);
-        return location;
+        return `${city}-${state}`;
       }
     }
 
@@ -216,20 +195,11 @@ const PatientDetailView = () => {
     if (patient?.city && patient?.state) {
       const city = patient.city.trim();
       const state = patient.state.trim();
-      console.log(
-        "📍 Patient data - city/state processados:",
-        city,
-        "/",
-        state,
-      );
       if (city && state && city !== "N/A" && state !== "N/A") {
-        const location = `${city}-${state}`;
-        console.log("✅ Localização dos dados do paciente:", location);
-        return location;
+        return `${city}-${state}`;
       }
     }
 
-    console.log("⚠️ Nenhuma localização válida disponível");
     return "Não informado";
   };
 
