@@ -377,10 +377,12 @@ const PatientDetailView = () => {
                         </span>
                         <div className="flex items-center">
                           <div
-                            className={`w-3 h-3 rounded-full mr-2 ${medicalData?.physicalActivity ? "bg-green-500" : "bg-gray-400"}`}
+                            className={`w-3 h-3 rounded-full mr-2 ${getBooleanValue(medicalData?.physicalActivity) ? "bg-green-500" : "bg-gray-400"}`}
                           ></div>
                           <span className="text-sm font-medium text-gray-900">
-                            {medicalData?.physicalActivity ? "Sim" : "Não"}
+                            {getBooleanValue(medicalData?.physicalActivity)
+                              ? "Sim"
+                              : "Não"}
                           </span>
                         </div>
                       </div>
@@ -390,10 +392,12 @@ const PatientDetailView = () => {
                         </span>
                         <div className="flex items-center">
                           <div
-                            className={`w-3 h-3 rounded-full mr-2 ${medicalData?.healthyDiet ? "bg-green-500" : "bg-gray-400"}`}
+                            className={`w-3 h-3 rounded-full mr-2 ${getBooleanValue(medicalData?.healthyDiet) ? "bg-green-500" : "bg-gray-400"}`}
                           ></div>
                           <span className="text-sm font-medium text-gray-900">
-                            {medicalData?.healthyDiet ? "Sim" : "Não"}
+                            {getBooleanValue(medicalData?.healthyDiet)
+                              ? "Sim"
+                              : "Não"}
                           </span>
                         </div>
                       </div>
