@@ -109,9 +109,9 @@ const PatientForm = () => {
           weight: patient.weight || 0,
           status: (patient.status as "ativo" | "inativo") || "ativo",
           notes: patient.notes || "",
-          email: patient.email || "",
 
           // Dados pessoais auxiliares
+          email: personalData?.email || "", // Email vem dos dados pessoais auxiliares
           birthDate: personalData?.birth_date || "",
           gender: personalData?.gender || "",
           healthPlan: personalData?.health_plan || "",
