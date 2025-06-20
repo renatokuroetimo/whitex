@@ -136,43 +136,59 @@ class PatientAPI {
               continue;
             }
 
-            // 2.2 Determinar nome do paciente (prioridade: full_name da tabela users)
+            // 2.2 Determinar nome do paciente (prioridade: patient_personal_data para compartilhados)
             let patientName = "Sem nome definido";
 
-            // PRIMEIRO: tentar usar full_name da tabela users
-            if (patientUser.full_name && patientUser.full_name.trim()) {
-              patientName = patientUser.full_name.trim();
-            } else {
-              // SEGUNDO: buscar nome em patient_personal_data como fallback
-              try {
-                const { data: personalData, error: personalError } =
-                  await supabase
-                    .from("patient_personal_data")
-                    .select("full_name, email")
-                    .eq("user_id", share.patient_id)
-                    .single();
+            // PRIMEIRO: buscar nome em patient_personal_data (dados atualizados pelo paciente)
+            try {
+              const { data: personalData, error: personalError } =
+                await supabase
+                  .from("patient_personal_data")
+                  .select("full_name, email")
+                  .eq("user_id", share.patient_id)
+                  .single();
 
-                if (
-                  !personalError &&
-                  personalData?.full_name &&
-                  personalData.full_name.trim()
-                ) {
-                  patientName = personalData.full_name.trim();
+              if (
+                !personalError &&
+                personalData?.full_name &&
+                personalData.full_name.trim()
+              ) {
+                patientName = personalData.full_name.trim();
+                console.log(
+                  "✅ Nome encontrado em patient_personal_data:",
+                  patientName,
+                );
+              } else {
+                // SEGUNDO: fallback para full_name da tabela users
+                if (patientUser.full_name && patientUser.full_name.trim()) {
+                  patientName = patientUser.full_name.trim();
+                  console.log(
+                    "✅ Nome encontrado em users.full_name:",
+                    patientName,
+                  );
                 } else {
                   // TERCEIRO: fallback para email
                   if (patientUser.email) {
                     patientName = `Paciente ${patientUser.email.split("@")[0]}`;
+                    console.log("⚠️ Usando email como nome:", patientName);
                   } else {
                     patientName = `Paciente ${share.patient_id.substring(0, 8)}`;
+                    console.log("⚠️ Usando ID como nome:", patientName);
                   }
                 }
-              } catch (error) {
-                // Fallback para email se não conseguir buscar dados pessoais
-                if (patientUser.email) {
-                  patientName = `Paciente ${patientUser.email.split("@")[0]}`;
-                } else {
-                  patientName = `Paciente ${share.patient_id.substring(0, 8)}`;
-                }
+              }
+            } catch (error) {
+              console.warn(
+                "⚠️ Erro ao buscar dados pessoais, usando fallback:",
+                error,
+              );
+              // Fallback para full_name da tabela users
+              if (patientUser.full_name && patientUser.full_name.trim()) {
+                patientName = patientUser.full_name.trim();
+              } else if (patientUser.email) {
+                patientName = `Paciente ${patientUser.email.split("@")[0]}`;
+              } else {
+                patientName = `Paciente ${share.patient_id.substring(0, 8)}`;
               }
             }
 
@@ -694,7 +710,7 @@ class PatientAPI {
     // Atualizar dados pessoais se for paciente próprio (não compartilhado)
     if (ownPatient) {
       console.log(
-        "✅ Paciente próprio identificado, atualizando dados básicos...",
+        "✅ Paciente próprio identificado, atualizando dados b��sicos...",
       );
 
       // Atualizar dados básicos do paciente (SEMPRE atualizar com os dados recebidos)
