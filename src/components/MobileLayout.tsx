@@ -109,9 +109,6 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
   const userProfession = currentUser?.profession || "médico";
   const sidebarItems = getSidebarItems(currentUser?.profession);
 
-  console.log("🚨 MOBILE LAYOUT - Current user:", currentUser);
-  console.log("🚨 MOBILE LAYOUT - Sidebar items:", sidebarItems);
-
   // Carregar imagem de perfil
   useEffect(() => {
     if (currentUser?.id) {
