@@ -91,9 +91,7 @@ const PatientForm = () => {
         console.log("📊 FORM: Dados médicos encontrados:", medicalData);
 
         if (!personalData) {
-          console.warn(
-            "⚠️ FORM: Nenhum dado pessoal encontrado - email será vazio",
-          );
+          console.warn("⚠️ FORM: Nenhum dado pessoal encontrado - email será vazio");
         } else {
           console.log("✅ FORM: Email encontrado:", personalData.email);
         }
@@ -121,14 +119,8 @@ const PatientForm = () => {
           physicalActivity: medicalData?.physical_activity || false,
         };
 
-        console.log(
-          "📝 FORM: Dados FINAIS que serão aplicados:",
-          finalFormData,
-        );
-        console.log(
-          "🔍 FORM: Email específico no objeto final:",
-          finalFormData.email,
-        );
+        console.log("📝 FORM: Dados FINAIS que serão aplicados:", finalFormData);
+        console.log("🔍 FORM: Email específico no objeto final:", finalFormData.email);
 
         // Aplicar todos os dados de uma vez
         setFormData(finalFormData);
@@ -142,10 +134,7 @@ const PatientForm = () => {
 
         setIsSharedPatient(patient.isShared || false);
         setDataLoaded(true); // Marcar que dados foram carregados
-        console.log(
-          "✅ FORM: Carregamento concluído com dados:",
-          finalFormData,
-        );
+        console.log("✅ FORM: Carregamento concluído com dados:", finalFormData);
       }
     } catch (error) {
       console.error("❌ FORM: Erro ao carregar dados:", error);
@@ -404,24 +393,23 @@ const PatientForm = () => {
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
-                  {/* Dados pessoais - ocultos para pacientes compartilhados */}
-                  {!isSharedPatient && (
-                    <>
-                      {/* Nome */}
-                      <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Nome completo *
-                        </label>
-                        <Input
-                          value={formData.name}
-                          onChange={(e) =>
-                            handleInputChange("name", e.target.value)
-                          }
-                          placeholder="Digite o nome completo"
-                          className="w-full"
-                          required
-                        />
-                      </div>
+                  {/* Diagnósticos - para todos os pacientes */}
+                  <div className="md:col-span-2">
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">
+                      Diagnósticos
+                    </h3>
+
+                    {!isAddingDiagnosis && (
+                      <Button
+                        type="button"
+                        onClick={() => setIsAddingDiagnosis(true)}
+                        className="mb-4"
+                        size="sm"
+                      >
+                        <Plus className="h-4 w-4 mr-1" />
+                        Adicionar Diagnóstico
+                      </Button>
+                    )}
 
                       {/* Peso */}
                       <div>
