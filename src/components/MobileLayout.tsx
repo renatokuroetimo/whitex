@@ -146,9 +146,6 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
 
   const isActive = (path: string) => {
     const active = location.pathname === path;
-    console.log(
-      `🚨 MOBILE LAYOUT - isActive: ${path} === ${location.pathname} = ${active}`,
-    );
     return active;
   };
 
