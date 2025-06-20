@@ -454,7 +454,6 @@ class PatientAPI {
         id: newPatientId,
         doctor_id: currentUser.id,
         name: data.name,
-        age: data.age || null,
         city: data.city || null,
         state: data.state || null,
         weight: data.weight || null,
