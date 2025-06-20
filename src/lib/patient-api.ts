@@ -766,17 +766,10 @@ class PatientAPI {
       console.log("📋 UPDATE: Verificando dados pessoais para salvar...");
       console.log("📊 UPDATE: Dados recebidos:", {
         email: data.email,
-        phone: data.phone,
         birthDate: data.birthDate,
         gender: data.gender,
         healthPlan: data.healthPlan,
       });
-
-      if (data.phone) {
-        console.warn(
-          "⚠️ UPDATE: PHONE não será salvo - coluna não existe no banco",
-        );
-      }
 
       const personalDataToSave = {
         id: this.generateId(),
