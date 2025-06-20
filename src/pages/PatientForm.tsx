@@ -425,28 +425,6 @@ const PatientForm = () => {
                         />
                       </div>
 
-                      {/* Idade */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Idade *
-                        </label>
-                        <Input
-                          type="number"
-                          value={formData.age || ""}
-                          onChange={(e) =>
-                            handleInputChange(
-                              "age",
-                              parseInt(e.target.value) || 0,
-                            )
-                          }
-                          placeholder="Idade"
-                          className="w-full"
-                          min="1"
-                          max="120"
-                          required
-                        />
-                      </div>
-
                       {/* Peso */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
