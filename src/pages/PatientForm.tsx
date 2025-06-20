@@ -73,8 +73,7 @@ const PatientForm = () => {
       console.log("📊 FORM: Dados do paciente recebidos:", patient);
 
       if (patient) {
-        // Para pacientes criados pelo médico, TODOS os dados estão no objeto patient
-        // Primeiro, vamos buscar dados complementares se existirem
+        // Buscar dados complementares das tabelas auxiliares SEMPRE
         let complementaryData = {
           phone: "",
           birthDate: "",
@@ -86,33 +85,41 @@ const PatientForm = () => {
           physicalActivity: false,
         };
 
-        // Buscar dados complementares das tabelas auxiliares
+        console.log("🔍 FORM: Buscando dados auxiliares para paciente:", id);
+
+        // Buscar dados pessoais auxiliares
         try {
-          const { data: personalData } = await supabase
+          const { data: personalData, error: personalError } = await supabase
             .from("patient_personal_data")
             .select("*")
             .eq("user_id", id)
             .single();
 
-          const { data: medicalData } = await supabase
-            .from("patient_medical_data")
-            .select("*")
-            .eq("user_id", id)
-            .single();
+          console.log("📊 FORM: Dados pessoais encontrados:", personalData);
+          console.log("📊 FORM: Erro dados pessoais:", personalError);
 
-          console.log("📊 FORM: Dados complementares encontrados:", {
-            personalData,
-            medicalData,
-          });
-
-          if (personalData) {
+          if (personalData && !personalError) {
             complementaryData.phone = personalData.phone || "";
             complementaryData.birthDate = personalData.birth_date || "";
             complementaryData.gender = personalData.gender || "";
             complementaryData.healthPlan = personalData.health_plan || "";
           }
+        } catch (error) {
+          console.log("⚠️ FORM: Erro ao buscar dados pessoais:", error);
+        }
 
-          if (medicalData) {
+        // Buscar dados médicos auxiliares
+        try {
+          const { data: medicalData, error: medicalError } = await supabase
+            .from("patient_medical_data")
+            .select("*")
+            .eq("user_id", id)
+            .single();
+
+          console.log("📊 FORM: Dados médicos encontrados:", medicalData);
+          console.log("📊 FORM: Erro dados médicos:", medicalError);
+
+          if (medicalData && !medicalError) {
             complementaryData.height = medicalData.height || 0;
             complementaryData.smoker = medicalData.smoker || false;
             complementaryData.highBloodPressure =
@@ -121,9 +128,7 @@ const PatientForm = () => {
               medicalData.physical_activity || false;
           }
         } catch (error) {
-          console.log(
-            "⚠️ FORM: Dados complementares não encontrados - usando valores padrão",
-          );
+          console.log("⚠️ FORM: Erro ao buscar dados médicos:", error);
         }
 
         // Combinar dados do patient com dados complementares
