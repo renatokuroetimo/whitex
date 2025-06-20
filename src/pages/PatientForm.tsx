@@ -134,7 +134,11 @@ const PatientForm = () => {
         }
 
         setIsSharedPatient(patient.isShared || false);
-        console.log("✅ FORM: Carregamento concluído");
+        setDataLoaded(true); // Marcar que dados foram carregados
+        console.log(
+          "✅ FORM: Carregamento concluído com dados:",
+          finalFormData,
+        );
       }
     } catch (error) {
       console.error("❌ FORM: Erro ao carregar dados:", error);
