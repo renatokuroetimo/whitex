@@ -458,7 +458,6 @@ class PatientAPI {
         city: data.city || null,
         state: data.state || null,
         weight: data.weight || null,
-        phone: data.phone || null,
         status: data.status || "ativo",
         notes: data.notes || "",
         created_at: new Date().toISOString(),
@@ -507,7 +506,7 @@ class PatientAPI {
         if (userCreateError) {
           console.error("❌ Erro ao criar usuário:", userCreateError);
           console.warn(
-            "⚠️ Paciente criado mas conta de usuário não foi criada",
+            "��️ Paciente criado mas conta de usuário não foi criada",
           );
         } else {
           console.log(
@@ -686,7 +685,7 @@ class PatientAPI {
       throw new Error("Você não tem permissão para editar este paciente");
     }
 
-    console.log("���� Permissões verificadas:", {
+    console.log("🔍 Permissões verificadas:", {
       isOwnPatient: !!ownPatient,
       isSharedPatient: !!shareData,
       patientId: id,
@@ -990,7 +989,7 @@ class PatientAPI {
       notes: data.notes || currentPatient.notes,
     };
 
-    console.log("✅ UPDATEPATIENT CONCLUÍDO COM SUCESSO:", result);
+    console.log("✅ UPDATEPATIENT CONCLU��DO COM SUCESSO:", result);
     return result;
   }
 
