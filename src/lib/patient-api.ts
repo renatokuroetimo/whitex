@@ -852,15 +852,19 @@ class PatientAPI {
     }
 
     // Retornar paciente atualizado
+    console.log("🔄 Buscando paciente atualizado...");
     const currentPatient = await this.getPatientById(id);
     if (!currentPatient) {
       throw new Error("Paciente não encontrado");
     }
 
-    return {
+    const result = {
       ...currentPatient,
       notes: data.notes || currentPatient.notes,
     };
+
+    console.log("✅ UPDATEPATIENT CONCLUÍDO COM SUCESSO:", result);
+    return result;
   }
   async deletePatients(ids: string[]): Promise<void> {
     await this.delay(300);
