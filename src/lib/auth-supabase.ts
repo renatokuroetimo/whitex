@@ -138,7 +138,7 @@ class AuthSupabaseAPI {
       email: user.email,
       profession: user.profession,
       crm: user.crm,
-      fullName: user.full_name, // CORRIGIDO: usar 'full_name' se existir
+      fullName: user.full_name || user.name, // Try both full_name and name fields
       city: user.city,
       state: user.state,
       specialty: user.specialty,
