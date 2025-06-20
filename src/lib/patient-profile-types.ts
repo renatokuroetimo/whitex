@@ -54,6 +54,7 @@ export interface PatientPersonalFormData {
   state: string;
   city: string;
   healthPlan?: string;
+  phone?: string;
 }
 
 export interface PatientMedicalFormData {
