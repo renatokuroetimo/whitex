@@ -564,6 +564,8 @@ class PatientAPI {
   ): Promise<Patient> {
     await this.delay(300);
 
+    console.log("🔥 UPDATEPATIENT INICIADO:", { id, data });
+
     if (!supabase) {
       throw new Error("Sistema de banco de dados não configurado");
     }
@@ -574,6 +576,12 @@ class PatientAPI {
       throw new Error("Usuário não autenticado");
     }
     const currentUser = JSON.parse(currentUserStr);
+
+    console.log("🔍 Usuário atual:", {
+      id: currentUser.id,
+      profession: currentUser.profession,
+      email: currentUser.email,
+    });
 
     // PRIMEIRO: Verificar se é paciente próprio do médico
     const { data: ownPatient, error: ownError } = await supabase
