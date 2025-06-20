@@ -124,10 +124,12 @@ class AuthSupabaseAPI {
       id: user.id,
       email: user.email,
       profession: user.profession,
-      full_name: user.full_name, // CORRIGIDO: usar 'full_name' se existir
+      full_name: user.full_name,
+      name: user.name, // Check if 'name' field exists
       city: user.city,
       state: user.state,
       phone: user.phone,
+      allFields: Object.keys(user), // Log all available fields
     });
 
     // Converter formato Supabase para formato local com TODOS os campos
