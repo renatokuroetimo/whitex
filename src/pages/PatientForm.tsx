@@ -102,7 +102,6 @@ const PatientForm = () => {
         const finalFormData: PatientFormData = {
           // Dados básicos do patient
           name: patient.name || "",
-          age: patient.age || 0,
           city: patient.city || "",
           state: patient.state || "",
           weight: patient.weight || 0,
