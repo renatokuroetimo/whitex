@@ -57,10 +57,10 @@ const PatientForm = () => {
   const [isAddingDiagnosis, setIsAddingDiagnosis] = useState(false);
 
   useEffect(() => {
-    if (isEditing && id) {
+    if (id) {
       loadPatientData();
     }
-  }, [isEditing, id]);
+  }, [id]);
 
   const loadPatientData = async () => {
     if (!id) return;
