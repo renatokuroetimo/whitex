@@ -19,7 +19,7 @@ class PatientAPI {
   }> {
     await this.delay(200);
 
-    // Verificar se usuário está logado
+    // Verificar se usuário est�� logado
     const currentUserStr = localStorage.getItem("medical_app_current_user");
     if (!currentUserStr) {
       return {
@@ -348,12 +348,19 @@ class PatientAPI {
       }
 
       // SEGUNDO: Se não é compartilhado, verificar se é um paciente próprio
+      console.log("🔍 Buscando paciente próprio do médico:", {
+        patientId: id,
+        doctorId: currentUser.id,
+      });
+
       const { data: ownPatient } = await supabase
         .from("patients")
         .select("*")
         .eq("id", id)
         .eq("doctor_id", currentUser.id)
         .single();
+
+      console.log("📋 Paciente próprio encontrado:", ownPatient);
 
       if (ownPatient) {
         // Buscar observações médicas salvas
