@@ -132,7 +132,7 @@ const PatientForm = () => {
         }
 
         // Combinar dados do patient com dados complementares
-        const formData = {
+        const combinedFormData = {
           name: patient.name || "",
           age: patient.age || 0,
           city: patient.city || "",
@@ -141,11 +141,24 @@ const PatientForm = () => {
           status: patient.status as "ativo" | "inativo",
           notes: patient.notes || "",
           email: patient.email || "",
-          ...complementaryData,
+          phone: complementaryData.phone,
+          birthDate: complementaryData.birthDate,
+          gender: complementaryData.gender,
+          healthPlan: complementaryData.healthPlan,
+          height: complementaryData.height,
+          smoker: complementaryData.smoker,
+          highBloodPressure: complementaryData.highBloodPressure,
+          physicalActivity: complementaryData.physicalActivity,
         };
 
-        console.log("📝 FORM: Dados COMPLETOS definidos:", formData);
-        setFormData(formData);
+        console.log("📝 FORM: Dados COMPLETOS definidos:", combinedFormData);
+        console.log("🔍 FORM: Dados complementares aplicados:", {
+          phone: complementaryData.phone,
+          birthDate: complementaryData.birthDate,
+          gender: complementaryData.gender,
+          healthPlan: complementaryData.healthPlan,
+        });
+        setFormData(combinedFormData);
 
         // Configurar estado e cidades se disponíveis
         if (formData.state) {
