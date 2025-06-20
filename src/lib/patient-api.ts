@@ -656,76 +656,11 @@ class PatientAPI {
           console.log("✅ Dados básicos atualizados com sucesso");
         }
 
-        // Atualizar/inserir dados pessoais
-        if (
-          data.birthDate ||
-          data.email ||
-          data.phone ||
-          data.gender ||
-          data.healthPlan ||
-          data.city ||
-          data.state
-        ) {
-          console.log("📋 Atualizando dados pessoais...");
-
-          const { data: existingPersonal } = await supabase
-            .from("patient_personal_data")
-            .select("*")
-            .eq("user_id", id)
-            .single();
-
-          console.log("🔍 Dados pessoais existentes:", existingPersonal);
-
-          if (existingPersonal) {
-            const { error: updatePersonalError } = await supabase
-              .from("patient_personal_data")
-              .update({
-                full_name: data.name || existingPersonal.full_name,
-                birth_date: data.birthDate || existingPersonal.birth_date,
-                email: data.email || existingPersonal.email,
-                phone: data.phone || existingPersonal.phone,
-                gender: data.gender || existingPersonal.gender,
-                health_plan: data.healthPlan || existingPersonal.health_plan,
-                city: data.city || existingPersonal.city,
-                state: data.state || existingPersonal.state,
-                updated_at: new Date().toISOString(),
-              })
-              .eq("user_id", id);
-
-            if (updatePersonalError) {
-              console.warn(
-                "Aviso: erro ao atualizar dados pessoais:",
-                updatePersonalError,
-              );
-            }
-          } else {
-            const { error: insertPersonalError } = await supabase
-              .from("patient_personal_data")
-              .insert([
-                {
-                  id: this.generateId(),
-                  user_id: id,
-                  full_name: data.name,
-                  birth_date: data.birthDate || null,
-                  email: data.email || null,
-                  phone: data.phone || null,
-                  gender: data.gender || null,
-                  health_plan: data.healthPlan || null,
-                  city: data.city || null,
-                  state: data.state || null,
-                  created_at: new Date().toISOString(),
-                  updated_at: new Date().toISOString(),
-                },
-              ]);
-
-            if (insertPersonalError) {
-              console.warn(
-                "Aviso: erro ao inserir dados pessoais:",
-                insertPersonalError,
-              );
-            }
-          }
-        }
+        // Para pacientes criados pelo médico (não usuários registrados),
+        // não inserimos dados em patient_personal_data/patient_medical_data
+        console.log(
+          "⚠️ NOTA: Paciente criado pelo médico - dados pessoais/médicos são gerenciados na tabela patients",
+        );
 
         // Atualizar/inserir dados médicos
         if (
@@ -988,7 +923,7 @@ class PatientAPI {
         .single();
 
       if (shareError && shareError.code !== "PGRST116") {
-        console.error("❌ Erro ao verificar compartilhamento:", shareError);
+        console.error("��� Erro ao verificar compartilhamento:", shareError);
         throw new Error("Erro ao verificar permissões de acesso ao paciente");
       }
 
