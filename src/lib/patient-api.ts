@@ -575,32 +575,45 @@ class PatientAPI {
     }
     const currentUser = JSON.parse(currentUserStr);
 
-    // Verificar se é paciente compartilhado
-    const { data: shareData, error: shareError } = await supabase
-      .from("doctor_patient_sharing")
+    // PRIMEIRO: Verificar se é paciente próprio do médico
+    const { data: ownPatient, error: ownError } = await supabase
+      .from("patients")
       .select("*")
+      .eq("id", id)
       .eq("doctor_id", currentUser.id)
-      .eq("patient_id", id)
       .single();
 
-    if (shareError && shareError.code !== "PGRST116") {
-      throw new Error(`Erro ao verificar permissões: ${shareError.message}`);
+    // SEGUNDO: Se não for paciente próprio, verificar se é compartilhado
+    let shareData = null;
+    if (!ownPatient) {
+      const { data: tempShareData, error: shareError } = await supabase
+        .from("doctor_patient_sharing")
+        .select("*")
+        .eq("doctor_id", currentUser.id)
+        .eq("patient_id", id)
+        .single();
+
+      if (shareError && shareError.code !== "PGRST116") {
+        throw new Error(`Erro ao verificar permissões: ${shareError.message}`);
+      }
+
+      shareData = tempShareData;
     }
 
-    if (!shareData) {
+    // Verificar se tem permissão (próprio OU compartilhado)
+    if (!ownPatient && !shareData) {
       throw new Error("Você não tem permissão para editar este paciente");
     }
 
-    // Atualizar dados pessoais se for paciente próprio (não compartilhado)
-    if (!shareData) {
-      // Verificar se é paciente próprio do médico
-      const { data: ownPatient } = await supabase
-        .from("patients")
-        .select("*")
-        .eq("id", id)
-        .eq("doctor_id", currentUser.id)
-        .single();
+    console.log("🔍 Permissões verificadas:", {
+      isOwnPatient: !!ownPatient,
+      isSharedPatient: !!shareData,
+      patientId: id,
+      doctorId: currentUser.id,
+    });
 
+    // Atualizar dados pessoais se for paciente próprio (não compartilhado)
+    if (ownPatient) {
       if (ownPatient) {
         // Atualizar dados básicos do paciente
         if (data.name || data.status) {
