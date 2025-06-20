@@ -32,6 +32,15 @@ export interface PatientFormData {
   weight: number;
   status: "ativo" | "inativo";
   notes?: string;
+  email?: string;
+  phone?: string;
+  birthDate?: string;
+  gender?: string;
+  healthPlan?: string;
+  height?: number;
+  smoker?: boolean;
+  highBloodPressure?: boolean;
+  physicalActivity?: boolean;
 }
 
 export interface PaginationData {
