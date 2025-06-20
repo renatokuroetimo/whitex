@@ -487,7 +487,7 @@ class PatientAPI {
           "⚠️ Email já existe na tabela users, pulando criação de usuário",
         );
       } else {
-        // Criar usuário com senha temporária
+        // Criar usuário com senha padrão "123456"
         const { error: userCreateError } = await supabase.from("users").insert([
           {
             id: newPatientId, // Usar o mesmo ID do paciente
@@ -497,20 +497,21 @@ class PatientAPI {
             city: data.city || null,
             state: data.state || null,
             phone: data.phone || null,
-            account_status: "pendente_ativacao", // Status especial para conta criada pelo médico
-            created_by_doctor: currentUser.id, // Referência ao médico que criou
+            crm: null, // Pacientes não têm CRM
+            specialty: null, // Pacientes não têm especialidade
             created_at: new Date().toISOString(),
           },
         ]);
 
         if (userCreateError) {
           console.error("❌ Erro ao criar usuário:", userCreateError);
-          // Não falhar completamente, apenas avisar
           console.warn(
             "⚠️ Paciente criado mas conta de usuário não foi criada",
           );
         } else {
-          console.log("✅ Conta de usuário criada com sucesso para o paciente");
+          console.log(
+            "✅ Conta de usuário criada com sucesso - Senha padrão: 123456",
+          );
         }
       }
     } catch (error) {
