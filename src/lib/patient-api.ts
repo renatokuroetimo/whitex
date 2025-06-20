@@ -506,7 +506,7 @@ class PatientAPI {
         if (userCreateError) {
           console.error("❌ Erro ao criar usuário:", userCreateError);
           console.warn(
-            "��️ Paciente criado mas conta de usuário não foi criada",
+            "⚠️ Paciente criado mas conta de usuário não foi criada",
           );
         } else {
           console.log(
@@ -772,6 +772,12 @@ class PatientAPI {
         healthPlan: data.healthPlan,
       });
 
+      if (data.phone) {
+        console.warn(
+          "⚠️ UPDATE: PHONE não será salvo - coluna não existe no banco",
+        );
+      }
+
       const personalDataToSave = {
         id: this.generateId(),
         user_id: id,
@@ -989,7 +995,7 @@ class PatientAPI {
       notes: data.notes || currentPatient.notes,
     };
 
-    console.log("✅ UPDATEPATIENT CONCLU��DO COM SUCESSO:", result);
+    console.log("✅ UPDATEPATIENT CONCLUÍDO COM SUCESSO:", result);
     return result;
   }
 
