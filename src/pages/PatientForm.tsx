@@ -36,6 +36,15 @@ const PatientForm = () => {
     weight: 0,
     status: "ativo",
     notes: "",
+    email: "",
+    phone: "",
+    birthDate: "",
+    gender: "",
+    healthPlan: "",
+    height: 0,
+    smoker: false,
+    highBloodPressure: false,
+    physicalActivity: false,
   });
 
   // Diagnosis form state
