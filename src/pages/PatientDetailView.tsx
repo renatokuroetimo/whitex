@@ -54,32 +54,31 @@ const PatientDetailView = () => {
         setPatient(foundPatient);
         console.log("✅ Paciente carregado:", foundPatient);
 
-        // Para pacientes criados pelo médico (não compartilhados), usar dados da tabela patients
-        if (!foundPatient.isShared) {
-          console.log(
-            "💡 Paciente criado pelo médico - usando dados da tabela patients",
-          );
-          // Não buscar dados complementares, usar apenas o que está na tabela patients
-          setPersonalData(null);
-          setMedicalData(null);
-        } else {
-          console.log(
-            "🔍 Paciente compartilhado - carregando dados complementares...",
-          );
+        // SEMPRE buscar dados complementares das tabelas auxiliares (tanto para criados pelo médico quanto compartilhados)
+        console.log("🔍 Buscando dados auxiliares para o paciente...");
 
-          // Carregar dados pessoais detalhados
+        // Carregar dados pessoais das tabelas auxiliares
+        try {
           console.log("🔍 Carregando dados pessoais...");
           const personal =
             await patientProfileAPI.getPatientPersonalData(patientId);
           console.log("📊 Dados pessoais carregados:", personal);
           setPersonalData(personal);
+        } catch (error) {
+          console.log("⚠️ Erro ao carregar dados pessoais:", error);
+          setPersonalData(null);
+        }
 
-          // Carregar dados médicos detalhados
+        // Carregar dados médicos das tabelas auxiliares
+        try {
           console.log("🔍 Carregando dados médicos...");
           const medical =
             await patientProfileAPI.getPatientMedicalData(patientId);
           console.log("📊 Dados médicos carregados:", medical);
           setMedicalData(medical);
+        } catch (error) {
+          console.log("⚠️ Erro ao carregar dados médicos:", error);
+          setMedicalData(null);
         }
 
         // Carregar histórico de diagnósticos
