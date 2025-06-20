@@ -132,11 +132,21 @@ const PatientDetailView = () => {
   };
 
   const getPatientAge = () => {
+    console.log("🔍 getPatientAge - personalData:", personalData);
+    console.log("🔍 getPatientAge - patient.age:", patient?.age);
+
     // Try personal data first, then fall back to patient age
     if (personalData?.birthDate) {
       try {
         const today = new Date();
         const birthDate = new Date(personalData.birthDate);
+
+        console.log(
+          "📅 Data de nascimento:",
+          personalData.birthDate,
+          "-> Date:",
+          birthDate,
+        );
 
         // Validar se a data é válida
         if (isNaN(birthDate.getTime())) {
@@ -151,8 +161,11 @@ const PatientDetailView = () => {
           monthDiff < 0 ||
           (monthDiff === 0 && today.getDate() < birthDate.getDate())
         ) {
-          return age - 1;
+          const finalAge = age - 1;
+          console.log("✅ Idade calculada:", finalAge);
+          return finalAge;
         }
+        console.log("✅ Idade calculada:", age);
         return age;
       } catch (error) {
         console.error("Erro ao calcular idade:", error);
@@ -162,9 +175,11 @@ const PatientDetailView = () => {
 
     // Fall back to patient.age if available
     if (patient?.age && patient.age > 0) {
+      console.log("✅ Usando idade do paciente:", patient.age);
       return patient.age;
     }
 
+    console.log("⚠️ Nenhuma idade disponível");
     return "N/A";
   };
 
