@@ -57,10 +57,16 @@ const PatientForm = () => {
   const [isAddingDiagnosis, setIsAddingDiagnosis] = useState(false);
 
   useEffect(() => {
-    if (id) {
+    if (id && !formData.name) {
+      // Só carrega se ainda não tem dados
       loadPatientData();
     }
   }, [id]);
+
+  // Segundo useEffect para debug - remover depois
+  useEffect(() => {
+    console.log("🔄 FORM: FormData atualizado:", formData);
+  }, [formData]);
 
   const loadPatientData = async () => {
     if (!id) return;
