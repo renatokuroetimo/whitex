@@ -566,10 +566,13 @@ const PatientProfile = () => {
                       <Label>Telefone</Label>
                       <Input
                         type="tel"
-                        value={phone}
+                        value={personalData.phone || ""}
                         onChange={(e) => {
                           const maskedValue = phoneMask(e.target.value);
-                          setPhone(maskedValue);
+                          setPersonalData((prev) => ({
+                            ...prev,
+                            phone: maskedValue,
+                          }));
                         }}
                         placeholder="(11) 99999-9999"
                         maxLength={15}
