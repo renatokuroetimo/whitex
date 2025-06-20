@@ -538,7 +538,6 @@ class PatientAPI {
           user_id: newPatientId,
           full_name: data.name,
           email: data.email || "",
-          phone: data.phone || "",
           birth_date: data.birthDate || null,
           gender: data.gender || null,
           state: data.state || null,
