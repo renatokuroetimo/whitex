@@ -32,7 +32,6 @@ const PatientForm = () => {
   const [dataLoaded, setDataLoaded] = useState(false); // Flag para controlar carregamento
   const [formData, setFormData] = useState<PatientFormData>({
     name: "",
-    age: 0,
     city: "",
     state: "",
     weight: 0,
