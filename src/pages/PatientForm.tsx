@@ -68,6 +68,7 @@ const PatientForm = () => {
       const patient = await patientAPI.getPatientById(id);
 
       if (patient) {
+        // Carregar dados básicos
         setFormData({
           name: patient.name || "",
           age: patient.age || 0,
@@ -86,6 +87,49 @@ const PatientForm = () => {
           highBloodPressure: false,
           physicalActivity: false,
         });
+
+        // Carregar dados pessoais adicionais do banco
+        try {
+          const { data: personalData } = await patientAPI.supabase
+            ?.from("patient_personal_data")
+            .select("*")
+            .eq("user_id", id)
+            .single();
+
+          const { data: medicalData } = await patientAPI.supabase
+            ?.from("patient_medical_data")
+            .select("*")
+            .eq("user_id", id)
+            .single();
+
+          if (personalData || medicalData) {
+            setFormData((prev) => ({
+              ...prev,
+              email: personalData?.email || prev.email,
+              phone: personalData?.phone || prev.phone,
+              birthDate: personalData?.birth_date || prev.birthDate,
+              gender: personalData?.gender || prev.gender,
+              healthPlan: personalData?.health_plan || prev.healthPlan,
+              city: personalData?.city || prev.city,
+              state: personalData?.state || prev.state,
+              height: medicalData?.height || prev.height,
+              weight: medicalData?.weight || prev.weight,
+              smoker: medicalData?.smoker || prev.smoker,
+              highBloodPressure:
+                medicalData?.high_blood_pressure || prev.highBloodPressure,
+              physicalActivity:
+                medicalData?.physical_activity || prev.physicalActivity,
+            }));
+
+            if (personalData?.state) {
+              setSelectedState(personalData.state);
+              const cities = getCitiesByState(personalData.state);
+              setAvailableCities(cities);
+            }
+          }
+        } catch (error) {
+          console.warn("Aviso: erro ao carregar dados complementares:", error);
+        }
 
         if (patient.state) {
           setSelectedState(patient.state);
