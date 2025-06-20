@@ -73,7 +73,7 @@ const PatientForm = () => {
 
       if (patient) {
         // Carregar dados básicos
-        setFormData({
+        const basicFormData = {
           name: patient.name || "",
           age: patient.age || 0,
           city: patient.city || "",
@@ -90,7 +90,10 @@ const PatientForm = () => {
           smoker: false,
           highBloodPressure: false,
           physicalActivity: false,
-        });
+        };
+
+        console.log("📝 FORM: Dados básicos definidos:", basicFormData);
+        setFormData(basicFormData);
 
         // Carregar dados pessoais adicionais do banco
         try {
