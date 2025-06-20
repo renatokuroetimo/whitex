@@ -36,15 +36,6 @@ const PatientForm = () => {
     weight: 0,
     status: "ativo",
     notes: "",
-    email: "",
-    phone: "",
-    birthDate: "",
-    gender: "",
-    healthPlan: "",
-    height: 0,
-    smoker: false,
-    highBloodPressure: false,
-    physicalActivity: false,
   });
 
   // Diagnosis form state
@@ -63,37 +54,31 @@ const PatientForm = () => {
   const loadPatientData = async () => {
     if (!id) return;
 
-    setIsLoading(true);
     try {
+      setIsLoading(true);
       const patient = await patientAPI.getPatientById(id);
-      if (patient) {
-        // Set state first and load cities
-        setSelectedState(patient.state);
-        const cities = getCitiesByState(patient.state);
-        setAvailableCities(cities);
 
-        // Then set form data including city
+      if (patient) {
         setFormData({
-          name: patient.name,
+          name: patient.name || "",
           age: patient.age || 0,
           city: patient.city || "",
           state: patient.state || "",
           weight: patient.weight || 0,
-          status: patient.status,
+          status: patient.status as "ativo" | "inativo",
           notes: patient.notes || "",
         });
 
-        // Detectar se é paciente compartilhado
-        setIsSharedPatient(patient.status === 'compartilhado');
+        if (patient.state) {
+          setSelectedState(patient.state);
+          const cities = getCitiesByState(patient.state);
+          setAvailableCities(cities);
+        }
 
-        console.log("🔍 Patient data loaded:", {
-          state: patient.state,
-          city: patient.city,
-          availableCities: cities.length
-        });
+        // Check if this is a shared patient
+        setIsSharedPatient(patient.isShared || false);
       }
     } catch (error) {
-      console.error("❌ Error loading patient:", error);
       toast({
         variant: "destructive",
         title: "Erro",
@@ -104,21 +89,20 @@ const PatientForm = () => {
     }
   };
 
-  const handleStateChange = (stateId: string) => {
-    setSelectedState(stateId);
-    setAvailableCities(getCitiesByState(stateId));
-    setFormData((prev) => ({
-      ...prev,
-      state: stateId,
-      city: "", // Reset cidade quando muda estado
-    }));
-  };
-
   const handleInputChange = (field: keyof PatientFormData, value: any) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
+  };
+
+  const handleStateChange = (stateId: string) => {
+    setSelectedState(stateId);
+    setFormData((prev) => ({ ...prev, state: stateId }));
+    const cities = getCitiesByState(stateId);
+    setAvailableCities(cities);
+    // Reset city when state changes
+    setFormData((prev) => ({ ...prev, city: "" }));
   };
 
   const handleDiagnosisInputChange = (field: string, value: string) => {
@@ -129,44 +113,30 @@ const PatientForm = () => {
   };
 
   const handleAddDiagnosis = async () => {
-    if (!diagnosisForm.cid.trim() || !diagnosisForm.diagnosis.trim()) {
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "CID e Diagnóstico são obrigatórios",
-      });
-      return;
-    }
+    if (!diagnosisForm.cid || !diagnosisForm.diagnosis || !id) return;
 
-    if (!id) {
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Salve o paciente primeiro para adicionar diagnósticos",
-      });
-      return;
-    }
-
-    setIsLoading(true);
     try {
+      setIsLoading(true);
       await patientAPI.addDiagnosis(id, {
-        date: new Date().toLocaleDateString("pt-BR"),
-        status: diagnosisForm.diagnosis,
+        date: new Date().toISOString().split("T")[0],
+        diagnosis: diagnosisForm.diagnosis,
         code: diagnosisForm.cid,
+        status: diagnosisForm.diagnosis,
       });
-
-      setDiagnosisForm({ cid: "", diagnosis: "" });
-      setIsAddingDiagnosis(false);
 
       toast({
         title: "Sucesso",
         description: "Diagnóstico adicionado com sucesso",
       });
-    } catch (error) {
+
+      // Reset form
+      setDiagnosisForm({ cid: "", diagnosis: "" });
+      setIsAddingDiagnosis(false);
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Erro ao adicionar diagnóstico",
+        description: error.message || "Erro ao adicionar diagnóstico",
       });
     } finally {
       setIsLoading(false);
@@ -181,7 +151,7 @@ const PatientForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validações apenas para pacientes não compartilhados
+    // Validation for non-shared patients
     if (!isSharedPatient) {
       if (!formData.name.trim()) {
         toast({
@@ -231,12 +201,9 @@ const PatientForm = () => {
 
     setIsLoading(true);
 
-
-
     try {
       if (isEditing && id) {
         const result = await patientAPI.updatePatient(id, formData);
-        console.log("📊 RESULTADO do updatePatient:", result);
 
         if (!result) {
           throw new Error("Operação retornou resultado vazio");
@@ -256,28 +223,11 @@ const PatientForm = () => {
         });
         navigate(`/pacientes/${newPatient.id}`);
       }
-    } catch (error) {
-      console.error("💥 ERRO CAPTURADO no PatientForm:", error);
-
-      // Mostrar a mensagem de erro específica com mais detalhes
-      let errorMessage = "Erro desconhecido";
-
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      } else if (typeof error === 'object' && error !== null) {
-        errorMessage = JSON.stringify(error, null, 2);
-      } else {
-        errorMessage = String(error);
-      }
-
-      console.error("🔍 Erro detalhado:", errorMessage);
-
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Erro",
-        description: isEditing
-          ? `Erro ao atualizar paciente: ${errorMessage}`
-          : `Erro ao criar paciente: ${errorMessage}`,
+        description: error.message || "Erro ao processar operação",
       });
     } finally {
       setIsLoading(false);
@@ -296,7 +246,7 @@ const PatientForm = () => {
     if (!id) return;
 
     const confirmed = window.confirm(
-      `Tem certeza que deseja apagar o paciente "${formData.name}"? Esta ação não pode ser desfeita.`
+      `Tem certeza que deseja apagar o paciente "${formData.name}"? Esta ação não pode ser desfeita.`,
     );
 
     if (!confirmed) return;
@@ -327,9 +277,7 @@ const PatientForm = () => {
       </div>
 
       <div className="flex-1 overflow-auto">
-        <div className="p-4 sm:p-6 lg:p-8">
-          {/* Header */}
-          <div className="flex justify-between items-center mb-6">
+        <div className="p-8">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-3">
               <button
@@ -340,9 +288,10 @@ const PatientForm = () => {
               </button>
               <h1 className="text-2xl font-semibold text-gray-900">
                 {isEditing
-                  ? (isSharedPatient ? "Adicionar Diagnósticos" : "Editar Paciente")
-                  : "Novo Paciente"
-                }
+                  ? isSharedPatient
+                    ? "Adicionar Diagnósticos"
+                    : "Editar Paciente"
+                  : "Novo Paciente"}
               </h1>
             </div>
             {isEditing && !isSharedPatient && (
@@ -356,23 +305,26 @@ const PatientForm = () => {
               </Button>
             )}
           </div>
+
           <div className="max-w-2xl">
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <div className="mb-6">
                 <h2 className="text-lg font-medium text-gray-900 mb-1">
-                  {isSharedPatient ? "Diagnósticos e Observações" : "Dados do paciente"}
+                  {isSharedPatient
+                    ? "Diagnósticos e Observações"
+                    : "Dados do paciente"}
                 </h2>
                 <p className="text-sm text-gray-600">
                   {isSharedPatient
                     ? "Adicione diagnósticos e observações para este paciente compartilhado"
-                    : "Preencha as informações básicas do paciente"
-                  }
+                    : "Preencha as informações básicas do paciente"}
                 </p>
                 {isSharedPatient && (
                   <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                     <p className="text-sm text-blue-800">
-                      <strong>Paciente Compartilhado:</strong> Você pode apenas adicionar diagnósticos e observações.
-                      Os dados pessoais são gerenciados pelo paciente.
+                      <strong>Paciente Compartilhado:</strong> Você pode apenas
+                      adicionar diagnósticos e observações. Os dados pessoais
+                      são gerenciados pelo paciente.
                     </p>
                   </div>
                 )}
@@ -408,7 +360,10 @@ const PatientForm = () => {
                           type="number"
                           value={formData.age || ""}
                           onChange={(e) =>
-                            handleInputChange("age", parseInt(e.target.value) || 0)
+                            handleInputChange(
+                              "age",
+                              parseInt(e.target.value) || 0,
+                            )
                           }
                           placeholder="Idade"
                           className="w-full"
@@ -456,7 +411,7 @@ const PatientForm = () => {
                           <SelectContent>
                             {brazilStates.map((state) => (
                               <SelectItem key={state.id} value={state.id}>
-                                {state.name} ({state.abbreviation})
+                                {state.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -470,17 +425,13 @@ const PatientForm = () => {
                         </label>
                         <Select
                           value={formData.city}
-                          onValueChange={(value) => handleInputChange("city", value)}
+                          onValueChange={(value) =>
+                            handleInputChange("city", value)
+                          }
                           disabled={!selectedState}
                         >
                           <SelectTrigger>
-                            <SelectValue
-                              placeholder={
-                                selectedState
-                                  ? "Selecione a cidade"
-                                  : "Primeiro selecione o estado"
-                              }
-                            />
+                            <SelectValue placeholder="Selecione a cidade" />
                           </SelectTrigger>
                           <SelectContent>
                             {availableCities.map((city) => (
@@ -491,58 +442,83 @@ const PatientForm = () => {
                           </SelectContent>
                         </Select>
                       </div>
+
+                      {/* Status */}
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Status
+                        </label>
+                        <Select
+                          value={formData.status}
+                          onValueChange={(value) =>
+                            handleInputChange(
+                              "status",
+                              value as "ativo" | "inativo",
+                            )
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="ativo">Ativo</SelectItem>
+                            <SelectItem value="inativo">Inativo</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </>
                   )}
 
-                  {/* Diagnóstico */}
-                  {isEditing && (
+                  {/* Diagnósticos - apenas para pacientes compartilhados */}
+                  {isSharedPatient && (
                     <div className="md:col-span-2">
-                      <div className="flex items-center justify-between mb-3">
-                        <label className="block text-sm font-medium text-gray-700">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Diagnósticos
+                      </label>
+
+                      {!isAddingDiagnosis && (
+                        <Button
+                          type="button"
+                          onClick={() => setIsAddingDiagnosis(true)}
+                          className="mb-4"
+                          size="sm"
+                        >
+                          <Plus className="h-4 w-4 mr-1" />
                           Adicionar Diagnóstico
-                        </label>
-                        {!isAddingDiagnosis && (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setIsAddingDiagnosis(true)}
-                            className="text-blue-600 border-blue-200 hover:bg-blue-50"
-                          >
-                            <Plus className="h-4 w-4 mr-1" />
-                            Novo diagnóstico
-                          </Button>
-                        )}
-                      </div>
+                        </Button>
+                      )}
 
                       {isAddingDiagnosis && (
-                        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                        <div className="border border-gray-200 rounded-lg p-4 mb-4">
                           <div className="space-y-4">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                              {/* CID */}
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  CID *
+                                  CID-10
                                 </label>
                                 <Input
                                   value={diagnosisForm.cid}
                                   onChange={(e) =>
-                                    handleDiagnosisInputChange("cid", e.target.value)
+                                    handleDiagnosisInputChange(
+                                      "cid",
+                                      e.target.value,
+                                    )
                                   }
-                                  placeholder="Ex: I10.9"
+                                  placeholder="Ex: I10"
                                   className="w-full"
                                 />
                               </div>
-
-                              {/* Diagnóstico */}
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Diagnóstico *
+                                  Diagnóstico
                                 </label>
                                 <Input
                                   value={diagnosisForm.diagnosis}
                                   onChange={(e) =>
-                                    handleDiagnosisInputChange("diagnosis", e.target.value)
+                                    handleDiagnosisInputChange(
+                                      "diagnosis",
+                                      e.target.value,
+                                    )
                                   }
                                   placeholder="Ex: Hipertensão arterial"
                                   className="w-full"
@@ -578,7 +554,8 @@ const PatientForm = () => {
 
                       {!isAddingDiagnosis && (
                         <p className="text-sm text-gray-500">
-                          Os diagnósticos são exibidos no histórico do paciente após serem adicionados.
+                          Os diagnósticos são exibidos no histórico do paciente
+                          após serem adicionados.
                         </p>
                       )}
                     </div>
@@ -605,8 +582,6 @@ const PatientForm = () => {
                   </div>
                 </div>
 
-
-
                 {/* Buttons */}
                 <div className="flex justify-end gap-3 pt-6">
                   <Button
@@ -627,7 +602,9 @@ const PatientForm = () => {
                         ? "Salvando..."
                         : "Criando..."
                       : isEditing
-                        ? (isSharedPatient ? "Salvar diagnósticos" : "Salvar alterações")
+                        ? isSharedPatient
+                          ? "Salvar diagnósticos"
+                          : "Salvar alterações"
                         : "Criar paciente"}
                   </Button>
                 </div>
