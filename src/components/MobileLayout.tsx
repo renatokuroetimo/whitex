@@ -199,10 +199,6 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
               const Icon = item.icon;
               const active = isActive(item.path);
 
-              console.log(
-                `🚨 MOBILE LAYOUT - Rendering: ${item.label} (${item.path}) - Active: ${active}`,
-              );
-
               return (
                 <li key={item.id}>
                   <button
