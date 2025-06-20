@@ -423,13 +423,6 @@ const Pacientes = () => {
                                 >
                                   Editar perfil
                                 </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() =>
-                                    navigate(`/pacientes/${patient.id}/editar`)
-                                  }
-                                >
-                                  Adicionar diagnósticos
-                                </DropdownMenuItem>
                                 {patient.status === "compartilhado" && (
                                   <DropdownMenuItem
                                     onClick={() =>
