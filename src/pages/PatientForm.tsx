@@ -127,6 +127,10 @@ const PatientForm = () => {
           "📝 FORM: Dados FINAIS que serão aplicados:",
           finalFormData,
         );
+        console.log(
+          "🔍 FORM: Email específico no objeto final:",
+          finalFormData.email,
+        );
 
         // Aplicar todos os dados de uma vez
         setFormData(finalFormData);
