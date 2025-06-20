@@ -733,9 +733,26 @@ class PatientAPI {
         .single();
 
       if (updatePatientError) {
+        console.error("❌ BASIC UPDATE: Erro ao atualizar dados básicos:");
         console.error(
-          "❌ Erro ao atualizar dados básicos:",
-          updatePatientError,
+          "❌ BASIC UPDATE: Código do erro:",
+          updatePatientError.code,
+        );
+        console.error(
+          "❌ BASIC UPDATE: Mensagem do erro:",
+          updatePatientError.message,
+        );
+        console.error(
+          "❌ BASIC UPDATE: Detalhes do erro:",
+          updatePatientError.details,
+        );
+        console.error(
+          "❌ BASIC UPDATE: Hint do erro:",
+          updatePatientError.hint,
+        );
+        console.error(
+          "❌ BASIC UPDATE: Erro completo:",
+          JSON.stringify(updatePatientError, null, 2),
         );
         throw new Error(
           `Erro ao atualizar dados básicos: ${updatePatientError.message}`,
@@ -1162,7 +1179,7 @@ class PatientAPI {
 
   async removePatientSharing(patientId: string): Promise<void> {
     if (!supabase) {
-      throw new Error("❌ Supabase não est�� configurado");
+      throw new Error("❌ Supabase não está configurado");
     }
 
     // Verificar se usuário está logado (médico)
