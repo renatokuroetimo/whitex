@@ -294,16 +294,6 @@ const PatientForm = () => {
                   : "Novo Paciente"}
               </h1>
             </div>
-            {isEditing && !isSharedPatient && (
-              <Button
-                onClick={handleDeletePatient}
-                variant="destructive"
-                disabled={isLoading}
-                className="bg-red-600 hover:bg-red-700"
-              >
-                🗑️ Apagar Paciente
-              </Button>
-            )}
           </div>
 
           <div className="max-w-2xl">
