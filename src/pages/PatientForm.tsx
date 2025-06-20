@@ -95,7 +95,7 @@ const PatientForm = () => {
             .eq("user_id", id)
             .single();
 
-          console.log("📊 FORM: Query dados pessoais - ID:", id);
+          console.log("�� FORM: Query dados pessoais - ID:", id);
           console.log("📊 FORM: Dados pessoais encontrados:", personalData);
           console.log("📊 FORM: Erro dados pessoais:", personalError);
 
@@ -174,7 +174,18 @@ const PatientForm = () => {
           gender: complementaryData.gender,
           healthPlan: complementaryData.healthPlan,
         });
+
         setFormData(combinedFormData);
+
+        console.log("✅ FORM: setFormData chamado com:", combinedFormData);
+
+        // Log adicional após um pequeno delay para ver se o estado foi atualizado
+        setTimeout(() => {
+          console.log(
+            "🔍 FORM: Estado atual do formData após setFormData:",
+            formData,
+          );
+        }, 100);
 
         // Configurar estado e cidades se disponíveis
         if (formData.state) {
@@ -621,7 +632,7 @@ const PatientForm = () => {
                           }
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione o g��nero" />
+                            <SelectValue placeholder="Selecione o gênero" />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="masculino">Masculino</SelectItem>
