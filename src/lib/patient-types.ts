@@ -10,7 +10,9 @@ export interface Patient {
   notes?: string;
   createdAt: string;
   updatedAt?: string;
-  doctorId: string;
+  doctorId: string | null;
+  isShared?: boolean;
+  sharedId?: string;
 }
 
 export interface Diagnosis {
