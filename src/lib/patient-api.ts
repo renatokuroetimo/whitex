@@ -19,7 +19,7 @@ class PatientAPI {
   }> {
     await this.delay(200);
 
-    // Verificar se usuário est�� logado
+    // Verificar se usuário está logado
     const currentUserStr = localStorage.getItem("medical_app_current_user");
     if (!currentUserStr) {
       return {
@@ -381,52 +381,18 @@ class PatientAPI {
           // Ignorar erro se não houver observações
         }
 
-        // Buscar dados pessoais para complementar informações
-        let age = null;
-        let city = "N/A";
-        let state = "N/A";
-        let weight = null;
+        // Para pacientes criados pelo médico, usar dados básicos da tabela patients
+        console.log("📊 Dados base do paciente próprio:", ownPatient);
 
-        try {
-          // Buscar dados pessoais
-          const { data: personalData } = await supabase
-            .from("patient_personal_data")
-            .select("*")
-            .eq("user_id", id)
-            .single();
+        // Os dados estão todos na tabela patients para pacientes criados pelo médico
+        const age = null; // TODO: Implementar cálculo de idade se necessário
+        const city = "N/A"; // TODO: Adicionar campos à tabela patients se necessário
+        const state = "N/A"; // TODO: Adicionar campos à tabela patients se necessário
+        const weight = null; // TODO: Adicionar campos à tabela patients se necessário
 
-          if (personalData) {
-            if (personalData.city) city = personalData.city;
-            if (personalData.state) state = personalData.state;
-
-            // Calcular idade se data de nascimento disponível
-            if (personalData.birth_date) {
-              const today = new Date();
-              const birthDate = new Date(personalData.birth_date);
-              age = today.getFullYear() - birthDate.getFullYear();
-              const monthDiff = today.getMonth() - birthDate.getMonth();
-              if (
-                monthDiff < 0 ||
-                (monthDiff === 0 && today.getDate() < birthDate.getDate())
-              ) {
-                age--;
-              }
-            }
-          }
-
-          // Buscar dados médicos
-          const { data: medicalData } = await supabase
-            .from("patient_medical_data")
-            .select("*")
-            .eq("user_id", id)
-            .single();
-
-          if (medicalData && medicalData.weight) {
-            weight = parseFloat(medicalData.weight.toString());
-          }
-        } catch (error) {
-          // Silenciosamente ignorar erros na busca de dados complementares
-        }
+        console.log(
+          "⚠️ NOTA: Usando apenas dados da tabela patients (paciente criado pelo médico)",
+        );
 
         return {
           id: ownPatient.id,
