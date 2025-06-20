@@ -413,6 +413,18 @@ const PatientForm = () => {
     }
   };
 
+  // DEBUG: Log do estado atual do formulário
+  console.log("🎨 RENDER DEBUG:", {
+    formData,
+    isEditing,
+    id,
+    email: formData.email,
+    phone: formData.phone,
+    birthDate: formData.birthDate,
+    gender: formData.gender,
+    healthPlan: formData.healthPlan,
+  });
+
   return (
     <div className="flex h-screen bg-gray-50">
       <div className="hidden lg:block">
