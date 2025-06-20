@@ -344,14 +344,17 @@ const PatientDetailView = () => {
                           {getFormattedWeight(medicalData?.weight)}
                         </span>
                       </div>
-                      {medicalData?.height && medicalData?.weight && (
+                      {getCalculatedIMC(
+                        medicalData?.height,
+                        medicalData?.weight,
+                      ) && (
                         <div className="flex justify-between">
                           <span className="text-sm text-gray-600">IMC:</span>
                           <span className="text-sm font-medium text-gray-900">
-                            {(
-                              medicalData.weight /
-                              Math.pow(medicalData.height / 100, 2)
-                            ).toFixed(1)}{" "}
+                            {getCalculatedIMC(
+                              medicalData?.height,
+                              medicalData?.weight,
+                            )}{" "}
                             kg/m²
                           </span>
                         </div>
