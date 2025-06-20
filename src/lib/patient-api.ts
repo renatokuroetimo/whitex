@@ -458,6 +458,7 @@ class PatientAPI {
         city: data.city || null,
         state: data.state || null,
         weight: data.weight || null,
+        phone: data.phone || null,
         status: data.status || "ativo",
         notes: data.notes || "",
         created_at: new Date().toISOString(),
@@ -1161,7 +1162,7 @@ class PatientAPI {
 
   async removePatientSharing(patientId: string): Promise<void> {
     if (!supabase) {
-      throw new Error("❌ Supabase não está configurado");
+      throw new Error("❌ Supabase não est�� configurado");
     }
 
     // Verificar se usuário está logado (médico)
