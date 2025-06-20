@@ -283,6 +283,34 @@ const PatientForm = () => {
     }
   };
 
+  const handleDeletePatient = async () => {
+    if (!id) return;
+
+    const confirmed = window.confirm(
+      `Tem certeza que deseja apagar o paciente "${formData.name}"? Esta ação não pode ser desfeita.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      setIsLoading(true);
+      await patientAPI.deletePatients([id]);
+      toast({
+        title: "Sucesso",
+        description: "Paciente removido com sucesso",
+      });
+      navigate("/pacientes");
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Erro ao remover paciente",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex h-screen bg-gray-50">
       <div className="hidden lg:block">
