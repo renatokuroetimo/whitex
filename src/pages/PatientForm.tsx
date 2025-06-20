@@ -756,8 +756,7 @@ const PatientForm = () => {
                           após serem adicionados.
                         </p>
                       )}
-                    </div>
-                  )}
+                  </div>
 
                   {/* Observações */}
                   <div className="md:col-span-2">
