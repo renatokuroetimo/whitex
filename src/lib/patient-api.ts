@@ -374,13 +374,60 @@ class PatientAPI {
           // Ignorar erro se não houver observações
         }
 
+        // Buscar dados pessoais para complementar informações
+        let age = null;
+        let city = "N/A";
+        let state = "N/A";
+        let weight = null;
+
+        try {
+          // Buscar dados pessoais
+          const { data: personalData } = await supabase
+            .from("patient_personal_data")
+            .select("*")
+            .eq("user_id", id)
+            .single();
+
+          if (personalData) {
+            if (personalData.city) city = personalData.city;
+            if (personalData.state) state = personalData.state;
+
+            // Calcular idade se data de nascimento disponível
+            if (personalData.birth_date) {
+              const today = new Date();
+              const birthDate = new Date(personalData.birth_date);
+              age = today.getFullYear() - birthDate.getFullYear();
+              const monthDiff = today.getMonth() - birthDate.getMonth();
+              if (
+                monthDiff < 0 ||
+                (monthDiff === 0 && today.getDate() < birthDate.getDate())
+              ) {
+                age--;
+              }
+            }
+          }
+
+          // Buscar dados médicos
+          const { data: medicalData } = await supabase
+            .from("patient_medical_data")
+            .select("*")
+            .eq("user_id", id)
+            .single();
+
+          if (medicalData && medicalData.weight) {
+            weight = parseFloat(medicalData.weight.toString());
+          }
+        } catch (error) {
+          // Silenciosamente ignorar erros na busca de dados complementares
+        }
+
         return {
           id: ownPatient.id,
           name: ownPatient.name,
-          age: null, // TODO: calcular idade se necessário
-          city: "N/A", // TODO: buscar de patient_personal_data se necessário
-          state: "N/A", // TODO: buscar de patient_personal_data se necessário
-          weight: null, // TODO: buscar de patient_medical_data se necessário
+          age: age,
+          city: city,
+          state: state,
+          weight: weight,
           status: ownPatient.status || "ativo",
           notes: notes,
           createdAt: ownPatient.created_at || new Date().toISOString(),
