@@ -63,6 +63,11 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            {/* Redirecionamento da rota incorreta para a correta */}
+            <Route
+              path="/patient/dashboard"
+              element={<Navigate to="/patient-dashboard" replace />}
+            />
             <Route
               path="/profile"
               element={
