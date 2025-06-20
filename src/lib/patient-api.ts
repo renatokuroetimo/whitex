@@ -348,7 +348,10 @@ class PatientAPI {
       }
 
       // SEGUNDO: Se não é compartilhado, verificar se é um paciente próprio
-      console.log("🔍 Buscando paciente próprio do médico:", { patientId: id, doctorId: currentUser.id });
+      console.log("🔍 Buscando paciente próprio do médico:", {
+        patientId: id,
+        doctorId: currentUser.id,
+      });
 
       const { data: ownPatient } = await supabase
         .from("patients")
@@ -387,7 +390,12 @@ class PatientAPI {
         const state = ownPatient.state;
         const weight = ownPatient.weight;
 
-        console.log("✅ Usando dados reais da tabela patients:", { age, city, state, weight });
+        console.log("✅ Usando dados reais da tabela patients:", {
+          age,
+          city,
+          state,
+          weight,
+        });
 
         const result = {
           id: ownPatient.id,
@@ -539,49 +547,54 @@ class PatientAPI {
 
     // Atualizar dados pessoais se for paciente próprio (não compartilhado)
     if (ownPatient) {
+      console.log(
+        "✅ Paciente próprio identificado, atualizando dados básicos...",
+      );
 
-      if (ownPatient) {
-        console.log("✅ Paciente próprio identificado, atualizando dados básicos...");
+      // Atualizar dados básicos do paciente (SEMPRE atualizar com os dados recebidos)
+      console.log("📝 Atualizando dados básicos completos:");
+      console.log("📊 Dados atuais no banco (ownPatient):", ownPatient);
+      console.log("📊 Dados enviados pelo formulário (data):", data);
+      console.log("🔍 Campos específicos do formulário:");
+      console.log("  - data.age:", data.age, "tipo:", typeof data.age);
+      console.log("  - data.city:", data.city, "tipo:", typeof data.city);
+      console.log("  - data.state:", data.state, "tipo:", typeof data.state);
+      console.log("  - data.weight:", data.weight, "tipo:", typeof data.weight);
 
-        // Atualizar dados básicos do paciente (SEMPRE atualizar com os dados recebidos)
-        console.log("📝 Atualizando dados básicos completos:");
-        console.log("📊 Dados atuais no banco (ownPatient):", ownPatient);
-        console.log("📊 Dados enviados pelo formulário (data):", data);
-        console.log("🔍 Campos específicos do formulário:");
-        console.log("  - data.age:", data.age, "tipo:", typeof data.age);
-        console.log("  - data.city:", data.city, "tipo:", typeof data.city);
-        console.log("  - data.state:", data.state, "tipo:", typeof data.state);
-        console.log("  - data.weight:", data.weight, "tipo:", typeof data.weight);
+      const updateData = {
+        name: data.name || ownPatient.name,
+        age: data.age ? parseInt(data.age.toString()) : ownPatient.age,
+        city: data.city || ownPatient.city,
+        state: data.state || ownPatient.state,
+        weight: data.weight
+          ? parseFloat(data.weight.toString())
+          : ownPatient.weight,
+        status: data.status || ownPatient.status,
+        updated_at: new Date().toISOString(),
+      };
 
-        const updateData = {
-          name: data.name || ownPatient.name,
-          age: data.age ? parseInt(data.age.toString()) : ownPatient.age,
-          city: data.city || ownPatient.city,
-          state: data.state || ownPatient.state,
-          weight: data.weight ? parseFloat(data.weight.toString()) : ownPatient.weight,
-          status: data.status || ownPatient.status,
-          updated_at: new Date().toISOString(),
-        };
+      console.log("💾 Dados que serão salvos (COMPLETOS):", updateData);
 
-        console.log("💾 Dados que serão salvos (COMPLETOS):", updateData);
+      const { data: updatedPatient, error: updatePatientError } = await supabase
+        .from("patients")
+        .update(updateData)
+        .eq("id", id)
+        .eq("doctor_id", currentUser.id) // Garantir que só atualiza se for do médico
+        .select()
+        .single();
 
-        const { data: updatedPatient, error: updatePatientError } = await supabase
-          .from("patients")
-          .update(updateData)
-          .eq("id", id)
-          .eq("doctor_id", currentUser.id) // Garantir que só atualiza se for do médico
-          .select()
-          .single();
-
-        if (updatePatientError) {
-          console.error("❌ Erro ao atualizar dados básicos:", updatePatientError);
-          throw new Error(
-            `Erro ao atualizar dados básicos: ${updatePatientError.message}`,
-          );
-        }
-
-        console.log("✅ Dados básicos atualizados com sucesso:", updatedPatient);
+      if (updatePatientError) {
+        console.error(
+          "❌ Erro ao atualizar dados básicos:",
+          updatePatientError,
+        );
+        throw new Error(
+          `Erro ao atualizar dados básicos: ${updatePatientError.message}`,
+        );
       }
+
+      console.log("✅ Dados básicos atualizados com sucesso:", updatedPatient);
+    }
 
     // Salvar observações médicas se houver
     if (data.notes && data.notes.trim()) {
@@ -589,7 +602,10 @@ class PatientAPI {
 
       // Para pacientes criados pelo médico, simplesmente atualizar o campo notes na tabela patients
       if (ownPatient) {
-        console.log("💾 Salvando observações diretamente na tabela patients:", data.notes);
+        console.log(
+          "💾 Salvando observações diretamente na tabela patients:",
+          data.notes,
+        );
 
         const { data: updatedNotes, error: updateNotesError } = await supabase
           .from("patients")
@@ -611,7 +627,9 @@ class PatientAPI {
         console.log("✅ Observações salvas com sucesso:", updatedNotes);
       } else {
         // Para pacientes compartilhados, usar a tabela de observações médicas
-        console.log("💾 Salvando observações na tabela patient_medical_observations");
+        console.log(
+          "💾 Salvando observações na tabela patient_medical_observations",
+        );
 
         // Verificar se já existe observação
         const { data: existingObs } = await supabase
@@ -654,7 +672,9 @@ class PatientAPI {
             ]);
 
           if (insertError) {
-            throw new Error(`Erro ao salvar observações: ${insertError.message}`);
+            throw new Error(
+              `Erro ao salvar observações: ${insertError.message}`,
+            );
           }
         }
       }
