@@ -591,6 +591,172 @@ class PatientAPI {
       throw new Error("Você não tem permissão para editar este paciente");
     }
 
+    // Atualizar dados pessoais se for paciente próprio (não compartilhado)
+    if (!shareData) {
+      // Verificar se é paciente próprio do médico
+      const { data: ownPatient } = await supabase
+        .from("patients")
+        .select("*")
+        .eq("id", id)
+        .eq("doctor_id", currentUser.id)
+        .single();
+
+      if (ownPatient) {
+        // Atualizar dados básicos do paciente
+        if (data.name || data.status) {
+          const { error: updatePatientError } = await supabase
+            .from("patients")
+            .update({
+              name: data.name || ownPatient.name,
+              status: data.status || ownPatient.status,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", id);
+
+          if (updatePatientError) {
+            throw new Error(
+              `Erro ao atualizar dados básicos: ${updatePatientError.message}`,
+            );
+          }
+        }
+
+        // Atualizar/inserir dados pessoais
+        if (
+          data.birthDate ||
+          data.email ||
+          data.phone ||
+          data.gender ||
+          data.healthPlan ||
+          data.city ||
+          data.state
+        ) {
+          const { data: existingPersonal } = await supabase
+            .from("patient_personal_data")
+            .select("*")
+            .eq("user_id", id)
+            .single();
+
+          if (existingPersonal) {
+            const { error: updatePersonalError } = await supabase
+              .from("patient_personal_data")
+              .update({
+                full_name: data.name || existingPersonal.full_name,
+                birth_date: data.birthDate || existingPersonal.birth_date,
+                email: data.email || existingPersonal.email,
+                phone: data.phone || existingPersonal.phone,
+                gender: data.gender || existingPersonal.gender,
+                health_plan: data.healthPlan || existingPersonal.health_plan,
+                city: data.city || existingPersonal.city,
+                state: data.state || existingPersonal.state,
+                updated_at: new Date().toISOString(),
+              })
+              .eq("user_id", id);
+
+            if (updatePersonalError) {
+              console.warn(
+                "Aviso: erro ao atualizar dados pessoais:",
+                updatePersonalError,
+              );
+            }
+          } else {
+            const { error: insertPersonalError } = await supabase
+              .from("patient_personal_data")
+              .insert([
+                {
+                  id: this.generateId(),
+                  user_id: id,
+                  full_name: data.name,
+                  birth_date: data.birthDate || null,
+                  email: data.email || null,
+                  phone: data.phone || null,
+                  gender: data.gender || null,
+                  health_plan: data.healthPlan || null,
+                  city: data.city || null,
+                  state: data.state || null,
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                },
+              ]);
+
+            if (insertPersonalError) {
+              console.warn(
+                "Aviso: erro ao inserir dados pessoais:",
+                insertPersonalError,
+              );
+            }
+          }
+        }
+
+        // Atualizar/inserir dados médicos
+        if (
+          data.height ||
+          data.weight ||
+          data.smoker !== undefined ||
+          data.highBloodPressure !== undefined ||
+          data.physicalActivity !== undefined
+        ) {
+          const { data: existingMedical } = await supabase
+            .from("patient_medical_data")
+            .select("*")
+            .eq("user_id", id)
+            .single();
+
+          if (existingMedical) {
+            const { error: updateMedicalError } = await supabase
+              .from("patient_medical_data")
+              .update({
+                height: data.height || existingMedical.height,
+                weight: data.weight || existingMedical.weight,
+                smoker:
+                  data.smoker !== undefined
+                    ? data.smoker
+                    : existingMedical.smoker,
+                high_blood_pressure:
+                  data.highBloodPressure !== undefined
+                    ? data.highBloodPressure
+                    : existingMedical.high_blood_pressure,
+                physical_activity:
+                  data.physicalActivity !== undefined
+                    ? data.physicalActivity
+                    : existingMedical.physical_activity,
+                updated_at: new Date().toISOString(),
+              })
+              .eq("user_id", id);
+
+            if (updateMedicalError) {
+              console.warn(
+                "Aviso: erro ao atualizar dados médicos:",
+                updateMedicalError,
+              );
+            }
+          } else {
+            const { error: insertMedicalError } = await supabase
+              .from("patient_medical_data")
+              .insert([
+                {
+                  id: this.generateId(),
+                  user_id: id,
+                  height: data.height || null,
+                  weight: data.weight || null,
+                  smoker: data.smoker || false,
+                  high_blood_pressure: data.highBloodPressure || false,
+                  physical_activity: data.physicalActivity || false,
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                },
+              ]);
+
+            if (insertMedicalError) {
+              console.warn(
+                "Aviso: erro ao inserir dados médicos:",
+                insertMedicalError,
+              );
+            }
+          }
+        }
+      }
+    }
+
     // Salvar observações médicas se houver
     if (data.notes && data.notes.trim()) {
       // Verificar se já existe observação
