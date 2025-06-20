@@ -581,73 +581,7 @@ class PatientAPI {
         }
 
         console.log("✅ Dados básicos atualizados com sucesso:", updatedPatient);
-
-        // NOVO: Salvar dados complementares nas tabelas auxiliares para pacientes próprios
-        console.log("💾 Salvando dados complementares nas tabelas auxiliares...");
-
-        // Salvar dados pessoais se fornecidos
-        if (data.email || data.phone || data.birthDate || data.gender || data.healthPlan) {
-          console.log("📋 Atualizando/criando dados pessoais auxiliares");
-
-          const personalDataToSave = {
-            id: this.generateId(),
-            user_id: id,
-            full_name: data.name || ownPatient.name,
-            email: data.email || "",
-            phone: data.phone || "",
-            birth_date: data.birthDate || null,
-            gender: data.gender || null,
-            state: data.state || ownPatient.state,
-            city: data.city || ownPatient.city,
-            health_plan: data.healthPlan || "",
-            profile_image: null,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          };
-
-          // Deletar registros existentes e inserir novo
-          await supabase.from("patient_personal_data").delete().eq("user_id", id);
-          const { error: personalError } = await supabase.from("patient_personal_data").insert([personalDataToSave]);
-
-          if (personalError) {
-            console.warn("⚠️ Erro ao salvar dados pessoais auxiliares:", personalError);
-          } else {
-            console.log("✅ Dados pessoais auxiliares salvos");
-          }
-        }
-
-        // Salvar dados médicos se fornecidos
-        if (data.height || data.smoker !== undefined || data.highBloodPressure !== undefined || data.physicalActivity !== undefined) {
-          console.log("🏥 Atualizando/criando dados médicos auxiliares");
-
-          const medicalDataToSave = {
-            id: this.generateId(),
-            user_id: id,
-            height: data.height || null,
-            weight: data.weight || ownPatient.weight,
-            smoker: data.smoker || false,
-            high_blood_pressure: data.highBloodPressure || false,
-            physical_activity: data.physicalActivity || false,
-            exercise_frequency: null,
-            healthy_diet: false,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          };
-
-          // Deletar registros existentes e inserir novo
-          await supabase.from("patient_medical_data").delete().eq("user_id", id);
-          const { error: medicalError } = await supabase.from("patient_medical_data").insert([medicalDataToSave]);
-
-          if (medicalError) {
-            console.warn("⚠️ Erro ao salvar dados médicos auxiliares:", medicalError);
-          } else {
-            console.log("✅ Dados médicos auxiliares salvos");
-          }
-        }
       }
-
-      // Para pacientes criados pelo médico, dados também são salvos nas tabelas auxiliares
-      console.log("✅ Dados básicos E auxiliares atualizados para paciente próprio");
 
     // Salvar observações médicas se houver
     if (data.notes && data.notes.trim()) {
