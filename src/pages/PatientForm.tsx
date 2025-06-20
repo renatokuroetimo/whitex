@@ -39,7 +39,6 @@ const PatientForm = () => {
     status: "ativo",
     notes: "",
     email: "",
-    phone: "",
     birthDate: "",
     gender: "",
     healthPlan: "",
