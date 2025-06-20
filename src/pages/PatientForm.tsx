@@ -668,24 +668,23 @@ const PatientForm = () => {
                     </>
                   )}
 
-                  {/* Diagnósticos - apenas para pacientes compartilhados */}
-                  {isSharedPatient && (
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Diagnósticos
-                      </label>
+                  {/* Diagnósticos - para todos os pacientes */}
+                  <div className="md:col-span-2">
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">
+                      Diagnósticos
+                    </h3>
 
-                      {!isAddingDiagnosis && (
-                        <Button
-                          type="button"
-                          onClick={() => setIsAddingDiagnosis(true)}
-                          className="mb-4"
-                          size="sm"
-                        >
-                          <Plus className="h-4 w-4 mr-1" />
-                          Adicionar Diagnóstico
-                        </Button>
-                      )}
+                    {!isAddingDiagnosis && (
+                      <Button
+                        type="button"
+                        onClick={() => setIsAddingDiagnosis(true)}
+                        className="mb-4"
+                        size="sm"
+                      >
+                        <Plus className="h-4 w-4 mr-1" />
+                        Adicionar Diagnóstico
+                      </Button>
+                    )}
 
                       {isAddingDiagnosis && (
                         <div className="border border-gray-200 rounded-lg p-4 mb-4">
