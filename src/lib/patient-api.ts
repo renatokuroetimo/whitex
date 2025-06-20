@@ -648,8 +648,6 @@ class PatientAPI {
 
       // Para pacientes criados pelo médico, dados também são salvos nas tabelas auxiliares
       console.log("✅ Dados básicos E auxiliares atualizados para paciente próprio");
-      }
-    }
 
     // Salvar observações médicas se houver
     if (data.notes && data.notes.trim()) {
