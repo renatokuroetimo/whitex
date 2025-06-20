@@ -60,7 +60,6 @@ const getSidebarItems = (userProfession?: string): SidebarItem[] => {
         path: "/indicadores",
       },
     ];
-    console.log("🚨 MOBILE LAYOUT - Returning MEDICO items:", items);
     return items;
   }
 
