@@ -106,7 +106,7 @@ const PatientForm = () => {
           email: patient.email || "",
 
           // Dados pessoais auxiliares
-          phone: personalData?.phone || "",
+          phone: patient.phone || "", // Phone vem da tabela patients
           birthDate: personalData?.birth_date || "",
           gender: personalData?.gender || "",
           healthPlan: personalData?.health_plan || "",
