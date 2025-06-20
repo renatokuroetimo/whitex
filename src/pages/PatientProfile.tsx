@@ -54,10 +54,8 @@ const PatientProfile = () => {
     state: "",
     city: "",
     healthPlan: "",
+    phone: "",
   });
-
-  // Estado adicional para telefone (não está no tipo PatientPersonalFormData)
-  const [phone, setPhone] = useState("");
 
   // Estados dos dados médicos
   const [medicalData, setMedicalData] = useState<PatientMedicalFormData>({
