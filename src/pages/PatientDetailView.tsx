@@ -450,9 +450,24 @@ const PatientDetailView = () => {
 
               {/* Dados Médicos Section */}
               <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">
-                  Dados Médicos
-                </h3>
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Dados Médicos
+                  </h3>
+                  {!patient?.isShared && !medicalData && (
+                    <Button
+                      onClick={() =>
+                        navigate(`/pacientes/${patient.id}/editar`)
+                      }
+                      variant="outline"
+                      size="sm"
+                      className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                    >
+                      <Edit className="h-4 w-4 mr-2" />
+                      Preencher dados
+                    </Button>
+                  )}
+                </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Medidas Físicas */}
