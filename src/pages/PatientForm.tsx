@@ -524,24 +524,6 @@ const PatientForm = () => {
                         />
                       </div>
 
-                      {/* Telefone */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Telefone
-                        </label>
-                        <Input
-                          type="tel"
-                          value={formData.phone || ""}
-                          onChange={(e) => {
-                            const maskedValue = phoneMask(e.target.value);
-                            handleInputChange("phone", maskedValue);
-                          }}
-                          placeholder="(11) 99999-9999"
-                          maxLength={15}
-                          className="w-full"
-                        />
-                      </div>
-
                       {/* Data de Nascimento */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
