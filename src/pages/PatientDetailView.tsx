@@ -242,18 +242,29 @@ const PatientDetailView = () => {
 
   // Função helper para interpretar valores booleanos vindos do banco
   const getBooleanValue = (value: any): boolean => {
+    console.log(
+      "🔍 getBooleanValue - valor original:",
+      value,
+      "tipo:",
+      typeof value,
+    );
     if (value === null || value === undefined) return false;
     if (typeof value === "boolean") return value;
     if (typeof value === "string") {
       const lowerValue = value.toLowerCase().trim();
-      return (
+      const result =
         lowerValue === "true" ||
         lowerValue === "1" ||
         lowerValue === "sim" ||
-        lowerValue === "yes"
-      );
+        lowerValue === "yes";
+      console.log("✅ String convertida:", lowerValue, "->", result);
+      return result;
     }
-    if (typeof value === "number") return value > 0;
+    if (typeof value === "number") {
+      const result = value > 0;
+      console.log("✅ Número convertido:", value, "->", result);
+      return result;
+    }
     return false;
   };
 
