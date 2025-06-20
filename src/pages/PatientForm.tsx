@@ -76,6 +76,15 @@ const PatientForm = () => {
           weight: patient.weight || 0,
           status: patient.status as "ativo" | "inativo",
           notes: patient.notes || "",
+          email: patient.email || "",
+          phone: "",
+          birthDate: "",
+          gender: "",
+          healthPlan: "",
+          height: 0,
+          smoker: false,
+          highBloodPressure: false,
+          physicalActivity: false,
         });
 
         if (patient.state) {
