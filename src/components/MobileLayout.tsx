@@ -72,7 +72,6 @@ const getSidebarItems = (userProfession?: string): SidebarItem[] => {
       path: "/",
     },
   ];
-  console.log("🚨 MOBILE LAYOUT - Returning FALLBACK items:", fallback);
   return fallback;
 };
 
