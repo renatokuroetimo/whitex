@@ -557,11 +557,15 @@ class PatientAPI {
 
         const updateData = {
           name: data.name || ownPatient.name,
+          age: data.age || ownPatient.age,
+          city: data.city || ownPatient.city,
+          state: data.state || ownPatient.state,
+          weight: data.weight || ownPatient.weight,
           status: data.status || ownPatient.status,
           updated_at: new Date().toISOString(),
         };
 
-        console.log("💾 Dados que serão salvos:", updateData);
+        console.log("💾 Dados que serão salvos (COMPLETOS):", updateData);
 
         const { data: updatedPatient, error: updatePatientError } =
           await supabase
