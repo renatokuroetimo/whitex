@@ -66,7 +66,10 @@ const PatientForm = () => {
 
     try {
       setIsLoading(true);
+      console.log("🔍 FORM: Carregando dados do paciente:", id);
+
       const patient = await patientAPI.getPatientById(id);
+      console.log("📊 FORM: Dados do paciente recebidos:", patient);
 
       if (patient) {
         // Carregar dados básicos
