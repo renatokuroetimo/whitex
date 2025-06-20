@@ -454,166 +454,22 @@ const PatientDetailView = () => {
 
             {/* Sidebar */}
             <div className="space-y-6">
-              {/* Profile Card */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Perfil
-                  </h3>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => navigate(`/pacientes/${patient.id}/editar`)}
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    <Edit className="h-4 w-4 mr-1" />
-                    {patient.status === "compartilhado"
-                      ? "Adicionar diagnósticos"
-                      : "Editar"}
-                  </Button>
-                </div>
-
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-900 mb-2">
-                      Dados pessoais
-                    </h4>
-                    <div className="text-sm text-gray-600 space-y-1">
-                      <p>
-                        <strong>Nome:</strong> {patient.name}
-                      </p>
-                      <p>
-                        <strong>Idade:</strong> {getPatientAge()} anos
-                      </p>
-                      <p>
-                        <strong>Sexo:</strong>{" "}
-                        {personalData?.gender
-                          ? personalData.gender.charAt(0).toUpperCase() +
-                            personalData.gender.slice(1)
-                          : "N/A"}
-                      </p>
-                      {personalData?.email && (
-                        <p>
-                          <strong>Email:</strong> {personalData.email}
-                        </p>
-                      )}
-                      {personalData?.healthPlan && (
-                        <p>
-                          <strong>Plano de saúde:</strong>{" "}
-                          {personalData.healthPlan}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-900 mb-2">
-                      Medidas físicas
-                    </h4>
-                    <div className="text-sm text-gray-600 space-y-1">
-                      <p>
-                        <strong>Altura:</strong>{" "}
-                        {medicalData?.height
-                          ? `${medicalData.height} cm`
-                          : "N/A"}
-                      </p>
-                      <p>
-                        <strong>Peso:</strong>{" "}
-                        {medicalData?.weight
-                          ? `${medicalData.weight} kg`
-                          : patient?.weight
-                            ? `${patient.weight} kg`
-                            : "N/A"}
-                      </p>
-                      {medicalData?.height && medicalData?.weight && (
-                        <p>
-                          <strong>IMC:</strong>{" "}
-                          {(
-                            medicalData.weight /
-                            Math.pow(medicalData.height / 100, 2)
-                          ).toFixed(1)}{" "}
-                          kg/m²
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-900 mb-2">
-                      Condições médicas
-                    </h4>
-                    <div className="text-sm text-gray-600 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span>Fumante:</span>
-                        <div className="flex items-center">
-                          <div
-                            className={`w-2 h-2 rounded-full mr-1 ${medicalData?.smoker ? "bg-red-500" : "bg-green-500"}`}
-                          ></div>
-                          <span>{medicalData?.smoker ? "Sim" : "Não"}</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span>Pressão alta:</span>
-                        <div className="flex items-center">
-                          <div
-                            className={`w-2 h-2 rounded-full mr-1 ${medicalData?.highBloodPressure ? "bg-red-500" : "bg-green-500"}`}
-                          ></div>
-                          <span>
-                            {medicalData?.highBloodPressure ? "Sim" : "Não"}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span>Atividade física:</span>
-                        <div className="flex items-center">
-                          <div
-                            className={`w-2 h-2 rounded-full mr-1 ${medicalData?.physicalActivity ? "bg-green-500" : "bg-gray-400"}`}
-                          ></div>
-                          <span>
-                            {medicalData?.physicalActivity ? "Sim" : "Não"}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-900 mb-2">
-                      Localização
-                    </h4>
-                    <p className="text-sm text-gray-600">
-                      {getPatientLocation()}
-                    </p>
-                  </div>
-
-                  {(patient?.notes || personalData?.notes) && (
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-900 mb-2">
-                        Observações
-                      </h4>
-                      <p className="text-sm text-gray-600">
-                        {patient?.notes || personalData?.notes}
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={
-                    patient.status === "compartilhado"
-                      ? handleRemoveSharing
-                      : handleDeletePatient
-                  }
-                  className="w-full mt-4"
-                >
-                  <Trash2 className="h-4 w-4 mr-1" />
-                  {patient.status === "compartilhado"
-                    ? "Remover compartilhamento"
-                    : "Deletar perfil"}
-                </Button>
-              </div>
+              {/* Delete Button */}
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={
+                  patient.status === "compartilhado"
+                    ? handleRemoveSharing
+                    : handleDeletePatient
+                }
+                className="w-full"
+              >
+                <Trash2 className="h-4 w-4 mr-1" />
+                {patient.status === "compartilhado"
+                  ? "Remover compartilhamento"
+                  : "Deletar perfil"}
+              </Button>
 
               {/* Add Indicator Button */}
               <Button
