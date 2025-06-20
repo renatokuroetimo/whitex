@@ -581,8 +581,9 @@ const PatientDetailView = () => {
                 {!medicalData && (
                   <div className="text-center py-8">
                     <p className="text-gray-500 text-sm">
-                      Dados médicos não compartilhados ou não preenchidos pelo
-                      paciente
+                      {patient?.isShared
+                        ? "Dados médicos não compartilhados ou não preenchidos pelo paciente"
+                        : "Dados médicos não preenchidos. Use a opção 'Editar Paciente' para adicionar informações médicas."}
                     </p>
                   </div>
                 )}
