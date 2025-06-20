@@ -142,65 +142,17 @@ const PatientForm = () => {
         console.log("📝 FORM: Dados COMPLETOS definidos:", formData);
         setFormData(formData);
 
-        // Para pacientes criados pelo médico, todos os dados estão na tabela patients
-        console.log(
-          "⚠️ FORM: Paciente criado pelo médico - usando apenas dados básicos",
-        );
-
-        // Se é paciente compartilhado, tentar buscar dados complementares
-        if (patient.isShared) {
+        // Configurar estado e cidades se disponíveis
+        if (formData.state) {
+          setSelectedState(formData.state);
+          const cities = getCitiesByState(formData.state);
+          setAvailableCities(cities);
           console.log(
-            "🔍 FORM: Paciente compartilhado - buscando dados complementares",
+            "🏙️ FORM: Estado/cidade configurados:",
+            formData.state,
+            "/",
+            formData.city,
           );
-          try {
-            const { data: personalData } = await supabase
-              .from("patient_personal_data")
-              .select("*")
-              .eq("user_id", id)
-              .single();
-
-            const { data: medicalData } = await supabase
-              .from("patient_medical_data")
-              .select("*")
-              .eq("user_id", id)
-              .single();
-
-            console.log("📊 FORM: Dados complementares:", {
-              personalData,
-              medicalData,
-            });
-
-            if (personalData || medicalData) {
-              setFormData((prev) => ({
-                ...prev,
-                email: personalData?.email || prev.email,
-                phone: personalData?.phone || prev.phone,
-                birthDate: personalData?.birth_date || prev.birthDate,
-                gender: personalData?.gender || prev.gender,
-                healthPlan: personalData?.health_plan || prev.healthPlan,
-                city: personalData?.city || prev.city,
-                state: personalData?.state || prev.state,
-                height: medicalData?.height || prev.height,
-                weight: medicalData?.weight || prev.weight,
-                smoker: medicalData?.smoker || prev.smoker,
-                highBloodPressure:
-                  medicalData?.high_blood_pressure || prev.highBloodPressure,
-                physicalActivity:
-                  medicalData?.physical_activity || prev.physicalActivity,
-              }));
-
-              if (personalData?.state) {
-                setSelectedState(personalData.state);
-                const cities = getCitiesByState(personalData.state);
-                setAvailableCities(cities);
-              }
-            }
-          } catch (error) {
-            console.warn(
-              "Aviso: erro ao carregar dados complementares:",
-              error,
-            );
-          }
         }
 
         if (patient.state) {
