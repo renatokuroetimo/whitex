@@ -557,10 +557,12 @@ class PatientAPI {
 
         const updateData = {
           name: data.name || ownPatient.name,
-          age: data.age || ownPatient.age,
+          age: data.age ? parseInt(data.age.toString()) : ownPatient.age,
           city: data.city || ownPatient.city,
           state: data.state || ownPatient.state,
-          weight: data.weight || ownPatient.weight,
+          weight: data.weight
+            ? parseFloat(data.weight.toString())
+            : ownPatient.weight,
           status: data.status || ownPatient.status,
           updated_at: new Date().toISOString(),
         };
