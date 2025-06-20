@@ -691,7 +691,7 @@ class PatientAPI {
           );
         }
         console.log("✅ Observações salvas com sucesso");
-      } else if (shareData) {
+      } else {
         // Para pacientes compartilhados, usar a tabela de observações médicas
         console.log(
           "💾 Salvando observações na tabela patient_medical_observations",
