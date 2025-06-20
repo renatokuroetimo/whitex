@@ -321,12 +321,54 @@ class PatientAPI {
           return null;
         }
 
-        // Nome do paciente
+        // Nome do paciente (prioridade: patient_personal_data para compartilhados)
         let patientName = "Sem nome definido";
-        if (patientUser.full_name && patientUser.full_name.trim()) {
-          patientName = patientUser.full_name.trim();
-        } else if (patientUser.email) {
-          patientName = `Paciente ${patientUser.email.split("@")[0]}`;
+
+        // PRIMEIRO: buscar nome em patient_personal_data (dados atualizados pelo paciente)
+        try {
+          const { data: personalData, error: personalError } = await supabase
+            .from("patient_personal_data")
+            .select("full_name")
+            .eq("user_id", id)
+            .single();
+
+          if (
+            !personalError &&
+            personalData?.full_name &&
+            personalData.full_name.trim()
+          ) {
+            patientName = personalData.full_name.trim();
+            console.log(
+              "✅ Nome compartilhado encontrado em patient_personal_data:",
+              patientName,
+            );
+          } else {
+            // SEGUNDO: fallback para full_name da tabela users
+            if (patientUser.full_name && patientUser.full_name.trim()) {
+              patientName = patientUser.full_name.trim();
+              console.log(
+                "✅ Nome compartilhado encontrado em users.full_name:",
+                patientName,
+              );
+            } else if (patientUser.email) {
+              patientName = `Paciente ${patientUser.email.split("@")[0]}`;
+              console.log(
+                "⚠️ Usando email como nome compartilhado:",
+                patientName,
+              );
+            }
+          }
+        } catch (error) {
+          console.warn(
+            "⚠️ Erro ao buscar dados pessoais do compartilhado:",
+            error,
+          );
+          // Fallback para users.full_name
+          if (patientUser.full_name && patientUser.full_name.trim()) {
+            patientName = patientUser.full_name.trim();
+          } else if (patientUser.email) {
+            patientName = `Paciente ${patientUser.email.split("@")[0]}`;
+          }
         }
 
         // Buscar observações médicas salvas
@@ -710,7 +752,7 @@ class PatientAPI {
     // Atualizar dados pessoais se for paciente próprio (não compartilhado)
     if (ownPatient) {
       console.log(
-        "✅ Paciente próprio identificado, atualizando dados b��sicos...",
+        "✅ Paciente próprio identificado, atualizando dados básicos...",
       );
 
       // Atualizar dados básicos do paciente (SEMPRE atualizar com os dados recebidos)
