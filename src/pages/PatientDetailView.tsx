@@ -205,6 +205,24 @@ const PatientDetailView = () => {
     return false;
   };
 
+  // Função helper para formatar altura
+  const getFormattedHeight = (height: any): string => {
+    if (!height) return "Não informado";
+    const numHeight = typeof height === "string" ? parseFloat(height) : height;
+    if (isNaN(numHeight) || numHeight <= 0 || numHeight > 300)
+      return "Não informado";
+    return `${numHeight} cm`;
+  };
+
+  // Função helper para formatar peso
+  const getFormattedWeight = (weight: any): string => {
+    if (!weight) return "Não informado";
+    const numWeight = typeof weight === "string" ? parseFloat(weight) : weight;
+    if (isNaN(numWeight) || numWeight <= 0 || numWeight > 1000)
+      return "Não informado";
+    return `${numWeight} kg`;
+  };
+
   if (!user || user.profession !== "medico") {
     navigate("/dashboard");
     return null;
