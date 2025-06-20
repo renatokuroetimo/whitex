@@ -623,8 +623,17 @@ class PatientAPI {
     // Atualizar dados pessoais se for paciente próprio (não compartilhado)
     if (ownPatient) {
       if (ownPatient) {
+        console.log(
+          "✅ Paciente próprio identificado, atualizando dados básicos...",
+        );
+
         // Atualizar dados básicos do paciente
         if (data.name || data.status) {
+          console.log("📝 Atualizando dados básicos:", {
+            name: data.name || ownPatient.name,
+            status: data.status || ownPatient.status,
+          });
+
           const { error: updatePatientError } = await supabase
             .from("patients")
             .update({
@@ -635,10 +644,16 @@ class PatientAPI {
             .eq("id", id);
 
           if (updatePatientError) {
+            console.error(
+              "❌ Erro ao atualizar dados básicos:",
+              updatePatientError,
+            );
             throw new Error(
               `Erro ao atualizar dados básicos: ${updatePatientError.message}`,
             );
           }
+
+          console.log("✅ Dados básicos atualizados com sucesso");
         }
 
         // Atualizar/inserir dados pessoais
