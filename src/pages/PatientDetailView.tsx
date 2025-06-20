@@ -338,10 +338,12 @@ const PatientDetailView = () => {
                         <span className="text-sm text-gray-600">Fumante:</span>
                         <div className="flex items-center">
                           <div
-                            className={`w-3 h-3 rounded-full mr-2 ${medicalData?.smoker ? "bg-red-500" : "bg-green-500"}`}
+                            className={`w-3 h-3 rounded-full mr-2 ${getBooleanValue(medicalData?.smoker) ? "bg-red-500" : "bg-green-500"}`}
                           ></div>
                           <span className="text-sm font-medium text-gray-900">
-                            {medicalData?.smoker ? "Sim" : "Não"}
+                            {getBooleanValue(medicalData?.smoker)
+                              ? "Sim"
+                              : "Não"}
                           </span>
                         </div>
                       </div>
@@ -351,10 +353,12 @@ const PatientDetailView = () => {
                         </span>
                         <div className="flex items-center">
                           <div
-                            className={`w-3 h-3 rounded-full mr-2 ${medicalData?.highBloodPressure ? "bg-red-500" : "bg-green-500"}`}
+                            className={`w-3 h-3 rounded-full mr-2 ${getBooleanValue(medicalData?.highBloodPressure) ? "bg-red-500" : "bg-green-500"}`}
                           ></div>
                           <span className="text-sm font-medium text-gray-900">
-                            {medicalData?.highBloodPressure ? "Sim" : "Não"}
+                            {getBooleanValue(medicalData?.highBloodPressure)
+                              ? "Sim"
+                              : "Não"}
                           </span>
                         </div>
                       </div>
