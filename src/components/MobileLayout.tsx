@@ -36,7 +36,6 @@ const getSidebarItems = (userProfession?: string): SidebarItem[] => {
         path: "/patient/indicadores",
       },
     ];
-    console.log("🚨 MOBILE LAYOUT - Returning PACIENTE items:", items);
     return items;
   }
 
