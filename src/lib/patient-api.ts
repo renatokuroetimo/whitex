@@ -686,7 +686,7 @@ class PatientAPI {
       throw new Error("Você não tem permissão para editar este paciente");
     }
 
-    console.log("🔍 Permissões verificadas:", {
+    console.log("���� Permissões verificadas:", {
       isOwnPatient: !!ownPatient,
       isSharedPatient: !!shareData,
       patientId: id,
@@ -717,7 +717,6 @@ class PatientAPI {
         weight: data.weight
           ? parseFloat(data.weight.toString())
           : ownPatient.weight,
-        phone: data.phone || null, // Adicionar phone na tabela patients
         status: data.status || ownPatient.status,
         updated_at: new Date().toISOString(),
       };
