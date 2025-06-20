@@ -18,7 +18,6 @@ import { PatientFormData } from "@/lib/patient-types";
 import { brazilStates, getCitiesByState } from "@/lib/brazil-locations";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
-import { phoneMask } from "@/lib/masks";
 
 const PatientForm = () => {
   const { id } = useParams<{ id?: string }>();
