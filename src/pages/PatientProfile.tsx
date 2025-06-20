@@ -908,7 +908,7 @@ const PatientProfile = () => {
                   <div className="flex justify-end gap-3 mt-8">
                     <Button
                       variant="outline"
-                      onClick={() => navigate("/patient/dashboard")}
+                      onClick={() => navigate("/patient-dashboard")}
                     >
                       Cancelar
                     </Button>
