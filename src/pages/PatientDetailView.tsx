@@ -223,6 +223,36 @@ const PatientDetailView = () => {
     return `${numWeight} kg`;
   };
 
+  // Função helper para calcular IMC
+  const getCalculatedIMC = (height: any, weight: any): string | null => {
+    if (!height || !weight) return null;
+
+    const numHeight = typeof height === "string" ? parseFloat(height) : height;
+    const numWeight = typeof weight === "string" ? parseFloat(weight) : weight;
+
+    if (
+      isNaN(numHeight) ||
+      isNaN(numWeight) ||
+      numHeight <= 0 ||
+      numWeight <= 0
+    ) {
+      return null;
+    }
+
+    if (numHeight > 300 || numWeight > 1000) {
+      return null;
+    }
+
+    const heightInMeters = numHeight / 100;
+    const imc = numWeight / Math.pow(heightInMeters, 2);
+
+    if (isNaN(imc) || imc < 5 || imc > 100) {
+      return null;
+    }
+
+    return imc.toFixed(1);
+  };
+
   if (!user || user.profession !== "medico") {
     navigate("/dashboard");
     return null;
