@@ -531,7 +531,7 @@ class PatientAPI {
         data.gender ||
         data.healthPlan
       ) {
-        console.log("📋 Salvando dados pessoais auxiliares");
+        console.log("📋 CREATE: Salvando dados pessoais auxiliares");
 
         const personalDataToSave = {
           id: this.generateId(),
@@ -549,18 +549,27 @@ class PatientAPI {
           updated_at: new Date().toISOString(),
         };
 
+        console.log(
+          "📝 CREATE: Dados pessoais que serão salvos:",
+          personalDataToSave,
+        );
+
         const { error: personalError } = await supabase
           .from("patient_personal_data")
           .insert([personalDataToSave]);
 
         if (personalError) {
           console.warn(
-            "⚠️ Erro ao salvar dados pessoais auxiliares:",
+            "❌ CREATE: Erro ao salvar dados pessoais auxiliares:",
             personalError,
           );
         } else {
-          console.log("✅ Dados pessoais auxiliares salvos com sucesso");
+          console.log(
+            "✅ CREATE: Dados pessoais auxiliares salvos com sucesso",
+          );
         }
+      } else {
+        console.log("⚠️ CREATE: Nenhum dado pessoal fornecido para salvar");
       }
 
       // 2. Salvar dados médicos se fornecidos
