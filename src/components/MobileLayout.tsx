@@ -129,7 +129,6 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
   }, [currentUser?.id]);
 
   const handleNavigation = (path: string) => {
-    console.log("🚨 MOBILE LAYOUT - Navigating to:", path);
     navigate(path);
     setIsMobileMenuOpen(false);
   };
