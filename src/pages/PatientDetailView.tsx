@@ -246,7 +246,7 @@ const PatientDetailView = () => {
     }
 
     console.log("⚠️ Nenhuma localização válida disponível");
-    return "N/A";
+    return "Não informado";
   };
 
   const getPatientInitial = () => {
@@ -506,7 +506,7 @@ const PatientDetailView = () => {
                           <span className="text-sm font-medium text-gray-900">
                             {getBooleanValue(medicalData?.smoker)
                               ? "Sim"
-                              : "N��o"}
+                              : "Não"}
                           </span>
                         </div>
                       </div>
