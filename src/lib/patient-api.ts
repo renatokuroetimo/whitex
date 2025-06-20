@@ -72,7 +72,7 @@ class PatientAPI {
             name: ownPatient.name,
             age: null, // TODO: buscar de patient_personal_data se necessário
             city: "N/A", // TODO: buscar de patient_personal_data se necessário
-            state: "N/A", // TODO: buscar de patient_personal_data se necess��rio
+            state: "N/A", // TODO: buscar de patient_personal_data se necessário
             weight: null, // TODO: buscar de patient_medical_data se necessário
             status: ownPatient.status || "ativo",
             notes: notes,
@@ -543,7 +543,42 @@ class PatientAPI {
   }
   async deletePatients(ids: string[]): Promise<void> {
     await this.delay(300);
-    // Implementação simplificada - não deletar realmente
+
+    if (!supabase) {
+      throw new Error("Sistema de banco de dados não configurado");
+    }
+
+    const currentUserStr = localStorage.getItem("medical_app_current_user");
+    if (!currentUserStr) {
+      throw new Error("Usuário não autenticado");
+    }
+
+    const currentUser = JSON.parse(currentUserStr);
+
+    try {
+      // Deletar apenas pacientes que pertencem ao médico atual
+      const { error } = await supabase
+        .from("patients")
+        .delete()
+        .in("id", ids)
+        .eq("doctor_id", currentUser.id);
+
+      if (error) {
+        throw new Error(`Erro ao deletar pacientes: ${error.message}`);
+      }
+
+      // Também remover observações médicas relacionadas
+      for (const patientId of ids) {
+        await supabase
+          .from("patient_medical_observations")
+          .delete()
+          .eq("patient_id", patientId)
+          .eq("doctor_id", currentUser.id);
+      }
+    } catch (error) {
+      console.error("Erro ao deletar pacientes:", error);
+      throw error;
+    }
   }
 
   // Função auxiliar para gerar IDs únicos
