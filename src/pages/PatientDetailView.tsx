@@ -52,19 +52,26 @@ const PatientDetailView = () => {
 
       if (foundPatient) {
         setPatient(foundPatient);
+        console.log("✅ Paciente carregado:", foundPatient);
 
         // Carregar dados pessoais detalhados
+        console.log("🔍 Carregando dados pessoais...");
         const personal =
           await patientProfileAPI.getPatientPersonalData(patientId);
+        console.log("📊 Dados pessoais carregados:", personal);
         setPersonalData(personal);
 
         // Carregar dados médicos detalhados
+        console.log("🔍 Carregando dados médicos...");
         const medical =
           await patientProfileAPI.getPatientMedicalData(patientId);
+        console.log("📊 Dados médicos carregados:", medical);
         setMedicalData(medical);
 
         // Carregar histórico de diagnósticos
+        console.log("🔍 Carregando diagnósticos...");
         const patientDiagnoses = await patientAPI.getDiagnoses(patientId);
+        console.log("📊 Diagnósticos carregados:", patientDiagnoses);
         setDiagnoses(patientDiagnoses);
       } else {
         toast({
