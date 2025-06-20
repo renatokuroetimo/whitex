@@ -493,6 +493,7 @@ class PatientAPI {
       city: data.city || "N/A",
       state: data.state || "N/A",
       weight: data.weight || null,
+      email: data.email || undefined,
       status: data.status || "ativo",
       notes: data.notes || "",
       createdAt: new Date().toISOString(),
