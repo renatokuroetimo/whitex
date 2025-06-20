@@ -73,16 +73,9 @@ const PatientForm = () => {
       console.log("📊 FORM: Dados do paciente recebidos:", patient);
 
       if (patient) {
-        // Carregar dados básicos
-        const basicFormData = {
-          name: patient.name || "",
-          age: patient.age || 0,
-          city: patient.city || "",
-          state: patient.state || "",
-          weight: patient.weight || 0,
-          status: patient.status as "ativo" | "inativo",
-          notes: patient.notes || "",
-          email: patient.email || "",
+        // Para pacientes criados pelo médico, TODOS os dados estão no objeto patient
+        // Primeiro, vamos buscar dados complementares se existirem
+        let complementaryData = {
           phone: "",
           birthDate: "",
           gender: "",
@@ -93,8 +86,61 @@ const PatientForm = () => {
           physicalActivity: false,
         };
 
-        console.log("📝 FORM: Dados básicos definidos:", basicFormData);
-        setFormData(basicFormData);
+        // Buscar dados complementares das tabelas auxiliares
+        try {
+          const { data: personalData } = await supabase
+            .from("patient_personal_data")
+            .select("*")
+            .eq("user_id", id)
+            .single();
+
+          const { data: medicalData } = await supabase
+            .from("patient_medical_data")
+            .select("*")
+            .eq("user_id", id)
+            .single();
+
+          console.log("📊 FORM: Dados complementares encontrados:", {
+            personalData,
+            medicalData,
+          });
+
+          if (personalData) {
+            complementaryData.phone = personalData.phone || "";
+            complementaryData.birthDate = personalData.birth_date || "";
+            complementaryData.gender = personalData.gender || "";
+            complementaryData.healthPlan = personalData.health_plan || "";
+          }
+
+          if (medicalData) {
+            complementaryData.height = medicalData.height || 0;
+            complementaryData.smoker = medicalData.smoker || false;
+            complementaryData.highBloodPressure =
+              medicalData.high_blood_pressure || false;
+            complementaryData.physicalActivity =
+              medicalData.physical_activity || false;
+          }
+        } catch (error) {
+          console.log(
+            "⚠️ FORM: Dados complementares não encontrados - usando valores padrão",
+          );
+        }
+
+        // Combinar dados do patient com dados complementares
+        const formData = {
+          name: patient.name || "",
+          age: patient.age || 0,
+          city: patient.city || "",
+          state: patient.state || "",
+          weight: patient.weight || 0,
+          status: patient.status as "ativo" | "inativo",
+          notes: patient.notes || "",
+          email: patient.email || "",
+          ...complementaryData,
+        };
+
+        console.log("📝 FORM: Dados COMPLETOS definidos:", formData);
+        setFormData(formData);
 
         // Para pacientes criados pelo médico, todos os dados estão na tabela patients
         console.log(
