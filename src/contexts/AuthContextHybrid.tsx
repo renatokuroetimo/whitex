@@ -119,9 +119,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response.success && response.data) {
         dispatch({ type: "AUTH_SUCCESS", payload: response.data });
 
+        // Debug: check what fields are available
+        console.log("🔍 Response data fields:", Object.keys(response.data));
+        console.log("👤 User data:", {
+          fullName: response.data.fullName,
+          full_name: response.data.full_name,
+          name: response.data.name,
+          email: response.data.email,
+        });
+
+        const displayName =
+          response.data.fullName ||
+          response.data.full_name ||
+          response.data.name ||
+          response.data.email;
+
         toast({
           title: "Login realizado com sucesso!",
-          description: `Bem-vindo de volta, ${response.data.full_name || response.data.email}`,
+          description: `Bem-vindo de volta, ${displayName}`,
         });
         return true;
       } else {
