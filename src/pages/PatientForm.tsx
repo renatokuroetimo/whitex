@@ -95,7 +95,7 @@ const PatientForm = () => {
             .eq("user_id", id)
             .single();
 
-          console.log("�� FORM: Query dados pessoais - ID:", id);
+          console.log("📊 FORM: Query dados pessoais - ID:", id);
           console.log("📊 FORM: Dados pessoais encontrados:", personalData);
           console.log("📊 FORM: Erro dados pessoais:", personalError);
 
@@ -185,6 +185,12 @@ const PatientForm = () => {
             "🔍 FORM: Estado atual do formData após setFormData:",
             formData,
           );
+          console.log("🔍 FORM: Verificação específica dos campos:");
+          console.log("  - email:", formData.email);
+          console.log("  - phone:", formData.phone);
+          console.log("  - birthDate:", formData.birthDate);
+          console.log("  - gender:", formData.gender);
+          console.log("  - healthPlan:", formData.healthPlan);
         }, 100);
 
         // Configurar estado e cidades se disponíveis
