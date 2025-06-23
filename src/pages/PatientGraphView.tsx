@@ -433,14 +433,17 @@ const PatientGraphView = () => {
                 </SelectContent>
               </Select>
 
-              <Button
-                onClick={handleOpenDiagnosisModal}
-                className="bg-green-600 hover:bg-green-700 text-white"
-                disabled={chartData.length === 0}
-              >
-                <Stethoscope className="h-4 w-4 mr-2" />
-                Realizar diagnóstico
-              </Button>
+              {/* Diagnosis button - only show for doctors */}
+              {user?.profession === "medico" && (
+                <Button
+                  onClick={handleOpenDiagnosisModal}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                  disabled={chartData.length === 0}
+                >
+                  <Stethoscope className="h-4 w-4 mr-2" />
+                  Realizar diagnóstico
+                </Button>
+              )}
             </div>
           </div>
 
