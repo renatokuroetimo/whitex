@@ -271,6 +271,61 @@ const Pacientes = () => {
                   />
                 </div>
 
+                {/* Status Filter */}
+                <div className="flex items-center gap-2">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <Filter className="h-4 w-4 mr-2" />
+                        Filtros ({statusFilters.length})
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <div className="p-2">
+                        <p className="text-sm font-medium text-gray-700 mb-2">
+                          Status do Paciente
+                        </p>
+                        {[
+                          {
+                            value: "ativo",
+                            label: "Ativos",
+                            color: "bg-green-100 text-green-800",
+                          },
+                          {
+                            value: "inativo",
+                            label: "Inativos",
+                            color: "bg-gray-100 text-gray-800",
+                          },
+                          {
+                            value: "compartilhado",
+                            label: "Compartilhados",
+                            color: "bg-blue-100 text-blue-800",
+                          },
+                        ].map((status) => (
+                          <div
+                            key={status.value}
+                            className="flex items-center space-x-2 py-1"
+                          >
+                            <Checkbox
+                              id={status.value}
+                              checked={statusFilters.includes(status.value)}
+                              onCheckedChange={() =>
+                                handleStatusFilterToggle(status.value)
+                              }
+                            />
+                            <label
+                              htmlFor={status.value}
+                              className="text-sm font-normal cursor-pointer flex-1"
+                            >
+                              {status.label}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
                 <div className="flex items-center gap-2 sm:gap-3 order-2 sm:order-2 flex-wrap">
                   {selectedPatients.length > 0 && (
                     <Button
