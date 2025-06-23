@@ -374,9 +374,7 @@ const PatientDetailView = () => {
                     <h2 className="text-xl font-semibold text-gray-900">
                       {patient.name}
                     </h2>
-                    <p className="text-gray-600">
-                      {getPatientAge()} anos, {getPatientLocation()}
-                    </p>
+                    <p className="text-gray-600">{getPatientInfo()}</p>
                   </div>
                 </div>
 
