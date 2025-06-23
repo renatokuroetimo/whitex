@@ -32,6 +32,10 @@ const Pacientes = () => {
   const [selectedPatients, setSelectedPatients] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [statusFilters, setStatusFilters] = useState<string[]>([
+    "ativo",
+    "compartilhado",
+  ]); // Default filter
 
   // Carregar pacientes
   const loadPatients = async (page: number = 1, search?: string) => {
