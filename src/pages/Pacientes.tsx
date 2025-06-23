@@ -398,10 +398,20 @@ const Pacientes = () => {
                           <div className="flex flex-col sm:flex-row items-end sm:items-center justify-end gap-2">
                             <Button
                               size="sm"
-                              onClick={() =>
-                                navigate(`/pacientes/${patient.id}`)
-                              }
+                              onClick={() => {
+                                if (patient.status === "inativo") {
+                                  toast({
+                                    variant: "destructive",
+                                    title: "Acesso negado",
+                                    description:
+                                      "Não é possível acessar perfis de pacientes inativos",
+                                  });
+                                  return;
+                                }
+                                navigate(`/pacientes/${patient.id}`);
+                              }}
                               className="bg-blue-600 hover:bg-blue-700 text-white"
+                              disabled={patient.status === "inativo"}
                             >
                               Ver Perfil
                             </Button>
