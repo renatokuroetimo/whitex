@@ -582,7 +582,7 @@ const Dashboard = () => {
               Dashboard Médico
             </h1>
             <p className="text-gray-600 mt-1">
-              Bem-vindo, Dr. {user.fullName || user.email?.split("@")[0]}
+              Bem-vindo, Dr. {user.fullName || "Doutor"}
             </p>
           </div>
           <div className="flex gap-3">
