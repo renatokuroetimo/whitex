@@ -497,20 +497,35 @@ const PatientGraphView = () => {
               <div className="max-w-md mx-auto">
                 <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  Nenhum dado no período selecionado
+                  {hasLoadingError
+                    ? "Erro ao carregar dados"
+                    : "Nenhum dado no período selecionado"}
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  Não há registros de {parameter} para o período selecionado.
-                  Tente selecionar um período maior ou adicione mais registros.
+                  {hasLoadingError
+                    ? "Houve um problema ao carregar os dados. Tente novamente ou verifique sua conexão."
+                    : `Não há registros de ${parameter} para o período selecionado. Tente selecionar um período maior ou adicione mais registros.`}
                 </p>
-                <Button
-                  onClick={() =>
-                    navigate(`/pacientes/${patientId}/adicionar-indicador`)
-                  }
-                  className="bg-green-600 hover:bg-green-700 text-white"
-                >
-                  Adicionar Registro
-                </Button>
+                <div className="flex gap-3 justify-center">
+                  {hasLoadingError ? (
+                    <Button
+                      onClick={loadData}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "Carregando..." : "Tentar novamente"}
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() =>
+                        navigate(`/pacientes/${patientId}/adicionar-indicador`)
+                      }
+                      className="bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      Adicionar Registro
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           ) : (
