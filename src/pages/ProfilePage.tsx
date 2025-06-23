@@ -45,23 +45,76 @@ const ProfilePage: React.FC = () => {
     email: user?.email || "",
   });
 
-  // Carregar dados do usuário do contexto do Supabase
+  // Carregar dados do usuário do banco de dados
   useEffect(() => {
-    if (user) {
-      setFormData({
-        name: user.fullName || "",
-        crm: user.crm || "",
-        state: user.state || "",
-        city: user.city || "",
-        phone: user.phone || "", // Carregar telefone do contexto
-        email: user.email || "",
-      });
+    const loadUserData = async () => {
+      if (!user?.id) return;
 
-      if (user.state) {
-        setSelectedState(user.state);
-        setAvailableCities(getCitiesByState(user.state));
+      try {
+        // Carregar dados atuais do banco
+        const { supabase } = await import("@/lib/supabase");
+        if (!supabase) {
+          console.warn("Supabase não disponível, usando dados do contexto");
+          loadFromContext();
+          return;
+        }
+
+        console.log("🔍 Carregando dados do usuário do banco:", user.id);
+
+        const { data: userData, error } = await supabase
+          .from("users")
+          .select("*")
+          .eq("id", user.id)
+          .single();
+
+        if (error) {
+          console.warn("Erro ao carregar dados do banco:", error);
+          loadFromContext();
+          return;
+        }
+
+        console.log("📊 Dados carregados do banco:", userData);
+
+        // Usar dados do banco
+        setFormData({
+          name: userData.full_name || userData.name || "",
+          crm: userData.crm || "",
+          state: userData.state || "",
+          city: userData.city || "",
+          phone: userData.phone || "",
+          email: userData.email || "",
+        });
+
+        if (userData.state) {
+          setSelectedState(userData.state);
+          setAvailableCities(getCitiesByState(userData.state));
+        }
+      } catch (error) {
+        console.warn("Erro ao carregar dados do usuário:", error);
+        loadFromContext();
       }
-    }
+    };
+
+    const loadFromContext = () => {
+      // Fallback: usar dados do contexto se não conseguir carregar do banco
+      if (user) {
+        setFormData({
+          name: user.fullName || "",
+          crm: user.crm || "",
+          state: user.state || "",
+          city: user.city || "",
+          phone: user.phone || "",
+          email: user.email || "",
+        });
+
+        if (user.state) {
+          setSelectedState(user.state);
+          setAvailableCities(getCitiesByState(user.state));
+        }
+      }
+    };
+
+    loadUserData();
 
     // Carregar imagem de perfil do Supabase
     if (user?.id) {
