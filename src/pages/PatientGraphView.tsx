@@ -64,6 +64,13 @@ const PatientGraphView = () => {
   const [timeRange, setTimeRange] = useState<string>("all");
   const [isLoading, setIsLoading] = useState(true);
 
+  // Diagnosis modal state
+  const [showDiagnosisModal, setShowDiagnosisModal] = useState(false);
+  const [diagnosisQuestion, setDiagnosisQuestion] = useState("");
+  const [isDiagnosisLoading, setIsDiagnosisLoading] = useState(false);
+  const [showDiagnosisResult, setShowDiagnosisResult] = useState(false);
+  const [diagnosisResult, setDiagnosisResult] = useState("");
+
   // Parâmetros da URL
   const category = searchParams.get("category") || "";
   const subcategory = searchParams.get("subcategory") || "";
