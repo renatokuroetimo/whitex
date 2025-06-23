@@ -1097,7 +1097,6 @@ export const brazilCities: Record<string, string[]> = {
     "Contenda",
     "Balsa Nova",
     "Rio Negro",
-    "São José dos Pinhais",
     "Quatro Barras",
     "Campina Grande do Sul",
     "Bocaiúva do Sul",
