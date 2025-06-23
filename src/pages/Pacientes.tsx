@@ -390,7 +390,7 @@ const Pacientes = () => {
                         Carregando...
                       </td>
                     </tr>
-                  ) : patients.length === 0 ? (
+                  ) : filteredPatients.length === 0 ? (
                     <tr>
                       <td colSpan={4} className="px-6 py-16">
                         <div className="text-center">
