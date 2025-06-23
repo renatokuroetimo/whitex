@@ -407,7 +407,7 @@ const Pacientes = () => {
                               ? "Tente ajustar sua pesquisa ou filtros, ou adicionar um novo paciente."
                               : "Comece adicionando seu primeiro paciente para gerenciar os atendimentos."}
                           </p>
-                          {!searchTerm && (
+                          {!searchTerm && statusFilters.length >= 3 && (
                             <Button
                               onClick={() => navigate("/pacientes/novo")}
                               className="bg-blue-600 hover:bg-blue-700"
