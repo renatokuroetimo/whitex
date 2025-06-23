@@ -61,6 +61,26 @@ const Pacientes = () => {
     loadPatients();
   }, [user?.id]);
 
+  // Filter patients based on status and search
+  const filteredPatients = patients.filter((patient) => {
+    const matchesSearch =
+      !searchTerm ||
+      patient.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilters.includes(patient.status);
+    return matchesSearch && matchesStatus;
+  });
+
+  // Handle status filter toggle
+  const handleStatusFilterToggle = (status: string) => {
+    setStatusFilters((prev) => {
+      if (prev.includes(status)) {
+        return prev.filter((s) => s !== status);
+      } else {
+        return [...prev, status];
+      }
+    });
+  };
+
   // Busca com debounce
   useEffect(() => {
     const timer = setTimeout(() => {
