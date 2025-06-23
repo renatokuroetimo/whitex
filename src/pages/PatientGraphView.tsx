@@ -95,6 +95,31 @@ const PatientGraphView = () => {
     }
   }, [indicators, timeRange]);
 
+  // Retry function for network errors
+  const retryIndicatorValues = async (
+    patientId: string,
+    maxRetries: number = 3,
+  ) => {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(
+          `🔄 Tentativa ${attempt} de ${maxRetries} para carregar indicadores`,
+        );
+        return await patientIndicatorAPI.getPatientIndicatorValues(patientId);
+      } catch (error) {
+        console.warn(`❌ Tentativa ${attempt} falhou:`, error);
+
+        if (attempt === maxRetries) {
+          throw error; // Re-throw on final attempt
+        }
+
+        // Wait before retry (exponential backoff)
+        const waitTime = Math.pow(2, attempt) * 1000;
+        await new Promise((resolve) => setTimeout(resolve, waitTime));
+      }
+    }
+  };
+
   const loadData = async () => {
     const targetPatientId = patientId || user?.id;
     if (!targetPatientId) return;
