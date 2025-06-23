@@ -344,8 +344,23 @@ const Pacientes = () => {
                     patients.map((patient) => (
                       <tr
                         key={patient.id}
-                        className="hover:bg-gray-50 cursor-pointer transition-colors"
-                        onClick={() => navigate(`/pacientes/${patient.id}`)}
+                        className={`transition-colors ${
+                          patient.status === "inativo"
+                            ? "opacity-50 cursor-not-allowed"
+                            : "hover:bg-gray-50 cursor-pointer"
+                        }`}
+                        onClick={() => {
+                          if (patient.status === "inativo") {
+                            toast({
+                              variant: "destructive",
+                              title: "Acesso negado",
+                              description:
+                                "Não é possível acessar perfis de pacientes inativos",
+                            });
+                            return;
+                          }
+                          navigate(`/pacientes/${patient.id}`);
+                        }}
                       >
                         <td
                           className="px-4 sm:px-6 py-4"
