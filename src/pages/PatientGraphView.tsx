@@ -108,7 +108,7 @@ const PatientGraphView = () => {
         shouldLoadPatientData
           ? patientAPI.getPatientById(targetPatientId)
           : Promise.resolve(null),
-        patientIndicatorAPI.getPatientIndicatorValues(targetPatientId),
+        retryIndicatorValues(targetPatientId),
       ]);
 
       if (shouldLoadPatientData && !patientData) {
