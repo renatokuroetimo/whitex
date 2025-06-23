@@ -222,6 +222,23 @@ const PatientDetailView = () => {
     }
   };
 
+  // Function to format date from yyyy-mm-dd to dd/mm/yyyy
+  const formatDiagnosisDate = (dateStr: string) => {
+    if (!dateStr) return "-";
+
+    try {
+      // If it's already in yyyy-mm-dd format, parse and reformat
+      const date = new Date(dateStr);
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleDateString("pt-BR");
+      }
+      return dateStr; // Return as-is if parsing fails
+    } catch (error) {
+      console.warn("Error formatting diagnosis date:", error);
+      return dateStr;
+    }
+  };
+
   const getPatientInitial = () => {
     if (!patient?.name) return "P";
     return patient.name.charAt(0).toUpperCase();
@@ -249,7 +266,7 @@ const PatientDetailView = () => {
     if (!height) return "Não informado";
     const numHeight = typeof height === "string" ? parseFloat(height) : height;
     if (isNaN(numHeight) || numHeight <= 0 || numHeight > 300) {
-      return "Não informado";
+      return "N��o informado";
     }
     return `${numHeight} cm`;
   };
