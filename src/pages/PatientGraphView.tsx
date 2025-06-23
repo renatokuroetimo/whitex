@@ -70,6 +70,7 @@ const PatientGraphView = () => {
   const [isDiagnosisLoading, setIsDiagnosisLoading] = useState(false);
   const [showDiagnosisResult, setShowDiagnosisResult] = useState(false);
   const [diagnosisResult, setDiagnosisResult] = useState("");
+  const [hasLoadingError, setHasLoadingError] = useState(false);
 
   // Parâmetros da URL
   const category = searchParams.get("category") || "";
