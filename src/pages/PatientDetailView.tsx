@@ -202,6 +202,26 @@ const PatientDetailView = () => {
     return "Não informado";
   };
 
+  // Function to format age and location in a user-friendly way
+  const getPatientInfo = () => {
+    const age = getPatientAge();
+    const location = getPatientLocation();
+
+    const ageStr = age === "Não informado" ? null : `${age} anos`;
+    const locationStr = location === "Não informado" ? null : location;
+
+    // Handle different combinations
+    if (ageStr && locationStr) {
+      return `${ageStr}, ${locationStr}`;
+    } else if (ageStr) {
+      return ageStr;
+    } else if (locationStr) {
+      return locationStr;
+    } else {
+      return "Informações não disponíveis";
+    }
+  };
+
   const getPatientInitial = () => {
     if (!patient?.name) return "P";
     return patient.name.charAt(0).toUpperCase();
