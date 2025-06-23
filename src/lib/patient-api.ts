@@ -605,90 +605,108 @@ class PatientAPI {
       );
     }
 
-    // Salvar dados extras nas tabelas auxiliares se fornecidos
+    // Salvar dados extras nas tabelas auxiliares APENAS se o usuário foi criado com sucesso
     try {
-      // 1. Salvar dados pessoais se fornecidos
-      if (
-        data.email ||
-        data.phone ||
-        data.birthDate ||
-        data.gender ||
-        data.healthPlan
-      ) {
-        console.log("📋 CREATE: Salvando dados pessoais auxiliares");
+      // Verificar se o usuário foi criado antes de salvar dados auxiliares
+      const { data: userExists, error: userCheckError } = await supabase
+        .from("users")
+        .select("id")
+        .eq("id", newPatientId)
+        .single();
 
-        const personalDataToSave = {
-          id: this.generateId(),
-          user_id: newPatientId,
-          full_name: data.name,
-          email: data.email || "",
-          birth_date: data.birthDate || null,
-          gender: data.gender || null,
-          state: data.state || null,
-          city: data.city || null,
-          health_plan: data.healthPlan || "",
-          profile_image: null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-
-        console.log(
-          "📝 CREATE: Dados pessoais que serão salvos:",
-          personalDataToSave,
+      if (userCheckError || !userExists) {
+        console.warn(
+          "⚠️ CREATE: Usuário não foi criado, pulando dados auxiliares",
         );
-
-        const { error: personalError } = await supabase
-          .from("patient_personal_data")
-          .insert([personalDataToSave]);
-
-        if (personalError) {
-          console.warn(
-            "❌ CREATE: Erro ao salvar dados pessoais auxiliares:",
-            personalError,
-          );
-        } else {
-          console.log(
-            "✅ CREATE: Dados pessoais auxiliares salvos com sucesso",
-          );
-        }
+        console.log(
+          "⚠️ CREATE: Dados auxiliares só serão salvos quando o usuário fizer login e completar o perfil",
+        );
       } else {
-        console.log("⚠️ CREATE: Nenhum dado pessoal fornecido para salvar");
-      }
+        console.log("✅ CREATE: Usuário confirmado, salvando dados auxiliares");
 
-      // 2. Salvar dados médicos se fornecidos
-      if (
-        data.height ||
-        data.smoker !== undefined ||
-        data.highBloodPressure !== undefined ||
-        data.physicalActivity !== undefined
-      ) {
-        console.log("🏥 Salvando dados médicos auxiliares");
+        // 1. Salvar dados pessoais se fornecidos
+        if (
+          data.email ||
+          data.phone ||
+          data.birthDate ||
+          data.gender ||
+          data.healthPlan
+        ) {
+          console.log("📋 CREATE: Salvando dados pessoais auxiliares");
 
-        const medicalDataToSave = {
-          id: this.generateId(),
-          user_id: newPatientId,
-          height: data.height || null,
-          weight: data.weight || null,
-          smoker: data.smoker || false,
-          high_blood_pressure: data.highBloodPressure || false,
-          physical_activity: data.physicalActivity || false,
-          exercise_frequency: null,
-          healthy_diet: false,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
+          const personalDataToSave = {
+            id: this.generateId(),
+            user_id: newPatientId,
+            full_name: data.name,
+            email: data.email || "",
+            birth_date: data.birthDate || null,
+            gender: data.gender || null,
+            state: data.state || null,
+            city: data.city || null,
+            health_plan: data.healthPlan || "",
+            profile_image: null,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
 
-        const { error: medicalError } = await supabase
-          .from("patient_medical_data")
-          .insert([medicalDataToSave]);
-
-        if (medicalError) {
-          console.warn(
-            "⚠️ Erro ao salvar dados médicos auxiliares:",
-            medicalError,
+          console.log(
+            "📝 CREATE: Dados pessoais que serão salvos:",
+            personalDataToSave,
           );
+
+          const { error: personalError } = await supabase
+            .from("patient_personal_data")
+            .insert([personalDataToSave]);
+
+          if (personalError) {
+            console.warn(
+              "❌ CREATE: Erro ao salvar dados pessoais auxiliares:",
+              personalError,
+            );
+          } else {
+            console.log(
+              "✅ CREATE: Dados pessoais auxiliares salvos com sucesso",
+            );
+          }
         } else {
-          console.log("✅ Dados médicos auxiliares salvos com sucesso");
+          console.log("⚠️ CREATE: Nenhum dado pessoal fornecido para salvar");
+        }
+
+        // 2. Salvar dados médicos se fornecidos
+        if (
+          data.height ||
+          data.smoker !== undefined ||
+          data.highBloodPressure !== undefined ||
+          data.physicalActivity !== undefined
+        ) {
+          console.log("🏥 Salvando dados médicos auxiliares");
+
+          const medicalDataToSave = {
+            id: this.generateId(),
+            user_id: newPatientId,
+            height: data.height || null,
+            weight: data.weight || null,
+            smoker: data.smoker || false,
+            high_blood_pressure: data.highBloodPressure || false,
+            physical_activity: data.physicalActivity || false,
+            exercise_frequency: null,
+            healthy_diet: false,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+
+          const { error: medicalError } = await supabase
+            .from("patient_medical_data")
+            .insert([medicalDataToSave]);
+
+          if (medicalError) {
+            console.warn(
+              "⚠️ Erro ao salvar dados médicos auxiliares:",
+              medicalError,
+            );
+          } else {
+            console.log("✅ Dados médicos auxiliares salvos com sucesso");
+          }
         }
       }
     } catch (error) {
@@ -844,85 +862,162 @@ class PatientAPI {
       // AGORA SALVAR DADOS EXTRAS NAS TABELAS AUXILIARES
       console.log("💾 Salvando dados extras nas tabelas auxiliares...");
 
-      // 1. SEMPRE salvar dados pessoais (mesmo que vazios) para garantir que existam
-      console.log("📋 UPDATE: Verificando dados pessoais para salvar...");
-      console.log("📊 UPDATE: Dados recebidos:", {
-        email: data.email,
-        birthDate: data.birthDate,
-        gender: data.gender,
-        healthPlan: data.healthPlan,
-      });
+      // 1. Salvar dados pessoais APENAS se há dados extras para salvar
+      if (data.email || data.birthDate || data.gender || data.healthPlan) {
+        console.log("📋 UPDATE: Verificando dados pessoais para salvar...");
+        console.log("📊 UPDATE: Dados recebidos:", {
+          email: data.email,
+          birthDate: data.birthDate,
+          gender: data.gender,
+          healthPlan: data.healthPlan,
+        });
 
-      const personalDataToSave = {
-        id: this.generateId(),
-        user_id: id,
-        full_name: data.name || ownPatient.name,
-        email: data.email || "",
-        birth_date: data.birthDate || null,
-        gender: data.gender || null,
-        state: data.state || ownPatient.state,
-        city: data.city || ownPatient.city,
-        health_plan: data.healthPlan || "",
-        profile_image: null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
+        // CRUCIAL: Verificar se o patient ID existe na tabela users antes de inserir
+        console.log(
+          "🔍 UPDATE: Verificando se patient ID existe na tabela users...",
+        );
+        const { data: userExists, error: userCheckError } = await supabase
+          .from("users")
+          .select("id")
+          .eq("id", id)
+          .single();
 
-      console.log(
-        "📝 UPDATE: Dados pessoais que serão salvos:",
-        personalDataToSave,
-      );
-
-      // Validar dados antes de inserir
-      if (!personalDataToSave.user_id) {
-        console.error("❌ UPDATE: user_id está vazio!");
-        return;
-      }
-
-      if (!personalDataToSave.id) {
-        console.error("❌ UPDATE: id está vazio!");
-        return;
-      }
-
-      try {
-        // Deletar registros existentes e inserir novo
-        console.log("🗑️ UPDATE: Deletando dados pessoais existentes...");
-        const { error: deleteError } = await supabase
-          .from("patient_personal_data")
-          .delete()
-          .eq("user_id", id);
-
-        if (deleteError) {
+        if (userCheckError || !userExists) {
           console.warn(
-            "⚠️ UPDATE: Erro ao deletar dados pessoais existentes:",
-            deleteError,
+            `⚠️ UPDATE: Patient ID ${id} não existe na tabela users, criando entrada...`,
           );
+
+          // Criar usuário na tabela users se não existir
+          try {
+            const { error: createUserError } = await supabase
+              .from("users")
+              .insert([
+                {
+                  id: id,
+                  email: data.email || `patient-${id}@medical.local`,
+                  profession: "paciente",
+                  full_name: data.name || ownPatient.name,
+                  city: data.city || ownPatient.city,
+                  state: data.state || ownPatient.state,
+                  phone: null,
+                  crm: null,
+                  specialty: null,
+                  created_at: new Date().toISOString(),
+                },
+              ]);
+
+            if (createUserError) {
+              console.error(
+                "❌ UPDATE: Erro ao criar usuário:",
+                createUserError,
+              );
+              console.warn(
+                "⚠️ UPDATE: Pulando salvamento de dados pessoais devido à falta de usuário",
+              );
+            } else {
+              console.log(
+                "✅ UPDATE: Usuário criado com sucesso para o patient",
+              );
+            }
+          } catch (createError) {
+            console.error(
+              "❌ UPDATE: Erro crítico ao criar usuário:",
+              createError,
+            );
+            console.warn("⚠️ UPDATE: Pulando salvamento de dados pessoais");
+          }
         } else {
-          console.log("✅ UPDATE: Dados pessoais existentes deletados");
+          console.log("✅ UPDATE: Patient ID existe na tabela users");
         }
 
-        console.log("💾 UPDATE: Inserindo novos dados pessoais...");
-        const { error: personalError } = await supabase
-          .from("patient_personal_data")
-          .insert([personalDataToSave]);
+        // Agora tentar salvar dados pessoais apenas se o usuário existe
+        const { data: finalUserCheck } = await supabase
+          .from("users")
+          .select("id")
+          .eq("id", id)
+          .single();
 
-        if (personalError) {
-          console.error("❌ UPDATE: Erro ao salvar dados pessoais auxiliares:");
-          console.error("❌ UPDATE: Código do erro:", personalError.code);
-          console.error("❌ UPDATE: Mensagem do erro:", personalError.message);
-          console.error("❌ UPDATE: Detalhes do erro:", personalError.details);
-          console.error("❌ UPDATE: Hint do erro:", personalError.hint);
-          console.error(
-            "❌ UPDATE: Erro completo:",
-            JSON.stringify(personalError, null, 2),
-          );
-        } else {
+        if (finalUserCheck) {
+          const personalDataToSave = {
+            id: this.generateId(),
+            user_id: id,
+            full_name: data.name || ownPatient.name,
+            email: data.email || "",
+            birth_date: data.birthDate || null,
+            gender: data.gender || null,
+            state: data.state || ownPatient.state,
+            city: data.city || ownPatient.city,
+            health_plan: data.healthPlan || "",
+            profile_image: null,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+
           console.log(
-            "✅ UPDATE: Dados pessoais auxiliares salvos com sucesso",
+            "📝 UPDATE: Dados pessoais que serão salvos:",
+            personalDataToSave,
+          );
+
+          try {
+            // Deletar registros existentes e inserir novo
+            console.log("🗑️ UPDATE: Deletando dados pessoais existentes...");
+            const { error: deleteError } = await supabase
+              .from("patient_personal_data")
+              .delete()
+              .eq("user_id", id);
+
+            if (deleteError) {
+              console.warn(
+                "⚠️ UPDATE: Erro ao deletar dados pessoais existentes:",
+                deleteError,
+              );
+            } else {
+              console.log("✅ UPDATE: Dados pessoais existentes deletados");
+            }
+
+            console.log("💾 UPDATE: Inserindo novos dados pessoais...");
+            const { error: personalError } = await supabase
+              .from("patient_personal_data")
+              .insert([personalDataToSave]);
+
+            if (personalError) {
+              console.error(
+                "❌ UPDATE: Erro ao salvar dados pessoais auxiliares:",
+              );
+              console.error("❌ UPDATE: Código do erro:", personalError.code);
+              console.error(
+                "❌ UPDATE: Mensagem do erro:",
+                personalError.message,
+              );
+              console.error(
+                "❌ UPDATE: Detalhes do erro:",
+                personalError.details,
+              );
+              console.error("❌ UPDATE: Hint do erro:", personalError.hint);
+              console.error(
+                "❌ UPDATE: Erro completo:",
+                JSON.stringify(personalError, null, 2),
+              );
+            } else {
+              console.log(
+                "✅ UPDATE: Dados pessoais auxiliares salvos com sucesso",
+              );
+            }
+          } catch (error) {
+            console.error(
+              "❌ UPDATE: Erro ao processar dados pessoais:",
+              error,
+            );
+          }
+        } else {
+          console.warn(
+            "⚠️ UPDATE: Usuário ainda não existe após tentativa de criação, pulando dados pessoais",
           );
         }
-      } catch (error) {
-        console.error("❌ UPDATE: Erro ao processar dados pessoais:", error);
+      } else {
+        console.log(
+          "⚠️ UPDATE: Nenhum dado pessoal extra fornecido, pulando salvamento",
+        );
       }
 
       // 2. Salvar dados médicos extras se fornecidos
@@ -934,40 +1029,53 @@ class PatientAPI {
       ) {
         console.log("🏥 Salvando dados médicos auxiliares");
 
-        const medicalDataToSave = {
-          id: this.generateId(),
-          user_id: id,
-          height: data.height || null,
-          weight: data.weight || ownPatient.weight,
-          smoker: data.smoker || false,
-          high_blood_pressure: data.highBloodPressure || false,
-          physical_activity: data.physicalActivity || false,
-          exercise_frequency: null,
-          healthy_diet: false,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
+        // Verificar se o usuário existe antes de tentar salvar dados médicos
+        const { data: userExistsForMedical } = await supabase
+          .from("users")
+          .select("id")
+          .eq("id", id)
+          .single();
 
-        try {
-          // Deletar registros existentes e inserir novo
-          await supabase
-            .from("patient_medical_data")
-            .delete()
-            .eq("user_id", id);
-          const { error: medicalError } = await supabase
-            .from("patient_medical_data")
-            .insert([medicalDataToSave]);
+        if (userExistsForMedical) {
+          const medicalDataToSave = {
+            id: this.generateId(),
+            user_id: id,
+            height: data.height || null,
+            weight: data.weight || ownPatient.weight,
+            smoker: data.smoker || false,
+            high_blood_pressure: data.highBloodPressure || false,
+            physical_activity: data.physicalActivity || false,
+            exercise_frequency: null,
+            healthy_diet: false,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
 
-          if (medicalError) {
-            console.warn(
-              "⚠️ Erro ao salvar dados médicos auxiliares:",
-              medicalError,
-            );
-          } else {
-            console.log("✅ Dados médicos auxiliares salvos com sucesso");
+          try {
+            // Deletar registros existentes e inserir novo
+            await supabase
+              .from("patient_medical_data")
+              .delete()
+              .eq("user_id", id);
+            const { error: medicalError } = await supabase
+              .from("patient_medical_data")
+              .insert([medicalDataToSave]);
+
+            if (medicalError) {
+              console.warn(
+                "⚠️ Erro ao salvar dados médicos auxiliares:",
+                medicalError,
+              );
+            } else {
+              console.log("✅ Dados médicos auxiliares salvos com sucesso");
+            }
+          } catch (error) {
+            console.warn("⚠️ Erro ao processar dados médicos:", error);
           }
-        } catch (error) {
-          console.warn("⚠️ Erro ao processar dados médicos:", error);
+        } else {
+          console.warn(
+            "⚠️ UPDATE: Usuário não existe, pulando salvamento de dados médicos",
+          );
         }
       }
 
@@ -1177,7 +1285,7 @@ class PatientAPI {
     // Verificar se usuário está logado (médico)
     const currentUserStr = localStorage.getItem("medical_app_current_user");
     if (!currentUserStr) {
-      throw new Error("❌ Usuário não autenticado");
+      throw new Error("❌ Usuário n��o autenticado");
     }
 
     const currentUser = JSON.parse(currentUserStr);
