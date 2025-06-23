@@ -359,12 +359,14 @@ const Pacientes = () => {
                     <th className="w-12 px-4 sm:px-6 py-3 text-left">
                       <Checkbox
                         checked={
-                          patients.length > 0 &&
+                          filteredPatients.length > 0 &&
                           selectedPatients.length ===
-                            patients.filter((p) => p.status !== "compartilhado")
-                              .length &&
-                          patients.filter((p) => p.status !== "compartilhado")
-                            .length > 0
+                            filteredPatients.filter(
+                              (p) => p.status !== "compartilhado",
+                            ).length &&
+                          filteredPatients.filter(
+                            (p) => p.status !== "compartilhado",
+                          ).length > 0
                         }
                         onCheckedChange={handleSelectAll}
                       />
