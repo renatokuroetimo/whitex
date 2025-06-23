@@ -218,7 +218,7 @@ const PatientDetailView = () => {
     } else if (locationStr) {
       return locationStr;
     } else {
-      return "Informações não disponíveis";
+      return "Informações de idade e localização indisponíveis";
     }
   };
 
