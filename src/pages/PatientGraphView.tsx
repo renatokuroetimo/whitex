@@ -135,10 +135,26 @@ const PatientGraphView = () => {
 
       setIndicators(filteredIndicators);
     } catch (error) {
+      console.error("❌ Erro ao carregar dados:", error);
+
+      let errorMessage = "Erro ao carregar dados do paciente";
+
+      // Provide more specific error messages
+      if (error instanceof Error) {
+        if (error.message.includes("Failed to fetch")) {
+          errorMessage =
+            "Erro de conexão. Verifique sua internet e tente novamente.";
+        } else if (error.message.includes("Supabase não está configurado")) {
+          errorMessage = "Erro de configuração do sistema. Contate o suporte.";
+        } else {
+          errorMessage = `Erro: ${error.message}`;
+        }
+      }
+
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Erro ao carregar dados do paciente",
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
