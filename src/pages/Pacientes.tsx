@@ -398,13 +398,13 @@ const Pacientes = () => {
                             <Plus className="h-8 w-8 text-gray-400" />
                           </div>
                           <h3 className="text-lg font-medium text-gray-900 mb-2">
-                            {searchTerm
+                            {searchTerm || statusFilters.length < 3
                               ? "Nenhum paciente encontrado"
                               : "Nenhum paciente cadastrado"}
                           </h3>
                           <p className="text-gray-500 mb-6">
-                            {searchTerm
-                              ? "Tente ajustar sua pesquisa ou adicionar um novo paciente."
+                            {searchTerm || statusFilters.length < 3
+                              ? "Tente ajustar sua pesquisa ou filtros, ou adicionar um novo paciente."
                               : "Comece adicionando seu primeiro paciente para gerenciar os atendimentos."}
                           </p>
                           {!searchTerm && (
