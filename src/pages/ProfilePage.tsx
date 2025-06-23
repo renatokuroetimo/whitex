@@ -528,8 +528,8 @@ const ProfilePage: React.FC = () => {
                       />
                     </SelectTrigger>
                     <SelectContent>
-                      {availableCities.map((city) => (
-                        <SelectItem key={city} value={city}>
+                      {availableCities.map((city, index) => (
+                        <SelectItem key={`${city}-${index}`} value={city}>
                           {city}
                         </SelectItem>
                       ))}
