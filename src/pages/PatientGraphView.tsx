@@ -163,6 +163,7 @@ const PatientGraphView = () => {
       setIndicators(filteredIndicators);
     } catch (error) {
       console.error("❌ Erro ao carregar dados:", error);
+      setHasLoadingError(true);
 
       let errorMessage = "Erro ao carregar dados do paciente";
 
