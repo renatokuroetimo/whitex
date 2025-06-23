@@ -420,7 +420,7 @@ const Pacientes = () => {
                       </td>
                     </tr>
                   ) : (
-                    patients.map((patient) => (
+                    filteredPatients.map((patient) => (
                       <tr
                         key={patient.id}
                         className={`transition-colors ${
