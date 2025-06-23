@@ -266,7 +266,7 @@ const PatientDetailView = () => {
     if (!height) return "Não informado";
     const numHeight = typeof height === "string" ? parseFloat(height) : height;
     if (isNaN(numHeight) || numHeight <= 0 || numHeight > 300) {
-      return "N��o informado";
+      return "Não informado";
     }
     return `${numHeight} cm`;
   };
@@ -612,7 +612,7 @@ const PatientDetailView = () => {
                             className="border-b border-gray-100"
                           >
                             <td className="py-3 text-sm text-gray-600">
-                              {diagnosis.date}
+                              {formatDiagnosisDate(diagnosis.date)}
                             </td>
                             <td className="py-3 text-sm text-gray-900">
                               {diagnosis.diagnosis}
