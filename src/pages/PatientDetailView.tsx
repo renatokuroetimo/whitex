@@ -658,6 +658,18 @@ const PatientDetailView = () => {
                 <Plus className="h-4 w-4 mr-2" />
                 Adicionar indicador
               </Button>
+
+              {/* Instructions for doctor-created profiles */}
+              {patient.status !== "compartilhado" && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <p className="text-sm text-blue-800">
+                    💡 <strong>Acesso para o paciente:</strong>
+                    <br />
+                    Caso queira fornecer acesso deste perfil ao seu paciente,
+                    informe o e-mail de cadastro e senha "123456".
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
