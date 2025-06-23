@@ -126,6 +126,7 @@ const PatientGraphView = () => {
     if (!targetPatientId) return;
 
     setIsLoading(true);
+    setHasLoadingError(false);
     try {
       const shouldLoadPatientData =
         !!patientId && user?.profession === "medico";
