@@ -299,7 +299,7 @@ const CreateIndicator = () => {
                 <ArrowLeft className="h-5 w-5 text-gray-600" />
               </button>
               <h1 className="text-2xl font-semibold text-gray-900">
-                Criar novo Indicador
+                {isEditMode ? "Editar Indicador" : "Criar novo Indicador"}
               </h1>
             </div>
             <button
