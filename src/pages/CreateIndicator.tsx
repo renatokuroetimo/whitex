@@ -59,8 +59,6 @@ const CreateIndicator = () => {
     isRequired: false,
     isConditional: false,
     isRepeatable: false,
-    parentMetadataId: "",
-    extendsMetadataId: "",
     standardId: "",
     source: "",
   });
