@@ -405,24 +405,24 @@ const CreateIndicator = () => {
                       />
                     </div>
 
-                    {/* Unidade de medida */}
+                    {/* Contexto */}
                     <div>
                       <Label className="text-sm font-medium text-gray-700 mb-2">
-                        Unidade de medida *
+                        Contexto
                       </Label>
                       <Select
-                        value={formData.unitOfMeasureId}
+                        value={formData.context || ""}
                         onValueChange={(value) =>
-                          handleInputChange("unitOfMeasureId", value)
+                          handleInputChange("context", value)
                         }
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecione uma unidade" />
+                          <SelectValue placeholder="Selecione o contexto" />
                         </SelectTrigger>
                         <SelectContent>
-                          {units.map((unit) => (
-                            <SelectItem key={unit.id} value={unit.id}>
-                              {unit.name} ({unit.symbol})
+                          {contexts.map((context) => (
+                            <SelectItem key={context.id} value={context.name}>
+                              {context.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
