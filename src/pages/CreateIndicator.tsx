@@ -135,18 +135,15 @@ const CreateIndicator = () => {
 
   const loadInitialData = async () => {
     try {
-      const [categoriesData, subcategoriesData, unitsData, indicatorsData] =
-        await Promise.all([
-          indicatorAPI.getCategories(),
-          indicatorAPI.getSubcategories(),
-          indicatorAPI.getUnits(),
-          indicatorAPI.getIndicators().catch(() => []), // Don't fail if indicators can't be loaded
-        ]);
+      const [categoriesData, subcategoriesData, unitsData] = await Promise.all([
+        indicatorAPI.getCategories(),
+        indicatorAPI.getSubcategories(),
+        indicatorAPI.getUnits(),
+      ]);
 
       setCategories(categoriesData);
       setAllSubcategories(subcategoriesData);
       setUnits(unitsData);
-      setExistingIndicators(indicatorsData);
     } catch (error) {
       toast({
         variant: "destructive",
@@ -155,7 +152,6 @@ const CreateIndicator = () => {
       });
     }
   };
-
   const loadSubcategories = () => {
     const filtered = allSubcategories.filter(
       (sub) => sub.categoryId === formData.categoryId,
