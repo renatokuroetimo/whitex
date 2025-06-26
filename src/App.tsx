@@ -31,6 +31,10 @@ import EditPatientIndicator from "./pages/EditPatientIndicator";
 import PatientDashboard from "./pages/PatientDashboard";
 import PatientAddIndicator from "./pages/PatientAddIndicator";
 import DoctorSearch from "./pages/DoctorSearch";
+import AdminLogin from "./pages/AdminLogin";
+import AdminIndicators from "./pages/AdminIndicators";
+import AdminEditIndicator from "./pages/AdminEditIndicator";
+import AdminCreateIndicator from "./pages/AdminCreateIndicator";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
