@@ -457,12 +457,12 @@ const Dashboard = () => {
           m.parameter.toLowerCase().includes("cardíaca"),
       );
 
-      heartRateMeasurements.forEach((measurement) => {
+      heartRateMeasurements.forEach((measurement, index) => {
         const bpm = parseFloat(measurement.value);
         if (!isNaN(bpm)) {
           if (bpm < 60 || bpm > 100) {
             alerts.push({
-              id: `hr_${measurement.id}`,
+              id: `hr_${measurement.id}_${patient.id}_${index}`,
               patientId: patient.id,
               patientName: patient.name,
               type: "abnormal_value",
