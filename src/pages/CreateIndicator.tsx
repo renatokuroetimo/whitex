@@ -468,18 +468,14 @@ const CreateIndicator = () => {
                             <SelectValue placeholder="Selecione o contexto" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="Autoria">Autoria</SelectItem>
-                            <SelectItem value="Paciente">Paciente</SelectItem>
-                            <SelectItem value="Clínico">Clínico</SelectItem>
-                            <SelectItem value="Administrativo">
-                              Administrativo
-                            </SelectItem>
-                            <SelectItem value="Técnico">Técnico</SelectItem>
-                            <SelectItem value="Temporal">Temporal</SelectItem>
+                            {contexts.map((context) => (
+                              <SelectItem key={context.id} value={context.name}>
+                                {context.name}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </div>
-
                       {/* Tipo de Dado */}
                       <div>
                         <Label className="text-sm font-medium text-gray-700 mb-2">
