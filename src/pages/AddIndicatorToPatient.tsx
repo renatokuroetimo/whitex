@@ -146,6 +146,7 @@ const AddIndicatorToPatient = () => {
         ...standardIndicators.map((ind) => ({
           ...ind,
           isStandard: true,
+          dataType: ind.dataType || "numero", // Default to number for standard indicators
           displayName: `${ind.categoryName} - ${ind.subcategoryName} - ${ind.parameter} (${ind.unitSymbol})`,
         })),
         ...validCustomIndicators.map((ind) => {
@@ -156,13 +157,16 @@ const AddIndicatorToPatient = () => {
             ind.subcategoryName || "Parâmetro Personalizado";
           const parameter = ind.parameter || ind.name || "Parâmetro";
           const unit = ind.unitSymbol || ind.unit_symbol || ind.unit || "un";
+          const dataType = ind.dataType || "numero"; // Get dataType from indicator
 
           const finalDisplay = `${categoryName} - ${subcategoryName} - ${parameter} (${unit})`;
           console.log("🎯 FINAL CUSTOM DISPLAY:", finalDisplay);
+          console.log("📊 DATA TYPE:", dataType);
 
           return {
             ...ind,
             isStandard: false,
+            dataType: dataType,
             displayName: finalDisplay,
           };
         }),
