@@ -546,62 +546,6 @@ const CreateIndicator = () => {
                   </div>
                 </div>
 
-                {/* Hierarquia */}
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">
-                    Hierarquia e Herança
-                  </h3>
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
-                    {/* Metadado Pai */}
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700 mb-2">
-                        Metadado Pai
-                      </Label>
-                      <Select
-                        value={formData.parentMetadataId || ""}
-                        onValueChange={(value) =>
-                          handleInputChange("parentMetadataId", value)
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione um metadado pai" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {existingIndicators.map((indicator) => (
-                            <SelectItem key={indicator.id} value={indicator.id}>
-                              {indicator.parameter} ({indicator.categoryName})
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Estende Metadado */}
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700 mb-2">
-                        Estende Metadado
-                      </Label>
-                      <Select
-                        value={formData.extendsMetadataId || ""}
-                        onValueChange={(value) =>
-                          handleInputChange("extendsMetadataId", value)
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Herda de metadado existente" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {existingIndicators.map((indicator) => (
-                            <SelectItem key={indicator.id} value={indicator.id}>
-                              {indicator.parameter} ({indicator.categoryName})
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </div>
-
                 {/* Configurações */}
                 <div>
                   <h3 className="text-lg font-medium text-gray-900 mb-4">
