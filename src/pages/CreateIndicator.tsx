@@ -111,8 +111,6 @@ const CreateIndicator = () => {
         isRequired: indicator.isRequired || false,
         isConditional: indicator.isConditional || false,
         isRepeatable: indicator.isRepeatable || false,
-        parentMetadataId: indicator.parentMetadataId || "",
-        extendsMetadataId: indicator.extendsMetadataId || "",
         standardId: indicator.standardId || "",
         source: indicator.source || "",
       });
