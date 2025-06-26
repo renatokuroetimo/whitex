@@ -48,6 +48,8 @@ const CreateIndicator = () => {
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [allSubcategories, setAllSubcategories] = useState<Subcategory[]>([]);
   const [units, setUnits] = useState<UnitOfMeasure[]>([]);
+  const [contexts, setContexts] = useState<MetadataContext[]>([]);
+  const [dataTypes, setDataTypes] = useState<MetadataDataType[]>([]);
 
   const [formData, setFormData] = useState<IndicatorFormData>({
     categoryId: "",
