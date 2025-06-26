@@ -218,19 +218,6 @@ const CreateIndicator = () => {
       return;
     }
 
-    // Validações de metadados
-    if (
-      formData.parentMetadataId &&
-      formData.parentMetadataId === formData.extendsMetadataId
-    ) {
-      toast({
-        variant: "destructive",
-        title: "Erro",
-        description: "Um metadado não pode ser pai e herdar de si mesmo",
-      });
-      return;
-    }
-
     if (!user?.id) return;
 
     setIsLoading(true);
