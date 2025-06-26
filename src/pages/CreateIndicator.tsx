@@ -67,7 +67,68 @@ const CreateIndicator = () => {
 
   useEffect(() => {
     loadInitialData();
+    if (isEditMode && id) {
+      loadIndicatorData(id);
+    }
   }, []);
+
+  const loadIndicatorData = async (indicatorId: string) => {
+    try {
+      setIsLoadingIndicator(true);
+      const indicator = await indicatorAPI.getIndicatorById(indicatorId);
+
+      if (!indicator) {
+        toast({
+          variant: "destructive",
+          title: "Erro",
+          description: "Indicador não encontrado",
+        });
+        navigate("/indicadores/criados");
+        return;
+      }
+
+      // Verificar se o indicador pertence ao usuário atual
+      if (indicator.doctorId !== user?.id) {
+        toast({
+          variant: "destructive",
+          title: "Erro",
+          description: "Você não tem permissão para editar este indicador",
+        });
+        navigate("/indicadores/criados");
+        return;
+      }
+
+      // Preencher o formulário com os dados do indicador
+      setFormData({
+        categoryId: indicator.categoryId || "",
+        subcategoryId: indicator.subcategoryId || "",
+        parameter: indicator.parameter || "",
+        unitOfMeasureId: indicator.unitId || "",
+        requiresTime: indicator.requiresTime || false,
+        requiresDate: indicator.requiresDate || false,
+        // Metadata fields
+        definition: indicator.definition || "",
+        context: indicator.context || "",
+        dataType: indicator.dataType || "",
+        isRequired: indicator.isRequired || false,
+        isConditional: indicator.isConditional || false,
+        isRepeatable: indicator.isRepeatable || false,
+        parentMetadataId: indicator.parentMetadataId || "",
+        extendsMetadataId: indicator.extendsMetadataId || "",
+        standardId: indicator.standardId || "",
+        source: indicator.source || "",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Erro ao carregar dados do indicador",
+      });
+      navigate("/indicadores/criados");
+    } finally {
+      setIsLoadingIndicator(false);
+    }
+  };
 
   useEffect(() => {
     if (formData.categoryId) {
