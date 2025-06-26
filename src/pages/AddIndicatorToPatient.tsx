@@ -381,16 +381,46 @@ const AddIndicatorToPatient = () => {
 
                     <div>
                       <Label className="text-sm text-gray-600 mb-2">
-                        Valor
+                        {selectedIndicatorData
+                          ? `Valor - ${getDataTypeLabel(selectedIndicatorData.dataType || "numero")}`
+                          : "Valor"}
                       </Label>
-                      <Input
-                        type="number"
-                        step="any"
-                        value={value}
-                        onChange={(e) => setValue(e.target.value)}
-                        placeholder="Digite o valor"
-                        className="w-full"
-                      />
+                      {selectedIndicatorData?.dataType === "booleano" ? (
+                        <Select value={value} onValueChange={setValue}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione uma opção" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="sim">Sim</SelectItem>
+                            <SelectItem value="não">Não</SelectItem>
+                            <SelectItem value="true">Verdadeiro</SelectItem>
+                            <SelectItem value="false">Falso</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Input
+                          type={
+                            selectedIndicatorData
+                              ? getInputType(
+                                  selectedIndicatorData.dataType || "numero",
+                                )
+                              : "text"
+                          }
+                          step={
+                            selectedIndicatorData?.dataType === "numero"
+                              ? "any"
+                              : undefined
+                          }
+                          value={value}
+                          onChange={(e) => setValue(e.target.value)}
+                          placeholder={
+                            selectedIndicatorData
+                              ? `Digite o ${getDataTypeLabel(selectedIndicatorData.dataType || "numero")}`
+                              : "Digite o valor"
+                          }
+                          className="w-full"
+                        />
+                      )}
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
