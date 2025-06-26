@@ -240,21 +240,35 @@ const CreateIndicator = () => {
     setIsLoading(true);
 
     try {
-      console.log("🎯 === CRIANDO INDICADOR ===");
-      console.log("🔍 FormData enviado:", formData);
-      console.log("🔍 User ID:", user.id);
+      if (isEditMode && id) {
+        console.log("🎯 === ATUALIZANDO INDICADOR ===");
+        console.log("🔍 FormData enviado:", formData);
+        console.log("🔍 Indicator ID:", id);
 
-      await indicatorAPI.createIndicator(formData);
-      toast({
-        title: "Sucesso",
-        description: "Indicador criado com sucesso",
-      });
-      navigate("/indicadores");
+        await indicatorAPI.updateIndicator(id, formData);
+        toast({
+          title: "Sucesso",
+          description: "Indicador atualizado com sucesso",
+        });
+      } else {
+        console.log("🎯 === CRIANDO INDICADOR ===");
+        console.log("🔍 FormData enviado:", formData);
+        console.log("🔍 User ID:", user.id);
+
+        await indicatorAPI.createIndicator(formData);
+        toast({
+          title: "Sucesso",
+          description: "Indicador criado com sucesso",
+        });
+      }
+      navigate("/indicadores/criados");
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Erro ao criar indicador",
+        description: isEditMode
+          ? "Erro ao atualizar indicador"
+          : "Erro ao criar indicador",
       });
     } finally {
       setIsLoading(false);
