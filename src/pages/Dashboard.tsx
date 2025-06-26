@@ -306,9 +306,9 @@ const Dashboard = () => {
       )
       .slice(0, 3);
 
-    recentPatients.forEach((patient) => {
+    recentPatients.forEach((patient, index) => {
       activities.push({
-        id: `patient_${patient.id}`,
+        id: `patient_${patient.id}_${Date.now()}_${index}`,
         type: "patient_added",
         patientName: patient.name,
         description: "Novo paciente cadastrado",
