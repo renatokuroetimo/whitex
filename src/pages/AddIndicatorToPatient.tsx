@@ -17,6 +17,10 @@ import { useAuth } from "@/contexts/AuthContextHybrid";
 import { indicatorAPI } from "@/lib/indicator-api";
 import { patientAPI } from "@/lib/patient-api";
 import { patientIndicatorAPI } from "@/lib/patient-indicator-api";
+import {
+  metadataOptionsAPI,
+  MetadataDataType,
+} from "@/lib/metadata-options-api";
 import { Patient } from "@/lib/patient-types";
 import { PatientIndicatorFormData } from "@/lib/patient-indicator-types";
 import { toast } from "@/hooks/use-toast";
