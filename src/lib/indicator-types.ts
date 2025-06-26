@@ -58,8 +58,6 @@ export interface IndicatorFormData {
   isRequired?: boolean;
   isConditional?: boolean;
   isRepeatable?: boolean;
-  parentMetadataId?: string;
-  extendsMetadataId?: string;
   standardId?: string;
   source?: string;
 }
