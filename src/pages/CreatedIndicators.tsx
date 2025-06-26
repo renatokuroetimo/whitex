@@ -245,7 +245,10 @@ const CreatedIndicators = () => {
                           </td>
                           <td className="py-3 px-4">
                             <button
-                              onClick={() => confirmDelete(indicator.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                confirmDelete(indicator.id);
+                              }}
                               className="text-red-600 hover:text-red-800 p-1"
                               title="Deletar indicador"
                             >
