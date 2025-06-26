@@ -188,10 +188,11 @@ const CreatedIndicators = () => {
                       {indicators.map((indicator) => (
                         <tr
                           key={indicator.id}
-                          className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
+                          className="border-b border-gray-100 hover:bg-blue-50 cursor-pointer transition-colors group"
                           onClick={() =>
                             navigate(`/indicadores/editar/${indicator.id}`)
                           }
+                          title="Clique para editar este indicador"
                         >
                           <td className="py-3 px-4">
                             <span className="text-sm font-medium text-gray-900">
