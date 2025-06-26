@@ -332,11 +332,11 @@ const Dashboard = () => {
       )
       .slice(0, 5);
 
-    recentMeasurements.forEach((measurement) => {
+    recentMeasurements.forEach((measurement, index) => {
       const patient = patients.find((p) => p.id === measurement.patientId);
       if (patient) {
         activities.push({
-          id: `measurement_${measurement.id}`,
+          id: `measurement_${measurement.id}_${measurement.patientId}_${index}`,
           type: "measurement_taken",
           patientName: patient.name,
           description: `${measurement.parameter}: ${measurement.value} ${measurement.unitSymbol}`,
