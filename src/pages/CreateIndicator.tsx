@@ -279,6 +279,22 @@ const CreateIndicator = () => {
     navigate("/indicadores/criados");
   };
 
+  if (isLoadingIndicator) {
+    return (
+      <div className="flex h-screen bg-gray-50">
+        <div className="hidden lg:block">
+          <Sidebar />
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
+            <p className="text-gray-600">Carregando dados do indicador...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
