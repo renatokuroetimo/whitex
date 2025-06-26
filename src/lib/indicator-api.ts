@@ -143,8 +143,6 @@ class IndicatorAPI {
         isRequired: data.is_required || false,
         isConditional: data.is_conditional || false,
         isRepeatable: data.is_repeatable || false,
-        parentMetadataId: data.parent_metadata_id || "",
-        extendsMetadataId: data.extends_metadata_id || "",
         standardId: data.standard_id || "",
         source: data.source || "",
       };
@@ -803,7 +801,7 @@ Erro fallback: ${fallbackError.message}`);
     }
   }
 
-  // Buscar indicadores padrão visíveis (apenas Supabase)
+  // Buscar indicadores padr��o visíveis (apenas Supabase)
   async getVisibleStandardIndicators(
     doctorId?: string,
   ): Promise<IndicatorWithDetails[]> {
