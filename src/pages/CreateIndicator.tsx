@@ -222,141 +222,376 @@ const CreateIndicator = () => {
           {/* Form */}
           <div className="max-w-2xl">
             <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
-                  {/* Categoria Principal */}
-                  <div>
-                    <Label className="text-sm font-medium text-gray-700 mb-2">
-                      Categoria Principal *
-                    </Label>
-                    <Select
-                      value={formData.categoryId}
-                      onValueChange={(value) =>
-                        handleInputChange("categoryId", value)
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione uma categoria" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category.id} value={category.id}>
-                            {category.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+              <form onSubmit={handleSubmit} className="space-y-8">
+                {/* Informações Básicas */}
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">
+                    Informações Básicas
+                  </h3>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+                    {/* Categoria Principal */}
+                    <div>
+                      <Label className="text-sm font-medium text-gray-700 mb-2">
+                        Categoria Principal *
+                      </Label>
+                      <Select
+                        value={formData.categoryId}
+                        onValueChange={(value) =>
+                          handleInputChange("categoryId", value)
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione uma categoria" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {categories.map((category) => (
+                            <SelectItem key={category.id} value={category.id}>
+                              {category.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                  {/* Subcategoria */}
-                  <div>
-                    <Label className="text-sm font-medium text-gray-700 mb-2">
-                      Subcategoria *
-                    </Label>
-                    <Select
-                      value={formData.subcategoryId}
-                      onValueChange={(value) =>
-                        handleInputChange("subcategoryId", value)
-                      }
-                      disabled={!formData.categoryId}
-                    >
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={
-                            formData.categoryId
-                              ? "Selecione uma subcategoria"
-                              : "Primeiro selecione uma categoria"
-                          }
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {subcategories.map((subcategory) => (
-                          <SelectItem
-                            key={subcategory.id}
-                            value={subcategory.id}
-                          >
-                            {subcategory.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                    {/* Subcategoria */}
+                    <div>
+                      <Label className="text-sm font-medium text-gray-700 mb-2">
+                        Subcategoria *
+                      </Label>
+                      <Select
+                        value={formData.subcategoryId}
+                        onValueChange={(value) =>
+                          handleInputChange("subcategoryId", value)
+                        }
+                        disabled={!formData.categoryId}
+                      >
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={
+                              formData.categoryId
+                                ? "Selecione uma subcategoria"
+                                : "Primeiro selecione uma categoria"
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {subcategories.map((subcategory) => (
+                            <SelectItem
+                              key={subcategory.id}
+                              value={subcategory.id}
+                            >
+                              {subcategory.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                  {/* Parâmetro */}
-                  <div>
-                    <Label className="text-sm font-medium text-gray-700 mb-2">
-                      Parâmetro *
-                    </Label>
-                    <Input
-                      value={formData.parameter}
-                      onChange={(e) =>
-                        handleInputChange("parameter", e.target.value)
-                      }
-                      placeholder="Digite o parâmetro"
-                      className="w-full"
-                    />
-                  </div>
+                    {/* Parâmetro */}
+                    <div>
+                      <Label className="text-sm font-medium text-gray-700 mb-2">
+                        Parâmetro *
+                      </Label>
+                      <Input
+                        value={formData.parameter}
+                        onChange={(e) =>
+                          handleInputChange("parameter", e.target.value)
+                        }
+                        placeholder="Digite o parâmetro"
+                        className="w-full"
+                      />
+                    </div>
 
-                  {/* Unidade de medida */}
-                  <div>
-                    <Label className="text-sm font-medium text-gray-700 mb-2">
-                      Unidade de medida *
-                    </Label>
-                    <Select
-                      value={formData.unitOfMeasureId}
-                      onValueChange={(value) =>
-                        handleInputChange("unitOfMeasureId", value)
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione uma unidade" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {units.map((unit) => (
-                          <SelectItem key={unit.id} value={unit.id}>
-                            {unit.name} ({unit.symbol})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    {/* Unidade de medida */}
+                    <div>
+                      <Label className="text-sm font-medium text-gray-700 mb-2">
+                        Unidade de medida *
+                      </Label>
+                      <Select
+                        value={formData.unitOfMeasureId}
+                        onValueChange={(value) =>
+                          handleInputChange("unitOfMeasureId", value)
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione uma unidade" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {units.map((unit) => (
+                            <SelectItem key={unit.id} value={unit.id}>
+                              {unit.name} ({unit.symbol})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </div>
 
-                {/* Obrigatoriedade */}
+                {/* Metadados */}
                 <div>
                   <h3 className="text-lg font-medium text-gray-900 mb-4">
-                    Obrigatoriedade
+                    Metadados
                   </h3>
-                  <div className="flex gap-8">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="requiresTime"
-                        checked={formData.requiresTime}
-                        onCheckedChange={(checked) =>
-                          handleInputChange("requiresTime", !!checked)
-                        }
-                      />
-                      <Label
-                        htmlFor="requiresTime"
-                        className="text-sm text-gray-700"
-                      >
-                        Horário
+                  <div className="space-y-4">
+                    {/* Definição */}
+                    <div>
+                      <Label className="text-sm font-medium text-gray-700 mb-2">
+                        Definição
                       </Label>
+                      <Textarea
+                        value={formData.definition || ""}
+                        onChange={(e) =>
+                          handleInputChange("definition", e.target.value)
+                        }
+                        placeholder="Definição clara do significado do metadado"
+                        className="w-full h-20"
+                      />
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="requiresDate"
-                        checked={formData.requiresDate}
-                        onCheckedChange={(checked) =>
-                          handleInputChange("requiresDate", !!checked)
-                        }
-                      />
-                      <Label
-                        htmlFor="requiresDate"
-                        className="text-sm text-gray-700"
-                      >
-                        Data
+
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+                      {/* Contexto */}
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700 mb-2">
+                          Contexto
+                        </Label>
+                        <Select
+                          value={formData.context || ""}
+                          onValueChange={(value) =>
+                            handleInputChange("context", value)
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o contexto" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Autoria">Autoria</SelectItem>
+                            <SelectItem value="Paciente">Paciente</SelectItem>
+                            <SelectItem value="Clínico">Clínico</SelectItem>
+                            <SelectItem value="Administrativo">
+                              Administrativo
+                            </SelectItem>
+                            <SelectItem value="Técnico">Técnico</SelectItem>
+                            <SelectItem value="Temporal">Temporal</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Tipo de Dado */}
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700 mb-2">
+                          Tipo de Dado
+                        </Label>
+                        <Select
+                          value={formData.dataType || ""}
+                          onValueChange={(value) =>
+                            handleInputChange("dataType", value)
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o tipo" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="texto">Texto</SelectItem>
+                            <SelectItem value="numero">Número</SelectItem>
+                            <SelectItem value="data">Data</SelectItem>
+                            <SelectItem value="data_hora">
+                              Data e Hora
+                            </SelectItem>
+                            <SelectItem value="booleano">Booleano</SelectItem>
+                            <SelectItem value="lista">Lista</SelectItem>
+                            <SelectItem value="url">URL</SelectItem>
+                            <SelectItem value="email">Email</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Standard ID */}
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700 mb-2">
+                          Standard ID
+                        </Label>
+                        <Input
+                          value={formData.standardId || ""}
+                          onChange={(e) =>
+                            handleInputChange("standardId", e.target.value)
+                          }
+                          placeholder="ex: Dublin Core, MPEG-7"
+                          className="w-full"
+                        />
+                      </div>
+
+                      {/* Fonte/Origem */}
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700 mb-2">
+                          Fonte/Origem
+                        </Label>
+                        <Input
+                          value={formData.source || ""}
+                          onChange={(e) =>
+                            handleInputChange("source", e.target.value)
+                          }
+                          placeholder="Fonte ou origem do metadado"
+                          className="w-full"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Hierarquia */}
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">
+                    Hierarquia e Herança
+                  </h3>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+                    {/* Metadado Pai */}
+                    <div>
+                      <Label className="text-sm font-medium text-gray-700 mb-2">
+                        Metadado Pai
                       </Label>
+                      <Select
+                        value={formData.parentMetadataId || ""}
+                        onValueChange={(value) =>
+                          handleInputChange("parentMetadataId", value)
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione um metadado pai" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {existingIndicators.map((indicator) => (
+                            <SelectItem key={indicator.id} value={indicator.id}>
+                              {indicator.parameter} ({indicator.categoryName})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Estende Metadado */}
+                    <div>
+                      <Label className="text-sm font-medium text-gray-700 mb-2">
+                        Estende Metadado
+                      </Label>
+                      <Select
+                        value={formData.extendsMetadataId || ""}
+                        onValueChange={(value) =>
+                          handleInputChange("extendsMetadataId", value)
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Herda de metadado existente" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {existingIndicators.map((indicator) => (
+                            <SelectItem key={indicator.id} value={indicator.id}>
+                              {indicator.parameter} ({indicator.categoryName})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Configurações */}
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">
+                    Configurações
+                  </h3>
+                  <div className="space-y-4">
+                    {/* Obrigatoriedade Básica */}
+                    <div>
+                      <Label className="text-sm font-medium text-gray-700 mb-3 block">
+                        Requisitos de Dados
+                      </Label>
+                      <div className="flex gap-8">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="requiresTime"
+                            checked={formData.requiresTime}
+                            onCheckedChange={(checked) =>
+                              handleInputChange("requiresTime", !!checked)
+                            }
+                          />
+                          <Label
+                            htmlFor="requiresTime"
+                            className="text-sm text-gray-700"
+                          >
+                            Requer Horário
+                          </Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="requiresDate"
+                            checked={formData.requiresDate}
+                            onCheckedChange={(checked) =>
+                              handleInputChange("requiresDate", !!checked)
+                            }
+                          />
+                          <Label
+                            htmlFor="requiresDate"
+                            className="text-sm text-gray-700"
+                          >
+                            Requer Data
+                          </Label>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Obrigatoriedade de Metadados */}
+                    <div>
+                      <Label className="text-sm font-medium text-gray-700 mb-3 block">
+                        Obrigatoriedade
+                      </Label>
+                      <div className="flex gap-8">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="isRequired"
+                            checked={formData.isRequired || false}
+                            onCheckedChange={(checked) =>
+                              handleInputChange("isRequired", !!checked)
+                            }
+                          />
+                          <Label
+                            htmlFor="isRequired"
+                            className="text-sm text-gray-700"
+                          >
+                            É Obrigatório
+                          </Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="isConditional"
+                            checked={formData.isConditional || false}
+                            onCheckedChange={(checked) =>
+                              handleInputChange("isConditional", !!checked)
+                            }
+                          />
+                          <Label
+                            htmlFor="isConditional"
+                            className="text-sm text-gray-700"
+                          >
+                            Obrigatório Condicional
+                          </Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="isRepeatable"
+                            checked={formData.isRepeatable || false}
+                            onCheckedChange={(checked) =>
+                              handleInputChange("isRepeatable", !!checked)
+                            }
+                          />
+                          <Label
+                            htmlFor="isRepeatable"
+                            className="text-sm text-gray-700"
+                          >
+                            Repetível
+                          </Label>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
