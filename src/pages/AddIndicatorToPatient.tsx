@@ -26,6 +26,36 @@ const AddIndicatorToPatient = () => {
   const { patientId } = useParams<{ patientId: string }>();
   const { user } = useAuth();
   const [patient, setPatient] = useState<Patient | null>(null);
+
+  // Function to get readable data type label
+  const getDataTypeLabel = (dataType: string): string => {
+    const typeMap: { [key: string]: string } = {
+      texto: "texto",
+      numero: "número",
+      data: "data",
+      data_hora: "data e hora",
+      booleano: "sim/não",
+      lista: "lista",
+      url: "URL",
+      email: "email",
+    };
+    return typeMap[dataType] || "valor";
+  };
+
+  // Function to get input type based on data type
+  const getInputType = (dataType: string): string => {
+    const inputTypeMap: { [key: string]: string } = {
+      texto: "text",
+      numero: "number",
+      data: "date",
+      data_hora: "datetime-local",
+      booleano: "text", // We'll handle boolean separately
+      lista: "text",
+      url: "url",
+      email: "email",
+    };
+    return inputTypeMap[dataType] || "text";
+  };
   const [indicators, setIndicators] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedIndicator, setSelectedIndicator] = useState("");
