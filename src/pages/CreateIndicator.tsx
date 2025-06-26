@@ -43,7 +43,6 @@ const CreateIndicator = () => {
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [allSubcategories, setAllSubcategories] = useState<Subcategory[]>([]);
   const [units, setUnits] = useState<UnitOfMeasure[]>([]);
-  const [existingIndicators, setExistingIndicators] = useState<any[]>([]);
 
   const [formData, setFormData] = useState<IndicatorFormData>({
     categoryId: "",
