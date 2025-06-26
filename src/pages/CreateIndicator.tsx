@@ -38,6 +38,7 @@ const CreateIndicator = () => {
     }
   }, [user, navigate]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingIndicator, setIsLoadingIndicator] = useState(isEditMode);
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [allSubcategories, setAllSubcategories] = useState<Subcategory[]>([]);
