@@ -89,6 +89,16 @@ const AddIndicatorToPatient = () => {
       let patientData = null;
       let standardIndicators = [];
       let customIndicators = [];
+      let dataTypesData = [];
+
+      // Load data types for dynamic validation
+      try {
+        dataTypesData = await metadataOptionsAPI.getDataTypes();
+        setDataTypes(dataTypesData);
+      } catch (error) {
+        console.error("❌ Erro ao carregar tipos de dados:", error);
+        // Continue sem tipos dinâmicos se houver erro
+      }
 
       try {
         patientData = await patientAPI.getPatientById(patientId);
