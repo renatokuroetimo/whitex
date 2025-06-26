@@ -368,7 +368,7 @@ const Dashboard = () => {
           m.parameter.toLowerCase().includes("arterial"),
       );
 
-      pressureMeasurements.forEach((measurement) => {
+      pressureMeasurements.forEach((measurement, index) => {
         const value = measurement.value;
         // Check for patterns like "150/95", "160/100", etc.
         const pressureMatch = value.match(/(\d+)\/(\d+)/);
@@ -378,7 +378,7 @@ const Dashboard = () => {
 
           if (systolic >= 140 || diastolic >= 90) {
             alerts.push({
-              id: `pressure_${measurement.id}`,
+              id: `pressure_${measurement.id}_${patient.id}_${index}`,
               patientId: patient.id,
               patientName: patient.name,
               type: "high_pressure",
