@@ -403,6 +403,7 @@ const label = `Valor - ${getDataTypeLabel(indicator.dataType)}`;
 - **[Implementação de Metadados](METADATA_IMPLEMENTATION.md)** - Guia técnico completo
 - **[Opções Dinâmicas](DYNAMIC_METADATA_OPTIONS.md)** - Sistema configurável
 - **[Remoção de Hierarquia](HIERARCHY_REMOVAL.md)** - Decisões de design
+- **[Análise de Compatibilidade LOINC](LOINC_COMPATIBILITY_ANALYSIS.md)** - Estudo completo sobre implementação de códigos LOINC no sistema
 
 ## 🎓 Referências Acadêmicas
 
