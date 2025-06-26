@@ -149,6 +149,14 @@ const App = () => (
               }
             />
             <Route
+              path="/indicadores/editar/:id"
+              element={
+                <ProtectedRoute>
+                  <CreateIndicator />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/indicadores/criados"
               element={
                 <ProtectedRoute>
