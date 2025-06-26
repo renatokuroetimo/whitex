@@ -241,6 +241,35 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminLogin />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route
+              path="/admin/indicators"
+              element={
+                <AdminProtectedRoute>
+                  <AdminIndicators />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/indicators/create"
+              element={
+                <AdminProtectedRoute>
+                  <AdminCreateIndicator />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/indicators/edit/:id"
+              element={
+                <AdminProtectedRoute>
+                  <AdminEditIndicator />
+                </AdminProtectedRoute>
+              }
+            />
+
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
