@@ -47,6 +47,17 @@ const CreateIndicator = () => {
     unitOfMeasureId: "",
     requiresTime: false,
     requiresDate: false,
+    // Metadata fields
+    definition: "",
+    context: "",
+    dataType: "",
+    isRequired: false,
+    isConditional: false,
+    isRepeatable: false,
+    parentMetadataId: "",
+    extendsMetadataId: "",
+    standardId: "",
+    source: "",
   });
 
   useEffect(() => {
