@@ -121,7 +121,7 @@ const CreateIndicator = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validações
+    // Validações básicas
     if (!formData.categoryId) {
       toast({
         variant: "destructive",
@@ -154,6 +154,19 @@ const CreateIndicator = () => {
         variant: "destructive",
         title: "Erro",
         description: "Unidade de medida é obrigatória",
+      });
+      return;
+    }
+
+    // Validações de metadados
+    if (
+      formData.parentMetadataId &&
+      formData.parentMetadataId === formData.extendsMetadataId
+    ) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Um metadado não pode ser pai e herdar de si mesmo",
       });
       return;
     }
