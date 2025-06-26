@@ -405,7 +405,7 @@ const Dashboard = () => {
 
         if (daysSinceLastMeasurement > 7) {
           alerts.push({
-            id: `missing_${patient.id}`,
+            id: `missing_${patient.id}_${Date.now()}`,
             patientId: patient.id,
             patientName: patient.name,
             type: "missing_measurements",
@@ -417,7 +417,7 @@ const Dashboard = () => {
       } else if (patient.status === "ativo") {
         // No measurements at all for active patient
         alerts.push({
-          id: `no_measurements_${patient.id}`,
+          id: `no_measurements_${patient.id}_${Date.now()}`,
           patientId: patient.id,
           patientName: patient.name,
           type: "missing_measurements",
