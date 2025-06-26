@@ -223,6 +223,104 @@ class IndicatorAPI {
     }
   }
 
+  // Atualizar indicador (apenas Supabase)
+  async updateIndicator(
+    id: string,
+    data: IndicatorFormData,
+  ): Promise<Indicator> {
+    await this.delay(500);
+
+    if (!supabase) {
+      throw new Error("❌ Supabase não está configurado");
+    }
+
+    // Verificar se usuário está logado
+    const currentUserStr = localStorage.getItem("medical_app_current_user");
+    if (!currentUserStr) {
+      throw new Error("❌ Usuário não autenticado");
+    }
+
+    const currentUser = JSON.parse(currentUserStr);
+
+    // Validar dados obrigatórios
+    if (!data.categoryId) {
+      throw new Error("❌ Categoria é obrigatória");
+    }
+    if (!data.subcategoryId) {
+      throw new Error("❌ Subcategoria é obrigatória");
+    }
+    if (!data.parameter?.trim()) {
+      throw new Error("❌ Parâmetro é obrigatório");
+    }
+    if (!data.unitOfMeasureId) {
+      throw new Error("❌ Unidade de medida é obrigatória");
+    }
+
+    // Buscar informações da unidade selecionada
+    const units = await this.getUnits();
+    const selectedUnit = units.find((unit) => unit.id === data.unitOfMeasureId);
+
+    const updateData = {
+      name: data.parameter,
+      category_id: data.categoryId,
+      category: data.categoryId,
+      subcategory_id: data.subcategoryId,
+      parameter: data.parameter.trim(),
+      unit_id: data.unitOfMeasureId,
+      unit: selectedUnit?.symbol || "un",
+      unit_symbol: selectedUnit?.symbol || "un",
+      type: "custom",
+      is_mandatory: false,
+      requires_time: data.requiresTime || false,
+      requires_date: data.requiresDate || false,
+      updated_at: new Date().toISOString(),
+      // Metadata fields
+      definition: data.definition?.trim() || null,
+      context: data.context || null,
+      data_type: data.dataType || null,
+      is_required: data.isRequired || false,
+      is_conditional: data.isConditional || false,
+      is_repeatable: data.isRepeatable || false,
+      parent_metadata_id: data.parentMetadataId || null,
+      extends_metadata_id: data.extendsMetadataId || null,
+      standard_id: data.standardId?.trim() || null,
+      source: data.source?.trim() || null,
+    };
+
+    try {
+      const { error } = await supabase
+        .from("indicators")
+        .update(updateData)
+        .eq("id", id)
+        .eq("doctor_id", currentUser.id); // Ensure user can only update their own indicators
+
+      if (error) {
+        throw new Error(`Erro ao atualizar indicador: ${error.message}`);
+      }
+
+      console.log("✅ Indicador atualizado no Supabase:", id);
+
+      return {
+        id: id,
+        name: updateData.name,
+        categoryId: updateData.category_id,
+        subcategoryId: updateData.subcategory_id,
+        parameter: updateData.parameter,
+        unitOfMeasureId: updateData.unit_id,
+        unitSymbol: updateData.unit_symbol,
+        isMandatory: updateData.is_mandatory,
+        doctorId: currentUser.id,
+        createdAt: new Date().toISOString(), // We don't have the original, but it's not critical
+        updatedAt: updateData.updated_at,
+        requiresTime: updateData.requires_time,
+        requiresDate: updateData.requires_date,
+      };
+    } catch (error) {
+      console.error("💥 Erro ao atualizar indicador:", error);
+      throw error;
+    }
+  }
+
   // Criar indicador (apenas Supabase)
   async createIndicator(data: IndicatorFormData): Promise<Indicator> {
     await this.delay(500);
