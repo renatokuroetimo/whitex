@@ -185,10 +185,21 @@ const CreateIndicator = () => {
   };
 
   const handleInputChange = (field: keyof IndicatorFormData, value: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setFormData((prev) => {
+      const newData = { ...prev, [field]: value };
+
+      // Business rules for metadata obligation based on metastandard specification
+      // "É Obrigatório" and "Obrigatório Condicional" are mutually exclusive
+      if (field === "isRequired" && value === true) {
+        // If setting as required, disable conditional requirement
+        newData.isConditional = false;
+      } else if (field === "isConditional" && value === true) {
+        // If setting as conditional, disable required
+        newData.isRequired = false;
+      }
+
+      return newData;
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
