@@ -77,6 +77,83 @@ class IndicatorAPI {
     return subcategoryMap[subcategoryId] || `Subcategoria ${subcategoryId}`;
   }
 
+  // Buscar um indicador específico por ID
+  async getIndicatorById(id: string): Promise<IndicatorWithDetails | null> {
+    await this.delay(300);
+
+    if (!supabase) {
+      throw new Error("❌ Supabase não está configurado");
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("indicators")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (error) {
+        if (error.code === "PGRST116") {
+          // No rows returned
+          return null;
+        }
+        throw new Error(`Erro ao buscar indicador: ${error.message}`);
+      }
+
+      if (!data) {
+        return null;
+      }
+
+      // Get categories and subcategories to resolve names
+      const categories = await this.getCategories();
+      const subcategories = await this.getSubcategories();
+
+      const categoryName =
+        data.category_name ||
+        categories.find((cat) => cat.id === data.category_id)?.name ||
+        this.mapCategoryIdToName(data.category_id) ||
+        "Categoria";
+
+      const subcategoryName =
+        data.subcategory_name ||
+        subcategories.find((sub) => sub.id === data.subcategory_id)?.name ||
+        this.mapSubcategoryIdToName(data.subcategory_id) ||
+        "Subcategoria";
+
+      return {
+        id: data.id || `temp_${Date.now()}`,
+        name: data.name || data.parameter || "Indicador",
+        categoryId: data.category_id || "cat1",
+        categoryName: categoryName,
+        subcategoryId: data.subcategory_id || "sub1",
+        subcategoryName: subcategoryName,
+        parameter: data.parameter || data.name || "Parâmetro",
+        unitId: data.unit_id || "unit_un",
+        unitSymbol: data.unit_symbol || "un",
+        isMandatory: data.is_mandatory || false,
+        requiresTime: data.requires_time || false,
+        requiresDate: data.requires_date || false,
+        doctorId: data.doctor_id || "",
+        createdAt: data.created_at || new Date().toISOString(),
+        updatedAt: data.updated_at || new Date().toISOString(),
+        // Metadata fields
+        definition: data.definition || "",
+        context: data.context || "",
+        dataType: data.data_type || "",
+        isRequired: data.is_required || false,
+        isConditional: data.is_conditional || false,
+        isRepeatable: data.is_repeatable || false,
+        parentMetadataId: data.parent_metadata_id || "",
+        extendsMetadataId: data.extends_metadata_id || "",
+        standardId: data.standard_id || "",
+        source: data.source || "",
+      };
+    } catch (error) {
+      console.error("💥 Erro ao buscar indicador:", error);
+      throw error;
+    }
+  }
+
   // Buscar indicadores (apenas Supabase)
   async getIndicators(): Promise<IndicatorWithDetails[]> {
     await this.delay(500);
