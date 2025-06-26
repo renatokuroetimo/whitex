@@ -207,6 +207,17 @@ class IndicatorAPI {
       requires_date: data.requiresDate || false, // Add date requirement
       doctor_id: currentUser.id,
       created_at: new Date().toISOString(),
+      // Metadata fields
+      definition: data.definition?.trim() || null,
+      context: data.context || null,
+      data_type: data.dataType || null,
+      is_required: data.isRequired || false,
+      is_conditional: data.isConditional || false,
+      is_repeatable: data.isRepeatable || false,
+      parent_metadata_id: data.parentMetadataId || null,
+      extends_metadata_id: data.extendsMetadataId || null,
+      standard_id: data.standardId?.trim() || null,
+      source: data.source?.trim() || null,
     };
 
     // Fallback: tentar com apenas colunas básicas se der erro de schema
