@@ -81,9 +81,6 @@ const AdminLogin = () => {
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="mx-auto w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mb-4">
-            <Shield className="w-8 h-8 text-white" />
-          </div>
           <h1 className="text-3xl font-bold text-white mb-2">
             Acesso Administrativo
           </h1>
