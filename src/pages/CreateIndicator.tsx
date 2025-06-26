@@ -453,24 +453,24 @@ const CreateIndicator = () => {
                     </div>
 
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
-                      {/* Contexto */}
+                      {/* Unidade de medida */}
                       <div>
                         <Label className="text-sm font-medium text-gray-700 mb-2">
-                          Contexto
+                          Unidade de medida *
                         </Label>
                         <Select
-                          value={formData.context || ""}
+                          value={formData.unitOfMeasureId}
                           onValueChange={(value) =>
-                            handleInputChange("context", value)
+                            handleInputChange("unitOfMeasureId", value)
                           }
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione o contexto" />
+                            <SelectValue placeholder="Selecione uma unidade" />
                           </SelectTrigger>
                           <SelectContent>
-                            {contexts.map((context) => (
-                              <SelectItem key={context.id} value={context.name}>
-                                {context.name}
+                            {units.map((unit) => (
+                              <SelectItem key={unit.id} value={unit.id}>
+                                {unit.name} ({unit.symbol})
                               </SelectItem>
                             ))}
                           </SelectContent>
