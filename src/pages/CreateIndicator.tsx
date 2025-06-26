@@ -491,20 +491,22 @@ const CreateIndicator = () => {
                             <SelectValue placeholder="Selecione o tipo" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="texto">Texto</SelectItem>
-                            <SelectItem value="numero">Número</SelectItem>
-                            <SelectItem value="data">Data</SelectItem>
-                            <SelectItem value="data_hora">
-                              Data e Hora
-                            </SelectItem>
-                            <SelectItem value="booleano">Booleano</SelectItem>
-                            <SelectItem value="lista">Lista</SelectItem>
-                            <SelectItem value="url">URL</SelectItem>
-                            <SelectItem value="email">Email</SelectItem>
+                            {dataTypes.map((dataType) => (
+                              <SelectItem
+                                key={dataType.id}
+                                value={dataType.value}
+                              >
+                                {dataType.name}
+                                {dataType.description && (
+                                  <span className="text-gray-500 text-xs ml-2">
+                                    - {dataType.description}
+                                  </span>
+                                )}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </div>
-
                       {/* Standard ID */}
                       <div>
                         <Label className="text-sm font-medium text-gray-700 mb-2">
