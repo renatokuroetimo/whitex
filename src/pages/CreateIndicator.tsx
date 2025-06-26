@@ -76,15 +76,18 @@ const CreateIndicator = () => {
 
   const loadInitialData = async () => {
     try {
-      const [categoriesData, subcategoriesData, unitsData] = await Promise.all([
-        indicatorAPI.getCategories(),
-        indicatorAPI.getSubcategories(),
-        indicatorAPI.getUnits(),
-      ]);
+      const [categoriesData, subcategoriesData, unitsData, indicatorsData] =
+        await Promise.all([
+          indicatorAPI.getCategories(),
+          indicatorAPI.getSubcategories(),
+          indicatorAPI.getUnits(),
+          indicatorAPI.getIndicators().catch(() => []), // Don't fail if indicators can't be loaded
+        ]);
 
       setCategories(categoriesData);
       setAllSubcategories(subcategoriesData);
       setUnits(unitsData);
+      setExistingIndicators(indicatorsData);
     } catch (error) {
       toast({
         variant: "destructive",
