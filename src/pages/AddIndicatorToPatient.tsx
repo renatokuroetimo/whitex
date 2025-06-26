@@ -238,6 +238,44 @@ const AddIndicatorToPatient = () => {
       return;
     }
 
+    // Validate based on data type
+    if (selectedIndicatorData?.dataType) {
+      const dataType = selectedIndicatorData.dataType;
+
+      if (dataType === "numero") {
+        const numValue = parseFloat(value);
+        if (isNaN(numValue)) {
+          toast({
+            variant: "destructive",
+            title: "Erro",
+            description: "O valor deve ser um número válido",
+          });
+          return;
+        }
+      } else if (dataType === "email") {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) {
+          toast({
+            variant: "destructive",
+            title: "Erro",
+            description: "Digite um email válido",
+          });
+          return;
+        }
+      } else if (dataType === "url") {
+        try {
+          new URL(value);
+        } catch {
+          toast({
+            variant: "destructive",
+            title: "Erro",
+            description: "Digite uma URL válida",
+          });
+          return;
+        }
+      }
+    }
+
     if (selectedIndicatorData?.requiresDate && !date) {
       toast({
         variant: "destructive",
