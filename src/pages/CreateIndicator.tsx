@@ -276,7 +276,7 @@ const CreateIndicator = () => {
   };
 
   const handleCancel = () => {
-    navigate("/indicadores");
+    navigate("/indicadores/criados");
   };
 
   return (
