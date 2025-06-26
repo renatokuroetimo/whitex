@@ -155,9 +155,14 @@ const CreatedIndicators = () => {
             <div className="bg-white rounded-lg border border-gray-200">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold text-gray-900">
-                    Seus Indicadores ({indicators.length})
-                  </h2>
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-900">
+                      Seus Indicadores ({indicators.length})
+                    </h2>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Clique em qualquer linha para editar o indicador
+                    </p>
+                  </div>
                 </div>
 
                 <div className="overflow-x-auto">
