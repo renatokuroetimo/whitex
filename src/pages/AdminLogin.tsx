@@ -1,77 +1,110 @@
-import React, { useState } from "react";
-import { ArrowLeft, Eye, EyeOff, Lock, Mail } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff, Shield, Lock, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContextHybrid";
+import { adminAPI } from "@/lib/admin-api";
+import { toast } from "@/hooks/use-toast";
 
-const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+const AdminLogin = () => {
   const navigate = useNavigate();
-  const { login, isLoading } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
 
-  const handleLogin = async (e: React.FormEvent) => {
+  // Verificar se já está autenticado
+  useEffect(() => {
+    if (adminAPI.isAuthenticated()) {
+      navigate("/admin/indicators", { replace: true });
+    }
+  }, [navigate]);
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email || !password) {
+    if (!formData.email.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Email é obrigatório",
+      });
       return;
     }
 
-    const success = await login({ email, password });
-    if (success) {
-      navigate("/dashboard");
+    if (!formData.password.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Senha é obrigatória",
+      });
+      return;
     }
-  };
 
-  const handleBack = () => {
-    navigate("/");
+    setIsLoading(true);
+
+    try {
+      await adminAPI.login({
+        email: formData.email.trim(),
+        password: formData.password,
+      });
+
+      toast({
+        title: "Sucesso",
+        description: "Login realizado com sucesso",
+      });
+
+      navigate("/admin/indicators", { replace: true });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erro no Login",
+        description: error.message || "Credenciais inválidas",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-800 via-purple-600 to-slate-800 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* WhiteX Brand */}
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-purple-300 bg-clip-text text-transparent mb-8">
-            WhiteX
-          </h1>
-        </div>
-
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Fazer login</h1>
+          <h1 className="text-3xl font-bold text-white mb-2">
+            Acesso Administrativo
+          </h1>
           <p className="text-slate-300">
-            Não tem uma conta?{" "}
-            <Link
-              to="/"
-              className="text-purple-400 hover:text-purple-300 underline transition-colors"
-            >
-              Criar conta
-            </Link>
+            Faça login para gerenciar indicadores padrão
           </p>
         </div>
 
         {/* Form */}
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 p-8 shadow-2xl">
-          <form onSubmit={handleLogin} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email */}
             <div>
-              <Label className="text-white mb-2 block">E-mail</Label>
+              <Label className="text-white mb-2 block">Email</Label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Mail className="h-5 w-5 text-slate-400" />
                 </div>
                 <Input
-                  id="email"
                   type="email"
-                  placeholder="Digite seu e-mail"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={formData.email}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  placeholder="Digite seu email administrativo"
                   className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-slate-400 focus:border-purple-300 focus:ring-purple-300"
-                  required
                   disabled={isLoading}
                 />
               </div>
@@ -85,13 +118,13 @@ const Login = () => {
                   <Lock className="h-5 w-5 text-slate-400" />
                 </div>
                 <Input
-                  id="password"
                   type={showPassword ? "text" : "password"}
+                  value={formData.password}
+                  onChange={(e) =>
+                    handleInputChange("password", e.target.value)
+                  }
                   placeholder="Digite sua senha"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
                   className="pl-10 pr-10 bg-white/10 border-white/20 text-white placeholder:text-slate-400 focus:border-purple-300 focus:ring-purple-300"
-                  required
                   disabled={isLoading}
                 />
                 <button
@@ -109,10 +142,10 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Login button */}
+            {/* Submit Button */}
             <Button
               type="submit"
-              disabled={isLoading || !email || !password}
+              disabled={isLoading}
               className="w-full bg-gradient-to-r from-purple-400 to-blue-500 hover:from-purple-500 hover:to-blue-600 text-white font-semibold py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {isLoading ? (
@@ -121,27 +154,26 @@ const Login = () => {
                   Entrando...
                 </div>
               ) : (
-                "Entrar"
+                "Entrar como Administrador"
               )}
             </Button>
           </form>
 
-          {/* Forgot password link */}
+          {/* Footer */}
           <div className="mt-6 text-center">
-            <button className="text-slate-400 hover:text-white text-sm underline transition-colors">
-              Esqueceu sua senha?
-            </button>
+            <p className="text-slate-400 text-sm">
+              Área restrita para administradores do sistema
+            </p>
           </div>
         </div>
 
-        {/* Back to Registration */}
+        {/* Back to Main */}
         <div className="text-center mt-6">
           <button
-            onClick={handleBack}
-            className="text-slate-300 hover:text-white text-sm underline transition-colors flex items-center justify-center gap-2 mx-auto"
+            onClick={() => navigate("/")}
+            className="text-slate-300 hover:text-white text-sm underline transition-colors"
           >
-            <ArrowLeft className="h-4 w-4" />
-            Voltar para criação de conta
+            ← Voltar ao site principal
           </button>
         </div>
       </div>
@@ -149,4 +181,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default AdminLogin;

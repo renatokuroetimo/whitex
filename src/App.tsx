@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContextHybrid";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import AdminProtectedRoute from "@/components/AdminProtectedRoute";
 import MigrationPanel from "@/components/MigrationPanel";
 
 // Supabase test disponível via console em desenvolvimento
@@ -30,6 +31,10 @@ import EditPatientIndicator from "./pages/EditPatientIndicator";
 import PatientDashboard from "./pages/PatientDashboard";
 import PatientAddIndicator from "./pages/PatientAddIndicator";
 import DoctorSearch from "./pages/DoctorSearch";
+import AdminLogin from "./pages/AdminLogin";
+import AdminIndicators from "./pages/AdminIndicators";
+import AdminEditIndicator from "./pages/AdminEditIndicator";
+import AdminCreateIndicator from "./pages/AdminCreateIndicator";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -149,6 +154,14 @@ const App = () => (
               }
             />
             <Route
+              path="/indicadores/editar/:id"
+              element={
+                <ProtectedRoute>
+                  <CreateIndicator />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/indicadores/criados"
               element={
                 <ProtectedRoute>
@@ -228,6 +241,35 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminLogin />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route
+              path="/admin/indicators"
+              element={
+                <AdminProtectedRoute>
+                  <AdminIndicators />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/indicators/create"
+              element={
+                <AdminProtectedRoute>
+                  <AdminCreateIndicator />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/indicators/edit/:id"
+              element={
+                <AdminProtectedRoute>
+                  <AdminEditIndicator />
+                </AdminProtectedRoute>
+              }
+            />
+
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

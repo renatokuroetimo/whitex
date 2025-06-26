@@ -17,6 +17,10 @@ import { useAuth } from "@/contexts/AuthContextHybrid";
 import { indicatorAPI } from "@/lib/indicator-api";
 import { patientAPI } from "@/lib/patient-api";
 import { patientIndicatorAPI } from "@/lib/patient-indicator-api";
+import {
+  metadataOptionsAPI,
+  MetadataDataType,
+} from "@/lib/metadata-options-api";
 import { Patient } from "@/lib/patient-types";
 import { PatientIndicatorFormData } from "@/lib/patient-indicator-types";
 import { toast } from "@/hooks/use-toast";
@@ -26,6 +30,19 @@ const AddIndicatorToPatient = () => {
   const { patientId } = useParams<{ patientId: string }>();
   const { user } = useAuth();
   const [patient, setPatient] = useState<Patient | null>(null);
+  const [dataTypes, setDataTypes] = useState<MetadataDataType[]>([]);
+
+  // Function to get readable data type label from dynamic data
+  const getDataTypeLabel = (dataTypeValue: string): string => {
+    const dataType = dataTypes.find((dt) => dt.value === dataTypeValue);
+    return dataType?.name.toLowerCase() || "valor";
+  };
+
+  // Function to get input type based on data type from dynamic data
+  const getInputType = (dataTypeValue: string): string => {
+    const dataType = dataTypes.find((dt) => dt.value === dataTypeValue);
+    return dataType?.inputType || "text";
+  };
   const [indicators, setIndicators] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedIndicator, setSelectedIndicator] = useState("");
@@ -72,6 +89,16 @@ const AddIndicatorToPatient = () => {
       let patientData = null;
       let standardIndicators = [];
       let customIndicators = [];
+      let dataTypesData = [];
+
+      // Load data types for dynamic validation
+      try {
+        dataTypesData = await metadataOptionsAPI.getDataTypes();
+        setDataTypes(dataTypesData);
+      } catch (error) {
+        console.error("❌ Erro ao carregar tipos de dados:", error);
+        // Continue sem tipos dinâmicos se houver erro
+      }
 
       try {
         patientData = await patientAPI.getPatientById(patientId);
@@ -146,6 +173,7 @@ const AddIndicatorToPatient = () => {
         ...standardIndicators.map((ind) => ({
           ...ind,
           isStandard: true,
+          dataType: ind.dataType || "numero", // Default to number for standard indicators
           displayName: `${ind.categoryName} - ${ind.subcategoryName} - ${ind.parameter} (${ind.unitSymbol})`,
         })),
         ...validCustomIndicators.map((ind) => {
@@ -156,13 +184,16 @@ const AddIndicatorToPatient = () => {
             ind.subcategoryName || "Parâmetro Personalizado";
           const parameter = ind.parameter || ind.name || "Parâmetro";
           const unit = ind.unitSymbol || ind.unit_symbol || ind.unit || "un";
+          const dataType = ind.dataType || "numero"; // Get dataType from indicator
 
           const finalDisplay = `${categoryName} - ${subcategoryName} - ${parameter} (${unit})`;
           console.log("🎯 FINAL CUSTOM DISPLAY:", finalDisplay);
+          console.log("📊 DATA TYPE:", dataType);
 
           return {
             ...ind,
             isStandard: false,
+            dataType: dataType,
             displayName: finalDisplay,
           };
         }),
@@ -202,6 +233,44 @@ const AddIndicatorToPatient = () => {
         description: "Digite um valor",
       });
       return;
+    }
+
+    // Validate based on data type
+    if (selectedIndicatorData?.dataType) {
+      const dataType = selectedIndicatorData.dataType;
+
+      if (dataType === "numero") {
+        const numValue = parseFloat(value);
+        if (isNaN(numValue)) {
+          toast({
+            variant: "destructive",
+            title: "Erro",
+            description: "O valor deve ser um número válido",
+          });
+          return;
+        }
+      } else if (dataType === "email") {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) {
+          toast({
+            variant: "destructive",
+            title: "Erro",
+            description: "Digite um email válido",
+          });
+          return;
+        }
+      } else if (dataType === "url") {
+        try {
+          new URL(value);
+        } catch {
+          toast({
+            variant: "destructive",
+            title: "Erro",
+            description: "Digite uma URL válida",
+          });
+          return;
+        }
+      }
     }
 
     if (selectedIndicatorData?.requiresDate && !date) {
@@ -347,16 +416,46 @@ const AddIndicatorToPatient = () => {
 
                     <div>
                       <Label className="text-sm text-gray-600 mb-2">
-                        Valor
+                        {selectedIndicatorData
+                          ? `Valor - ${getDataTypeLabel(selectedIndicatorData.dataType || "numero")}`
+                          : "Valor"}
                       </Label>
-                      <Input
-                        type="number"
-                        step="any"
-                        value={value}
-                        onChange={(e) => setValue(e.target.value)}
-                        placeholder="Digite o valor"
-                        className="w-full"
-                      />
+                      {selectedIndicatorData?.dataType === "booleano" ? (
+                        <Select value={value} onValueChange={setValue}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione uma opção" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="sim">Sim</SelectItem>
+                            <SelectItem value="não">Não</SelectItem>
+                            <SelectItem value="true">Verdadeiro</SelectItem>
+                            <SelectItem value="false">Falso</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Input
+                          type={
+                            selectedIndicatorData
+                              ? getInputType(
+                                  selectedIndicatorData.dataType || "numero",
+                                )
+                              : "text"
+                          }
+                          step={
+                            selectedIndicatorData?.dataType === "numero"
+                              ? "any"
+                              : undefined
+                          }
+                          value={value}
+                          onChange={(e) => setValue(e.target.value)}
+                          placeholder={
+                            selectedIndicatorData
+                              ? `Digite o ${getDataTypeLabel(selectedIndicatorData.dataType || "numero")}`
+                              : "Digite o valor"
+                          }
+                          className="w-full"
+                        />
+                      )}
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">

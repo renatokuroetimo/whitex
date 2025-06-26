@@ -182,7 +182,7 @@ const Pacientes = () => {
     if (currentPage > 1) {
       pages.push(
         <button
-          key="prev"
+          key="prev-btn"
           onClick={() => handlePageChange(currentPage - 1)}
           className="px-3 py-1 text-gray-500 hover:text-gray-700"
         >
@@ -195,7 +195,7 @@ const Pacientes = () => {
     for (let i = 1; i <= Math.min(totalPages, 6); i++) {
       pages.push(
         <button
-          key={i}
+          key={`page-${i}`}
           onClick={() => handlePageChange(i)}
           className={`px-3 py-1 ${
             i === currentPage
@@ -211,13 +211,13 @@ const Pacientes = () => {
     // Reticências e última página
     if (totalPages > 6) {
       pages.push(
-        <span key="dots" className="px-3 py-1 text-gray-400">
+        <span key="dots-span" className="px-3 py-1 text-gray-400">
           ...
         </span>,
       );
       pages.push(
         <button
-          key={totalPages}
+          key={`page-last-${totalPages}`}
           onClick={() => handlePageChange(totalPages)}
           className="px-3 py-1 text-gray-500 hover:text-gray-700"
         >
@@ -230,7 +230,7 @@ const Pacientes = () => {
     if (currentPage < totalPages) {
       pages.push(
         <button
-          key="next"
+          key="next-btn"
           onClick={() => handlePageChange(currentPage + 1)}
           className="px-3 py-1 text-gray-500 hover:text-gray-700"
         >

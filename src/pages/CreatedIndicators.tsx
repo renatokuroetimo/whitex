@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Edit } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -155,9 +155,14 @@ const CreatedIndicators = () => {
             <div className="bg-white rounded-lg border border-gray-200">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold text-gray-900">
-                    Seus Indicadores ({indicators.length})
-                  </h2>
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-900">
+                      Seus Indicadores ({indicators.length})
+                    </h2>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Clique em qualquer linha para editar o indicador
+                    </p>
+                  </div>
                 </div>
 
                 <div className="overflow-x-auto">
@@ -188,7 +193,11 @@ const CreatedIndicators = () => {
                       {indicators.map((indicator) => (
                         <tr
                           key={indicator.id}
-                          className="border-b border-gray-100 hover:bg-gray-50"
+                          className="border-b border-gray-100 hover:bg-blue-50 cursor-pointer transition-colors group"
+                          onClick={() =>
+                            navigate(`/indicadores/editar/${indicator.id}`)
+                          }
+                          title="Clique para editar este indicador"
                         >
                           <td className="py-3 px-4">
                             <span className="text-sm font-medium text-gray-900">
@@ -241,13 +250,30 @@ const CreatedIndicators = () => {
                             </div>
                           </td>
                           <td className="py-3 px-4">
-                            <button
-                              onClick={() => confirmDelete(indicator.id)}
-                              className="text-red-600 hover:text-red-800 p-1"
-                              title="Deletar indicador"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigate(
+                                    `/indicadores/editar/${indicator.id}`,
+                                  );
+                                }}
+                                className="text-blue-600 hover:text-blue-800 p-1"
+                                title="Editar indicador"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  confirmDelete(indicator.id);
+                                }}
+                                className="text-red-600 hover:text-red-800 p-1"
+                                title="Deletar indicador"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}

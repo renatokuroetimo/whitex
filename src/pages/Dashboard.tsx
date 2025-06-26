@@ -306,9 +306,9 @@ const Dashboard = () => {
       )
       .slice(0, 3);
 
-    recentPatients.forEach((patient) => {
+    recentPatients.forEach((patient, index) => {
       activities.push({
-        id: `patient_${patient.id}`,
+        id: `patient_${patient.id}_${Date.now()}_${index}`,
         type: "patient_added",
         patientName: patient.name,
         description: "Novo paciente cadastrado",
@@ -332,11 +332,11 @@ const Dashboard = () => {
       )
       .slice(0, 5);
 
-    recentMeasurements.forEach((measurement) => {
+    recentMeasurements.forEach((measurement, index) => {
       const patient = patients.find((p) => p.id === measurement.patientId);
       if (patient) {
         activities.push({
-          id: `measurement_${measurement.id}`,
+          id: `measurement_${measurement.id}_${measurement.patientId}_${index}`,
           type: "measurement_taken",
           patientName: patient.name,
           description: `${measurement.parameter}: ${measurement.value} ${measurement.unitSymbol}`,
@@ -368,7 +368,7 @@ const Dashboard = () => {
           m.parameter.toLowerCase().includes("arterial"),
       );
 
-      pressureMeasurements.forEach((measurement) => {
+      pressureMeasurements.forEach((measurement, index) => {
         const value = measurement.value;
         // Check for patterns like "150/95", "160/100", etc.
         const pressureMatch = value.match(/(\d+)\/(\d+)/);
@@ -378,7 +378,7 @@ const Dashboard = () => {
 
           if (systolic >= 140 || diastolic >= 90) {
             alerts.push({
-              id: `pressure_${measurement.id}`,
+              id: `pressure_${measurement.id}_${patient.id}_${index}`,
               patientId: patient.id,
               patientName: patient.name,
               type: "high_pressure",
@@ -405,7 +405,7 @@ const Dashboard = () => {
 
         if (daysSinceLastMeasurement > 7) {
           alerts.push({
-            id: `missing_${patient.id}`,
+            id: `missing_${patient.id}_${Date.now()}`,
             patientId: patient.id,
             patientName: patient.name,
             type: "missing_measurements",
@@ -417,7 +417,7 @@ const Dashboard = () => {
       } else if (patient.status === "ativo") {
         // No measurements at all for active patient
         alerts.push({
-          id: `no_measurements_${patient.id}`,
+          id: `no_measurements_${patient.id}_${Date.now()}`,
           patientId: patient.id,
           patientName: patient.name,
           type: "missing_measurements",
@@ -432,12 +432,12 @@ const Dashboard = () => {
         m.parameter.toLowerCase().includes("temperatura"),
       );
 
-      temperatureMeasurements.forEach((measurement) => {
+      temperatureMeasurements.forEach((measurement, index) => {
         const temp = parseFloat(measurement.value);
         if (!isNaN(temp)) {
           if (temp < 35 || temp > 38) {
             alerts.push({
-              id: `temp_${measurement.id}`,
+              id: `temp_${measurement.id}_${patient.id}_${index}`,
               patientId: patient.id,
               patientName: patient.name,
               type: "abnormal_value",
@@ -457,12 +457,12 @@ const Dashboard = () => {
           m.parameter.toLowerCase().includes("cardíaca"),
       );
 
-      heartRateMeasurements.forEach((measurement) => {
+      heartRateMeasurements.forEach((measurement, index) => {
         const bpm = parseFloat(measurement.value);
         if (!isNaN(bpm)) {
           if (bpm < 60 || bpm > 100) {
             alerts.push({
-              id: `hr_${measurement.id}`,
+              id: `hr_${measurement.id}_${patient.id}_${index}`,
               patientId: patient.id,
               patientName: patient.name,
               type: "abnormal_value",

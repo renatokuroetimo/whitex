@@ -1,234 +1,439 @@
-# 🏥 Sistema Médico - Autenticação e Dashboard
+# 🏥 Sistema Médico com Metapadrão de Indicadores
 
-Sistema completo de autenticação para plataforma médica com suporte a médicos e pacientes, incluindo validação de CRM.
+Sistema completo de autenticação médica com implementação de **Metapadrão para Descrição e Integração de Padrões de Metadados**, baseado na pesquisa acadêmica de Alcione Benacchio e Maria Salete Marcon Gomes Vaz (UFPR/UEPG).
 
-## 🚀 Deploy Rápido
+## 📚 Fundamentação Acadêmica
 
-[![Deploy with AWS Amplify](https://oneclick.amplifyapp.com/button.svg)](https://console.aws.amazon.com/amplify/)
+Este projeto implementa os conceitos do artigo científico **"Metapadrão - Descrição e Integração de Padrões de Metadados"** (RUTI, 2008), seguindo as especificações da norma **ISO/IEC 11179** para gestão de metadados em organizações.
 
-## ✨ Funcionalidades
+### 🎯 Objetivo do Metapadrão
 
-- ✅ **Registro de Conta** - Email/senha + validação
-- ✅ **Login Social** - Google e Facebook (simulado)
-- ✅ **Seleção de Profissão** - Médico ou Paciente
-- ✅ **Validação CRM** - Para médicos
-- ✅ **Dashboard Protegido** - Informações da conta
-- ✅ **Responsivo** - Mobile-first design
-- ✅ **Seguro** - Proteção de rotas
+> _"O objetivo é apresentar um padrão genérico para descrição de padrões de metadados que possibilita a integração dos dados comuns entre padrões distintos, proporcionando um repositório onde um único sistema possa gerenciar os metadados de vários padrões."_
+
+## 🏗️ Arquitetura do Sistema
+
+### 📊 Gestão de Indicadores Médicos
+
+O sistema implementa um repositório centralizado de metadados para indicadores médicos, permitindo:
+
+- **Padronização**: Descrição uniforme de indicadores
+- **Reutilização**: Compartilhamento entre diferentes contextos
+- **Integração**: Dados comuns entre padrões distintos
+- **Flexibilidade**: Extensão constante dos padrões
+
+### 🗄️ Estrutura de Metadados
+
+Baseado no modelo conceitual do Metapadrão:
+
+```
+Padrão (Standard)
+├── Classe (Categoria/Subcategoria)
+│   ├── Contexto (Domínio de aplicação)
+│   └── Propriedade (Indicador específico)
+│       ├── Tipo de Dado
+│       ├── Obrigatoriedade
+│       └── Condições
+```
+
+## 📋 Especificações dos Metadados
+
+Conforme definido no artigo, os metadados registrados possuem as seguintes especificações:
+
+### ✅ Campos Obrigatórios
+
+- **Identificador único** para cada elemento
+- **Contexto** dos metadados
+- **Definição** clara do significado
+
+### 🔄 Classificação de Obrigatoriedade
+
+Implementa as **três categorias** definidas no Metapadrão:
+
+1. **📌 Obrigatórios**: Sempre necessários
+2. **📋 Opcionais**: Não são necessários
+3. **⚠️ Obrigatórios Condicionais**: Obrigatórios baseados em condições
+
+### 🏷️ Propriedades Especiais
+
+- **🔄 Repetíveis**: Um metadado pode ocorrer múltiplas vezes
+- **📊 Tipados**: Tipos de valores específicos por metadado
+- **🔗 Hierárquicos**: Relacionamentos entre metadados (removido por redundância)
+
+## 🎨 Interface de Indicadores
+
+### 📝 Formulário de Criação/Edição
+
+#### **Seção 1: Informações Básicas**
+
+- **Categoria Principal\*** - Classificação primária do indicador
+  - _Exemplo_: Sinais Vitais, Exames Laboratoriais, Medidas Antropométricas
+- **Subcategoria\*** - Refinamento da categoria
+  - _Exemplo_: Pressão Arterial, Glicemia, Peso
+- **Parâmetro\*** - Nome específico do indicador
+  - _Exemplo_: Sistólica/Diastólica, Glicose em jejum, Peso corporal
+- **Contexto** - Domínio de aplicação (dinâmico do banco)
+  - _Exemplos_: Autoria, Paciente, Clínico, Administrativo, Técnico, Temporal
+
+#### **Seção 2: Metadados**
+
+- **Definição** - Descrição clara do significado
+  - _Texto livre explicando o propósito do indicador_
+- **Unidade de Medida\*** - Unidade física de medição
+  - _Exemplo_: mmHg, mg/dL, kg, cm, °C, bpm
+- **Tipo de Dado** - Classificação do valor (dinâmico do banco)
+  - **Texto**: Campo de texto livre
+  - **Número**: Valor numérico com validação
+  - **Data**: Data no formato DD/MM/AAAA
+  - **Data e Hora**: Data e hora completas
+  - **Booleano**: Verdadeiro/falso ou sim/não
+  - **Lista**: Lista de valores separados
+  - **URL**: Endereço web válido
+  - **Email**: Endereço de email válido
+- **Standard ID** - Identificação do padrão origem
+  - _Exemplo_: Dublin Core, MPEG-7, HL7
+- **Fonte/Origem** - Proveniência do metadado
+
+#### **Seção 3: Configurações**
+
+**Requisitos de Dados:**
+
+- **Requer Data** - Se o indicador necessita informação temporal
+- **Requer Horário** - Se o indicador necessita hora específica
+
+**Regras de Obrigatoriedade** (mutuamente exclusivas):
+
+- **É Obrigatório** - Sempre necessário, não pode ser condicional
+- **Obrigatório Condicional** - Obrigatório apenas sob certas condições
+- **Repetível** - Pode ocorrer múltiplas vezes
+
+### 🎯 Interface Dinâmica de Valores
+
+Ao adicionar indicadores a pacientes, o sistema adapta-se automaticamente:
+
+- **Label dinâmico**: "Valor - número", "Valor - email", etc.
+- **Input adaptativo**: Tipo de campo baseado no data_type
+- **Validação específica**: Regras conforme o tipo de dados
+- **Componentes especiais**: Select para booleanos, date picker para datas
+
+## 🗄️ Modelo de Dados
+
+### 📊 Tabelas Principais
+
+#### `indicators` - Repositório de Metadados
+
+```sql
+-- Campos básicos (existentes)
+id, name, category, subcategory, parameter, unit, type, doctor_id
+
+-- Campos de metadados (novos)
+definition          -- Definição clara do significado
+context            -- Contexto de aplicação
+data_type          -- Tipo de dado (texto, numero, data, etc.)
+is_required        -- Se é obrigatório
+is_conditional     -- Se é obrigatório condicional
+is_repeatable      -- Se pode repetir
+standard_id        -- Padrão de origem (Dublin Core, HL7, etc.)
+source             -- Fonte/origem do metadado
+requires_date      -- Se requer informação de data
+requires_time      -- Se requer informação de horário
+```
+
+#### `metadata_contexts` - Contextos Dinâmicos
+
+```sql
+id, name, description, is_active, display_order
+```
+
+#### `metadata_data_types` - Tipos de Dados Dinâmicos
+
+```sql
+id, name, value, input_type, validation_rules, is_active, display_order
+```
+
+### 🔄 Configurabilidade Dinâmica
+
+Seguindo o princípio de **flexibilidade para constantes extensões**:
+
+- **Contextos configuráveis** via banco de dados
+- **Tipos de dados extensíveis** sem alteração de código
+- **Validações personalizáveis** por tipo de dados
+- **Padrões adicionáveis** conforme necessidade organizacional
+
+## 🚀 Funcionalidades Implementadas
+
+### ✅ Sistema Completo de Metapadrão
+
+- **✅ Repositório Centralizado** - Metadados em local único
+- **✅ Reutilização** - Compartilhamento entre padrões
+- **✅ Tipagem Dinâmica** - Tipos configuráveis via banco
+- **✅ Contextos Flexíveis** - Domínios configuráveis
+- **✅ Validação Inteligente** - Regras baseadas em tipos
+- **✅ Interface Adaptativa** - UI que se adapta aos metadados
+- **✅ Obrigatoriedade Condicional** - Regras de negócio implementadas
+- **✅ Padrões Extensíveis** - Suporte a múltiplos standards
+
+### 👥 Sistema de Usuários
+
+- **✅ Autenticação Médicos/Pacientes**
+- **✅ Validação CRM**
+- **✅ Dashboard Diferenciado**
+- **✅ Proteção de Rotas**
+
+### 📊 Gestão de Indicadores
+
+- **✅ CRUD Completo** (Criar, Ler, Atualizar, Deletar)
+- **✅ Indicadores Padrão e Personalizados**
+- **✅ Categorização Hierárquica**
+- **✅ Metadados Completos**
+- **✅ Validação por Tipo de Dados**
+
+### 🏥 Gestão de Pacientes
+
+- **✅ Cadastro de Pacientes**
+- **✅ Atribuição de Indicadores**
+- **✅ Coleta de Valores**
+- **✅ Histórico Temporal**
+- **✅ Visualização Gráfica**
 
 ## 🛠️ Tecnologias
 
-- **Frontend**: React 18 + TypeScript
-- **Routing**: React Router 6
-- **Styling**: TailwindCSS + Radix UI
-- **Build**: Vite
-- **State**: Context API
-- **Forms**: Validação nativa HTML5
+### Frontend
+
+- **React 18** + TypeScript
+- **React Router 6** - Roteamento SPA
+- **TailwindCSS** + Radix UI - Design System
+- **Vite** - Build e desenvolvimento
+
+### Backend/Dados
+
+- **Supabase** - PostgreSQL + Auth + API
+- **LocalStorage** - Fallback offline
+
+### Validação e Tipos
+
+- **Zod** - Validação de schemas
+- **React Hook Form** - Formulários
+- **TypeScript** - Tipagem estática
 
 ## 🏃‍♂️ Execução Local
 
 ```bash
-# Instalar dependências
+# 1. Instalar dependências
 npm install
 
-# Executar em desenvolvimento
+# 2. Executar migração do banco (apenas uma vez)
+# Execute o script create_metadata_options_tables.sql no Supabase
+
+# 3. Executar em desenvolvimento
 npm run dev
 
-# Build para produção
+# 4. Build para produção
 npm run build
-
-# Preview da build
-npm run preview
 ```
 
-## 🌍 Deploy para AWS
+## 🗄️ Configuração do Banco
 
-### Opção 1: AWS Amplify (Recomendado)
+### 1. Scripts SQL Necessários
 
-1. **Fork/Clone** este repositório
-2. **AWS Console** → Amplify → "New app"
-3. **Conectar repositório** GitHub/GitLab
-4. **Deploy automático** - Pronto!
+Execute na seguinte ordem no SQL Editor do Supabase:
 
-**URL de exemplo**: `https://main.d1234567890.amplifyapp.com`
+```sql
+-- 1. Criar tabelas de opções dinâmicas
+-- Arquivo: create_metadata_options_tables.sql
 
-### Opção 2: S3 + CloudFront
+-- 2. Adicionar campos de metadados
+-- Arquivo: update_indicators_metadata_schema.sql
+
+-- 3. (Opcional) Remover campos de hierarquia
+-- Arquivo: remove_hierarchy_columns.sql
+```
+
+### 2. Variáveis de Ambiente
 
 ```bash
-# Build do projeto
-npm run build
-
-# Upload para S3
-aws s3 sync dist/ s3://seu-bucket-name --delete
-
-# Invalidar CloudFront
-aws cloudfront create-invalidation --distribution-id EDFDVBD6EXAMPLE --paths "/*"
+# .env.local
+VITE_SUPABASE_URL=sua_url_supabase
+VITE_SUPABASE_ANON_KEY=sua_chave_anonima
 ```
 
 ## 📁 Estrutura do Projeto
 
 ```
 src/
-├── components/          # Componentes reutilizáveis
-│   ├── ui/             # Biblioteca de UI (Radix)
-│   └── ProtectedRoute.tsx
-├── contexts/           # Context API
-│   └── AuthContext.tsx
-├── hooks/              # Hooks customizados
-├── lib/                # Utilitários e APIs
-│   ├── auth-api.ts     # API de autenticação
-│   ├── types.ts        # TypeScript types
-│   └── utils.ts        # Funções utilitárias
-├── pages/              # Páginas da aplicação
-│   ├── Index.tsx       # Registro
-│   ├── Login.tsx       # Login
-│   ├── SelectProfession.tsx
-│   ├── AddCRM.tsx
-│   └── Dashboard.tsx
-└── docs/               # Documentação
-    └── AUTH_SYSTEM.md
+├── components/              # Componentes reutilizáveis
+│   ├── ui/                 # Biblioteca Radix UI
+│   ├── ProtectedRoute.tsx  # Proteção de rotas
+│   └── Sidebar.tsx         # Navegação
+├── contexts/               # Context API
+│   └── AuthContextHybrid.tsx
+├── lib/                    # APIs e utilitários
+│   ├── indicator-api.ts    # CRUD de indicadores
+│   ├── indicator-types.ts  # Tipos TypeScript
+│   ├── metadata-options-api.ts  # API de opções dinâmicas
+│   ├── patient-api.ts      # Gestão de pacientes
+│   └── supabase.ts         # Cliente Supabase
+├── pages/                  # Páginas da aplicação
+│   ├── CreateIndicator.tsx # Formulário de metadados
+│   ├── CreatedIndicators.tsx # Lista com edição
+│   ├── AddIndicatorToPatient.tsx # Coleta de valores
+│   ├── Dashboard.tsx       # Dashboard médico
+│   └── PatientDashboard.tsx # Dashboard paciente
+└── docs/                   # Documentação
+    ├── METADATA_IMPLEMENTATION.md
+    ├── DYNAMIC_METADATA_OPTIONS.md
+    └── HIERARCHY_REMOVAL.md
 ```
 
-## 🔐 Sistema de Autenticação
+## 🔧 APIs Implementadas
 
-### Dados do Usuário
+### `indicatorAPI`
+
+- `getIndicators()` - Lista indicadores do médico
+- `getStandardIndicators()` - Indicadores padrão do sistema
+- `getIndicatorById(id)` - Busca indicador específico
+- `createIndicator(data)` - Cria novo indicador
+- `updateIndicator(id, data)` - Atualiza indicador
+- `deleteIndicator(id)` - Remove indicador
+
+### `metadataOptionsAPI`
+
+- `getContexts()` - Lista contextos disponíveis
+- `getDataTypes()` - Lista tipos de dados disponíveis
+- `createContext(name, description)` - Adiciona contexto
+- `createDataType(name, value, inputType)` - Adiciona tipo
+
+### `patientAPI`
+
+- `getPatients()` - Lista pacientes do médico
+- `getPatientById(id)` - Busca paciente específico
+- `createPatient(data)` - Cadastra paciente
+- `updatePatient(id, data)` - Atualiza paciente
+
+## 🎯 Casos de Uso
+
+### 1. Criar Indicador Personalizado
 
 ```typescript
-interface User {
-  id: string;
-  email: string;
-  profession: "medico" | "paciente";
-  crm?: string; // Apenas para médicos
-  createdAt: string;
+// Médico cria indicador seguindo metapadrão
+const indicador = {
+  // Informações Básicas
+  categoryId: "cat1", // Sinais Vitais
+  subcategoryId: "sub1", // Pressão Arterial
+  parameter: "Pressão Sistólica",
+  context: "Clínico", // Dinâmico do banco
+
+  // Metadados
+  definition: "Pressão exercida pelo sangue...",
+  dataType: "numero", // Dinâmico do banco
+  standardId: "HL7 FHIR",
+  source: "Protocolo Clínico XYZ",
+
+  // Configurações
+  isRequired: true, // Mutuamente exclusivo
+  isConditional: false, // com isConditional
+  isRepeatable: false,
+  requiresDate: true,
+  requiresTime: false,
+};
+```
+
+### 2. Coleta de Valores Dinâmica
+
+```typescript
+// Sistema adapta interface baseado no metadado
+if (indicator.dataType === "numero") {
+  // Input tipo number com validação numérica
+  renderNumberInput();
+} else if (indicator.dataType === "booleano") {
+  // Select com opções Sim/Não
+  renderBooleanSelect();
 }
+
+// Label dinâmico: "Valor - número", "Valor - email"
+const label = `Valor - ${getDataTypeLabel(indicator.dataType)}`;
 ```
 
-### Fluxo de Registro
+## 📊 Benefícios do Metapadrão
 
-1. **Registro** → Email + Senha
-2. **Profissão** → Médico ou Paciente
-3. **CRM** → Se médico, informar CRM
-4. **Dashboard** → Acesso ao sistema
+### 🎯 Padronização
 
-### Armazenamento
+- **Descrição uniforme** de dados médicos
+- **Entendimento claro** através de elementos organizacionais
+- **Consistência** na coleta e armazenamento
 
-- **LocalStorage**: Base de dados simulada
-- **SessionStorage**: Dados temporários
-- **Context API**: Estado global
+### 🔄 Reutilização
 
-## 🔗 Rotas
+- **Compartilhamento** entre diferentes contextos
+- **Reuso** através do tempo, espaço e aplicações
+- **Evita duplicação** de metadados
 
-| Rota                 | Componente        | Proteção |
-| -------------------- | ----------------- | -------- |
-| `/`                  | Registro          | Pública  |
-| `/login`             | Login             | Pública  |
-| `/select-profession` | Seleção Profissão | Temp\*   |
-| `/add-crm`           | Adicionar CRM     | Temp\*   |
-| `/dashboard`         | Dashboard         | Privada  |
+### 🏗️ Integração
 
-\*Requer dados temporários no sessionStorage
+- **Dados comuns** entre padrões distintos
+- **Crosswalking** automático entre standards
+- **Repositório único** para múltiplos padrões
 
-## 🎨 Design System
+### 📈 Extensibilidade
 
-- **Cores**: Blue (#4285f4) + Neutros
-- **Typography**: System fonts
-- **Spacing**: Escala 4px (Tailwind)
-- **Components**: Radix UI primitives
-- **Responsive**: Mobile-first
+- **Novos contextos** sem alteração de código
+- **Tipos de dados** configuráveis via banco
+- **Padrões adicionais** facilmente integrados
 
-## 🧪 Testes
+## 🔮 Roadmap
 
-```bash
-# Executar testes
-npm test
+### Próximas Implementações
 
-# Verificação de tipos
-npm run typecheck
+- [ ] **Condições Complexas** - Interface para regras condicionais
+- [ ] **Versionamento** - Histórico de alterações de metadados
+- [ ] **Importação/Exportação** - Dublin Core, HL7 FHIR
+- [ ] **API RESTful** - Endpoints para integração externa
+- [ ] **Múltiplos Padrões** - Suporte nativo a HL7, DICOM
+- [ ] **Validação Avançada** - Regras JSON Schema
+- [ ] **Auditoria** - Log de alterações de metadados
 
-# Linting
-npm run format.fix
-```
+### Standards Futuros
 
-## 📊 Performance
+- **HL7 FHIR** - Interoperabilidade em saúde
+- **DICOM** - Imagens médicas
+- **Dublin Core** - Metadados descritivos
+- **MPEG-7** - Conteúdo multimídia
 
-- **Bundle size**: ~200KB gzipped
-- **First Load**: <2s
-- **Lighthouse**: 95+ score
-- **Core Web Vitals**: Todas verdes
+## 📚 Documentação Adicional
 
-## 🔄 Migração para API Real
+- **[Implementação de Metadados](METADATA_IMPLEMENTATION.md)** - Guia técnico completo
+- **[Opções Dinâmicas](DYNAMIC_METADATA_OPTIONS.md)** - Sistema configurável
+- **[Remoção de Hierarquia](HIERARCHY_REMOVAL.md)** - Decisões de design
 
-### 1. Substituir AuthAPI
+## 🎓 Referências Acadêmicas
 
-```typescript
-// Trocar localStorage por fetch
-const response = await fetch("/api/register", {
-  method: "POST",
-  body: JSON.stringify(userData),
-});
-```
+1. **Benacchio, A.** & **Vaz, M.S.M.G.** (2008). _"Metapadrão - Descrição e Integração de Padrões de Metadados"_. RUTI | Revista Unieuro de Tecnologia da Informação, V1 N1.
 
-### 2. Adicionar JWT
+2. **ISO/IEC 11179** - _Information Technology – Metadata registries (MDR)_
 
-```typescript
-// Armazenar tokens
-localStorage.setItem("token", response.token);
-```
+3. **Dublin Core Metadata Initiative** - Padrão de metadados descritivos
 
-### 3. Backend Sugerido
-
-- **Node.js + Express**
-- **PostgreSQL + Prisma**
-- **JWT Authentication**
-- **AWS RDS/Aurora**
-
-## 📈 Próximas Funcionalidades
-
-- [ ] Backend API (Node.js/Python)
-- [ ] Email verification
-- [ ] Password reset
-- [ ] 2FA Authentication
-- [ ] Admin panel
-- [ ] Patient management
-- [ ] Appointment scheduling
-- [ ] Real-time notifications
-
-## 🆘 Suporte
-
-### Issues Comuns
-
-**Build Error**: Limpar node_modules
-
-```bash
-rm -rf node_modules package-lock.json
-npm install
-```
-
-**404 em Produção**: Configurar SPA redirect
-
-```yaml
-# amplify.yml
-redirects:
-  - source: "/<*>"
-    target: "/index.html"
-    status: "200"
-```
-
-### Contato
-
-- **Repositório**: [GitHub Issues](https://github.com/usuario/medical-app/issues)
-- **Documentação**: [Docs completa](./src/docs/AUTH_SYSTEM.md)
+4. **HL7 FHIR** - Fast Healthcare Interoperability Resources
 
 ## 📄 Licença
 
-MIT License - Veja [LICENSE](LICENSE) para detalhes.
+MIT License - Sistema desenvolvido para fins acadêmicos e de pesquisa, implementando conceitos do metapadrão conforme especificação científica.
 
 ---
 
-## 🚀 Deploy em 3 Passos
+## 🚀 Deploy e Implementação
 
-1. **Fork** este repo
-2. **AWS Amplify** → Connect repository
-3. **Deploy** → Pronto! 🎉
+### AWS Amplify (Recomendado)
 
-**Live Demo**: [https://medical-app.amplifyapp.com](https://medical-app.amplifyapp.com)
+1. Fork este repositório
+2. AWS Console → Amplify → "New app"
+3. Conectar ao repositório
+4. Deploy automático
+
+### Configuração Supabase
+
+1. Criar projeto no [Supabase](https://supabase.com)
+2. Executar scripts SQL da pasta raiz
+3. Configurar variáveis de ambiente
+4. Deploy!
+
+**O sistema implementa completamente os conceitos de metapadrão para integração e gestão de metadados médicos** 🎉
