@@ -142,16 +142,27 @@ const CreateIndicator = () => {
 
   const loadInitialData = async () => {
     try {
-      const [categoriesData, subcategoriesData, unitsData] = await Promise.all([
+      const [
+        categoriesData,
+        subcategoriesData,
+        unitsData,
+        contextsData,
+        dataTypesData,
+      ] = await Promise.all([
         indicatorAPI.getCategories(),
         indicatorAPI.getSubcategories(),
         indicatorAPI.getUnits(),
+        metadataOptionsAPI.getContexts(),
+        metadataOptionsAPI.getDataTypes(),
       ]);
 
       setCategories(categoriesData);
       setAllSubcategories(subcategoriesData);
       setUnits(unitsData);
+      setContexts(contextsData);
+      setDataTypes(dataTypesData);
     } catch (error) {
+      console.error("❌ Erro ao carregar dados iniciais:", error);
       toast({
         variant: "destructive",
         title: "Erro",
