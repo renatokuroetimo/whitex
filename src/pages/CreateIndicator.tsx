@@ -27,7 +27,9 @@ import { toast } from "@/hooks/use-toast";
 
 const CreateIndicator = () => {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
+  const isEditMode = !!id;
 
   // Redirect patients to their indicators page
   useEffect(() => {
