@@ -19,6 +19,7 @@ export interface UnitOfMeasure {
 
 export interface Indicator {
   id: string;
+  name: string;
   categoryId: string;
   subcategoryId: string;
   parameter: string;
@@ -30,6 +31,17 @@ export interface Indicator {
   doctorId: string;
   createdAt: string;
   updatedAt: string;
+  // Metadata fields
+  definition?: string;
+  context?: string;
+  dataType?: string;
+  isRequired?: boolean;
+  isConditional?: boolean;
+  isRepeatable?: boolean;
+  parentMetadataId?: string;
+  extendsMetadataId?: string;
+  standardId?: string;
+  source?: string;
 }
 
 export interface IndicatorFormData {
@@ -41,13 +53,26 @@ export interface IndicatorFormData {
   requiresDate: boolean;
   visible?: boolean;
   visibleToMedics?: boolean;
+  // Metadata fields
+  definition?: string;
+  context?: string;
+  dataType?: string;
+  isRequired?: boolean;
+  isConditional?: boolean;
+  isRepeatable?: boolean;
+  parentMetadataId?: string;
+  extendsMetadataId?: string;
+  standardId?: string;
+  source?: string;
 }
 
 export interface IndicatorWithDetails extends Indicator {
   categoryName: string;
   subcategoryName: string;
-  unitOfMeasureName: string;
-  unitOfMeasureSymbol: string;
+  unitOfMeasureName?: string;
+  unitOfMeasureSymbol?: string;
+  unitSymbol?: string;
+  isMandatory?: boolean;
 }
 
 export interface StandardIndicator {
