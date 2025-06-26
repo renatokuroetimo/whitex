@@ -23,6 +23,11 @@ import {
   UnitOfMeasure,
   IndicatorFormData,
 } from "@/lib/indicator-types";
+import {
+  metadataOptionsAPI,
+  MetadataContext,
+  MetadataDataType,
+} from "@/lib/metadata-options-api";
 import { toast } from "@/hooks/use-toast";
 
 const CreateIndicator = () => {
