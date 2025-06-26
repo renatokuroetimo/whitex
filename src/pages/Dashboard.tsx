@@ -432,12 +432,12 @@ const Dashboard = () => {
         m.parameter.toLowerCase().includes("temperatura"),
       );
 
-      temperatureMeasurements.forEach((measurement) => {
+      temperatureMeasurements.forEach((measurement, index) => {
         const temp = parseFloat(measurement.value);
         if (!isNaN(temp)) {
           if (temp < 35 || temp > 38) {
             alerts.push({
-              id: `temp_${measurement.id}`,
+              id: `temp_${measurement.id}_${patient.id}_${index}`,
               patientId: patient.id,
               patientName: patient.name,
               type: "abnormal_value",
