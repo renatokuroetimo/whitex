@@ -244,16 +244,30 @@ const CreatedIndicators = () => {
                             </div>
                           </td>
                           <td className="py-3 px-4">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                confirmDelete(indicator.id);
-                              }}
-                              className="text-red-600 hover:text-red-800 p-1"
-                              title="Deletar indicador"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigate(
+                                    `/indicadores/editar/${indicator.id}`,
+                                  );
+                                }}
+                                className="text-blue-600 hover:text-blue-800 p-1"
+                                title="Editar indicador"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  confirmDelete(indicator.id);
+                                }}
+                                className="text-red-600 hover:text-red-800 p-1"
+                                title="Deletar indicador"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
