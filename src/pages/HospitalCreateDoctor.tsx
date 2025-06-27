@@ -188,6 +188,8 @@ const HospitalCreateDoctor = () => {
     setIsLoading(true);
 
     try {
+      console.log("🚀 Iniciando cadastro de médico...");
+
       await doctorAPI.createDoctor({
         ...formData,
         hospitalId: hospital.id,
@@ -201,10 +203,29 @@ const HospitalCreateDoctor = () => {
 
       navigate("/gerenciamento/dashboard");
     } catch (error: any) {
+      console.error("❌ Erro no cadastro de médico:", error);
+
+      let errorMessage = "Erro ao cadastrar médico";
+
+      // Melhor tratamento da mensagem de erro
+      if (error && typeof error === "object") {
+        if (error.message && typeof error.message === "string") {
+          errorMessage = error.message;
+        } else if (error.error && typeof error.error === "string") {
+          errorMessage = error.error;
+        } else {
+          console.log("🔍 Erro detalhado:", JSON.stringify(error, null, 2));
+          errorMessage =
+            "Erro interno do sistema. Verifique os dados e tente novamente.";
+        }
+      } else if (typeof error === "string") {
+        errorMessage = error;
+      }
+
       toast({
         variant: "destructive",
-        title: "Erro",
-        description: error.message || "Erro ao cadastrar médico",
+        title: "Erro no Cadastro",
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
