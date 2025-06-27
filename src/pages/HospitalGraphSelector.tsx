@@ -74,9 +74,8 @@ const HospitalGraphSelector = () => {
           console.log(
             `📊 Buscando indicadores do paciente ${patient.name} (${patient.id})`,
           );
-          const patientIndicators = await patientIndicatorAPI.getIndicators(
-            patient.id,
-          );
+          const patientIndicators =
+            await patientIndicatorAPI.getPatientIndicatorValues(patient.id);
           console.log(
             `📊 Indicadores encontrados para ${patient.name}:`,
             patientIndicators.length,
