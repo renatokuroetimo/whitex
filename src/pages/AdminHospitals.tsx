@@ -188,7 +188,7 @@ const AdminHospitals = () => {
 
   const openEditDialog = (hospital: Hospital) => {
     setEditingHospital(hospital);
-    setFormData({ name: hospital.name });
+    setFormData({ name: hospital.name, email: hospital.email || "" });
     setIsEditDialogOpen(true);
   };
 
