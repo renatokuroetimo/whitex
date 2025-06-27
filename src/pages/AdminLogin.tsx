@@ -77,34 +77,34 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-800 via-purple-600 to-slate-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-200 to-gray-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">
             Acesso Administrativo
           </h1>
-          <p className="text-slate-300">
+          <p className="text-gray-600">
             Faça login para gerenciar indicadores padrão
           </p>
         </div>
 
         {/* Form */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 p-8 shadow-2xl">
+        <div className="bg-white/90 backdrop-blur-lg rounded-2xl border border-gray-200 p-8 shadow-xl">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email */}
             <div>
-              <Label className="text-white mb-2 block">Email</Label>
+              <Label className="text-gray-700 mb-2 block">Email</Label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-slate-400" />
+                  <Mail className="h-5 w-5 text-gray-400" />
                 </div>
                 <Input
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
                   placeholder="Digite seu email administrativo"
-                  className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-slate-400 focus:border-purple-300 focus:ring-purple-300"
+                  className="pl-10 bg-white border-gray-300 text-gray-800 placeholder:text-gray-400 focus:border-gray-500 focus:ring-gray-500"
                   disabled={isLoading}
                 />
               </div>
@@ -112,10 +112,10 @@ const AdminLogin = () => {
 
             {/* Password */}
             <div>
-              <Label className="text-white mb-2 block">Senha</Label>
+              <Label className="text-gray-700 mb-2 block">Senha</Label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-slate-400" />
+                  <Lock className="h-5 w-5 text-gray-400" />
                 </div>
                 <Input
                   type={showPassword ? "text" : "password"}
@@ -124,7 +124,7 @@ const AdminLogin = () => {
                     handleInputChange("password", e.target.value)
                   }
                   placeholder="Digite sua senha"
-                  className="pl-10 pr-10 bg-white/10 border-white/20 text-white placeholder:text-slate-400 focus:border-purple-300 focus:ring-purple-300"
+                  className="pl-10 pr-10 bg-white border-gray-300 text-gray-800 placeholder:text-gray-400 focus:border-gray-500 focus:ring-gray-500"
                   disabled={isLoading}
                 />
                 <button
@@ -134,9 +134,9 @@ const AdminLogin = () => {
                   disabled={isLoading}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-slate-400 hover:text-white transition-colors" />
+                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
                   ) : (
-                    <Eye className="h-5 w-5 text-slate-400 hover:text-white transition-colors" />
+                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
                   )}
                 </button>
               </div>
@@ -146,7 +146,7 @@ const AdminLogin = () => {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-purple-400 to-blue-500 hover:from-purple-500 hover:to-blue-600 text-white font-semibold py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-full bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {isLoading ? (
                 <div className="flex items-center justify-center gap-2">
@@ -161,7 +161,7 @@ const AdminLogin = () => {
 
           {/* Footer */}
           <div className="mt-6 text-center">
-            <p className="text-slate-400 text-sm">
+            <p className="text-gray-500 text-sm">
               Área restrita para administradores do sistema
             </p>
           </div>
@@ -171,7 +171,7 @@ const AdminLogin = () => {
         <div className="text-center mt-6">
           <button
             onClick={() => navigate("/")}
-            className="text-slate-300 hover:text-white text-sm underline transition-colors"
+            className="text-gray-600 hover:text-gray-800 text-sm underline transition-colors"
           >
             ← Voltar ao site principal
           </button>
