@@ -78,7 +78,7 @@ class HospitalAPI {
 
   async updateHospital(
     hospitalId: string,
-    updates: { name: string },
+    updates: { name: string; email: string },
   ): Promise<void> {
     if (!supabase) {
       throw new Error("Supabase não está configurado");
@@ -86,7 +86,10 @@ class HospitalAPI {
 
     const { error } = await supabase
       .from("hospitals")
-      .update({ name: updates.name })
+      .update({
+        name: updates.name,
+        email: updates.email,
+      })
       .eq("id", hospitalId);
 
     if (error) {
