@@ -248,6 +248,19 @@ const AdminHospitals = () => {
                       required
                     />
                   </div>
+                  <div>
+                    <Label htmlFor="email">Email da Instituição</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
+                      placeholder="Digite o email da instituição"
+                      required
+                    />
+                  </div>
                   <div className="bg-blue-50 p-3 rounded-md">
                     <p className="text-sm text-blue-700">
                       <strong>Senha padrão:</strong> 123456
