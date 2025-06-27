@@ -346,7 +346,7 @@ const PatientDetailView = () => {
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <p className="text-gray-600">Paciente não encontrado</p>
-            <Button onClick={() => navigate("/pacientes")} className="mt-4">
+            <Button onClick={() => navigate(backPath)} className="mt-4">
               Voltar para lista
             </Button>
           </div>
