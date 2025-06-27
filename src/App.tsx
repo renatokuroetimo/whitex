@@ -252,10 +252,26 @@ const App = () => (
             <Route path="/admin" element={<AdminLogin />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route
+              path="/admin/dashboard"
+              element={
+                <AdminProtectedRoute>
+                  <AdminDashboard />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
               path="/admin/indicators"
               element={
                 <AdminProtectedRoute>
                   <AdminIndicators />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/hospitals"
+              element={
+                <AdminProtectedRoute>
+                  <AdminHospitals />
                 </AdminProtectedRoute>
               }
             />
@@ -274,6 +290,22 @@ const App = () => (
                   <AdminEditIndicator />
                 </AdminProtectedRoute>
               }
+            />
+
+            {/* Hospital Management Routes */}
+            <Route path="/gerenciamento" element={<HospitalLogin />} />
+            <Route path="/gerenciamento/login" element={<HospitalLogin />} />
+            <Route
+              path="/gerenciamento/dashboard"
+              element={<HospitalDashboard />}
+            />
+            <Route
+              path="/gerenciamento/doctors/create"
+              element={<HospitalCreateDoctor />}
+            />
+            <Route
+              path="/gerenciamento/patients"
+              element={<HospitalPatients />}
             />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
