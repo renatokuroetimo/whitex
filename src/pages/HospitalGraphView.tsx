@@ -91,7 +91,7 @@ const HospitalGraphView = () => {
     try {
       // Buscar dados do hospital
       const hospitalData = JSON.parse(
-        localStorage.getItem("hospitalData") || "null",
+        localStorage.getItem("hospital_session") || "null",
       );
       if (!hospitalData) {
         toast({
