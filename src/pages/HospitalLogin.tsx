@@ -81,11 +81,11 @@ const HospitalLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-100 via-green-200 to-green-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-200 to-gray-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-4">
             <Building2 className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
@@ -99,21 +99,19 @@ const HospitalLogin = () => {
         {/* Form */}
         <div className="bg-white/90 backdrop-blur-lg rounded-2xl border border-gray-200 p-8 shadow-xl">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Hospital Name */}
+            {/* Email */}
             <div>
-              <Label className="text-gray-700 mb-2 block">
-                Nome da Instituição
-              </Label>
+              <Label className="text-gray-700 mb-2 block">Email</Label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-gray-400" />
+                  <Mail className="h-5 w-5 text-gray-400" />
                 </div>
                 <Input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => handleInputChange("name", e.target.value)}
-                  placeholder="Digite o nome do hospital/clínica"
-                  className="pl-10 bg-white border-gray-300 text-gray-800 placeholder:text-gray-400 focus:border-green-500 focus:ring-green-500"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  placeholder="Digite o email da instituição"
+                  className="pl-10 bg-white border-gray-300 text-gray-800 placeholder:text-gray-400 focus:border-gray-500 focus:ring-gray-500"
                   disabled={isLoading}
                 />
               </div>
