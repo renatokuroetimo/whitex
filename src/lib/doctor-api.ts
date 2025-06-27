@@ -23,7 +23,6 @@ export interface DoctorFormData {
   phone: string;
   email: string;
   hospitalId: string;
-  password: string;
 }
 
 class DoctorAPI {
