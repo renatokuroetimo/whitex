@@ -410,13 +410,14 @@ const HospitalCreateDoctor = () => {
                 </div>
               </div>
 
-              {/* Default Password Info */}
+              {/* Login Info */}
               <div className="mt-6 p-4 bg-blue-50 rounded-lg">
                 <p className="text-blue-700 text-sm">
-                  <strong>Senha padrão:</strong> 123456
+                  <strong>Acesso:</strong> O médico poderá fazer login usando o
+                  e-mail cadastrado
                 </p>
                 <p className="text-blue-600 text-xs mt-1">
-                  O médico poderá alterar a senha após o primeiro login
+                  O sistema de autenticação será configurado automaticamente
                 </p>
               </div>
 
