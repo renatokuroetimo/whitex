@@ -105,7 +105,9 @@ const HospitalGraphView = () => {
       setHospital(hospitalData);
 
       // Buscar todos os pacientes do hospital
-      const patients = await hospitalPatientAPI.getPatients(hospitalData.id);
+      const patients = await hospitalPatientAPI.getPatientsByHospital(
+        hospitalData.id,
+      );
 
       // Buscar indicadores específicos de todos os pacientes
       const allIndicators: PatientIndicatorValue[] = [];
