@@ -31,23 +31,23 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-800 via-purple-600 to-slate-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-200 to-gray-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* WhiteX Brand */}
         <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-purple-300 bg-clip-text text-transparent mb-8">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-8">
             WhiteX
           </h1>
         </div>
 
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Fazer login</h1>
-          <p className="text-slate-300">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Fazer login</h1>
+          <p className="text-gray-600">
             Não tem uma conta?{" "}
             <Link
               to="/"
-              className="text-purple-400 hover:text-purple-300 underline transition-colors"
+              className="text-gray-700 hover:text-gray-800 underline transition-colors"
             >
               Criar conta
             </Link>
@@ -55,14 +55,14 @@ const Login = () => {
         </div>
 
         {/* Form */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 p-8 shadow-2xl">
+        <div className="bg-white/90 backdrop-blur-lg rounded-2xl border border-gray-200 p-8 shadow-xl">
           <form onSubmit={handleLogin} className="space-y-6">
             {/* Email */}
             <div>
-              <Label className="text-white mb-2 block">E-mail</Label>
+              <Label className="text-gray-700 mb-2 block">E-mail</Label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-slate-400" />
+                  <Mail className="h-5 w-5 text-gray-400" />
                 </div>
                 <Input
                   id="email"
@@ -70,7 +70,7 @@ const Login = () => {
                   placeholder="Digite seu e-mail"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-slate-400 focus:border-purple-300 focus:ring-purple-300"
+                  className="pl-10 bg-white border-gray-300 text-gray-800 placeholder:text-gray-400 focus:border-gray-500 focus:ring-gray-500"
                   required
                   disabled={isLoading}
                 />
@@ -79,10 +79,10 @@ const Login = () => {
 
             {/* Password */}
             <div>
-              <Label className="text-white mb-2 block">Senha</Label>
+              <Label className="text-gray-700 mb-2 block">Senha</Label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-slate-400" />
+                  <Lock className="h-5 w-5 text-gray-400" />
                 </div>
                 <Input
                   id="password"
@@ -90,7 +90,7 @@ const Login = () => {
                   placeholder="Digite sua senha"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-10 bg-white/10 border-white/20 text-white placeholder:text-slate-400 focus:border-purple-300 focus:ring-purple-300"
+                  className="pl-10 pr-10 bg-white border-gray-300 text-gray-800 placeholder:text-gray-400 focus:border-gray-500 focus:ring-gray-500"
                   required
                   disabled={isLoading}
                 />
@@ -101,9 +101,9 @@ const Login = () => {
                   disabled={isLoading}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-slate-400 hover:text-white transition-colors" />
+                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
                   ) : (
-                    <Eye className="h-5 w-5 text-slate-400 hover:text-white transition-colors" />
+                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
                   )}
                 </button>
               </div>
@@ -113,7 +113,7 @@ const Login = () => {
             <Button
               type="submit"
               disabled={isLoading || !email || !password}
-              className="w-full bg-gradient-to-r from-purple-400 to-blue-500 hover:from-purple-500 hover:to-blue-600 text-white font-semibold py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-full bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {isLoading ? (
                 <div className="flex items-center justify-center gap-2">
@@ -128,7 +128,7 @@ const Login = () => {
 
           {/* Forgot password link */}
           <div className="mt-6 text-center">
-            <button className="text-slate-400 hover:text-white text-sm underline transition-colors">
+            <button className="text-gray-500 hover:text-gray-700 text-sm underline transition-colors">
               Esqueceu sua senha?
             </button>
           </div>
@@ -138,7 +138,7 @@ const Login = () => {
         <div className="text-center mt-6">
           <button
             onClick={handleBack}
-            className="text-slate-300 hover:text-white text-sm underline transition-colors flex items-center justify-center gap-2 mx-auto"
+            className="text-gray-600 hover:text-gray-800 text-sm underline transition-colors flex items-center justify-center gap-2 mx-auto"
           >
             <ArrowLeft className="h-4 w-4" />
             Voltar para criação de conta
