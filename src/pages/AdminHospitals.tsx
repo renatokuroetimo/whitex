@@ -42,6 +42,7 @@ const AdminHospitals = () => {
   );
   const [formData, setFormData] = useState({
     name: "",
+    email: "",
   });
 
   useEffect(() => {
