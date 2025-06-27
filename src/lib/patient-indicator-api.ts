@@ -124,11 +124,17 @@ class PatientIndicatorAPI {
         }),
       );
 
-      console.log(`✅ ${values.length} valores carregados do Supabase`);
+      console.log(
+        `✅ ${values.length} valores carregados para paciente ${patientId}`,
+      );
       return values;
     } catch (error) {
-      console.error("💥 Erro ao buscar valores de indicadores:", error);
-      throw error;
+      console.error(
+        `💥 Erro ao buscar valores de indicadores para paciente ${patientId}:`,
+        error,
+      );
+      // Retornar array vazio em vez de lançar erro para não interromper o carregamento
+      return [];
     }
   }
 
