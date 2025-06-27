@@ -139,7 +139,7 @@ const PatientDetailView = () => {
         title: "Sucesso",
         description: "Compartilhamento removido com sucesso",
       });
-      navigate("/pacientes");
+      navigate(backPath);
     } catch (error) {
       toast({
         variant: "destructive",
