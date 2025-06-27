@@ -28,6 +28,11 @@ const PatientDetailView = () => {
   const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Detectar se está sendo acessado pelo sistema hospitalar
+  const isHospitalContext =
+    window.location.pathname.includes("/gerenciamento/");
+  const backPath = isHospitalContext ? "/gerenciamento/patients" : "/pacientes";
+
   useEffect(() => {
     if (patientId && user?.id) {
       loadPatientData();
