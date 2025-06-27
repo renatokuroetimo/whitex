@@ -46,8 +46,6 @@ const HospitalGraphSelector = () => {
       const hospitalData = JSON.parse(
         localStorage.getItem("hospital_session") || "null",
       );
-      console.log("🏥 Hospital data:", hospitalData);
-
       if (!hospitalData) {
         toast({
           title: "Erro",
@@ -60,37 +58,21 @@ const HospitalGraphSelector = () => {
       setHospital(hospitalData);
 
       // Buscar todos os pacientes do hospital
-      console.log("🔍 Buscando pacientes do hospital:", hospitalData.id);
       const patients = await hospitalPatientAPI.getPatientsByHospital(
         hospitalData.id,
       );
-      console.log("👥 Pacientes encontrados:", patients.length);
-      console.log("👥 Lista de pacientes:", patients);
 
       // Buscar todos os indicadores de todos os pacientes
       const allIndicators: PatientIndicatorValue[] = [];
       for (const patient of patients) {
         try {
-          console.log(
-            `📊 Buscando indicadores do paciente ${patient.name} (${patient.id})`,
-          );
           const patientIndicators =
             await patientIndicatorAPI.getPatientIndicatorValues(patient.id);
-          console.log(
-            `📊 Indicadores encontrados para ${patient.name}:`,
-            patientIndicators.length,
-          );
           allIndicators.push(...patientIndicators);
         } catch (error) {
-          console.log(
-            `❌ Erro ao buscar indicadores do paciente ${patient.id}:`,
-            error,
-          );
+          console.log(`Erro ao buscar indicadores do paciente ${patient.id}`);
         }
       }
-
-      console.log("📊 Total de indicadores encontrados:", allIndicators.length);
-      console.log("📊 Amostra de indicadores:", allIndicators.slice(0, 3));
       setIndicators(allIndicators);
 
       // Agrupar indicadores por categoria/subcategoria/parâmetro
