@@ -90,11 +90,13 @@ class PatientIndicatorAPI {
     );
 
     try {
+      // Verificar conectividade com Supabase
       const { data, error } = await supabase
         .from("patient_indicator_values")
         .select("*")
         .eq("patient_id", patientId)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(1000); // Adicionar limite para evitar queries muito grandes
 
       if (error) {
         console.error("❌ Erro na query Supabase:", error);
