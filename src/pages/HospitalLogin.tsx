@@ -131,7 +131,7 @@ const HospitalLogin = () => {
                     handleInputChange("password", e.target.value)
                   }
                   placeholder="Digite sua senha"
-                  className="pl-10 pr-10 bg-white border-gray-300 text-gray-800 placeholder:text-gray-400 focus:border-green-500 focus:ring-green-500"
+                  className="pl-10 pr-10 bg-white border-gray-300 text-gray-800 placeholder:text-gray-400 focus:border-gray-500 focus:ring-gray-500"
                   disabled={isLoading}
                 />
                 <button
