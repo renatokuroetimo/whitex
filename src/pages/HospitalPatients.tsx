@@ -174,6 +174,15 @@ const HospitalPatients = () => {
               </div>
 
               <div className="flex items-center gap-3 flex-wrap">
+                {/* Ver gráficos button */}
+                <Button
+                  onClick={() => navigate("/gerenciamento/patients/graphs")}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  Ver gráficos
+                </Button>
+
                 {/* Doctor Filter */}
                 <div className="min-w-[200px]">
                   <Select
