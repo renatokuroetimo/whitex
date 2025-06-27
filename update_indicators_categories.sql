@@ -47,7 +47,7 @@ WHERE indicator_id = 'triglicerides';
 
 -- Troponina
 UPDATE patient_indicator_values
-SET category_name = 'Sistema Cardiovascular', subcategory = 'Marcadores Cardíacos'
+SET category_name = 'Sistema Cardiovascular', subcategory_name = 'Marcadores Cardíacos'
 WHERE indicator_id = 'troponina';
 
 -- =====================================================
@@ -56,22 +56,22 @@ WHERE indicator_id = 'troponina';
 
 -- Glicemia de Jejum
 UPDATE patient_indicator_values
-SET category_name = 'Sistema Endócrino', subcategory = 'Controle Glicêmico'
+SET category_name = 'Sistema Endócrino', subcategory_name = 'Controle Glicêmico'
 WHERE indicator_id = 'glicemia-jejum';
 
 -- Hemoglobina Glicada (HbA1c)
 UPDATE patient_indicator_values
-SET category_name = 'Sistema Endócrino', subcategory = 'Controle Glicêmico'
+SET category_name = 'Sistema Endócrino', subcategory_name = 'Controle Glicêmico'
 WHERE indicator_id = 'hba1c';
 
 -- Teste de Tolerância à Glicose
 UPDATE patient_indicator_values
-SET category_name = 'Sistema Endócrino', subcategory = 'Testes Funcionais'
+SET category_name = 'Sistema Endócrino', subcategory_name = 'Testes Funcionais'
 WHERE indicator_id = 'teste-tolerancia-glicose';
 
 -- Vitamina D
 UPDATE patient_indicator_values
-SET category_name = 'Sistema Endócrino', subcategory = 'Vitaminas e Hormônios'
+SET category_name = 'Sistema Endócrino', subcategory_name = 'Vitaminas e Hormônios'
 WHERE indicator_id = 'vitamina-d';
 
 -- =====================================================
@@ -80,22 +80,22 @@ WHERE indicator_id = 'vitamina-d';
 
 -- Peso Corporal
 UPDATE patient_indicator_values
-SET category_name = 'Antropometria', subcategory = 'Peso e Massa Corporal'
+SET category_name = 'Antropometria', subcategory_name = 'Peso e Massa Corporal'
 WHERE indicator_id = 'peso';
 
 -- Índice de Massa Corporal
 UPDATE patient_indicator_values
-SET category_name = 'Antropometria', subcategory = 'Índices Corporais'
+SET category_name = 'Antropometria', subcategory_name = 'Índices Corporais'
 WHERE indicator_id = 'imc';
 
 -- Circunferência Abdominal
 UPDATE patient_indicator_values
-SET category_name = 'Antropometria', subcategory = 'Medidas Corporais'
+SET category_name = 'Antropometria', subcategory_name = 'Medidas Corporais'
 WHERE indicator_id = 'circunferencia-abdominal';
 
 -- Percentual de Gordura
 UPDATE patient_indicator_values
-SET category_name = 'Antropometria', subcategory = 'Composição Corporal'
+SET category_name = 'Antropometria', subcategory_name = 'Composição Corporal'
 WHERE indicator_id = 'percentual-gordura';
 
 -- =====================================================
@@ -104,17 +104,17 @@ WHERE indicator_id = 'percentual-gordura';
 
 -- Peak Flow (Pico de Fluxo Expiratório)
 UPDATE patient_indicator_values
-SET category_name = 'Sistema Respiratório', subcategory = 'Função Pulmonar'
+SET category_name = 'Sistema Respiratório', subcategory_name = 'Função Pulmonar'
 WHERE indicator_id = 'peak-flow';
 
 -- Saturação de Oxigênio
 UPDATE patient_indicator_values
-SET category_name = 'Sistema Respiratório', subcategory = 'Oxigenação Sanguínea'
+SET category_name = 'Sistema Respiratório', subcategory_name = 'Oxigenação Sanguínea'
 WHERE indicator_id = 'saturacao-oxigenio';
 
 -- Uso de Broncodilatador
 UPDATE patient_indicator_values
-SET category_name = 'Sistema Respiratório', subcategory = 'Controle Medicamentoso'
+SET category_name = 'Sistema Respiratório', subcategory_name = 'Controle Medicamentoso'
 WHERE indicator_id = 'uso-broncodilatador';
 
 -- =====================================================
@@ -123,12 +123,12 @@ WHERE indicator_id = 'uso-broncodilatador';
 
 -- Hemoglobina
 UPDATE patient_indicator_values
-SET category_name = 'Sistema Hematológico', subcategory = 'Hemograma Básico'
+SET category_name = 'Sistema Hematológico', subcategory_name = 'Hemograma Básico'
 WHERE indicator_id = 'hemoglobina';
 
 -- Ferritina
 UPDATE patient_indicator_values
-SET category_name = 'Sistema Hematológico', subcategory = 'Metabolismo do Ferro'
+SET category_name = 'Sistema Hematológico', subcategory_name = 'Metabolismo do Ferro'
 WHERE indicator_id = 'ferritina';
 
 -- =====================================================
@@ -137,12 +137,12 @@ WHERE indicator_id = 'ferritina';
 
 -- Proteína C Reativa (PCR)
 UPDATE patient_indicator_values
-SET category_name = 'Sistema Imunológico', subcategory = 'Marcadores Inflamatórios'
+SET category_name = 'Sistema Imunológico', subcategory_name = 'Marcadores Inflamatórios'
 WHERE indicator_id = 'pcr';
 
 -- IgE Total
 UPDATE patient_indicator_values
-SET category_name = 'Sistema Imunológico', subcategory = 'Perfil Alérgico'
+SET category_name = 'Sistema Imunológico', subcategory_name = 'Perfil Alérgico'
 WHERE indicator_id = 'ige-total';
 
 -- =====================================================
@@ -151,12 +151,12 @@ WHERE indicator_id = 'ige-total';
 
 -- Escala Visual Analógica de Dor (VAS)
 UPDATE patient_indicator_values
-SET category_name = 'Reumatologia', subcategory = 'Avaliação da Dor'
+SET category_name = 'Reumatologia', subcategory_name = 'Avaliação da Dor'
 WHERE indicator_id = 'vas-dor';
 
 -- Rigidez Matinal
 UPDATE patient_indicator_values
-SET category_name = 'Reumatologia', subcategory = 'Sintomas Articulares'
+SET category_name = 'Reumatologia', subcategory_name = 'Sintomas Articulares'
 WHERE indicator_id = 'rigidez-matinal';
 
 -- =====================================================
@@ -165,7 +165,7 @@ WHERE indicator_id = 'rigidez-matinal';
 
 -- Creatinina Sérica
 UPDATE patient_indicator_values
-SET category_name = 'Sistema Renal', subcategory = 'Função Renal'
+SET category_name = 'Sistema Renal', subcategory_name = 'Função Renal'
 WHERE indicator_id = 'creatinina';
 
 -- =====================================================
@@ -174,12 +174,12 @@ WHERE indicator_id = 'creatinina';
 
 -- VO2 Máximo
 UPDATE patient_indicator_values
-SET category_name = 'Performance Física', subcategory = 'Capacidade Aeróbica'
+SET category_name = 'Performance Física', subcategory_name = 'Capacidade Aeróbica'
 WHERE indicator_id = 'vo2-max';
 
 -- Lactato Sanguíneo
 UPDATE patient_indicator_values
-SET category_name = 'Performance Física', subcategory = 'Metabolismo Anaeróbico'
+SET category_name = 'Performance Física', subcategory_name = 'Metabolismo Anaeróbico'
 WHERE indicator_id = 'lactato';
 
 -- =====================================================
@@ -188,7 +188,7 @@ WHERE indicator_id = 'lactato';
 
 -- Creatina Quinase (CK)
 UPDATE patient_indicator_values
-SET category_name = 'Sistema Muscular', subcategory = 'Enzimas Musculares'
+SET category_name = 'Sistema Muscular', subcategory_name = 'Enzimas Musculares'
 WHERE indicator_id = 'creatina-quinase';
 
 -- =====================================================
@@ -197,7 +197,7 @@ WHERE indicator_id = 'creatina-quinase';
 
 -- Altura Uterina
 UPDATE patient_indicator_values
-SET category_name = 'Ginecologia/Obstetrícia', subcategory = 'Acompanhamento Gestacional'
+SET category_name = 'Ginecologia/Obstetrícia', subcategory_name = 'Acompanhamento Gestacional'
 WHERE indicator_id = 'altura-uterina';
 
 -- =====================================================
