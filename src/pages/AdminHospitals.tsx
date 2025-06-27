@@ -77,9 +77,30 @@ const AdminHospitals = () => {
       return;
     }
 
+    if (!formData.email.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Email é obrigatório",
+      });
+      return;
+    }
+
+    // Validar formato do email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Email inválido",
+      });
+      return;
+    }
+
     try {
       await hospitalAPI.createHospital({
         name: formData.name.trim(),
+        email: formData.email.trim(),
         password: "123456", // Senha padrão
       });
 
@@ -88,7 +109,7 @@ const AdminHospitals = () => {
         description: "Hospital cadastrado com sucesso",
       });
 
-      setFormData({ name: "" });
+      setFormData({ name: "", email: "" });
       setIsCreateDialogOpen(false);
       loadHospitals();
     } catch (error: any) {
