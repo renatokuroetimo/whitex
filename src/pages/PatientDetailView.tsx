@@ -97,7 +97,7 @@ const PatientDetailView = () => {
           title: "Erro",
           description: "Paciente não encontrado",
         });
-        navigate("/pacientes");
+        navigate(backPath);
       }
     } catch (error) {
       console.error("Error loading patient data:", error);
