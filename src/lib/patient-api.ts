@@ -265,7 +265,10 @@ class PatientAPI {
               sharedId: share.id,
             };
 
-            allPatients.push(patient);
+            // Only add if not already exists (own patients have priority)
+            if (!patientMap.has(patient.id)) {
+              patientMap.set(patient.id, patient);
+            }
           } catch (error) {
             // Silenciosamente ignorar erros de processamento de pacientes individuais
           }
@@ -743,7 +746,7 @@ class PatientAPI {
     console.log("🔥 UPDATEPATIENT INICIADO:", { id, data });
 
     if (!supabase) {
-      throw new Error("Sistema de banco de dados não configurado");
+      throw new Error("Sistema de banco de dados n��o configurado");
     }
 
     // Obter usuário atual do contexto (SEM localStorage)
@@ -926,7 +929,7 @@ class PatientAPI {
               "❌ UPDATE: Erro crítico ao criar usuário:",
               createError,
             );
-            console.warn("⚠️ UPDATE: Pulando salvamento de dados pessoais");
+            console.warn("⚠�� UPDATE: Pulando salvamento de dados pessoais");
           }
         } else {
           console.log("✅ UPDATE: Patient ID existe na tabela users");
