@@ -307,6 +307,10 @@ const App = () => (
               path="/gerenciamento/patients"
               element={<HospitalPatients />}
             />
+            <Route
+              path="/gerenciamento/patients/:id"
+              element={<PatientDetailView />}
+            />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
