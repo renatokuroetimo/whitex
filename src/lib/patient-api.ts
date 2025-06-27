@@ -39,6 +39,7 @@ class PatientAPI {
     }
 
     const allPatients: Patient[] = [];
+    const patientMap = new Map<string, Patient>(); // Use Map to prevent duplicates
 
     try {
       // PRIMEIRO: Buscar pacientes criados pelo próprio médico
@@ -81,7 +82,8 @@ class PatientAPI {
             isShared: false,
           };
 
-          allPatients.push(patient);
+          // Add to map to prevent duplicates
+          patientMap.set(patient.id, patient);
         }
       }
 
@@ -263,19 +265,25 @@ class PatientAPI {
               sharedId: share.id,
             };
 
-            allPatients.push(patient);
+            // Only add if not already exists (own patients have priority)
+            if (!patientMap.has(patient.id)) {
+              patientMap.set(patient.id, patient);
+            }
           } catch (error) {
             // Silenciosamente ignorar erros de processamento de pacientes individuais
           }
         }
       }
 
+      // Convert Map to array for return
+      const finalPatients = Array.from(patientMap.values());
+
       return {
-        patients: allPatients,
+        patients: finalPatients,
         pagination: {
           currentPage: 1,
           totalPages: 1,
-          totalItems: allPatients.length,
+          totalItems: finalPatients.length,
         },
       };
     } catch (error) {

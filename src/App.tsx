@@ -32,9 +32,17 @@ import PatientDashboard from "./pages/PatientDashboard";
 import PatientAddIndicator from "./pages/PatientAddIndicator";
 import DoctorSearch from "./pages/DoctorSearch";
 import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
 import AdminIndicators from "./pages/AdminIndicators";
+import AdminHospitals from "./pages/AdminHospitals";
 import AdminEditIndicator from "./pages/AdminEditIndicator";
 import AdminCreateIndicator from "./pages/AdminCreateIndicator";
+import HospitalLogin from "./pages/HospitalLogin";
+import HospitalDashboard from "./pages/HospitalDashboard";
+import HospitalCreateDoctor from "./pages/HospitalCreateDoctor";
+import HospitalPatients from "./pages/HospitalPatients";
+import HospitalGraphSelector from "./pages/HospitalGraphSelector";
+import HospitalGraphView from "./pages/HospitalGraphView";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -246,10 +254,26 @@ const App = () => (
             <Route path="/admin" element={<AdminLogin />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route
+              path="/admin/dashboard"
+              element={
+                <AdminProtectedRoute>
+                  <AdminDashboard />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
               path="/admin/indicators"
               element={
                 <AdminProtectedRoute>
                   <AdminIndicators />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/hospitals"
+              element={
+                <AdminProtectedRoute>
+                  <AdminHospitals />
                 </AdminProtectedRoute>
               }
             />
@@ -268,6 +292,34 @@ const App = () => (
                   <AdminEditIndicator />
                 </AdminProtectedRoute>
               }
+            />
+
+            {/* Hospital Management Routes */}
+            <Route path="/gerenciamento" element={<HospitalLogin />} />
+            <Route path="/gerenciamento/login" element={<HospitalLogin />} />
+            <Route
+              path="/gerenciamento/dashboard"
+              element={<HospitalDashboard />}
+            />
+            <Route
+              path="/gerenciamento/doctors/create"
+              element={<HospitalCreateDoctor />}
+            />
+            <Route
+              path="/gerenciamento/patients"
+              element={<HospitalPatients />}
+            />
+            <Route
+              path="/gerenciamento/patients/:id"
+              element={<PatientDetailView />}
+            />
+            <Route
+              path="/gerenciamento/patients/graphs"
+              element={<HospitalGraphSelector />}
+            />
+            <Route
+              path="/gerenciamento/patients/graphs/view"
+              element={<HospitalGraphView />}
             />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -28,6 +28,11 @@ const PatientDetailView = () => {
   const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Detectar se est�� sendo acessado pelo sistema hospitalar
+  const isHospitalContext =
+    window.location.pathname.includes("/gerenciamento/");
+  const backPath = isHospitalContext ? "/gerenciamento/patients" : "/pacientes";
+
   useEffect(() => {
     if (patientId && user?.id) {
       loadPatientData();
@@ -92,7 +97,7 @@ const PatientDetailView = () => {
           title: "Erro",
           description: "Paciente não encontrado",
         });
-        navigate("/pacientes");
+        navigate(backPath);
       }
     } catch (error) {
       console.error("Error loading patient data:", error);
@@ -115,7 +120,7 @@ const PatientDetailView = () => {
         title: "Sucesso",
         description: "Paciente deletado com sucesso",
       });
-      navigate("/pacientes");
+      navigate(backPath);
     } catch (error) {
       toast({
         variant: "destructive",
@@ -134,7 +139,7 @@ const PatientDetailView = () => {
         title: "Sucesso",
         description: "Compartilhamento removido com sucesso",
       });
-      navigate("/pacientes");
+      navigate(backPath);
     } catch (error) {
       toast({
         variant: "destructive",
@@ -319,9 +324,11 @@ const PatientDetailView = () => {
   if (isLoading) {
     return (
       <div className="flex h-screen bg-gray-50">
-        <div className="hidden lg:block">
-          <Sidebar />
-        </div>
+        {!isHospitalContext && (
+          <div className="hidden lg:block">
+            <Sidebar />
+          </div>
+        )}
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
@@ -335,13 +342,15 @@ const PatientDetailView = () => {
   if (!patient) {
     return (
       <div className="flex h-screen bg-gray-50">
-        <div className="hidden lg:block">
-          <Sidebar />
-        </div>
+        {!isHospitalContext && (
+          <div className="hidden lg:block">
+            <Sidebar />
+          </div>
+        )}
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <p className="text-gray-600">Paciente não encontrado</p>
-            <Button onClick={() => navigate("/pacientes")} className="mt-4">
+            <Button onClick={() => navigate(backPath)} className="mt-4">
               Voltar para lista
             </Button>
           </div>
@@ -352,9 +361,11 @@ const PatientDetailView = () => {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      <div className="hidden lg:block">
-        <Sidebar />
-      </div>
+      {!isHospitalContext && (
+        <div className="hidden lg:block">
+          <Sidebar />
+        </div>
+      )}
 
       <div className="flex-1 overflow-auto">
         <div className="p-4 sm:p-6 lg:p-8">
@@ -364,7 +375,7 @@ const PatientDetailView = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => navigate("/pacientes")}
+                onClick={() => navigate(backPath)}
                 className="text-gray-600 hover:text-gray-900"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />

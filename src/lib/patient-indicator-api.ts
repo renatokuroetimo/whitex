@@ -78,25 +78,36 @@ class PatientIndicatorAPI {
   async getPatientIndicatorValues(
     patientId: string,
   ): Promise<PatientIndicatorValue[]> {
-    await this.delay(500);
+    await this.delay(100); // Reduzir delay para melhor performance
 
     if (!supabase) {
-      throw new Error("❌ Supabase não está configurado");
+      console.error("❌ Supabase não está configurado");
+      return []; // Retornar array vazio em vez de erro
     }
 
-    console.log("🚀 Buscando valores de indicadores no Supabase");
+    console.log(
+      `🚀 Buscando valores de indicadores para paciente: ${patientId}`,
+    );
 
     try {
+      // Verificar conectividade com Supabase
       const { data, error } = await supabase
         .from("patient_indicator_values")
         .select("*")
         .eq("patient_id", patientId)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(1000); // Adicionar limite para evitar queries muito grandes
 
       if (error) {
-        throw new Error(
-          `Erro ao buscar valores de indicadores: ${error.message}`,
+        console.error("❌ Erro na query Supabase:", error);
+        console.error(
+          "❌ Detalhes do erro:",
+          error.message,
+          error.details,
+          error.hint,
         );
+        // Retornar array vazio em vez de lançar erro para não interromper o carregamento
+        return [];
       }
 
       const values = (data || []).map(
@@ -115,11 +126,17 @@ class PatientIndicatorAPI {
         }),
       );
 
-      console.log(`✅ ${values.length} valores carregados do Supabase`);
+      console.log(
+        `✅ ${values.length} valores carregados para paciente ${patientId}`,
+      );
       return values;
     } catch (error) {
-      console.error("💥 Erro ao buscar valores de indicadores:", error);
-      throw error;
+      console.error(
+        `💥 Erro ao buscar valores de indicadores para paciente ${patientId}:`,
+        error,
+      );
+      // Retornar array vazio em vez de lançar erro para não interromper o carregamento
+      return [];
     }
   }
 

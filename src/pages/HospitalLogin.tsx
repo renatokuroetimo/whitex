@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Shield, Lock, Mail } from "lucide-react";
+import { Eye, EyeOff, Building2, Lock, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { adminAPI } from "@/lib/admin-api";
+import { hospitalAPI } from "@/lib/hospital-api";
 import { toast } from "@/hooks/use-toast";
 
-const AdminLogin = () => {
+const HospitalLogin = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -18,8 +18,9 @@ const AdminLogin = () => {
 
   // Verificar se já está autenticado
   useEffect(() => {
-    if (adminAPI.isAuthenticated()) {
-      navigate("/admin/dashboard", { replace: true });
+    const hospitalData = localStorage.getItem("hospital_session");
+    if (hospitalData) {
+      navigate("/gerenciamento/dashboard", { replace: true });
     }
   }, [navigate]);
 
@@ -54,17 +55,20 @@ const AdminLogin = () => {
     setIsLoading(true);
 
     try {
-      await adminAPI.login({
-        email: formData.email.trim(),
-        password: formData.password,
-      });
+      const hospital = await hospitalAPI.login(
+        formData.email.trim(),
+        formData.password,
+      );
+
+      // Salvar sessão do hospital
+      localStorage.setItem("hospital_session", JSON.stringify(hospital));
 
       toast({
         title: "Sucesso",
         description: "Login realizado com sucesso",
       });
 
-      navigate("/admin/dashboard", { replace: true });
+      navigate("/gerenciamento/dashboard", { replace: true });
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -81,11 +85,14 @@ const AdminLogin = () => {
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Building2 className="w-8 h-8 text-white" />
+          </div>
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Acesso Administrativo
+            Acesso Institucional
           </h1>
           <p className="text-gray-600">
-            Faça login para gerenciar indicadores padrão
+            Faça login para gerenciar sua instituição
           </p>
         </div>
 
@@ -103,7 +110,7 @@ const AdminLogin = () => {
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
-                  placeholder="Digite seu email administrativo"
+                  placeholder="Digite o email da instituição"
                   className="pl-10 bg-white border-gray-300 text-gray-800 placeholder:text-gray-400 focus:border-gray-500 focus:ring-gray-500"
                   disabled={isLoading}
                 />
@@ -154,15 +161,22 @@ const AdminLogin = () => {
                   Entrando...
                 </div>
               ) : (
-                "Entrar como Administrador"
+                "Entrar"
               )}
             </Button>
           </form>
 
+          {/* Default Password Info */}
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+            <p className="text-gray-700 text-sm text-center">
+              <strong>Primeira vez?</strong> Use a senha padrão: 123456
+            </p>
+          </div>
+
           {/* Footer */}
           <div className="mt-6 text-center">
             <p className="text-gray-500 text-sm">
-              Área restrita para administradores do sistema
+              Área restrita para hospitais e clínicas
             </p>
           </div>
         </div>
@@ -181,4 +195,4 @@ const AdminLogin = () => {
   );
 };
 
-export default AdminLogin;
+export default HospitalLogin;
