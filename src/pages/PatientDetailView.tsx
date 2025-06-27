@@ -28,7 +28,7 @@ const PatientDetailView = () => {
   const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Detectar se está sendo acessado pelo sistema hospitalar
+  // Detectar se est�� sendo acessado pelo sistema hospitalar
   const isHospitalContext =
     window.location.pathname.includes("/gerenciamento/");
   const backPath = isHospitalContext ? "/gerenciamento/patients" : "/pacientes";
@@ -357,9 +357,11 @@ const PatientDetailView = () => {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      <div className="hidden lg:block">
-        <Sidebar />
-      </div>
+      {!isHospitalContext && (
+        <div className="hidden lg:block">
+          <Sidebar />
+        </div>
+      )}
 
       <div className="flex-1 overflow-auto">
         <div className="p-4 sm:p-6 lg:p-8">
