@@ -78,13 +78,16 @@ class PatientIndicatorAPI {
   async getPatientIndicatorValues(
     patientId: string,
   ): Promise<PatientIndicatorValue[]> {
-    await this.delay(500);
+    await this.delay(100); // Reduzir delay para melhor performance
 
     if (!supabase) {
-      throw new Error("❌ Supabase não está configurado");
+      console.error("❌ Supabase não está configurado");
+      return []; // Retornar array vazio em vez de erro
     }
 
-    console.log("🚀 Buscando valores de indicadores no Supabase");
+    console.log(
+      `🚀 Buscando valores de indicadores para paciente: ${patientId}`,
+    );
 
     try {
       const { data, error } = await supabase
@@ -94,9 +97,15 @@ class PatientIndicatorAPI {
         .order("created_at", { ascending: false });
 
       if (error) {
-        throw new Error(
-          `Erro ao buscar valores de indicadores: ${error.message}`,
+        console.error("❌ Erro na query Supabase:", error);
+        console.error(
+          "❌ Detalhes do erro:",
+          error.message,
+          error.details,
+          error.hint,
         );
+        // Retornar array vazio em vez de lançar erro para não interromper o carregamento
+        return [];
       }
 
       const values = (data || []).map(
