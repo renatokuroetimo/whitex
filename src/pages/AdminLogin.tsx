@@ -64,7 +64,7 @@ const AdminLogin = () => {
         description: "Login realizado com sucesso",
       });
 
-      navigate("/admin/indicators", { replace: true });
+      navigate("/admin/dashboard", { replace: true });
     } catch (error: any) {
       toast({
         variant: "destructive",
