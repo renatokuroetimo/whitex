@@ -7,42 +7,42 @@
 
 -- Pressão Arterial Sistólica
 UPDATE patient_indicator_values
-SET category = 'Sistema Cardiovascular', subcategory = 'Pressão Arterial'
+SET category_name = 'Sistema Cardiovascular', subcategory_name = 'Pressão Arterial'
 WHERE indicator_id = 'pressao-arterial-sistolica';
 
 -- Pressão Arterial Diastólica
 UPDATE patient_indicator_values
-SET category = 'Sistema Cardiovascular', subcategory = 'Pressão Arterial'
+SET category_name = 'Sistema Cardiovascular', subcategory_name = 'Pressão Arterial'
 WHERE indicator_id = 'pressao-arterial-diastolica';
 
 -- Frequência Cardíaca
 UPDATE patient_indicator_values
-SET category = 'Sistema Cardiovascular', subcategory = 'Frequência Cardíaca'
+SET category_name = 'Sistema Cardiovascular', subcategory_name = 'Frequência Cardíaca'
 WHERE indicator_id = 'frequencia-cardiaca';
 
 -- Frequência Cardíaca de Repouso
 UPDATE patient_indicator_values
-SET category = 'Sistema Cardiovascular', subcategory = 'Frequência Cardíaca'
+SET category_name = 'Sistema Cardiovascular', subcategory_name = 'Frequência Cardíaca'
 WHERE indicator_id = 'frequencia-cardiaca-repouso';
 
 -- Colesterol Total
 UPDATE patient_indicator_values
-SET category = 'Sistema Cardiovascular', subcategory = 'Lipidograma'
+SET category_name = 'Sistema Cardiovascular', subcategory_name = 'Lipidograma'
 WHERE indicator_id = 'colesterol-total';
 
 -- HDL Colesterol
 UPDATE patient_indicator_values
-SET category = 'Sistema Cardiovascular', subcategory = 'Lipidograma'
+SET category_name = 'Sistema Cardiovascular', subcategory_name = 'Lipidograma'
 WHERE indicator_id = 'colesterol-hdl';
 
 -- LDL Colesterol
 UPDATE patient_indicator_values
-SET category = 'Sistema Cardiovascular', subcategory = 'Lipidograma'
+SET category_name = 'Sistema Cardiovascular', subcategory_name = 'Lipidograma'
 WHERE indicator_id = 'colesterol-ldl';
 
 -- Triglicérides
 UPDATE patient_indicator_values
-SET category = 'Sistema Cardiovascular', subcategory = 'Lipidograma'
+SET category_name = 'Sistema Cardiovascular', subcategory_name = 'Lipidograma'
 WHERE indicator_id = 'triglicerides';
 
 -- Troponina
@@ -146,7 +146,7 @@ SET category = 'Sistema Imunológico', subcategory = 'Perfil Alérgico'
 WHERE indicator_id = 'ige-total';
 
 -- =====================================================
--- REUMATOLOGIA E ARTICULAÇÕES
+-- REUMATOLOGIA E ARTICULAÇ��ES
 -- =====================================================
 
 -- Escala Visual Analógica de Dor (VAS)
