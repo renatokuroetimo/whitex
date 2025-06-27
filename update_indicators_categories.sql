@@ -206,37 +206,37 @@ WHERE indicator_id = 'altura-uterina';
 
 -- Verificar quantos indicadores foram atualizados por categoria
 SELECT
-    category,
-    subcategory,
+    category_name,
+    subcategory_name,
     COUNT(*) as total_indicadores
 FROM patient_indicator_values
 WHERE patient_id IN (
     SELECT id FROM patients
     WHERE doctor_id = '94e784dd-797a-4962-81ae-825e7060352e'
 )
-GROUP BY category, subcategory
-ORDER BY category, subcategory;
+GROUP BY category_name, subcategory_name
+ORDER BY category_name, subcategory_name;
 
 -- Verificar exemplos de oscilações por categoria
 SELECT
     p.name as paciente,
-    piv.category,
-    piv.subcategory,
+    piv.category_name,
+    piv.subcategory_name,
     piv.indicator_id,
     piv.value,
     piv.created_at
 FROM patients p
 JOIN patient_indicator_values piv ON p.id = piv.patient_id
 WHERE p.doctor_id = '94e784dd-797a-4962-81ae-825e7060352e'
-  AND piv.category IS NOT NULL
-ORDER BY piv.category, piv.subcategory, p.name, piv.created_at
+  AND piv.category_name IS NOT NULL
+ORDER BY piv.category_name, piv.subcategory_name, p.name, piv.created_at
 LIMIT 50;
 
 -- Mostrar evolução temporal de um indicador específico (exemplo: pressão arterial)
 SELECT
     p.name as paciente,
-    piv.category,
-    piv.subcategory,
+    piv.category_name,
+    piv.subcategory_name,
     piv.indicator_id,
     piv.value,
     piv.created_at,
