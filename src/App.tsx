@@ -32,9 +32,15 @@ import PatientDashboard from "./pages/PatientDashboard";
 import PatientAddIndicator from "./pages/PatientAddIndicator";
 import DoctorSearch from "./pages/DoctorSearch";
 import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
 import AdminIndicators from "./pages/AdminIndicators";
+import AdminHospitals from "./pages/AdminHospitals";
 import AdminEditIndicator from "./pages/AdminEditIndicator";
 import AdminCreateIndicator from "./pages/AdminCreateIndicator";
+import HospitalLogin from "./pages/HospitalLogin";
+import HospitalDashboard from "./pages/HospitalDashboard";
+import HospitalCreateDoctor from "./pages/HospitalCreateDoctor";
+import HospitalPatients from "./pages/HospitalPatients";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
