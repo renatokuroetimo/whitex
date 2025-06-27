@@ -73,7 +73,6 @@ class DoctorAPI {
       // Criar médico na tabela users
       const insertData = {
         email: doctorData.email,
-        password: doctorData.password,
         profession: "medico",
         full_name: doctorData.name,
         crm: doctorData.crm,
