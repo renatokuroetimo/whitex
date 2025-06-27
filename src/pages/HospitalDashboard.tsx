@@ -188,7 +188,7 @@ const HospitalDashboard = () => {
         <div className="bg-white/90 backdrop-blur-lg rounded-2xl border border-gray-200 p-6 shadow-xl mb-8">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center">
                 <Building2 className="w-6 h-6 text-white" />
               </div>
               <div>
