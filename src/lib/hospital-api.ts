@@ -33,6 +33,7 @@ class HospitalAPI {
       data?.map((hospital) => ({
         id: hospital.id,
         name: hospital.name,
+        email: hospital.email,
         createdAt: hospital.created_at,
       })) || []
     );
