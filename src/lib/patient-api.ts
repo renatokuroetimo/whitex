@@ -275,12 +275,15 @@ class PatientAPI {
         }
       }
 
+      // Convert Map to array for return
+      const finalPatients = Array.from(patientMap.values());
+
       return {
-        patients: allPatients,
+        patients: finalPatients,
         pagination: {
           currentPage: 1,
           totalPages: 1,
-          totalItems: allPatients.length,
+          totalItems: finalPatients.length,
         },
       };
     } catch (error) {
@@ -746,7 +749,7 @@ class PatientAPI {
     console.log("🔥 UPDATEPATIENT INICIADO:", { id, data });
 
     if (!supabase) {
-      throw new Error("Sistema de banco de dados n��o configurado");
+      throw new Error("Sistema de banco de dados não configurado");
     }
 
     // Obter usuário atual do contexto (SEM localStorage)
@@ -929,7 +932,7 @@ class PatientAPI {
               "❌ UPDATE: Erro crítico ao criar usuário:",
               createError,
             );
-            console.warn("⚠�� UPDATE: Pulando salvamento de dados pessoais");
+            console.warn("⚠️ UPDATE: Pulando salvamento de dados pessoais");
           }
         } else {
           console.log("✅ UPDATE: Patient ID existe na tabela users");
