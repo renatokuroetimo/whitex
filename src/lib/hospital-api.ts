@@ -44,12 +44,24 @@ class HospitalAPI {
       throw new Error("Supabase não está configurado");
     }
 
+    // Verificar se já existe hospital com este email
+    const { data: existingHospital, error: emailCheckError } = await supabase
+      .from("hospitals")
+      .select("id")
+      .eq("email", hospitalData.email)
+      .single();
+
+    if (existingHospital) {
+      throw new Error("Já existe um hospital cadastrado com este e-mail");
+    }
+
     // Criar entrada na tabela hospitals
     const { data: hospital, error: hospitalError } = await supabase
       .from("hospitals")
       .insert([
         {
           name: hospitalData.name,
+          email: hospitalData.email,
           password: hospitalData.password,
         },
       ])
