@@ -193,7 +193,6 @@ const HospitalCreateDoctor = () => {
       await doctorAPI.createDoctor({
         ...formData,
         hospitalId: hospital.id,
-        password: "123456", // Senha padrão
       });
 
       toast({
