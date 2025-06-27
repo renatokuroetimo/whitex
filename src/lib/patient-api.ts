@@ -39,6 +39,7 @@ class PatientAPI {
     }
 
     const allPatients: Patient[] = [];
+    const patientMap = new Map<string, Patient>(); // Use Map to prevent duplicates
 
     try {
       // PRIMEIRO: Buscar pacientes criados pelo próprio médico
@@ -81,7 +82,8 @@ class PatientAPI {
             isShared: false,
           };
 
-          allPatients.push(patient);
+          // Add to map to prevent duplicates
+          patientMap.set(patient.id, patient);
         }
       }
 
