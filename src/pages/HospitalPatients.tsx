@@ -307,7 +307,10 @@ const HospitalPatients = () => {
                     {filteredPatients.map((patient, index) => (
                       <tr
                         key={`hospital-patient-${patient.id}-${index}`}
-                        className="hover:bg-gray-50"
+                        className="hover:bg-gray-50 cursor-pointer"
+                        onClick={() => {
+                          navigate(`/gerenciamento/patients/${patient.id}`);
+                        }}
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">
