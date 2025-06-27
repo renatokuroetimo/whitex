@@ -369,7 +369,7 @@ const PatientDetailView = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => navigate("/pacientes")}
+                onClick={() => navigate(backPath)}
                 className="text-gray-600 hover:text-gray-900"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
