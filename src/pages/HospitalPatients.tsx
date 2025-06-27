@@ -109,11 +109,11 @@ const HospitalPatients = () => {
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      ativo: { label: "ATIVO", className: "bg-green-100 text-green-800" },
+      ativo: { label: "ATIVO", className: "bg-blue-100 text-blue-800" },
       inativo: { label: "INATIVO", className: "bg-gray-100 text-gray-800" },
       compartilhado: {
         label: "COMPARTILHADO",
-        className: "bg-blue-100 text-blue-800",
+        className: "bg-purple-100 text-purple-800",
       },
     };
 
