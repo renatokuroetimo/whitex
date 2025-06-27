@@ -211,7 +211,7 @@ const HospitalPatients = () => {
                         {
                           value: "ativo",
                           label: "Ativos",
-                          color: "bg-green-100 text-green-800",
+                          color: "bg-blue-100 text-blue-800",
                         },
                         {
                           value: "inativo",
@@ -221,7 +221,7 @@ const HospitalPatients = () => {
                         {
                           value: "compartilhado",
                           label: "Compartilhados",
-                          color: "bg-blue-100 text-blue-800",
+                          color: "bg-purple-100 text-purple-800",
                         },
                       ].map((status) => (
                         <div
