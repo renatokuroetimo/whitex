@@ -148,9 +148,13 @@ const HospitalGraphSelector = () => {
         summary.patientCount = uniquePatients.size;
       });
 
-      setIndicatorSummaries(Array.from(summaryMap.values()));
+      const finalSummaries = Array.from(summaryMap.values());
+      console.log("📈 Total de summaries criados:", finalSummaries.length);
+      console.log("📈 Amostra de summaries:", finalSummaries.slice(0, 3));
+
+      setIndicatorSummaries(finalSummaries);
     } catch (error) {
-      console.error("Erro ao carregar dados:", error);
+      console.error("❌ Erro ao carregar dados:", error);
       toast({
         title: "Erro",
         description: "Erro ao carregar dados dos indicadores",
