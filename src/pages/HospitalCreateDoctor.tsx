@@ -235,7 +235,7 @@ const HospitalCreateDoctor = () => {
   if (!hospital) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-100 via-green-200 to-green-100">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-200 to-gray-100">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
           {/* Header */}
