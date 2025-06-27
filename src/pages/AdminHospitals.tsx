@@ -376,6 +376,19 @@ const AdminHospitals = () => {
                   required
                 />
               </div>
+              <div>
+                <Label htmlFor="edit-email">Email da Instituição</Label>
+                <Input
+                  id="edit-email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  placeholder="Digite o email da instituição"
+                  required
+                />
+              </div>
               <div className="flex justify-end gap-2">
                 <Button
                   type="button"
