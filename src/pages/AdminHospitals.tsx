@@ -124,13 +124,25 @@ const AdminHospitals = () => {
   const handleEditHospital = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!editingHospital || !formData.name.trim()) {
+    if (!editingHospital || !formData.name.trim() || !formData.email.trim()) {
+      return;
+    }
+
+    // Validar formato do email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Email inválido",
+      });
       return;
     }
 
     try {
       await hospitalAPI.updateHospital(editingHospital.id, {
         name: formData.name.trim(),
+        email: formData.email.trim(),
       });
 
       toast({
@@ -138,7 +150,7 @@ const AdminHospitals = () => {
         description: "Hospital atualizado com sucesso",
       });
 
-      setFormData({ name: "" });
+      setFormData({ name: "", email: "" });
       setIsEditDialogOpen(false);
       setEditingHospital(null);
       loadHospitals();
