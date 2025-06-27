@@ -128,7 +128,7 @@ class HospitalAPI {
   }
 
   // Login para hospitais
-  async login(name: string, password: string): Promise<Hospital> {
+  async login(email: string, password: string): Promise<Hospital> {
     if (!supabase) {
       throw new Error("Supabase não está configurado");
     }
@@ -136,17 +136,18 @@ class HospitalAPI {
     const { data, error } = await supabase
       .from("hospitals")
       .select("*")
-      .eq("name", name)
+      .eq("email", email)
       .eq("password", password)
       .single();
 
     if (error || !data) {
-      throw new Error("Nome ou senha incorretos");
+      throw new Error("Email ou senha incorretos");
     }
 
     return {
       id: data.id,
       name: data.name,
+      email: data.email,
       createdAt: data.created_at,
     };
   }
