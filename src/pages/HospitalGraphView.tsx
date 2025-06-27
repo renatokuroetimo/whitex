@@ -113,9 +113,8 @@ const HospitalGraphView = () => {
       const allIndicators: PatientIndicatorValue[] = [];
       for (const patient of patients) {
         try {
-          const patientIndicators = await patientIndicatorAPI.getIndicators(
-            patient.id,
-          );
+          const patientIndicators =
+            await patientIndicatorAPI.getPatientIndicatorValues(patient.id);
           const filteredIndicators = patientIndicators.filter(
             (ind) =>
               ind.categoryName === categoryName &&
