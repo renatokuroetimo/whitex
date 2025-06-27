@@ -342,9 +342,11 @@ const PatientDetailView = () => {
   if (!patient) {
     return (
       <div className="flex h-screen bg-gray-50">
-        <div className="hidden lg:block">
-          <Sidebar />
-        </div>
+        {!isHospitalContext && (
+          <div className="hidden lg:block">
+            <Sidebar />
+          </div>
+        )}
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <p className="text-gray-600">Paciente não encontrado</p>
