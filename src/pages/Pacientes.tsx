@@ -422,9 +422,9 @@ const Pacientes = () => {
                       </td>
                     </tr>
                   ) : (
-                    filteredPatients.map((patient) => (
+                    filteredPatients.map((patient, index) => (
                       <tr
-                        key={patient.id}
+                        key={`patient-${patient.id}-${patient.status}-${index}`}
                         className={`transition-colors ${
                           patient.status === "inativo"
                             ? "opacity-50 cursor-not-allowed"
