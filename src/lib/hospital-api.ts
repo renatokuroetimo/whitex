@@ -3,11 +3,13 @@ import { supabase } from "./supabase";
 export interface Hospital {
   id: string;
   name: string;
+  email: string;
   createdAt: string;
 }
 
 export interface HospitalFormData {
   name: string;
+  email: string;
   password: string;
 }
 
