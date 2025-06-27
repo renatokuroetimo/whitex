@@ -316,6 +316,7 @@ const AdminHospitals = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Nome da Instituição</TableHead>
+                    <TableHead>Email</TableHead>
                     <TableHead>Data de Cadastro</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
@@ -325,6 +326,9 @@ const AdminHospitals = () => {
                     <TableRow key={hospital.id}>
                       <TableCell className="font-medium">
                         {hospital.name}
+                      </TableCell>
+                      <TableCell className="text-gray-600">
+                        {hospital.email}
                       </TableCell>
                       <TableCell>
                         {new Date(hospital.createdAt).toLocaleDateString(
