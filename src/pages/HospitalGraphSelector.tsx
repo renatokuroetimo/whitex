@@ -78,19 +78,8 @@ const HospitalGraphSelector = () => {
       // Agrupar indicadores por categoria/subcategoria/parâmetro
       const summaryMap = new Map<string, IndicatorSummary>();
 
-      allIndicators.forEach((indicator, index) => {
+      allIndicators.forEach((indicator) => {
         const key = `${indicator.categoryName}-${indicator.subcategoryName}-${indicator.parameter}`;
-
-        if (index < 5) {
-          console.log(`📋 Processando indicador ${index}:`, {
-            key,
-            categoryName: indicator.categoryName,
-            subcategoryName: indicator.subcategoryName,
-            parameter: indicator.parameter,
-            value: indicator.value,
-            unitSymbol: indicator.unitSymbol,
-          });
-        }
 
         if (!summaryMap.has(key)) {
           summaryMap.set(key, {
