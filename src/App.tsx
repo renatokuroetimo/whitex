@@ -41,6 +41,8 @@ import HospitalLogin from "./pages/HospitalLogin";
 import HospitalDashboard from "./pages/HospitalDashboard";
 import HospitalCreateDoctor from "./pages/HospitalCreateDoctor";
 import HospitalPatients from "./pages/HospitalPatients";
+import HospitalGraphSelector from "./pages/HospitalGraphSelector";
+import HospitalGraphView from "./pages/HospitalGraphView";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
