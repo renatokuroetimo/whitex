@@ -182,7 +182,7 @@ const HospitalDashboard = () => {
   if (!hospital) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-100 via-green-200 to-green-100">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-200 to-gray-100">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="bg-white/90 backdrop-blur-lg rounded-2xl border border-gray-200 p-6 shadow-xl mb-8">
