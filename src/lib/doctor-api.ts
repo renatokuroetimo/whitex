@@ -31,7 +31,7 @@ class DoctorAPI {
       throw new Error("Supabase não está configurado");
     }
 
-    console.log("🔍 Dados do médico para cadastro:", doctorData);
+    console.log("�� Dados do médico para cadastro:", doctorData);
 
     try {
       // Verificar se já existe usuário com este email
@@ -69,8 +69,12 @@ class DoctorAPI {
         throw new Error("Já existe um médico cadastrado com este CRM");
       }
 
+      // Gerar UUID para o médico
+      const doctorId = crypto.randomUUID();
+
       // Criar médico na tabela users
       const insertData = {
+        id: doctorId,
         email: doctorData.email,
         profession: "medico",
         full_name: doctorData.name,
