@@ -167,8 +167,8 @@ const HospitalLogin = () => {
           </form>
 
           {/* Default Password Info */}
-          <div className="mt-6 p-4 bg-green-50 rounded-lg">
-            <p className="text-green-700 text-sm text-center">
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+            <p className="text-gray-700 text-sm text-center">
               <strong>Primeira vez?</strong> Use a senha padrão: 123456
             </p>
           </div>
