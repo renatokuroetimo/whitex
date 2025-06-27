@@ -19,7 +19,7 @@ const AdminLogin = () => {
   // Verificar se já está autenticado
   useEffect(() => {
     if (adminAPI.isAuthenticated()) {
-      navigate("/admin/indicators", { replace: true });
+      navigate("/admin/dashboard", { replace: true });
     }
   }, [navigate]);
 
