@@ -120,7 +120,7 @@ const PatientDetailView = () => {
         title: "Sucesso",
         description: "Paciente deletado com sucesso",
       });
-      navigate("/pacientes");
+      navigate(backPath);
     } catch (error) {
       toast({
         variant: "destructive",
