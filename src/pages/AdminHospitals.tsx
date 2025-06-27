@@ -26,6 +26,7 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 interface Hospital {
   id: string;
   name: string;
+  email: string;
   createdAt: string;
 }
 
