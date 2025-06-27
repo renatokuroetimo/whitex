@@ -34,11 +34,11 @@ const HospitalLogin = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name.trim()) {
+    if (!formData.email.trim()) {
       toast({
         variant: "destructive",
         title: "Erro",
-        description: "Nome da instituição é obrigatório",
+        description: "Email é obrigatório",
       });
       return;
     }
@@ -56,7 +56,7 @@ const HospitalLogin = () => {
 
     try {
       const hospital = await hospitalAPI.login(
-        formData.name.trim(),
+        formData.email.trim(),
         formData.password,
       );
 
