@@ -61,11 +61,18 @@ const PatientDetailView = () => {
       // Carregar dados básicos do paciente (usando getPatientById para incluir observações médicas)
       console.log("🔍 ===== PATIENT DETAIL VIEW DEBUG =====");
       console.log("🔍 Patient ID da URL:", patientId);
-      console.log("🔍 Médico logado ID:", user.id);
-      console.log("🔍 Médico logado email:", user.email);
-      console.log("🔍 Chamando patientAPI.getPatientById...");
+      console.log("🔍 Hospital context:", isHospitalContext);
+      console.log("🔍 Médico logado ID:", user?.id);
+      console.log("🔍 Médico logado email:", user?.email);
 
-      const foundPatient = await patientAPI.getPatientById(patientId);
+      let foundPatient;
+      if (isHospitalContext) {
+        console.log("🔍 Chamando patientAPI.getPatientByIdForHospital...");
+        foundPatient = await patientAPI.getPatientByIdForHospital(patientId);
+      } else {
+        console.log("🔍 Chamando patientAPI.getPatientById...");
+        foundPatient = await patientAPI.getPatientById(patientId);
+      }
 
       console.log("📊 RESULTADO do getPatientById:", foundPatient);
 
