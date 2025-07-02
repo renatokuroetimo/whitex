@@ -292,6 +292,86 @@ class PatientAPI {
     }
   }
 
+  // Método para hospitais acessarem dados de pacientes
+  async getPatientByIdForHospital(id: string): Promise<Patient | null> {
+    await this.delay(200);
+
+    if (!supabase) {
+      return null;
+    }
+
+    try {
+      // Buscar dados do paciente na tabela patients
+      const { data: patientData, error: patientError } = await supabase
+        .from("patients")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (patientError || !patientData) {
+        // Se não encontrou na tabela patients, pode ser um paciente usuário
+        const { data: userPatient, error: userError } = await supabase
+          .from("users")
+          .select("id, email, full_name, profession")
+          .eq("id", id)
+          .eq("profession", "paciente")
+          .single();
+
+        if (userError || !userPatient) {
+          return null;
+        }
+
+        // Buscar nome mais atualizado
+        let patientName = userPatient.full_name || "Nome não informado";
+        try {
+          const { data: personalData } = await supabase
+            .from("patient_personal_data")
+            .select("full_name")
+            .eq("user_id", id)
+            .single();
+
+          if (personalData?.full_name) {
+            patientName = personalData.full_name;
+          }
+        } catch (error) {
+          // Ignore error, use fallback name
+        }
+
+        return {
+          id: userPatient.id,
+          name: patientName,
+          age: null,
+          city: "N/A",
+          state: "N/A",
+          weight: null,
+          status: "ativo",
+          notes: "",
+          createdAt: new Date().toISOString(),
+          doctorId: "",
+          isShared: false,
+        };
+      }
+
+      // Paciente encontrado na tabela patients
+      return {
+        id: patientData.id,
+        name: patientData.name || "Nome não informado",
+        age: null,
+        city: "N/A",
+        state: "N/A",
+        weight: null,
+        status: patientData.status || "ativo",
+        notes: patientData.notes || "",
+        createdAt: patientData.created_at || new Date().toISOString(),
+        doctorId: patientData.doctor_id || "",
+        isShared: false,
+      };
+    } catch (error) {
+      console.error("Erro ao buscar paciente para hospital:", error);
+      return null;
+    }
+  }
+
   // Versão simplificada do getPatientById para evitar problemas de autenticação
   async getPatientById(id: string): Promise<Patient | null> {
     await this.delay(200);
