@@ -26,8 +26,14 @@ class HospitalPatientAPI {
         .eq("hospital_id", hospitalId);
 
       if (doctorsError) {
-        console.error("Erro ao buscar médicos:", doctorsError);
-        throw new Error("Erro ao carregar médicos do hospital");
+        console.error("❌ Erro na query Supabase:", doctorsError);
+        console.error(
+          "❌ Detalhes do erro:",
+          JSON.stringify(doctorsError, null, 2),
+        );
+        throw new Error(
+          `Erro ao carregar médicos do hospital: ${doctorsError.message || "Erro desconhecido"}`,
+        );
       }
 
       if (!doctors || doctors.length === 0) {
