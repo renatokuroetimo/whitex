@@ -1315,6 +1315,44 @@ class PatientAPI {
     return Math.random().toString(36).substring(2) + Date.now().toString(36);
   }
 
+  // Método para hospitais acessarem diagnósticos
+  async getDiagnosesForHospital(patientId: string): Promise<Diagnosis[]> {
+    await this.delay(300);
+
+    if (!supabase) {
+      return [];
+    }
+
+    try {
+      const { data: diagnoses, error } = await supabase
+        .from("patient_diagnoses")
+        .select("*")
+        .eq("patient_id", patientId)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("❌ Erro ao buscar diagnósticos:", error);
+        return [];
+      }
+
+      if (!diagnoses || diagnoses.length === 0) {
+        return [];
+      }
+
+      return diagnoses.map((d: any) => ({
+        id: d.id,
+        patientId: d.patient_id,
+        date: d.date,
+        diagnosis: d.status,
+        code: d.code,
+        status: d.status,
+      }));
+    } catch (error) {
+      console.error("Erro ao buscar diagnósticos para hospital:", error);
+      return [];
+    }
+  }
+
   async getDiagnoses(patientId: string): Promise<Diagnosis[]> {
     await this.delay(300);
 
