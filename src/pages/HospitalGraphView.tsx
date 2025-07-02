@@ -431,6 +431,14 @@ const HospitalGraphView = () => {
             </div>
 
             <div className="flex items-center gap-4">
+              <Button
+                onClick={handleOpenDiagnosisModal}
+                className="bg-green-600 hover:bg-green-700 text-white"
+                disabled={patientData.length === 0 || indicators.length === 0}
+              >
+                <Stethoscope className="h-4 w-4 mr-2" />
+                Realizar diagnóstico
+              </Button>
               <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
                 <SelectTrigger className="w-40">
                   <Calendar className="h-4 w-4 mr-2" />
