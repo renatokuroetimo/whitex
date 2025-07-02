@@ -17,6 +17,26 @@ class HospitalPatientAPI {
       throw new Error("Supabase não está configurado");
     }
 
+    // Test basic connectivity
+    try {
+      console.log("🔍 Testando conectividade com Supabase...");
+      const { data: testData, error: testError } = await supabase
+        .from("users")
+        .select("count", { count: "exact", head: true });
+
+      console.log("✅ Teste de conectividade:", { testData, testError });
+
+      if (testError) {
+        console.error("❌ Falha no teste de conectividade:", testError);
+        throw new Error(`Erro de conectividade: ${testError.message}`);
+      }
+    } catch (connectError) {
+      console.error("❌ Erro de rede:", connectError);
+      throw new Error(
+        `Erro de rede ao conectar com Supabase: ${connectError instanceof Error ? connectError.message : "Erro desconhecido"}`,
+      );
+    }
+
     try {
       // Primeiro, buscar todos os médicos do hospital
       const { data: doctors, error: doctorsError } = await supabase
