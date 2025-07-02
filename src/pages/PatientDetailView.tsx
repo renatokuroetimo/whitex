@@ -459,7 +459,7 @@ const PatientDetailView = () => {
                   <h3 className="text-lg font-semibold text-gray-900">
                     Dados Médicos
                   </h3>
-                  {!patient?.isShared && !medicalData && (
+                  {!patient?.isShared && !medicalData && !isHospitalContext && (
                     <Button
                       onClick={() =>
                         navigate(`/pacientes/${patient.id}/editar`)
