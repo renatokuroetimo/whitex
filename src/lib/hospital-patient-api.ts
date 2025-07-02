@@ -12,42 +12,6 @@ export interface HospitalPatient {
 }
 
 class HospitalPatientAPI {
-  // Mock data for when Supabase is unavailable
-  private getMockPatients(hospitalId: string): HospitalPatient[] {
-    return [
-      {
-        id: "mock-patient-1",
-        name: "João Silva",
-        age: 45,
-        status: "ativo",
-        createdAt: "2024-01-15T10:00:00Z",
-        doctorId: "mock-doctor-1",
-        doctorName: "Dr. Maria Santos",
-        doctorSpecialty: "Cardiologia",
-      },
-      {
-        id: "mock-patient-2",
-        name: "Ana Costa",
-        age: 38,
-        status: "ativo",
-        createdAt: "2024-01-10T14:30:00Z",
-        doctorId: "mock-doctor-2",
-        doctorName: "Dr. Carlos Lima",
-        doctorSpecialty: "Endocrinologia",
-      },
-      {
-        id: "mock-patient-3",
-        name: "Pedro Oliveira",
-        age: 52,
-        status: "compartilhado",
-        createdAt: "2024-01-05T09:15:00Z",
-        doctorId: "mock-doctor-1",
-        doctorName: "Dr. Maria Santos",
-        doctorSpecialty: "Cardiologia",
-      },
-    ];
-  }
-
   async getPatientsByHospital(hospitalId: string): Promise<HospitalPatient[]> {
     if (!supabase) {
       throw new Error("Supabase não está configurado");
