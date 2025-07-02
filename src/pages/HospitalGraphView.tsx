@@ -280,6 +280,100 @@ const HospitalGraphView = () => {
     };
   };
 
+  const handleOpenDiagnosisModal = () => {
+    if (patientData.length === 0 || indicators.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "Sem dados",
+        description: "Não há dados disponíveis para realizar diagnóstico.",
+      });
+      return;
+    }
+    setShowDiagnosisModal(true);
+  };
+
+  const handleDiagnosis = async () => {
+    if (!diagnosisQuestion.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Por favor, digite uma pergunta.",
+      });
+      return;
+    }
+
+    if (patientData.length === 0 || indicators.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Não há dados disponíveis para análise.",
+      });
+      return;
+    }
+
+    setIsDiagnosisLoading(true);
+
+    try {
+      // Prepare data for multiple patients API
+      const tipoDado = `${categoryName} ${subcategoryName} em ${unitSymbol}`;
+
+      // Format readings for multiple patients
+      const leituras = patientData.map((patient) => ({
+        nome: patient.name,
+        leituras: patient.data.map((point) => ({
+          data: point.date.split("T")[0], // Extract date part only
+          valor: point.value,
+        })),
+      }));
+
+      const requestBody = {
+        tipo_dado: tipoDado,
+        pergunta: diagnosisQuestion,
+        leituras: leituras,
+      };
+
+      console.log("Sending hospital diagnosis request:", requestBody);
+
+      const response = await fetch(
+        "https://ai.timo.com.br/webhook/avaliar-pacientes",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Hospital diagnosis response:", result);
+
+      // Extract the content from the response structure
+      const content =
+        result.choices?.[0]?.message?.content ||
+        result.resposta ||
+        "Resposta não encontrada";
+
+      setDiagnosisResult(content);
+      setShowDiagnosisModal(false);
+      setShowDiagnosisResult(true);
+      setDiagnosisQuestion("");
+    } catch (error) {
+      console.error("Hospital diagnosis error:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Erro ao realizar diagnóstico. Tente novamente.",
+      });
+    } finally {
+      setIsDiagnosisLoading(false);
+    }
+  };
+
   const trend = calculateTrend();
 
   if (isLoading) {
