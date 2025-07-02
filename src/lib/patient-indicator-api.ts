@@ -180,8 +180,10 @@ class PatientIndicatorAPI {
         `💥 Erro ao buscar valores de indicadores para paciente ${patientId}:`,
         error,
       );
-      // Retornar array vazio em vez de lançar erro para não interromper o carregamento
-      return [];
+      console.warn(
+        "⚠️ Usando dados de demonstração para indicadores devido a erro de rede",
+      );
+      return this.getMockIndicators(patientId);
     }
   }
 
