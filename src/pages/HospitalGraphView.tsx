@@ -604,6 +604,77 @@ const HospitalGraphView = () => {
           </div>
         </div>
       </div>
+
+      {/* Diagnosis Question Modal */}
+      <Dialog open={showDiagnosisModal} onOpenChange={setShowDiagnosisModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Stethoscope className="h-5 w-5 text-green-600" />
+              Faça sua pergunta:
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Textarea
+              placeholder="Digite sua pergunta sobre os dados dos pacientes..."
+              value={diagnosisQuestion}
+              onChange={(e) => setDiagnosisQuestion(e.target.value)}
+              className="min-h-[100px]"
+              disabled={isDiagnosisLoading}
+            />
+            <div className="flex justify-end gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setShowDiagnosisModal(false)}
+                disabled={isDiagnosisLoading}
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleDiagnosis}
+                className="bg-green-600 hover:bg-green-700"
+                disabled={isDiagnosisLoading || !diagnosisQuestion.trim()}
+              >
+                {isDiagnosisLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Realizando diagnóstico...
+                  </>
+                ) : (
+                  "Enviar pergunta"
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Diagnosis Result Modal */}
+      <Dialog open={showDiagnosisResult} onOpenChange={setShowDiagnosisResult}>
+        <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Stethoscope className="h-5 w-5 text-green-600" />
+              Resultado do Diagnóstico
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="bg-gray-50 rounded-lg p-4">
+              <div className="whitespace-pre-wrap text-sm text-gray-800 leading-relaxed">
+                {diagnosisResult}
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <Button
+                onClick={() => setShowDiagnosisResult(false)}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                Fechar
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
