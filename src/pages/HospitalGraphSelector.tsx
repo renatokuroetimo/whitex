@@ -210,6 +210,13 @@ const HospitalGraphSelector = () => {
           </div>
         </div>
 
+        {/* Connectivity Status */}
+        {hasConnectivityError && (
+          <div className="mb-6">
+            <SupabaseStatus onRetry={loadData} />
+          </div>
+        )}
+
         {/* Indicators Grid */}
         <div className="bg-white rounded-lg border border-gray-200 shadow-lg">
           <div className="p-6">
