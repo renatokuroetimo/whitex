@@ -32,6 +32,16 @@ class HospitalPatientAPI {
       }
     } catch (connectError) {
       console.error("❌ Erro de rede:", connectError);
+
+      // If it's a network error, return empty array instead of throwing
+      if (
+        connectError instanceof Error &&
+        connectError.message.includes("Failed to fetch")
+      ) {
+        console.warn("⚠️ Supabase indisponível, retornando lista vazia");
+        return [];
+      }
+
       throw new Error(
         `Erro de rede ao conectar com Supabase: ${connectError instanceof Error ? connectError.message : "Erro desconhecido"}`,
       );
