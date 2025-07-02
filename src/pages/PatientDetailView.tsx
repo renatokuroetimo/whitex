@@ -28,16 +28,27 @@ const PatientDetailView = () => {
   const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Detectar se est�� sendo acessado pelo sistema hospitalar
+  // Detectar se está sendo acessado pelo sistema hospitalar
   const isHospitalContext =
     window.location.pathname.includes("/gerenciamento/");
   const backPath = isHospitalContext ? "/gerenciamento/patients" : "/pacientes";
 
   useEffect(() => {
-    if (patientId && user?.id) {
-      loadPatientData();
+    if (patientId) {
+      if (isHospitalContext) {
+        // Para hospital, verificar se há sessão hospitalar
+        const hospitalData = localStorage.getItem("hospital_session");
+        if (hospitalData) {
+          loadPatientData();
+        } else {
+          navigate("/gerenciamento", { replace: true });
+        }
+      } else if (user?.id) {
+        // Para médicos, verificar autenticação normal
+        loadPatientData();
+      }
     }
-  }, [patientId, user?.id]);
+  }, [patientId, user?.id, isHospitalContext, navigate]);
 
   const loadPatientData = async () => {
     if (!patientId || !user?.id) return;
