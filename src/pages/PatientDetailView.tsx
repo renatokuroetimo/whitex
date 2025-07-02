@@ -346,8 +346,12 @@ const PatientDetailView = () => {
     return imc.toFixed(1);
   };
 
-  if (!user || user.profession !== "medico") {
-    navigate("/dashboard");
+  // Skip user check in hospital context, but check user in doctor context
+  if (!isHospitalContext && (!user || user.profession !== "medico")) {
+    // Use useEffect to handle navigation to avoid render-time navigation
+    React.useEffect(() => {
+      navigate("/dashboard");
+    }, [navigate]);
     return null;
   }
 
