@@ -84,6 +84,13 @@ const HospitalGraphView = () => {
   const [selectedPeriod, setSelectedPeriod] = useState("6months");
   const [isLoading, setIsLoading] = useState(true);
 
+  // Diagnosis modal state
+  const [showDiagnosisModal, setShowDiagnosisModal] = useState(false);
+  const [diagnosisQuestion, setDiagnosisQuestion] = useState("");
+  const [isDiagnosisLoading, setIsDiagnosisLoading] = useState(false);
+  const [showDiagnosisResult, setShowDiagnosisResult] = useState(false);
+  const [diagnosisResult, setDiagnosisResult] = useState("");
+
   // Parâmetros do indicador
   const categoryName = searchParams.get("categoryName") || "";
   const subcategoryName = searchParams.get("subcategoryName") || "";
