@@ -35,6 +35,7 @@ const HospitalGraphSelector = () => {
     IndicatorSummary[]
   >([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasConnectivityError, setHasConnectivityError] = useState(false);
 
   useEffect(() => {
     loadData();
