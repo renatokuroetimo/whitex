@@ -43,6 +43,7 @@ const HospitalGraphSelector = () => {
 
   const loadData = async () => {
     setIsLoading(true);
+    setHasConnectivityError(false);
     try {
       // Buscar dados do hospital logado
       const hospitalData = JSON.parse(
