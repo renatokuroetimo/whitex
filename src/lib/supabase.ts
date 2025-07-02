@@ -27,6 +27,41 @@ if (!import.meta.env.VITE_SUPABASE_URL) {
 // Cliente Supabase (sempre disponível agora)
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+// Test connectivity function
+export const testSupabaseConnectivity = async (): Promise<{
+  success: boolean;
+  error?: string;
+  details?: any;
+}> => {
+  try {
+    console.log("🔍 Testing Supabase connectivity to:", supabaseUrl);
+
+    // Simple test query
+    const { data, error } = await supabase
+      .from("users")
+      .select("count", { count: "exact", head: true });
+
+    if (error) {
+      console.error("❌ Supabase test failed:", error);
+      return {
+        success: false,
+        error: error.message,
+        details: error,
+      };
+    }
+
+    console.log("✅ Supabase connectivity test passed");
+    return { success: true };
+  } catch (error) {
+    console.error("❌ Supabase connectivity test error:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+      details: error,
+    };
+  }
+};
+
 // Verificar se Supabase está disponível (sem teste de rede)
 export const isSupabaseAvailable = (): boolean => {
   return !!supabase && !!supabaseUrl && !!supabaseAnonKey;
