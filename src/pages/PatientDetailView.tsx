@@ -51,7 +51,10 @@ const PatientDetailView = () => {
   }, [patientId, user?.id, isHospitalContext, navigate]);
 
   const loadPatientData = async () => {
-    if (!patientId || !user?.id) return;
+    if (!patientId) return;
+
+    // Em contexto hospitalar, não precisamos do user.id
+    if (!isHospitalContext && !user?.id) return;
 
     setIsLoading(true);
     try {
