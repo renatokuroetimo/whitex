@@ -34,21 +34,24 @@ const PatientDetailView = () => {
   const backPath = isHospitalContext ? "/gerenciamento/patients" : "/pacientes";
 
   useEffect(() => {
-    if (patientId) {
-      if (isHospitalContext) {
-        // Para hospital, verificar se há sessão hospitalar
-        const hospitalData = localStorage.getItem("hospital_session");
-        if (hospitalData) {
-          loadPatientData();
-        } else {
-          navigate("/gerenciamento", { replace: true });
-        }
-      } else if (user?.id) {
-        // Para médicos, verificar autenticação normal
+    if (!patientId) return;
+
+    if (isHospitalContext) {
+      // Para hospital, verificar se há sessão hospitalar
+      const hospitalData = localStorage.getItem("hospital_session");
+      if (hospitalData) {
         loadPatientData();
+      } else {
+        // Use setTimeout to avoid navigation during render
+        setTimeout(() => {
+          navigate("/gerenciamento", { replace: true });
+        }, 0);
       }
+    } else if (user?.id) {
+      // Para médicos, verificar autenticação normal
+      loadPatientData();
     }
-  }, [patientId, user?.id, isHospitalContext, navigate]);
+  }, [patientId, user?.id, isHospitalContext]);
 
   const loadPatientData = async () => {
     if (!patientId) return;
