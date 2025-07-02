@@ -421,12 +421,46 @@ MIT License - Sistema desenvolvido para fins acadêmicos e de pesquisa, implemen
 
 ---
 
+## 🔐 Paths de Acesso por Tipo de Usuário
+
+### 👨‍⚕️ Médico
+
+- **Login**: `/login` → Selecionar "Médico" → Inserir CRM
+- **Dashboard**: `/dashboard`
+- **Pacientes**: `/pacientes`
+- **Indicadores**: `/indicadores`
+- **Perfil**: `/profile`
+
+### 🏥 Paciente
+
+- **Login**: `/login` → Selecionar "Paciente"
+- **Dashboard**: `/patient-dashboard`
+- **Meus Indicadores**: `/patient/indicadores`
+- **Buscar Médicos**: `/patient/buscar-medicos`
+- **Gráficos**: `/patient/graficos`
+- **Perfil**: `/patient-profile`
+
+### 👥 Administrador
+
+- **Login**: `/admin` ou `/admin/login`
+- **Dashboard**: `/admin/dashboard`
+- **Indicadores**: `/admin/indicators`
+- **Hospitais**: `/admin/hospitals`
+
+### 🏥 Hospital/Clínica
+
+- **Login**: `/gerenciamento` ou `/gerenciamento/login`
+- **Dashboard**: `/gerenciamento/dashboard`
+- **Pacientes**: `/gerenciamento/patients`
+- **Criar Médico**: `/gerenciamento/doctors/create`
+- **Gráficos**: `/gerenciamento/patients/graphs`
+
 ## 🚀 Deploy e Implementação
 
 ### AWS Amplify (Recomendado)
 
 1. Fork este repositório
-2. AWS Console → Amplify → "New app"
+2. AWS Console → Amplify ��� "New app"
 3. Conectar ao repositório
 4. Deploy automático
 
