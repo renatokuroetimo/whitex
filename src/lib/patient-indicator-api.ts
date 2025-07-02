@@ -136,10 +136,9 @@ class PatientIndicatorAPI {
         `💥 Erro ao buscar valores de indicadores para paciente ${patientId}:`,
         error,
       );
-      console.warn(
-        "⚠️ Usando dados de demonstração para indicadores devido a erro de rede",
+      throw new Error(
+        "Erro ao carregar indicadores do paciente. Verifique sua conexão e tente novamente.",
       );
-      return this.getMockIndicators(patientId);
     }
   }
 
