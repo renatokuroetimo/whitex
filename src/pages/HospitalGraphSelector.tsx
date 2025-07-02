@@ -7,6 +7,7 @@ import { hospitalPatientAPI } from "@/lib/hospital-patient-api";
 import { patientIndicatorAPI } from "@/lib/patient-indicator-api";
 import { PatientIndicatorValue } from "@/lib/patient-indicator-types";
 import { toast } from "@/hooks/use-toast";
+import SupabaseStatus from "@/components/SupabaseStatus";
 
 interface Hospital {
   id: string;
