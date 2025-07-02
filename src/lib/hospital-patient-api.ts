@@ -152,7 +152,21 @@ class HospitalPatientAPI {
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
     } catch (error) {
-      console.error("Erro ao buscar pacientes do hospital:", error);
+      console.error("❌ Erro ao buscar pacientes do hospital:", error);
+
+      // Check if it's a network connectivity error
+      if (error instanceof Error && error.message.includes("Failed to fetch")) {
+        console.warn("⚠️ Problema de conectividade com Supabase");
+        throw new Error(
+          "Erro de conectividade. Verifique sua conexão com a internet e tente novamente.",
+        );
+      }
+
+      // Check if it's a specific Supabase error
+      if (error && typeof error === "object" && "message" in error) {
+        throw new Error(`Erro na base de dados: ${(error as any).message}`);
+      }
+
       throw new Error("Erro ao carregar pacientes do hospital");
     }
   }
