@@ -12,6 +12,51 @@ class PatientIndicatorAPI {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
   }
 
+  // Mock data for when Supabase is unavailable
+  private getMockIndicators(patientId: string): PatientIndicatorValue[] {
+    const baseDate = new Date();
+    const mockData: PatientIndicatorValue[] = [];
+
+    // Create pressure data for last 30 days
+    for (let i = 30; i >= 0; i--) {
+      const date = new Date(baseDate);
+      date.setDate(date.getDate() - i);
+
+      mockData.push({
+        id: `mock-pressure-${i}`,
+        patientId: patientId,
+        indicatorId: "mock-indicator-pressure",
+        value: (120 + Math.random() * 20).toFixed(1),
+        categoryName: "Cardiovascular",
+        subcategoryName: "Pressão Arterial",
+        parameter: "Pressão Sistólica",
+        unitSymbol: "mmHg",
+        date: date.toISOString().split("T")[0],
+        time: "09:00",
+        createdAt: date.toISOString(),
+      });
+
+      // Add glucose data every few days
+      if (i % 3 === 0) {
+        mockData.push({
+          id: `mock-glucose-${i}`,
+          patientId: patientId,
+          indicatorId: "mock-indicator-glucose",
+          value: (90 + Math.random() * 30).toFixed(1),
+          categoryName: "Metabólico",
+          subcategoryName: "Glicemia",
+          parameter: "Glicose em Jejum",
+          unitSymbol: "mg/dL",
+          date: date.toISOString().split("T")[0],
+          time: "08:00",
+          createdAt: date.toISOString(),
+        });
+      }
+    }
+
+    return mockData;
+  }
+
   // Criar valor de indicador (apenas Supabase)
   async createPatientIndicatorValue(
     newValue: PatientIndicatorValue,
