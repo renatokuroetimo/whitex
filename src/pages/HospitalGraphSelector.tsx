@@ -122,12 +122,31 @@ const HospitalGraphSelector = () => {
 
       setIndicatorSummaries(Array.from(summaryMap.values()));
     } catch (error) {
-      console.error("Erro ao carregar dados:", error);
+      console.error("❌ Erro ao carregar dados do hospital:", error);
+
+      let errorMessage = "Erro ao carregar dados dos indicadores";
+
+      if (error instanceof Error) {
+        if (
+          error.message.includes("conectividade") ||
+          error.message.includes("Failed to fetch")
+        ) {
+          errorMessage =
+            "Problema de conectividade. Verifique sua conexão e tente novamente.";
+        } else if (error.message.includes("hospital")) {
+          errorMessage = error.message;
+        }
+      }
+
       toast({
         title: "Erro",
-        description: "Erro ao carregar dados dos indicadores",
+        description: errorMessage,
         variant: "destructive",
       });
+
+      // Set empty data to show empty state instead of infinite loading
+      setIndicators([]);
+      setIndicatorSummaries([]);
     } finally {
       setIsLoading(false);
     }
