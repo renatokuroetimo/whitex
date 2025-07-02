@@ -109,7 +109,13 @@ const PatientDetailView = () => {
 
         // Carregar histórico de diagnósticos
         console.log("🔍 Carregando diagnósticos...");
-        const patientDiagnoses = await patientAPI.getDiagnoses(patientId);
+        let patientDiagnoses;
+        if (isHospitalContext) {
+          patientDiagnoses =
+            await patientAPI.getDiagnosesForHospital(patientId);
+        } else {
+          patientDiagnoses = await patientAPI.getDiagnoses(patientId);
+        }
         console.log("📊 Diagnósticos carregados:", patientDiagnoses);
         setDiagnoses(patientDiagnoses);
       } else {
