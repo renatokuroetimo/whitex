@@ -8,6 +8,7 @@ import {
   Minus,
   Users,
   Loader2,
+  Stethoscope,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +19,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import {
   LineChart,
   Line,
@@ -75,6 +83,13 @@ const HospitalGraphView = () => {
   const [patientData, setPatientData] = useState<PatientData[]>([]);
   const [selectedPeriod, setSelectedPeriod] = useState("6months");
   const [isLoading, setIsLoading] = useState(true);
+
+  // Diagnosis modal state
+  const [showDiagnosisModal, setShowDiagnosisModal] = useState(false);
+  const [diagnosisQuestion, setDiagnosisQuestion] = useState("");
+  const [isDiagnosisLoading, setIsDiagnosisLoading] = useState(false);
+  const [showDiagnosisResult, setShowDiagnosisResult] = useState(false);
+  const [diagnosisResult, setDiagnosisResult] = useState("");
 
   // Parâmetros do indicador
   const categoryName = searchParams.get("categoryName") || "";
@@ -265,6 +280,100 @@ const HospitalGraphView = () => {
     };
   };
 
+  const handleOpenDiagnosisModal = () => {
+    if (patientData.length === 0 || indicators.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "Sem dados",
+        description: "Não há dados disponíveis para realizar diagnóstico.",
+      });
+      return;
+    }
+    setShowDiagnosisModal(true);
+  };
+
+  const handleDiagnosis = async () => {
+    if (!diagnosisQuestion.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Por favor, digite uma pergunta.",
+      });
+      return;
+    }
+
+    if (patientData.length === 0 || indicators.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Não há dados disponíveis para análise.",
+      });
+      return;
+    }
+
+    setIsDiagnosisLoading(true);
+
+    try {
+      // Prepare data for multiple patients API
+      const tipoDado = `${categoryName} ${subcategoryName} em ${unitSymbol}`;
+
+      // Format readings for multiple patients
+      const leituras = patientData.map((patient) => ({
+        nome: patient.name,
+        leituras: patient.data.map((point) => ({
+          data: point.date.split("T")[0], // Extract date part only
+          valor: point.value,
+        })),
+      }));
+
+      const requestBody = {
+        tipo_dado: tipoDado,
+        pergunta: diagnosisQuestion,
+        leituras: leituras,
+      };
+
+      console.log("Sending hospital diagnosis request:", requestBody);
+
+      const response = await fetch(
+        "https://ai.timo.com.br/webhook/avaliar-pacientes",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Hospital diagnosis response:", result);
+
+      // Extract the content from the response structure
+      const content =
+        result.choices?.[0]?.message?.content ||
+        result.resposta ||
+        "Resposta não encontrada";
+
+      setDiagnosisResult(content);
+      setShowDiagnosisModal(false);
+      setShowDiagnosisResult(true);
+      setDiagnosisQuestion("");
+    } catch (error) {
+      console.error("Hospital diagnosis error:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Erro ao realizar diagnóstico. Tente novamente.",
+      });
+    } finally {
+      setIsDiagnosisLoading(false);
+    }
+  };
+
   const trend = calculateTrend();
 
   if (isLoading) {
@@ -322,6 +431,14 @@ const HospitalGraphView = () => {
             </div>
 
             <div className="flex items-center gap-4">
+              <Button
+                onClick={handleOpenDiagnosisModal}
+                className="bg-green-600 hover:bg-green-700 text-white"
+                disabled={patientData.length === 0 || indicators.length === 0}
+              >
+                <Stethoscope className="h-4 w-4 mr-2" />
+                Realizar diagnóstico
+              </Button>
               <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
                 <SelectTrigger className="w-40">
                   <Calendar className="h-4 w-4 mr-2" />
@@ -487,6 +604,77 @@ const HospitalGraphView = () => {
           </div>
         </div>
       </div>
+
+      {/* Diagnosis Question Modal */}
+      <Dialog open={showDiagnosisModal} onOpenChange={setShowDiagnosisModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Stethoscope className="h-5 w-5 text-green-600" />
+              Faça sua pergunta:
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Textarea
+              placeholder="Digite sua pergunta sobre os dados dos pacientes..."
+              value={diagnosisQuestion}
+              onChange={(e) => setDiagnosisQuestion(e.target.value)}
+              className="min-h-[100px]"
+              disabled={isDiagnosisLoading}
+            />
+            <div className="flex justify-end gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setShowDiagnosisModal(false)}
+                disabled={isDiagnosisLoading}
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleDiagnosis}
+                className="bg-green-600 hover:bg-green-700"
+                disabled={isDiagnosisLoading || !diagnosisQuestion.trim()}
+              >
+                {isDiagnosisLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Realizando diagnóstico...
+                  </>
+                ) : (
+                  "Enviar pergunta"
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Diagnosis Result Modal */}
+      <Dialog open={showDiagnosisResult} onOpenChange={setShowDiagnosisResult}>
+        <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Stethoscope className="h-5 w-5 text-green-600" />
+              Resultado do Diagnóstico
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="bg-gray-50 rounded-lg p-4">
+              <div className="whitespace-pre-wrap text-sm text-gray-800 leading-relaxed">
+                {diagnosisResult}
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <Button
+                onClick={() => setShowDiagnosisResult(false)}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                Fechar
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -17,6 +17,8 @@ class HospitalPatientAPI {
       throw new Error("Supabase não está configurado");
     }
 
+    console.log("🔍 Iniciando busca de pacientes do hospital:", hospitalId);
+
     try {
       // Primeiro, buscar todos os médicos do hospital
       const { data: doctors, error: doctorsError } = await supabase
@@ -26,8 +28,14 @@ class HospitalPatientAPI {
         .eq("hospital_id", hospitalId);
 
       if (doctorsError) {
-        console.error("Erro ao buscar médicos:", doctorsError);
-        throw new Error("Erro ao carregar médicos do hospital");
+        console.error("❌ Erro na query Supabase:", doctorsError);
+        console.error(
+          "❌ Detalhes do erro:",
+          JSON.stringify(doctorsError, null, 2),
+        );
+        throw new Error(
+          `Erro ao carregar médicos do hospital: ${doctorsError.message || "Erro desconhecido"}`,
+        );
       }
 
       if (!doctors || doctors.length === 0) {
@@ -144,7 +152,20 @@ class HospitalPatientAPI {
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
     } catch (error) {
-      console.error("Erro ao buscar pacientes do hospital:", error);
+      console.error("❌ Erro ao buscar pacientes do hospital:", error);
+
+      // Check if it's a network connectivity error
+      if (error instanceof Error && error.message.includes("Failed to fetch")) {
+        throw new Error(
+          "Erro de conectividade com a base de dados. Verifique sua conexão com a internet e tente novamente.",
+        );
+      }
+
+      // Check if it's a specific Supabase error
+      if (error && typeof error === "object" && "message" in error) {
+        throw new Error(`Erro na base de dados: ${(error as any).message}`);
+      }
+
       throw new Error("Erro ao carregar pacientes do hospital");
     }
   }

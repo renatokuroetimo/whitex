@@ -106,8 +106,9 @@ class PatientIndicatorAPI {
           error.details,
           error.hint,
         );
-        // Retornar array vazio em vez de lançar erro para não interromper o carregamento
-        return [];
+        throw new Error(
+          "Erro de conectividade com a base de dados. Tente novamente.",
+        );
       }
 
       const values = (data || []).map(
@@ -135,8 +136,9 @@ class PatientIndicatorAPI {
         `💥 Erro ao buscar valores de indicadores para paciente ${patientId}:`,
         error,
       );
-      // Retornar array vazio em vez de lançar erro para não interromper o carregamento
-      return [];
+      throw new Error(
+        "Erro ao carregar indicadores do paciente. Verifique sua conexão e tente novamente.",
+      );
     }
   }
 

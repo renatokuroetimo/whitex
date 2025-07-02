@@ -7,6 +7,7 @@ import { hospitalPatientAPI } from "@/lib/hospital-patient-api";
 import { patientIndicatorAPI } from "@/lib/patient-indicator-api";
 import { PatientIndicatorValue } from "@/lib/patient-indicator-types";
 import { toast } from "@/hooks/use-toast";
+import SupabaseStatus from "@/components/SupabaseStatus";
 
 interface Hospital {
   id: string;
@@ -34,6 +35,7 @@ const HospitalGraphSelector = () => {
     IndicatorSummary[]
   >([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasConnectivityError, setHasConnectivityError] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -41,6 +43,7 @@ const HospitalGraphSelector = () => {
 
   const loadData = async () => {
     setIsLoading(true);
+    setHasConnectivityError(false);
     try {
       // Buscar dados do hospital logado
       const hospitalData = JSON.parse(
@@ -58,9 +61,11 @@ const HospitalGraphSelector = () => {
       setHospital(hospitalData);
 
       // Buscar todos os pacientes do hospital
+      console.log("🔍 Carregando pacientes do hospital:", hospitalData.id);
       const patients = await hospitalPatientAPI.getPatientsByHospital(
         hospitalData.id,
       );
+      console.log("✅ Pacientes carregados:", patients.length);
 
       // Buscar todos os indicadores de todos os pacientes
       const allIndicators: PatientIndicatorValue[] = [];
@@ -120,12 +125,36 @@ const HospitalGraphSelector = () => {
 
       setIndicatorSummaries(Array.from(summaryMap.values()));
     } catch (error) {
-      console.error("Erro ao carregar dados:", error);
-      toast({
-        title: "Erro",
-        description: "Erro ao carregar dados dos indicadores",
-        variant: "destructive",
-      });
+      console.error("❌ Erro ao carregar dados do hospital:", error);
+
+      let errorMessage = "Erro ao carregar dados dos indicadores";
+      let isConnectivityError = false;
+
+      if (error instanceof Error) {
+        if (
+          error.message.includes("conectividade") ||
+          error.message.includes("Failed to fetch")
+        ) {
+          errorMessage = "Problema de conectividade com a base de dados.";
+          isConnectivityError = true;
+        } else if (error.message.includes("hospital")) {
+          errorMessage = error.message;
+        }
+      }
+
+      setHasConnectivityError(isConnectivityError);
+
+      if (!isConnectivityError) {
+        toast({
+          title: "Erro",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
+
+      // Set empty data to show empty state instead of infinite loading
+      setIndicators([]);
+      setIndicatorSummaries([]);
     } finally {
       setIsLoading(false);
     }
@@ -181,6 +210,13 @@ const HospitalGraphSelector = () => {
             </div>
           </div>
         </div>
+
+        {/* Connectivity Status */}
+        {hasConnectivityError && (
+          <div className="mb-6">
+            <SupabaseStatus onRetry={loadData} />
+          </div>
+        )}
 
         {/* Indicators Grid */}
         <div className="bg-white rounded-lg border border-gray-200 shadow-lg">

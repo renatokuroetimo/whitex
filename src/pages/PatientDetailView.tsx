@@ -28,30 +28,54 @@ const PatientDetailView = () => {
   const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Detectar se est�� sendo acessado pelo sistema hospitalar
+  // Detectar se está sendo acessado pelo sistema hospitalar
   const isHospitalContext =
     window.location.pathname.includes("/gerenciamento/");
   const backPath = isHospitalContext ? "/gerenciamento/patients" : "/pacientes";
 
   useEffect(() => {
-    if (patientId && user?.id) {
+    if (!patientId) return;
+
+    if (isHospitalContext) {
+      // Para hospital, verificar se há sessão hospitalar
+      const hospitalData = localStorage.getItem("hospital_session");
+      if (hospitalData) {
+        loadPatientData();
+      } else {
+        // Use setTimeout to avoid navigation during render
+        setTimeout(() => {
+          navigate("/gerenciamento", { replace: true });
+        }, 0);
+      }
+    } else if (user?.id) {
+      // Para médicos, verificar autenticação normal
       loadPatientData();
     }
-  }, [patientId, user?.id]);
+  }, [patientId, user?.id, isHospitalContext]);
 
   const loadPatientData = async () => {
-    if (!patientId || !user?.id) return;
+    if (!patientId) return;
+
+    // Em contexto hospitalar, não precisamos do user.id
+    if (!isHospitalContext && !user?.id) return;
 
     setIsLoading(true);
     try {
       // Carregar dados básicos do paciente (usando getPatientById para incluir observações médicas)
       console.log("🔍 ===== PATIENT DETAIL VIEW DEBUG =====");
       console.log("🔍 Patient ID da URL:", patientId);
-      console.log("🔍 Médico logado ID:", user.id);
-      console.log("🔍 Médico logado email:", user.email);
-      console.log("🔍 Chamando patientAPI.getPatientById...");
+      console.log("🔍 Hospital context:", isHospitalContext);
+      console.log("🔍 Médico logado ID:", user?.id);
+      console.log("🔍 Médico logado email:", user?.email);
 
-      const foundPatient = await patientAPI.getPatientById(patientId);
+      let foundPatient;
+      if (isHospitalContext) {
+        console.log("🔍 Chamando patientAPI.getPatientByIdForHospital...");
+        foundPatient = await patientAPI.getPatientByIdForHospital(patientId);
+      } else {
+        console.log("🔍 Chamando patientAPI.getPatientById...");
+        foundPatient = await patientAPI.getPatientById(patientId);
+      }
 
       console.log("📊 RESULTADO do getPatientById:", foundPatient);
 
@@ -88,7 +112,13 @@ const PatientDetailView = () => {
 
         // Carregar histórico de diagnósticos
         console.log("🔍 Carregando diagnósticos...");
-        const patientDiagnoses = await patientAPI.getDiagnoses(patientId);
+        let patientDiagnoses;
+        if (isHospitalContext) {
+          patientDiagnoses =
+            await patientAPI.getDiagnosesForHospital(patientId);
+        } else {
+          patientDiagnoses = await patientAPI.getDiagnoses(patientId);
+        }
         console.log("📊 Diagnósticos carregados:", patientDiagnoses);
         setDiagnoses(patientDiagnoses);
       } else {
@@ -316,8 +346,12 @@ const PatientDetailView = () => {
     return imc.toFixed(1);
   };
 
-  if (!user || user.profession !== "medico") {
-    navigate("/dashboard");
+  // Skip user check in hospital context, but check user in doctor context
+  if (!isHospitalContext && (!user || user.profession !== "medico")) {
+    // Use useEffect to handle navigation to avoid render-time navigation
+    React.useEffect(() => {
+      navigate("/dashboard");
+    }, [navigate]);
     return null;
   }
 
@@ -407,10 +441,20 @@ const PatientDetailView = () => {
                 </div>
 
                 <Button
-                  onClick={() =>
-                    navigate(`/pacientes/${patient.id}/indicadores`)
-                  }
+                  onClick={() => {
+                    if (isHospitalContext) {
+                      // Em contexto hospitalar, mostrar mensagem que funcionalidade não está disponível
+                      toast({
+                        title: "Funcionalidade não disponível",
+                        description:
+                          "Para ver indicadores, acesse através da área médica.",
+                      });
+                    } else {
+                      navigate(`/pacientes/${patient.id}/indicadores`);
+                    }
+                  }}
                   className="w-full bg-blue-600 hover:bg-blue-700"
+                  disabled={isHospitalContext}
                 >
                   Ver indicadores
                 </Button>
@@ -422,7 +466,7 @@ const PatientDetailView = () => {
                   <h3 className="text-lg font-semibold text-gray-900">
                     Dados Médicos
                   </h3>
-                  {!patient?.isShared && !medicalData && (
+                  {!patient?.isShared && !medicalData && !isHospitalContext && (
                     <Button
                       onClick={() =>
                         navigate(`/pacientes/${patient.id}/editar`)
