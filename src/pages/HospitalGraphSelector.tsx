@@ -58,9 +58,11 @@ const HospitalGraphSelector = () => {
       setHospital(hospitalData);
 
       // Buscar todos os pacientes do hospital
+      console.log("🔍 Carregando pacientes do hospital:", hospitalData.id);
       const patients = await hospitalPatientAPI.getPatientsByHospital(
         hospitalData.id,
       );
+      console.log("✅ Pacientes carregados:", patients.length);
 
       // Buscar todos os indicadores de todos os pacientes
       const allIndicators: PatientIndicatorValue[] = [];
