@@ -12,8 +12,6 @@ class PatientIndicatorAPI {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
   }
 
-
-
   // Criar valor de indicador (apenas Supabase)
   async createPatientIndicatorValue(
     newValue: PatientIndicatorValue,
@@ -108,7 +106,9 @@ class PatientIndicatorAPI {
           error.details,
           error.hint,
         );
-        throw new Error("Erro de conectividade com a base de dados. Tente novamente.");      }
+        throw new Error(
+          "Erro de conectividade com a base de dados. Tente novamente.",
+        );
       }
 
       const values = (data || []).map(
