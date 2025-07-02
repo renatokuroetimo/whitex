@@ -434,10 +434,20 @@ const PatientDetailView = () => {
                 </div>
 
                 <Button
-                  onClick={() =>
-                    navigate(`/pacientes/${patient.id}/indicadores`)
-                  }
+                  onClick={() => {
+                    if (isHospitalContext) {
+                      // Em contexto hospitalar, mostrar mensagem que funcionalidade não está disponível
+                      toast({
+                        title: "Funcionalidade não disponível",
+                        description:
+                          "Para ver indicadores, acesse através da área médica.",
+                      });
+                    } else {
+                      navigate(`/pacientes/${patient.id}/indicadores`);
+                    }
+                  }}
                   className="w-full bg-blue-600 hover:bg-blue-700"
+                  disabled={isHospitalContext}
                 >
                   Ver indicadores
                 </Button>
