@@ -154,21 +154,19 @@ class HospitalPatientAPI {
     } catch (error) {
       console.error("❌ Erro ao buscar pacientes do hospital:", error);
 
-      // Check if it's a network connectivity error - return mock data instead of failing
+      // Check if it's a network connectivity error
       if (error instanceof Error && error.message.includes("Failed to fetch")) {
-        console.warn("⚠️ Supabase indisponível, usando dados de demonstração");
-        return this.getMockPatients(hospitalId);
+        throw new Error(
+          "Erro de conectividade com a base de dados. Verifique sua conexão com a internet e tente novamente.",
+        );
       }
 
-      // Check if it's a specific Supabase error - also return mock data
+      // Check if it's a specific Supabase error
       if (error && typeof error === "object" && "message" in error) {
-        console.warn("⚠️ Erro do Supabase, usando dados de demonstração");
-        return this.getMockPatients(hospitalId);
+        throw new Error(`Erro na base de dados: ${(error as any).message}`);
       }
 
-      // For any other error, also return mock data
-      console.warn("⚠️ Erro desconhecido, usando dados de demonstração");
-      return this.getMockPatients(hospitalId);
+      throw new Error("Erro ao carregar pacientes do hospital");
     }
   }
 }
