@@ -268,7 +268,7 @@ const PatientIndicators = () => {
                   Nenhum indicador registrado
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  {isViewingOtherPatient
+                  {isViewingOtherPatient || isHospitalViewing
                     ? "Este paciente ainda não registrou nenhum indicador de saúde."
                     : "Comece a registrar seus indicadores de saúde para acompanhar sua evolução e compartilhar com seus médicos."}
                 </p>
@@ -277,7 +277,7 @@ const PatientIndicators = () => {
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  {isViewingOtherPatient
+                  {isViewingOtherPatient || isHospitalViewing
                     ? "Adicionar Indicador"
                     : "Registrar Primeiro Indicador"}
                 </Button>
