@@ -52,15 +52,23 @@ const PatientGraphSelector = () => {
     const targetPatientId = patientId || user?.id;
     if (!targetPatientId) return;
 
+    // Em contexto hospitalar, verificar se há sessão hospitalar
+    if (isHospitalContext) {
+      const hospitalData = localStorage.getItem("hospital_session");
+      if (!hospitalData) return;
+    }
+
     setIsLoading(true);
     try {
       // Se é paciente próprio, não precisa carregar dados do paciente
       const shouldLoadPatientData =
-        !!patientId && user?.profession === "medico";
+        !!patientId && (user?.profession === "medico" || isHospitalContext);
 
       const [patientData, indicatorValues] = await Promise.all([
         shouldLoadPatientData
-          ? patientAPI.getPatientById(targetPatientId)
+          ? isHospitalContext
+            ? patientAPI.getPatientByIdForHospital(targetPatientId)
+            : patientAPI.getPatientById(targetPatientId)
           : Promise.resolve(null),
         patientIndicatorAPI.getPatientIndicatorValues(targetPatientId),
       ]);
@@ -72,7 +80,7 @@ const PatientGraphSelector = () => {
           title: "Erro",
           description: "Paciente não encontrado",
         });
-        navigate("/pacientes");
+        navigate(isHospitalContext ? "/gerenciamento/patients" : "/pacientes");
         return;
       }
 
@@ -199,7 +207,7 @@ const PatientGraphSelector = () => {
     );
   }
 
-  // S�� mostrar erro se esperávamos carregar dados do paciente mas não conseguimos
+  // Só mostrar erro se esperávamos carregar dados do paciente mas não conseguimos
   if (patientId && !patient) {
     return null;
   }
