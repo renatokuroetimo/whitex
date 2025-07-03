@@ -33,6 +33,10 @@ const PatientGraphSelector = () => {
   >([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Detectar se está sendo acessado pelo sistema hospitalar
+  const isHospitalContext =
+    window.location.pathname.includes("/gerenciamento/");
+
   useEffect(() => {
     if (patientId || (user?.profession === "paciente" && user?.id)) {
       loadData();
