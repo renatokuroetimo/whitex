@@ -525,9 +525,12 @@ const PatientGraphView = () => {
                     </Button>
                   ) : (
                     <Button
-                      onClick={() =>
-                        navigate(`/pacientes/${patientId}/adicionar-indicador`)
-                      }
+                      onClick={() => {
+                        const addIndicatorPath = isHospitalContext
+                          ? `/gerenciamento/patients/${patientId}/adicionar-indicador`
+                          : `/pacientes/${patientId}/adicionar-indicador`;
+                        navigate(addIndicatorPath);
+                      }}
                       className="bg-green-600 hover:bg-green-700 text-white"
                     >
                       Adicionar Registro
