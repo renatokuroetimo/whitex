@@ -62,10 +62,19 @@ const PatientIndicators = () => {
   }, [user?.id]);
 
   const loadIndicators = async () => {
-    if (!user?.id) return;
+    const isHospitalContext =
+      window.location.pathname.includes("/gerenciamento/");
+
+    // Em contexto hospitalar, verificar se há sessão hospitalar e patientId
+    if (isHospitalContext) {
+      const hospitalData = localStorage.getItem("hospital_session");
+      if (!hospitalData || !patientId) return;
+    } else if (!user?.id) {
+      return;
+    }
 
     // Determinar qual ID de paciente usar
-    const targetPatientId = patientId || user.id;
+    const targetPatientId = patientId || user?.id;
 
     setIsLoading(true);
     try {
