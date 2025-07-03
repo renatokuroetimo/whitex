@@ -133,11 +133,13 @@ const PatientGraphView = () => {
     setHasLoadingError(false);
     try {
       const shouldLoadPatientData =
-        !!patientId && user?.profession === "medico";
+        !!patientId && (user?.profession === "medico" || isHospitalContext);
 
       const [patientData, indicatorValues] = await Promise.all([
         shouldLoadPatientData
-          ? patientAPI.getPatientById(targetPatientId)
+          ? isHospitalContext
+            ? patientAPI.getPatientByIdForHospital(targetPatientId)
+            : patientAPI.getPatientById(targetPatientId)
           : Promise.resolve(null),
         retryIndicatorValues(targetPatientId),
       ]);
