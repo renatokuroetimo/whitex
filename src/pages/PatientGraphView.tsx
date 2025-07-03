@@ -64,6 +64,10 @@ const PatientGraphView = () => {
   const [timeRange, setTimeRange] = useState<string>("all");
   const [isLoading, setIsLoading] = useState(true);
 
+  // Detectar se está sendo acessado pelo sistema hospitalar
+  const isHospitalContext =
+    window.location.pathname.includes("/gerenciamento/");
+
   // Diagnosis modal state
   const [showDiagnosisModal, setShowDiagnosisModal] = useState(false);
   const [diagnosisQuestion, setDiagnosisQuestion] = useState("");
