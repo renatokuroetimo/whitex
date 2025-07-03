@@ -318,7 +318,11 @@ const PatientGraphView = () => {
 
   const handleBack = () => {
     if (patientId) {
-      navigate(`/pacientes/${patientId}/graficos`);
+      if (isHospitalContext) {
+        navigate(`/gerenciamento/patients/${patientId}/graficos`);
+      } else {
+        navigate(`/pacientes/${patientId}/graficos`);
+      }
     } else {
       navigate("/patient/graficos");
     }
