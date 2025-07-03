@@ -152,7 +152,7 @@ const AddIndicatorToPatient = () => {
           title: "Erro",
           description: "Paciente não encontrado ou erro de conexão",
         });
-        navigate("/pacientes");
+        navigate(isHospitalContext ? "/gerenciamento/patients" : "/pacientes");
         return;
       }
 
