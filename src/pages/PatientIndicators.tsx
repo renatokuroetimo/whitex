@@ -107,7 +107,9 @@ const PatientIndicators = () => {
   };
 
   const handleViewGraphs = () => {
-    if (isViewingOtherPatient) {
+    if (isHospitalContext) {
+      navigate(`/gerenciamento/patients/${patientId}/graficos`);
+    } else if (isViewingOtherPatient) {
       navigate(`/pacientes/${patientId}/graficos`);
     } else {
       navigate("/patient/graficos");
