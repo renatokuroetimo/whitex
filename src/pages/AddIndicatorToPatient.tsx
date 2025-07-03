@@ -305,7 +305,8 @@ const AddIndicatorToPatient = () => {
       return;
     }
 
-    if (!patientId || !user?.id) return;
+    if (!patientId) return;
+    if (!isHospitalContext && !user?.id) return;
 
     try {
       const newIndicatorValue: any = {
