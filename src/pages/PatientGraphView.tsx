@@ -148,7 +148,7 @@ const PatientGraphView = () => {
           title: "Erro",
           description: "Paciente não encontrado",
         });
-        navigate("/pacientes");
+        navigate(isHospitalContext ? "/gerenciamento/patients" : "/pacientes");
         return;
       }
 
