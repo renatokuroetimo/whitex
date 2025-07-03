@@ -166,10 +166,17 @@ const PatientGraphSelector = () => {
     });
 
     if (patientId) {
-      // Médico visualizando gráfico de paciente
-      navigate(
-        `/pacientes/${patientId}/graficos/visualizar?${params.toString()}`,
-      );
+      if (isHospitalContext) {
+        // Hospital visualizando gráfico de paciente
+        navigate(
+          `/gerenciamento/patients/${patientId}/graficos/visualizar?${params.toString()}`,
+        );
+      } else {
+        // Médico visualizando gráfico de paciente
+        navigate(
+          `/pacientes/${patientId}/graficos/visualizar?${params.toString()}`,
+        );
+      }
     } else {
       // Paciente visualizando próprio gráfico
       navigate(`/patient/graficos/visualizar?${params.toString()}`);
