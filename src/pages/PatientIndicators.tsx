@@ -135,16 +135,23 @@ const PatientIndicators = () => {
     setSelectedSubcategory("all");
   };
 
+  // Detectar se está sendo acessado pelo sistema hospitalar
+  const isHospitalContext =
+    window.location.pathname.includes("/gerenciamento/");
+
   // Determinar contexto de visualização
   const isViewingOtherPatient = patientId && user?.profession === "medico";
   const isOwnIndicators = !patientId && user?.profession === "paciente";
+  const isHospitalViewing = patientId && isHospitalContext;
 
   // Redirecionar se acesso inválido
-  if (!isViewingOtherPatient && !isOwnIndicators) {
+  if (!isViewingOtherPatient && !isOwnIndicators && !isHospitalViewing) {
     if (user?.profession === "medico") {
       navigate("/pacientes");
     } else if (user?.profession === "paciente") {
       navigate("/patient-dashboard");
+    } else if (isHospitalContext) {
+      navigate("/gerenciamento/patients");
     } else {
       navigate("/dashboard");
     }
