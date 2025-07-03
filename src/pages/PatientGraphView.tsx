@@ -129,6 +129,12 @@ const PatientGraphView = () => {
     const targetPatientId = patientId || user?.id;
     if (!targetPatientId) return;
 
+    // Em contexto hospitalar, verificar se há sessão hospitalar
+    if (isHospitalContext) {
+      const hospitalData = localStorage.getItem("hospital_session");
+      if (!hospitalData) return;
+    }
+
     setIsLoading(true);
     setHasLoadingError(false);
     try {
