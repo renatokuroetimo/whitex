@@ -32,6 +32,10 @@ const AddIndicatorToPatient = () => {
   const [patient, setPatient] = useState<Patient | null>(null);
   const [dataTypes, setDataTypes] = useState<MetadataDataType[]>([]);
 
+  // Detectar se está sendo acessado pelo sistema hospitalar
+  const isHospitalContext =
+    window.location.pathname.includes("/gerenciamento/");
+
   // Function to get readable data type label from dynamic data
   const getDataTypeLabel = (dataTypeValue: string): string => {
     const dataType = dataTypes.find((dt) => dt.value === dataTypeValue);
@@ -188,7 +192,7 @@ const AddIndicatorToPatient = () => {
 
           const finalDisplay = `${categoryName} - ${subcategoryName} - ${parameter} (${unit})`;
           console.log("🎯 FINAL CUSTOM DISPLAY:", finalDisplay);
-          console.log("📊 DATA TYPE:", dataType);
+          console.log("�� DATA TYPE:", dataType);
 
           return {
             ...ind,
