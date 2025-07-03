@@ -111,7 +111,11 @@ const AddIndicatorToPatient = () => {
       }
 
       try {
-        patientData = await patientAPI.getPatientById(patientId);
+        if (isHospitalContext) {
+          patientData = await patientAPI.getPatientByIdForHospital(patientId);
+        } else {
+          patientData = await patientAPI.getPatientById(patientId);
+        }
       } catch (error) {
         console.error("❌ Erro ao buscar paciente:", error);
         toast({
