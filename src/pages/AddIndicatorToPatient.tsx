@@ -331,7 +331,10 @@ const AddIndicatorToPatient = () => {
       });
 
       // Redirecionar para a lista de indicadores do paciente com timestamp para forçar reload
-      navigate(`/pacientes/${patientId}/indicadores?refresh=${Date.now()}`);
+      const indicatorsPath = isHospitalContext
+        ? `/gerenciamento/patients/${patientId}/indicadores`
+        : `/pacientes/${patientId}/indicadores`;
+      navigate(`${indicatorsPath}?refresh=${Date.now()}`);
     } catch (error) {
       toast({
         variant: "destructive",
