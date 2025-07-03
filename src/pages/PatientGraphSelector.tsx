@@ -185,8 +185,13 @@ const PatientGraphSelector = () => {
 
   const handleBack = () => {
     if (patientId) {
-      // Médico voltando para indicadores do paciente
-      navigate(`/pacientes/${patientId}/indicadores`);
+      if (isHospitalContext) {
+        // Hospital voltando para indicadores do paciente
+        navigate(`/gerenciamento/patients/${patientId}/indicadores`);
+      } else {
+        // Médico voltando para indicadores do paciente
+        navigate(`/pacientes/${patientId}/indicadores`);
+      }
     } else {
       // Paciente voltando para próprios indicadores
       navigate("/patient/indicadores");
