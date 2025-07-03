@@ -38,7 +38,11 @@ const PatientGraphSelector = () => {
     window.location.pathname.includes("/gerenciamento/");
 
   useEffect(() => {
-    if (patientId || (user?.profession === "paciente" && user?.id)) {
+    if (
+      patientId ||
+      (user?.profession === "paciente" && user?.id) ||
+      (isHospitalContext && patientId)
+    ) {
       loadData();
     }
   }, [patientId, user]);
@@ -195,7 +199,7 @@ const PatientGraphSelector = () => {
     );
   }
 
-  // Só mostrar erro se esperávamos carregar dados do paciente mas não conseguimos
+  // S�� mostrar erro se esperávamos carregar dados do paciente mas não conseguimos
   if (patientId && !patient) {
     return null;
   }
