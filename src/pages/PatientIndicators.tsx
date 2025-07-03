@@ -97,7 +97,9 @@ const PatientIndicators = () => {
   };
 
   const handleAddIndicator = () => {
-    if (isViewingOtherPatient) {
+    if (isHospitalContext) {
+      navigate(`/gerenciamento/patients/${patientId}/adicionar-indicador`);
+    } else if (isViewingOtherPatient) {
       navigate(`/pacientes/${patientId}/adicionar-indicador`);
     } else {
       navigate("/patient/adicionar-indicador");
