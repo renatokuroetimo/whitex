@@ -84,7 +84,9 @@ const PatientGraphView = () => {
 
   useEffect(() => {
     if (
-      (patientId || (user?.profession === "paciente" && user?.id)) &&
+      (patientId ||
+        (user?.profession === "paciente" && user?.id) ||
+        (isHospitalContext && patientId)) &&
       category &&
       subcategory &&
       parameter &&
