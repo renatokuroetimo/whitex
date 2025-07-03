@@ -32,6 +32,10 @@ const AddIndicatorToPatient = () => {
   const [patient, setPatient] = useState<Patient | null>(null);
   const [dataTypes, setDataTypes] = useState<MetadataDataType[]>([]);
 
+  // Detectar se está sendo acessado pelo sistema hospitalar
+  const isHospitalContext =
+    window.location.pathname.includes("/gerenciamento/");
+
   // Function to get readable data type label from dynamic data
   const getDataTypeLabel = (dataTypeValue: string): string => {
     const dataType = dataTypes.find((dt) => dt.value === dataTypeValue);
@@ -79,7 +83,13 @@ const AddIndicatorToPatient = () => {
   }, [selectedIndicator, indicators]);
 
   const loadData = async () => {
-    if (!patientId || !user?.id) return;
+    // Em contexto hospitalar, verificar se há sessão hospitalar
+    if (isHospitalContext) {
+      const hospitalData = localStorage.getItem("hospital_session");
+      if (!hospitalData || !patientId) return;
+    } else if (!patientId || !user?.id) {
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -101,7 +111,11 @@ const AddIndicatorToPatient = () => {
       }
 
       try {
-        patientData = await patientAPI.getPatientById(patientId);
+        if (isHospitalContext) {
+          patientData = await patientAPI.getPatientByIdForHospital(patientId);
+        } else {
+          patientData = await patientAPI.getPatientById(patientId);
+        }
       } catch (error) {
         console.error("❌ Erro ao buscar paciente:", error);
         toast({
@@ -138,7 +152,7 @@ const AddIndicatorToPatient = () => {
           title: "Erro",
           description: "Paciente não encontrado ou erro de conexão",
         });
-        navigate("/pacientes");
+        navigate(isHospitalContext ? "/gerenciamento/patients" : "/pacientes");
         return;
       }
 
@@ -291,7 +305,8 @@ const AddIndicatorToPatient = () => {
       return;
     }
 
-    if (!patientId || !user?.id) return;
+    if (!patientId) return;
+    if (!isHospitalContext && !user?.id) return;
 
     try {
       const newIndicatorValue: any = {
@@ -317,7 +332,10 @@ const AddIndicatorToPatient = () => {
       });
 
       // Redirecionar para a lista de indicadores do paciente com timestamp para forçar reload
-      navigate(`/pacientes/${patientId}/indicadores?refresh=${Date.now()}`);
+      const indicatorsPath = isHospitalContext
+        ? `/gerenciamento/patients/${patientId}/indicadores`
+        : `/pacientes/${patientId}/indicadores`;
+      navigate(`${indicatorsPath}?refresh=${Date.now()}`);
     } catch (error) {
       toast({
         variant: "destructive",
@@ -328,15 +346,20 @@ const AddIndicatorToPatient = () => {
   };
 
   const handleCancel = () => {
-    navigate(`/pacientes/${patientId}`);
+    const detailPath = isHospitalContext
+      ? `/gerenciamento/patients/${patientId}`
+      : `/pacientes/${patientId}`;
+    navigate(detailPath);
   };
 
   if (isLoading) {
     return (
       <div className="flex h-screen bg-gray-50">
-        <div className="hidden lg:block">
-          <Sidebar />
-        </div>
+        {!isHospitalContext && (
+          <div className="hidden lg:block">
+            <Sidebar />
+          </div>
+        )}
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
@@ -350,9 +373,11 @@ const AddIndicatorToPatient = () => {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className="hidden lg:block">
-        <Sidebar />
-      </div>
+      {!isHospitalContext && (
+        <div className="hidden lg:block">
+          <Sidebar />
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto">

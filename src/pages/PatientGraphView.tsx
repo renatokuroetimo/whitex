@@ -64,6 +64,10 @@ const PatientGraphView = () => {
   const [timeRange, setTimeRange] = useState<string>("all");
   const [isLoading, setIsLoading] = useState(true);
 
+  // Detectar se está sendo acessado pelo sistema hospitalar
+  const isHospitalContext =
+    window.location.pathname.includes("/gerenciamento/");
+
   // Diagnosis modal state
   const [showDiagnosisModal, setShowDiagnosisModal] = useState(false);
   const [diagnosisQuestion, setDiagnosisQuestion] = useState("");
@@ -80,7 +84,9 @@ const PatientGraphView = () => {
 
   useEffect(() => {
     if (
-      (patientId || (user?.profession === "paciente" && user?.id)) &&
+      (patientId ||
+        (user?.profession === "paciente" && user?.id) ||
+        (isHospitalContext && patientId)) &&
       category &&
       subcategory &&
       parameter &&
@@ -125,15 +131,23 @@ const PatientGraphView = () => {
     const targetPatientId = patientId || user?.id;
     if (!targetPatientId) return;
 
+    // Em contexto hospitalar, verificar se há sessão hospitalar
+    if (isHospitalContext) {
+      const hospitalData = localStorage.getItem("hospital_session");
+      if (!hospitalData) return;
+    }
+
     setIsLoading(true);
     setHasLoadingError(false);
     try {
       const shouldLoadPatientData =
-        !!patientId && user?.profession === "medico";
+        !!patientId && (user?.profession === "medico" || isHospitalContext);
 
       const [patientData, indicatorValues] = await Promise.all([
         shouldLoadPatientData
-          ? patientAPI.getPatientById(targetPatientId)
+          ? isHospitalContext
+            ? patientAPI.getPatientByIdForHospital(targetPatientId)
+            : patientAPI.getPatientById(targetPatientId)
           : Promise.resolve(null),
         retryIndicatorValues(targetPatientId),
       ]);
@@ -144,7 +158,7 @@ const PatientGraphView = () => {
           title: "Erro",
           description: "Paciente não encontrado",
         });
-        navigate("/pacientes");
+        navigate(isHospitalContext ? "/gerenciamento/patients" : "/pacientes");
         return;
       }
 
@@ -314,7 +328,11 @@ const PatientGraphView = () => {
 
   const handleBack = () => {
     if (patientId) {
-      navigate(`/pacientes/${patientId}/graficos`);
+      if (isHospitalContext) {
+        navigate(`/gerenciamento/patients/${patientId}/graficos`);
+      } else {
+        navigate(`/pacientes/${patientId}/graficos`);
+      }
     } else {
       navigate("/patient/graficos");
     }
@@ -415,9 +433,11 @@ const PatientGraphView = () => {
   if (isLoading) {
     return (
       <div className="flex h-screen bg-gray-50">
-        <div className="hidden lg:block">
-          <Sidebar />
-        </div>
+        {!isHospitalContext && (
+          <div className="hidden lg:block">
+            <Sidebar />
+          </div>
+        )}
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
@@ -436,9 +456,11 @@ const PatientGraphView = () => {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className="hidden lg:block">
-        <Sidebar />
-      </div>
+      {!isHospitalContext && (
+        <div className="hidden lg:block">
+          <Sidebar />
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
@@ -517,9 +539,12 @@ const PatientGraphView = () => {
                     </Button>
                   ) : (
                     <Button
-                      onClick={() =>
-                        navigate(`/pacientes/${patientId}/adicionar-indicador`)
-                      }
+                      onClick={() => {
+                        const addIndicatorPath = isHospitalContext
+                          ? `/gerenciamento/patients/${patientId}/adicionar-indicador`
+                          : `/pacientes/${patientId}/adicionar-indicador`;
+                        navigate(addIndicatorPath);
+                      }}
                       className="bg-green-600 hover:bg-green-700 text-white"
                     >
                       Adicionar Registro

@@ -314,6 +314,22 @@ const App = () => (
               element={<PatientDetailView />}
             />
             <Route
+              path="/gerenciamento/patients/:patientId/indicadores"
+              element={<PatientIndicators />}
+            />
+            <Route
+              path="/gerenciamento/patients/:patientId/adicionar-indicador"
+              element={<AddIndicatorToPatient />}
+            />
+            <Route
+              path="/gerenciamento/patients/:patientId/graficos"
+              element={<PatientGraphSelector />}
+            />
+            <Route
+              path="/gerenciamento/patients/:patientId/graficos/visualizar"
+              element={<PatientGraphView />}
+            />
+            <Route
               path="/gerenciamento/patients/graphs"
               element={<HospitalGraphSelector />}
             />

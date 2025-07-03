@@ -28,7 +28,9 @@ const PatientIndicators = () => {
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("all");
 
   useEffect(() => {
-    if (user?.id) {
+    const isHospitalContext =
+      window.location.pathname.includes("/gerenciamento/");
+    if (user?.id || (isHospitalContext && patientId)) {
       loadIndicators();
     }
   }, [user, patientId]);
@@ -60,10 +62,19 @@ const PatientIndicators = () => {
   }, [user?.id]);
 
   const loadIndicators = async () => {
-    if (!user?.id) return;
+    const isHospitalContext =
+      window.location.pathname.includes("/gerenciamento/");
+
+    // Em contexto hospitalar, verificar se há sessão hospitalar e patientId
+    if (isHospitalContext) {
+      const hospitalData = localStorage.getItem("hospital_session");
+      if (!hospitalData || !patientId) return;
+    } else if (!user?.id) {
+      return;
+    }
 
     // Determinar qual ID de paciente usar
-    const targetPatientId = patientId || user.id;
+    const targetPatientId = patientId || user?.id;
 
     setIsLoading(true);
     try {
@@ -86,7 +97,9 @@ const PatientIndicators = () => {
   };
 
   const handleAddIndicator = () => {
-    if (isViewingOtherPatient) {
+    if (isHospitalContext) {
+      navigate(`/gerenciamento/patients/${patientId}/adicionar-indicador`);
+    } else if (isViewingOtherPatient) {
       navigate(`/pacientes/${patientId}/adicionar-indicador`);
     } else {
       navigate("/patient/adicionar-indicador");
@@ -94,7 +107,9 @@ const PatientIndicators = () => {
   };
 
   const handleViewGraphs = () => {
-    if (isViewingOtherPatient) {
+    if (isHospitalContext) {
+      navigate(`/gerenciamento/patients/${patientId}/graficos`);
+    } else if (isViewingOtherPatient) {
       navigate(`/pacientes/${patientId}/graficos`);
     } else {
       navigate("/patient/graficos");
@@ -135,16 +150,23 @@ const PatientIndicators = () => {
     setSelectedSubcategory("all");
   };
 
+  // Detectar se está sendo acessado pelo sistema hospitalar
+  const isHospitalContext =
+    window.location.pathname.includes("/gerenciamento/");
+
   // Determinar contexto de visualização
   const isViewingOtherPatient = patientId && user?.profession === "medico";
   const isOwnIndicators = !patientId && user?.profession === "paciente";
+  const isHospitalViewing = patientId && isHospitalContext;
 
   // Redirecionar se acesso inválido
-  if (!isViewingOtherPatient && !isOwnIndicators) {
+  if (!isViewingOtherPatient && !isOwnIndicators && !isHospitalViewing) {
     if (user?.profession === "medico") {
       navigate("/pacientes");
     } else if (user?.profession === "paciente") {
       navigate("/patient-dashboard");
+    } else if (isHospitalContext) {
+      navigate("/gerenciamento/patients");
     } else {
       navigate("/dashboard");
     }
@@ -154,9 +176,11 @@ const PatientIndicators = () => {
   if (isLoading) {
     return (
       <div className="flex h-screen bg-gray-50">
-        <div className="hidden lg:block">
-          <Sidebar />
-        </div>
+        {!isHospitalContext && (
+          <div className="hidden lg:block">
+            <Sidebar />
+          </div>
+        )}
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
@@ -170,9 +194,11 @@ const PatientIndicators = () => {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className="hidden lg:block">
-        <Sidebar />
-      </div>
+      {!isHospitalContext && (
+        <div className="hidden lg:block">
+          <Sidebar />
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
@@ -181,19 +207,23 @@ const PatientIndicators = () => {
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
               <button
-                onClick={() =>
-                  navigate(
-                    isViewingOtherPatient
-                      ? `/pacientes/${patientId}`
-                      : "/patient-dashboard",
-                  )
-                }
+                onClick={() => {
+                  if (isHospitalContext) {
+                    navigate(`/gerenciamento/patients/${patientId}`);
+                  } else {
+                    navigate(
+                      isViewingOtherPatient
+                        ? `/pacientes/${patientId}`
+                        : "/patient-dashboard",
+                    );
+                  }
+                }}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               >
                 <ArrowLeft className="h-5 w-5 text-gray-600" />
               </button>
               <h1 className="text-2xl font-semibold text-gray-900">
-                {isViewingOtherPatient
+                {isHospitalViewing || isViewingOtherPatient
                   ? "Indicadores do Paciente"
                   : "Meus Indicadores"}
               </h1>
@@ -209,18 +239,16 @@ const PatientIndicators = () => {
                   Ver Gráficos
                 </Button>
               )}
-              {isViewingOtherPatient && (
+              {(isViewingOtherPatient || isHospitalViewing) && (
                 <Button
-                  onClick={() =>
-                    navigate(`/pacientes/${patientId}/adicionar-indicador`)
-                  }
+                  onClick={handleAddIndicator}
                   className="bg-green-600 hover:bg-green-700 text-white"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Adicionar indicador
                 </Button>
               )}
-              {!isViewingOtherPatient && (
+              {!isViewingOtherPatient && !isHospitalViewing && (
                 <Button
                   onClick={handleAddIndicator}
                   className="bg-green-600 hover:bg-green-700 text-white"
@@ -244,7 +272,7 @@ const PatientIndicators = () => {
                   Nenhum indicador registrado
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  {isViewingOtherPatient
+                  {isViewingOtherPatient || isHospitalViewing
                     ? "Este paciente ainda não registrou nenhum indicador de saúde."
                     : "Comece a registrar seus indicadores de saúde para acompanhar sua evolução e compartilhar com seus médicos."}
                 </p>
@@ -253,7 +281,7 @@ const PatientIndicators = () => {
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  {isViewingOtherPatient
+                  {isViewingOtherPatient || isHospitalViewing
                     ? "Adicionar Indicador"
                     : "Registrar Primeiro Indicador"}
                 </Button>

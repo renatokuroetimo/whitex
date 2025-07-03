@@ -33,8 +33,16 @@ const PatientGraphSelector = () => {
   >([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Detectar se está sendo acessado pelo sistema hospitalar
+  const isHospitalContext =
+    window.location.pathname.includes("/gerenciamento/");
+
   useEffect(() => {
-    if (patientId || (user?.profession === "paciente" && user?.id)) {
+    if (
+      patientId ||
+      (user?.profession === "paciente" && user?.id) ||
+      (isHospitalContext && patientId)
+    ) {
       loadData();
     }
   }, [patientId, user]);
@@ -44,15 +52,23 @@ const PatientGraphSelector = () => {
     const targetPatientId = patientId || user?.id;
     if (!targetPatientId) return;
 
+    // Em contexto hospitalar, verificar se há sessão hospitalar
+    if (isHospitalContext) {
+      const hospitalData = localStorage.getItem("hospital_session");
+      if (!hospitalData) return;
+    }
+
     setIsLoading(true);
     try {
       // Se é paciente próprio, não precisa carregar dados do paciente
       const shouldLoadPatientData =
-        !!patientId && user?.profession === "medico";
+        !!patientId && (user?.profession === "medico" || isHospitalContext);
 
       const [patientData, indicatorValues] = await Promise.all([
         shouldLoadPatientData
-          ? patientAPI.getPatientById(targetPatientId)
+          ? isHospitalContext
+            ? patientAPI.getPatientByIdForHospital(targetPatientId)
+            : patientAPI.getPatientById(targetPatientId)
           : Promise.resolve(null),
         patientIndicatorAPI.getPatientIndicatorValues(targetPatientId),
       ]);
@@ -64,7 +80,7 @@ const PatientGraphSelector = () => {
           title: "Erro",
           description: "Paciente não encontrado",
         });
-        navigate("/pacientes");
+        navigate(isHospitalContext ? "/gerenciamento/patients" : "/pacientes");
         return;
       }
 
@@ -150,10 +166,17 @@ const PatientGraphSelector = () => {
     });
 
     if (patientId) {
-      // Médico visualizando gráfico de paciente
-      navigate(
-        `/pacientes/${patientId}/graficos/visualizar?${params.toString()}`,
-      );
+      if (isHospitalContext) {
+        // Hospital visualizando gráfico de paciente
+        navigate(
+          `/gerenciamento/patients/${patientId}/graficos/visualizar?${params.toString()}`,
+        );
+      } else {
+        // Médico visualizando gráfico de paciente
+        navigate(
+          `/pacientes/${patientId}/graficos/visualizar?${params.toString()}`,
+        );
+      }
     } else {
       // Paciente visualizando próprio gráfico
       navigate(`/patient/graficos/visualizar?${params.toString()}`);
@@ -162,8 +185,13 @@ const PatientGraphSelector = () => {
 
   const handleBack = () => {
     if (patientId) {
-      // Médico voltando para indicadores do paciente
-      navigate(`/pacientes/${patientId}/indicadores`);
+      if (isHospitalContext) {
+        // Hospital voltando para indicadores do paciente
+        navigate(`/gerenciamento/patients/${patientId}/indicadores`);
+      } else {
+        // Médico voltando para indicadores do paciente
+        navigate(`/pacientes/${patientId}/indicadores`);
+      }
     } else {
       // Paciente voltando para próprios indicadores
       navigate("/patient/indicadores");
@@ -178,9 +206,11 @@ const PatientGraphSelector = () => {
   if (isLoading) {
     return (
       <div className="flex h-screen bg-gray-50">
-        <div className="hidden lg:block">
-          <Sidebar />
-        </div>
+        {!isHospitalContext && (
+          <div className="hidden lg:block">
+            <Sidebar />
+          </div>
+        )}
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
@@ -199,9 +229,11 @@ const PatientGraphSelector = () => {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className="hidden lg:block">
-        <Sidebar />
-      </div>
+      {!isHospitalContext && (
+        <div className="hidden lg:block">
+          <Sidebar />
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
