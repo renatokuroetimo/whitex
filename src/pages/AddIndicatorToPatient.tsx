@@ -83,7 +83,13 @@ const AddIndicatorToPatient = () => {
   }, [selectedIndicator, indicators]);
 
   const loadData = async () => {
-    if (!patientId || !user?.id) return;
+    // Em contexto hospitalar, verificar se há sessão hospitalar
+    if (isHospitalContext) {
+      const hospitalData = localStorage.getItem("hospital_session");
+      if (!hospitalData || !patientId) return;
+    } else if (!patientId || !user?.id) {
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -192,7 +198,7 @@ const AddIndicatorToPatient = () => {
 
           const finalDisplay = `${categoryName} - ${subcategoryName} - ${parameter} (${unit})`;
           console.log("🎯 FINAL CUSTOM DISPLAY:", finalDisplay);
-          console.log("�� DATA TYPE:", dataType);
+          console.log("📊 DATA TYPE:", dataType);
 
           return {
             ...ind,
