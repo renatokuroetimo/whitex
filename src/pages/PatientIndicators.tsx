@@ -28,7 +28,9 @@ const PatientIndicators = () => {
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("all");
 
   useEffect(() => {
-    if (user?.id) {
+    const isHospitalContext =
+      window.location.pathname.includes("/gerenciamento/");
+    if (user?.id || (isHospitalContext && patientId)) {
       loadIndicators();
     }
   }, [user, patientId]);
