@@ -326,6 +326,10 @@ const App = () => (
               element={<PatientGraphSelector />}
             />
             <Route
+              path="/gerenciamento/patients/:patientId/graficos/visualizar"
+              element={<PatientGraphView />}
+            />
+            <Route
               path="/gerenciamento/patients/graphs"
               element={<HospitalGraphSelector />}
             />
