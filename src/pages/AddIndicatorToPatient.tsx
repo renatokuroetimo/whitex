@@ -345,7 +345,10 @@ const AddIndicatorToPatient = () => {
   };
 
   const handleCancel = () => {
-    navigate(`/pacientes/${patientId}`);
+    const detailPath = isHospitalContext
+      ? `/gerenciamento/patients/${patientId}`
+      : `/pacientes/${patientId}`;
+    navigate(detailPath);
   };
 
   if (isLoading) {
