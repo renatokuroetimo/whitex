@@ -80,7 +80,7 @@ const PatientIndicators = () => {
     try {
       const indicatorValues =
         await patientIndicatorAPI.getPatientIndicatorValues(targetPatientId);
-      console.log("��� ===== INDICADORES CARREGADOS =====");
+      console.log("🔍 ===== INDICADORES CARREGADOS =====");
       console.log("📊 Quantidade:", indicatorValues.length);
       console.log("📋 Primeiro indicador:", indicatorValues[0]);
       console.log("📋 Estrutura completa:", indicatorValues);
@@ -194,9 +194,11 @@ const PatientIndicators = () => {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className="hidden lg:block">
-        <Sidebar />
-      </div>
+      {!isHospitalContext && (
+        <div className="hidden lg:block">
+          <Sidebar />
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
