@@ -164,10 +164,10 @@ const HospitalDashboard = () => {
 
   const dashboardOptions = [
     {
-      title: "Cadastrar Médicos",
-      description: "Adicionar novos médicos à sua instituição",
-      icon: UserPlus,
-      path: "/gerenciamento/doctors/create",
+      title: "Listar Médicos",
+      description: "Visualizar e gerenciar médicos da instituição",
+      icon: Users,
+      path: "/gerenciamento/doctors",
       color: "from-blue-500 to-blue-600",
     },
     {
