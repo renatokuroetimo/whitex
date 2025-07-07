@@ -9,6 +9,7 @@ import {
   Eye,
   EyeOff,
   Lock,
+  Stethoscope,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -164,10 +165,10 @@ const HospitalDashboard = () => {
 
   const dashboardOptions = [
     {
-      title: "Cadastrar Médicos",
-      description: "Adicionar novos médicos à sua instituição",
-      icon: UserPlus,
-      path: "/gerenciamento/doctors/create",
+      title: "Listar Médicos",
+      description: "Visualizar e gerenciar médicos da instituição",
+      icon: Stethoscope,
+      path: "/gerenciamento/doctors",
       color: "from-blue-500 to-blue-600",
     },
     {

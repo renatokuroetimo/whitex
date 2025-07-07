@@ -40,6 +40,7 @@ import AdminCreateIndicator from "./pages/AdminCreateIndicator";
 import HospitalLogin from "./pages/HospitalLogin";
 import HospitalDashboard from "./pages/HospitalDashboard";
 import HospitalCreateDoctor from "./pages/HospitalCreateDoctor";
+import HospitalDoctors from "./pages/HospitalDoctors";
 import HospitalPatients from "./pages/HospitalPatients";
 import HospitalGraphSelector from "./pages/HospitalGraphSelector";
 import HospitalGraphView from "./pages/HospitalGraphView";
@@ -304,6 +305,10 @@ const App = () => (
             <Route
               path="/gerenciamento/doctors/create"
               element={<HospitalCreateDoctor />}
+            />
+            <Route
+              path="/gerenciamento/doctors"
+              element={<HospitalDoctors />}
             />
             <Route
               path="/gerenciamento/patients"
