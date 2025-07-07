@@ -307,6 +307,10 @@ const App = () => (
               element={<HospitalCreateDoctor />}
             />
             <Route
+              path="/gerenciamento/doctors"
+              element={<HospitalDoctors />}
+            />
+            <Route
               path="/gerenciamento/patients"
               element={<HospitalPatients />}
             />
