@@ -167,7 +167,7 @@ const HospitalDashboard = () => {
     {
       title: "Listar Médicos",
       description: "Visualizar e gerenciar médicos da instituição",
-      icon: Users,
+      icon: Stethoscope,
       path: "/gerenciamento/doctors",
       color: "from-blue-500 to-blue-600",
     },
