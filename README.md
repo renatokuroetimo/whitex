@@ -217,72 +217,375 @@ Seguindo o princípio de **flexibilidade para constantes extensões**:
 
 ## 🏃‍♂️ Execução Local
 
+### 🌐 Ambiente Web
+
 ```bash
 # 1. Instalar dependências
 npm install
 
-# 2. Executar migração do banco (apenas uma vez)
-# Execute o script create_metadata_options_tables.sql no Supabase
+# 2. Configurar variáveis de ambiente
+cp .env.example .env.local
+# Edite .env.local com suas credenciais Supabase
 
-# 3. Executar em desenvolvimento
+# 3. Executar migração do banco (apenas uma vez)
+# Execute os scripts SQL no Supabase (veja seção "Configuração do Banco")
+
+# 4. Executar em desenvolvimento
 npm run dev
 
-# 4. Build para produção
+# 5. Build para produção
 npm run build
 ```
 
-## 🗄️ Configuração do Banco
-
-### 1. Scripts SQL Necessários
-
-Execute na seguinte ordem no SQL Editor do Supabase:
-
-```sql
--- 1. Criar tabelas de opções dinâmicas
--- Arquivo: create_metadata_options_tables.sql
-
--- 2. Adicionar campos de metadados
--- Arquivo: update_indicators_metadata_schema.sql
-
--- 3. (Opcional) Remover campos de hierarquia
--- Arquivo: remove_hierarchy_columns.sql
-```
-
-### 2. Variáveis de Ambiente
+### 📱 Ambiente Mobile
 
 ```bash
-# .env.local
-VITE_SUPABASE_URL=sua_url_supabase
-VITE_SUPABASE_ANON_KEY=sua_chave_anonima
+# 1. Pré-requisitos
+# - Node.js 18+
+# - Xcode (para iOS)
+# - Android Studio (para Android)
+
+# 2. Instalar dependências mobile
+npm install
+
+# 3. Configurar plataformas nativas
+npx cap add ios      # Para iOS
+npx cap add android  # Para Android
+
+# 4. Build inicial do app
+npm run mobile:build
+
+# 5. Desenvolvimento
+npm run mobile:dev   # Com hot reload
+
+# 6. Testar em dispositivos
+npm run mobile:ios     # Abre Xcode
+npm run mobile:android # Abre Android Studio
+```
+
+## ⚙️ Configuração Completa
+
+### 🗄️ 1. Configuração do Banco de Dados
+
+#### Supabase Setup
+
+1. **Criar projeto no Supabase**
+
+   - Acesse [supabase.com](https://supabase.com)
+   - Clique em "New Project"
+   - Configure nome, senha e região
+
+2. **Executar Scripts SQL**
+
+   Execute na seguinte ordem no SQL Editor do Supabase:
+
+   ```sql
+   -- 1. Schema principal
+   -- Arquivo: supabase_setup.sql
+
+   -- 2. Tabelas de metadados
+   -- Arquivo: create_metadata_options_tables.sql
+
+   -- 3. Atualizar indicadores
+   -- Arquivo: update_indicators_metadata_schema.sql
+
+   -- 4. Políticas RLS
+   -- Arquivo: supabase_rls_policies.sql
+
+   -- 5. Dados iniciais (opcional)
+   -- Arquivo: populate_standard_indicators_final.sql
+   ```
+
+3. **Configurar Autenticação**
+   - Settings → Authentication
+   - Habilitar Email/Password
+   - Configurar Redirect URLs (para mobile)
+
+#### Variáveis de Ambiente
+
+```bash
+# .env.local (copie de .env.example)
+VITE_SUPABASE_URL=https://xxxxxxxxxxxxx.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+# Para desenvolvimento mobile
+VITE_APP_MODE=web  # ou 'mobile'
+```
+
+### 🌐 2. Configuração Web
+
+```bash
+# 1. Clonar repositório
+git clone https://github.com/seu-usuario/medical-auth-system.git
+cd medical-auth-system
+
+# 2. Instalar dependências
+npm install
+
+# 3. Configurar ambiente
+cp .env.example .env.local
+# Edite com suas credenciais Supabase
+
+# 4. Executar em desenvolvimento
+npm run dev
+
+# 5. Acessar aplicação
+# http://localhost:5173
+```
+
+### 📱 3. Configuração Mobile
+
+#### Pré-requisitos
+
+**Para iOS:**
+
+- macOS
+- Xcode 14+
+- iOS Developer Account (para deploy)
+
+**Para Android:**
+
+- Android Studio
+- Java 11+
+- Android SDK
+
+#### Setup Inicial
+
+```bash
+# 1. Instalar Capacitor CLI globalmente
+npm install -g @capacitor/cli
+
+# 2. Adicionar plataformas
+npx cap add ios
+npx cap add android
+
+# 3. Configurar ícones e splash screen
+# Substitua arquivos em:
+# - ios/App/App/Assets.xcassets/
+# - android/app/src/main/res/
+
+# 4. Build inicial
+npm run mobile:build
+```
+
+#### Desenvolvimento Mobile
+
+```bash
+# Desenvolvimento com hot reload
+npm run mobile:dev
+
+# Build para produção
+npm run mobile:build
+
+# Sincronizar mudanças
+npm run mobile:sync
+
+# Abrir IDEs nativas
+npm run mobile:ios      # Xcode
+npm run mobile:android  # Android Studio
+```
+
+### 🚀 4. Deploy
+
+#### Web - AWS Amplify
+
+```bash
+# 1. Conectar repositório no AWS Amplify
+# 2. Configurar build settings:
+# Build command: npm run build
+# Output directory: dist
+
+# 3. Variáveis de ambiente:
+# VITE_SUPABASE_URL=sua_url
+# VITE_SUPABASE_ANON_KEY=sua_chave
+```
+
+#### Mobile - App Stores
+
+**iOS App Store:**
+
+```bash
+# 1. Configurar no Xcode
+npm run mobile:ios
+
+# 2. Configure:
+# - Team/Signing
+# - Bundle Identifier
+# - App Store Connect
+
+# 3. Archive e upload
+```
+
+**Google Play Store:**
+
+```bash
+# 1. Gerar keystore
+keytool -genkey -v -keystore release-key.keystore -keyalg RSA -keysize 2048 -validity 10000
+
+# 2. Build release
+npm run mobile:android
+# Android Studio → Build → Generate Signed Bundle
+
+# 3. Upload no Google Play Console
+```
+
+## 📋 Scripts Disponíveis
+
+### 🌐 Web Development
+
+```bash
+npm run dev              # Servidor desenvolvimento web
+npm run build           # Build produção web
+npm run preview         # Preview build local
+npm run typecheck       # Verificar tipos TypeScript
+npm test               # Executar testes
+```
+
+### 📱 Mobile Development
+
+```bash
+npm run mobile:dev      # Desenvolvimento mobile + hot reload
+npm run mobile:build    # Build aplicação + sync plataformas
+npm run mobile:sync     # Sincronizar mudanças com nativo
+npm run mobile:ios      # Abrir Xcode
+npm run mobile:android  # Abrir Android Studio
+```
+
+### 🔧 Utilitários
+
+```bash
+npm run format.fix      # Formatar código com Prettier
+npm run analyze         # Analisar bundle size
+npm run deploy          # Script de deploy customizado
+```
+
+## 🎯 Comandos Rápidos
+
+### ⚡ Setup Inicial
+
+```bash
+# Setup completo em um comando
+git clone https://github.com/seu-usuario/medical-auth-system.git
+cd medical-auth-system
+npm install
+cp .env.example .env.local
+# Editar .env.local com credenciais Supabase
+npm run dev
+```
+
+### 🔄 Desenvolvimento Diário
+
+```bash
+# Web
+npm run dev
+
+# Mobile (terminal separado)
+npm run mobile:dev
+# Após mudanças: npm run mobile:sync
+```
+
+### 🚀 Deploy Rápido
+
+```bash
+# Web para produção
+npm run build
+
+# Mobile para testes
+npm run mobile:build
+npm run mobile:ios    # ou android
 ```
 
 ## 📁 Estrutura do Projeto
 
+### 🌐 Projeto Web + Mobile
+
 ```
-src/
-├── components/              # Componentes reutilizáveis
-│   ├── ui/                 # Biblioteca Radix UI
-│   ├── ProtectedRoute.tsx  # Proteção de rotas
-│   └── Sidebar.tsx         # Navegação
-├── contexts/               # Context API
-│   └── AuthContextHybrid.tsx
-├── lib/                    # APIs e utilitários
-│   ├── indicator-api.ts    # CRUD de indicadores
-│   ├── indicator-types.ts  # Tipos TypeScript
-│   ├── metadata-options-api.ts  # API de opções dinâmicas
-│   ├── patient-api.ts      # Gestão de pacientes
-│   └── supabase.ts         # Cliente Supabase
-├── pages/                  # Páginas da aplicação
-│   ├── CreateIndicator.tsx # Formulário de metadados
-│   ├── CreatedIndicators.tsx # Lista com edição
-│   ├── AddIndicatorToPatient.tsx # Coleta de valores
-│   ├── Dashboard.tsx       # Dashboard médico
-│   └── PatientDashboard.tsx # Dashboard paciente
-└── docs/                   # Documentação
-    ├── METADATA_IMPLEMENTATION.md
-    ├── DYNAMIC_METADATA_OPTIONS.md
-    └── HIERARCHY_REMOVAL.md
+medical-auth-system/
+├── 📄 Configuração
+│   ├── package.json                 # Scripts web + mobile
+│   ├── capacitor.config.ts         # Config nativa
+│   ├── vite.config.ts              # Build web
+│   ├── vite.config.mobile.ts       # Build mobile
+│   ├── .env.example                # Template de ambiente
+│   └── tailwind.config.ts          # Design system
+│
+├── 📱 Mobile específico
+│   ├── src/AppMobile.tsx            # App mobile (rotas paciente)
+│   ├── src/main-mobile.tsx          # Entry point mobile
+│   ├── src/components/ProtectedRouteMobile.tsx
+│   ├── ios/                         # Projeto iOS nativo
+│   ├── android/                     # Projeto Android nativo
+│   └── scripts/build-mobile.sh      # Script de build
+│
+├── 🌐 Web completo
+│   ├── src/App.tsx                  # App web (todas rotas)
+│   ├── src/main.tsx                 # Entry point web
+│   ├── src/components/              # Componentes reutilizáveis
+│   │   ├── ui/                      # Biblioteca Radix UI
+│   │   ├── ProtectedRoute.tsx       # Proteção de rotas
+│   │   ├── AdminProtectedRoute.tsx  # Proteção admin
+│   │   └── Sidebar.tsx              # Navegação principal
+│   │
+│   ├── src/contexts/                # Context API
+│   │   └── AuthContextHybrid.tsx    # Auth universal
+│   │
+│   ├── src/lib/                     # APIs e utilitários
+│   │   ├── auth-api.ts              # Autenticação
+│   │   ├── indicator-api.ts         # CRUD indicadores
+│   │   ├── patient-api.ts           # Gestão pacientes
+│   │   ├── metadata-options-api.ts  # Opções dinâmicas
+│   │   └── supabase.ts              # Cliente Supabase
+│   │
+���   └── src/pages/                   # Páginas da aplicação
+│       ├── 👨‍⚕️ Médicos
+│       │   ├── Dashboard.tsx        # Dashboard médico
+│       │   ├── Pacientes.tsx        # Lista pacientes
+│       │   ├── CreateIndicator.tsx  # Criar indicadores
+│       │   └── Indicadores.tsx      # Gerenciar indicadores
+│       ├── 🏥 Pacientes
+│       │   ├── PatientDashboard.tsx # Dashboard paciente
+│       │   ├── PatientProfile.tsx   # Perfil
+│       │   ├── PatientIndicators.tsx# Meus indicadores
+│       │   └── DoctorSearch.tsx     # Buscar médicos
+│       ├── 👑 Admin
+│       │   ├── AdminDashboard.tsx   # Dashboard admin
+│       │   ├── AdminIndicators.tsx  # Gestão indicadores
+│       │   └── AdminHospitals.tsx   # Gestão hospitais
+│       └── 🏥 Hospital
+│           ├── HospitalDashboard.tsx# Dashboard hospital
+│           ├── HospitalDoctors.tsx  # Gestão médicos
+│           └── HospitalPatients.tsx # Pacientes hospital
+│
+├── 📚 Documentação
+│   ├── README.md                    # Este arquivo
+│   ├── TUTORIAL_LOCAL.md            # Tutorial desenvolvimento
+│   ├── MOBILE_SETUP.md              # Setup mobile específico
+│   ├── METADATA_IMPLEMENTATION.md   # Metadados
+│   └── DYNAMIC_METADATA_OPTIONS.md  # Opções dinâmicas
+│
+└── 🗄️ Database
+    ├── supabase_setup.sql           # Schema principal
+    ├── create_metadata_options_tables.sql
+    ├── update_indicators_metadata_schema.sql
+    └── populate_standard_indicators_final.sql
 ```
+
+### 🎯 Separação de Responsabilidades
+
+**🌐 Web (Completo):**
+
+- Todas as funcionalidades
+- Médicos, pacientes, admin, hospital
+- Dashboard completo
+- Gestão avançada
+
+**📱 Mobile (Pacientes apenas):**
+
+- Funcionalidades de paciente
+- Dashboard simplificado
+- Indicadores pessoais
+- Busca de médicos
+- Interface otimizada para touch
 
 ## 🔧 APIs Implementadas
 
