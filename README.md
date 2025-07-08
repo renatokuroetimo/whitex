@@ -429,33 +429,163 @@ npm run mobile:android
 # 3. Upload no Google Play Console
 ```
 
+## 📋 Scripts Disponíveis
+
+### 🌐 Web Development
+
+```bash
+npm run dev              # Servidor desenvolvimento web
+npm run build           # Build produção web
+npm run preview         # Preview build local
+npm run typecheck       # Verificar tipos TypeScript
+npm test               # Executar testes
+```
+
+### 📱 Mobile Development
+
+```bash
+npm run mobile:dev      # Desenvolvimento mobile + hot reload
+npm run mobile:build    # Build aplicação + sync plataformas
+npm run mobile:sync     # Sincronizar mudanças com nativo
+npm run mobile:ios      # Abrir Xcode
+npm run mobile:android  # Abrir Android Studio
+```
+
+### 🔧 Utilitários
+
+```bash
+npm run format.fix      # Formatar código com Prettier
+npm run analyze         # Analisar bundle size
+npm run deploy          # Script de deploy customizado
+```
+
+## 🎯 Comandos Rápidos
+
+### ⚡ Setup Inicial
+
+```bash
+# Setup completo em um comando
+git clone https://github.com/seu-usuario/medical-auth-system.git
+cd medical-auth-system
+npm install
+cp .env.example .env.local
+# Editar .env.local com credenciais Supabase
+npm run dev
+```
+
+### 🔄 Desenvolvimento Diário
+
+```bash
+# Web
+npm run dev
+
+# Mobile (terminal separado)
+npm run mobile:dev
+# Após mudanças: npm run mobile:sync
+```
+
+### 🚀 Deploy Rápido
+
+```bash
+# Web para produção
+npm run build
+
+# Mobile para testes
+npm run mobile:build
+npm run mobile:ios    # ou android
+```
+
 ## 📁 Estrutura do Projeto
 
+### 🌐 Projeto Web + Mobile
+
 ```
-src/
-├── components/              # Componentes reutilizáveis
-│   ├── ui/                 # Biblioteca Radix UI
-│   ├── ProtectedRoute.tsx  # Proteção de rotas
-│   └── Sidebar.tsx         # Navegação
-├── contexts/               # Context API
-│   └── AuthContextHybrid.tsx
-├── lib/                    # APIs e utilitários
-│   ├── indicator-api.ts    # CRUD de indicadores
-│   ├── indicator-types.ts  # Tipos TypeScript
-│   ├── metadata-options-api.ts  # API de opções dinâmicas
-│   ├── patient-api.ts      # Gestão de pacientes
-│   └── supabase.ts         # Cliente Supabase
-├── pages/                  # Páginas da aplicação
-│   ├── CreateIndicator.tsx # Formulário de metadados
-│   ├── CreatedIndicators.tsx # Lista com edição
-│   ├── AddIndicatorToPatient.tsx # Coleta de valores
-│   ├── Dashboard.tsx       # Dashboard médico
-│   └── PatientDashboard.tsx # Dashboard paciente
-└── docs/                   # Documentação
-    ├── METADATA_IMPLEMENTATION.md
-    ├── DYNAMIC_METADATA_OPTIONS.md
-    └── HIERARCHY_REMOVAL.md
+medical-auth-system/
+├── 📄 Configuração
+│   ├── package.json                 # Scripts web + mobile
+│   ├── capacitor.config.ts         # Config nativa
+│   ├── vite.config.ts              # Build web
+│   ├── vite.config.mobile.ts       # Build mobile
+│   ├── .env.example                # Template de ambiente
+│   └── tailwind.config.ts          # Design system
+│
+├── 📱 Mobile específico
+│   ├── src/AppMobile.tsx            # App mobile (rotas paciente)
+│   ├── src/main-mobile.tsx          # Entry point mobile
+│   ├── src/components/ProtectedRouteMobile.tsx
+│   ├── ios/                         # Projeto iOS nativo
+│   ├── android/                     # Projeto Android nativo
+│   └── scripts/build-mobile.sh      # Script de build
+│
+├── 🌐 Web completo
+│   ├── src/App.tsx                  # App web (todas rotas)
+│   ├── src/main.tsx                 # Entry point web
+│   ├── src/components/              # Componentes reutilizáveis
+│   │   ├── ui/                      # Biblioteca Radix UI
+│   │   ├── ProtectedRoute.tsx       # Proteção de rotas
+│   │   ├── AdminProtectedRoute.tsx  # Proteção admin
+│   │   └── Sidebar.tsx              # Navegação principal
+│   │
+│   ├── src/contexts/                # Context API
+│   │   └── AuthContextHybrid.tsx    # Auth universal
+│   │
+│   ├── src/lib/                     # APIs e utilitários
+│   │   ├── auth-api.ts              # Autenticação
+│   │   ├── indicator-api.ts         # CRUD indicadores
+│   │   ├── patient-api.ts           # Gestão pacientes
+│   │   ├── metadata-options-api.ts  # Opções dinâmicas
+│   │   └── supabase.ts              # Cliente Supabase
+│   │
+���   └── src/pages/                   # Páginas da aplicação
+│       ├── 👨‍⚕️ Médicos
+│       │   ├── Dashboard.tsx        # Dashboard médico
+│       │   ├── Pacientes.tsx        # Lista pacientes
+│       │   ├── CreateIndicator.tsx  # Criar indicadores
+│       │   └── Indicadores.tsx      # Gerenciar indicadores
+│       ├── 🏥 Pacientes
+│       │   ├── PatientDashboard.tsx # Dashboard paciente
+│       │   ├── PatientProfile.tsx   # Perfil
+│       │   ├── PatientIndicators.tsx# Meus indicadores
+│       │   └── DoctorSearch.tsx     # Buscar médicos
+│       ├── 👑 Admin
+│       │   ├── AdminDashboard.tsx   # Dashboard admin
+│       │   ├── AdminIndicators.tsx  # Gestão indicadores
+│       │   └── AdminHospitals.tsx   # Gestão hospitais
+│       └── 🏥 Hospital
+│           ├── HospitalDashboard.tsx# Dashboard hospital
+│           ├── HospitalDoctors.tsx  # Gestão médicos
+│           └── HospitalPatients.tsx # Pacientes hospital
+│
+├── 📚 Documentação
+│   ├── README.md                    # Este arquivo
+│   ├── TUTORIAL_LOCAL.md            # Tutorial desenvolvimento
+│   ├── MOBILE_SETUP.md              # Setup mobile específico
+│   ├── METADATA_IMPLEMENTATION.md   # Metadados
+│   └── DYNAMIC_METADATA_OPTIONS.md  # Opções dinâmicas
+│
+└── 🗄️ Database
+    ├── supabase_setup.sql           # Schema principal
+    ├── create_metadata_options_tables.sql
+    ├── update_indicators_metadata_schema.sql
+    └── populate_standard_indicators_final.sql
 ```
+
+### 🎯 Separação de Responsabilidades
+
+**🌐 Web (Completo):**
+
+- Todas as funcionalidades
+- Médicos, pacientes, admin, hospital
+- Dashboard completo
+- Gestão avançada
+
+**📱 Mobile (Pacientes apenas):**
+
+- Funcionalidades de paciente
+- Dashboard simplificado
+- Indicadores pessoais
+- Busca de médicos
+- Interface otimizada para touch
 
 ## 🔧 APIs Implementadas
 
