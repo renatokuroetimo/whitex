@@ -18,6 +18,7 @@ import PatientGraphSelector from "./pages/PatientGraphSelector";
 import PatientGraphView from "./pages/PatientGraphView";
 import DoctorSearch from "./pages/DoctorSearch";
 import NotFound from "./pages/NotFound";
+import DebugConnectivity from "./components/DebugConnectivity";
 
 const queryClient = new QueryClient();
 
