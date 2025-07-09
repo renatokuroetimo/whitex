@@ -9,6 +9,7 @@ const supabaseAnonKey =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9neXZpb2VlYWtuYWdzbHdvcnl6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAyNDg0MTMsImV4cCI6MjA2NTgyNDQxM30.tvWZHrK-OwIPjHgjAq8PA1Wr95OFmfPi89X6gmDB5Lw";
 
 console.log("🔧 Supabase Configuration Debug:");
+console.log("- App Mode:", import.meta.env.VITE_APP_MODE || "web");
 console.log(
   "- URL from env:",
   import.meta.env.VITE_SUPABASE_URL ? "✅ SET" : "❌ NOT SET",
@@ -19,9 +20,17 @@ console.log(
 );
 console.log("- Final URL:", supabaseUrl);
 console.log("- Key length:", supabaseAnonKey?.length || 0);
+console.log("- Environment variables:");
+console.log("  * VITE_SUPABASE_URL:", import.meta.env.VITE_SUPABASE_URL);
+console.log(
+  "  * VITE_SUPABASE_ANON_KEY exists:",
+  !!import.meta.env.VITE_SUPABASE_ANON_KEY,
+);
 
 if (!import.meta.env.VITE_SUPABASE_URL) {
-  console.log("Using fallback Supabase configuration");
+  console.log(
+    "⚠️ Using fallback Supabase configuration - check environment variables!",
+  );
 }
 
 // Cliente Supabase (sempre disponível agora)
