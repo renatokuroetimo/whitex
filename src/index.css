@@ -99,3 +99,57 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Safe Area Support for Mobile */
+@supports (padding: max(0px)) {
+  .safe-area-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+
+  .safe-area-bottom {
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+  }
+
+  .safe-area-full {
+    padding-top: max(1rem, env(safe-area-inset-top));
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+  }
+}
+
+/* Mobile viewport fixes */
+@media (max-width: 768px) {
+  body {
+    overflow-x: hidden;
+    /* Prevent zoom on input focus */
+    touch-action: manipulation;
+  }
+
+  .mobile-container {
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height */
+  }
+
+  /* Ensure content respects safe areas */
+  .mobile-header {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+
+  .mobile-content {
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+  }
+}
+
+/* Prevent content from going under notch on iOS */
+@supports (padding-top: constant(safe-area-inset-top)) {
+  .mobile-header {
+    padding-top: max(1rem, constant(safe-area-inset-top));
+  }
+}
+
+@supports (padding-top: env(safe-area-inset-top)) {
+  .mobile-header {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+}
