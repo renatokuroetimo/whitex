@@ -7,12 +7,19 @@ const config: CapacitorConfig = {
   server: {
     androidScheme: "https",
     iosScheme: "https",
-    hostname: "localhost",
+    // Remove hostname para produção - permite acesso externo
   },
   ios: {
     contentInset: "automatic",
     allowsLinkPreview: false,
     handleApplicationNotifications: false,
+    // Configurações importantes para produção
+    preferredContentMode: "mobile",
+  },
+  android: {
+    // Configurações importantes para produção
+    allowMixedContent: true,
+    captureInput: true,
   },
   plugins: {
     SplashScreen: {
@@ -26,6 +33,10 @@ const config: CapacitorConfig = {
     },
     Keyboard: {
       resize: "ionic",
+    },
+    // Configurações de rede importantes para produção
+    CapacitorHttp: {
+      enabled: true,
     },
   },
 };

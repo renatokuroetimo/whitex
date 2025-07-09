@@ -19,7 +19,8 @@
     "mobile:ios": "npx cap open ios",
     "mobile:android": "npx cap open android",
     "mobile:sync": "npx cap sync",
-    "mobile:dev": "VITE_APP_MODE=mobile npm run dev"
+    "mobile:dev": "VITE_APP_MODE=mobile npm run dev",
+    "mobile:test": "chmod +x scripts/test-mobile-connectivity.sh && scripts/test-mobile-connectivity.sh"
   },
   "keywords": [
     "react",

@@ -18,6 +18,7 @@ import PatientGraphSelector from "./pages/PatientGraphSelector";
 import PatientGraphView from "./pages/PatientGraphView";
 import DoctorSearch from "./pages/DoctorSearch";
 import NotFound from "./pages/NotFound";
+import DebugConnectivity from "./components/DebugConnectivity";
 
 const queryClient = new QueryClient();
 
@@ -101,6 +102,9 @@ const AppMobile = () => (
                 </ProtectedRoute>
               }
             />
+
+            {/* Debug de conectividade - TEMPOR��RIO */}
+            <Route path="/debug" element={<DebugConnectivity />} />
 
             {/* Redirect old routes */}
             <Route
