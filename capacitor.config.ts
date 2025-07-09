@@ -4,7 +4,6 @@ const config: CapacitorConfig = {
   appId: "com.medical.patient.app",
   appName: "Saúde+",
   webDir: "dist",
-  bundledWebRuntime: false,
   server: {
     androidScheme: "https",
     iosScheme: "https",
