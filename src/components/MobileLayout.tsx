@@ -88,6 +88,9 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
   const { logout, user } = useAuth();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
+  // Configurar StatusBar para mobile
+  useStatusBar();
+
   // Obter dados do usuário com fallback
   const getUserData = () => {
     if (user?.profession) {
