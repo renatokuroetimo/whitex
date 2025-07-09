@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => ({
   build: {
     rollupOptions: {
       input: {
-        main: "./index.html",
+        main: "./index-mobile.html",
       },
     },
   },
