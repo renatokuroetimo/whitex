@@ -100,7 +100,7 @@ nano .env.local
 **Conteúdo do .env.local:**
 
 ```bash
-VITE_SUPABASE_URL=https://SEU_ID_PROJETO.supabase.co
+VITE_SUPABASE_URL=https://ogyvioeeaknagslworyz.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJhbGci...SUA_CHAVE_PUBLICA
 ```
 
