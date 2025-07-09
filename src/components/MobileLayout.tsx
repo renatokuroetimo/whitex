@@ -358,12 +358,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
         )}
 
         {/* Main Content */}
-        <div
-          className="flex-1 overflow-auto"
-          style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
-        >
-          {children}
-        </div>
+        <div className="flex-1 overflow-auto mobile-content">{children}</div>
 
         <LogoutConfirmDialog
           open={showLogoutDialog}
