@@ -22,19 +22,19 @@ const getSidebarItems = (userProfession?: string): SidebarItem[] => {
         id: "inicio",
         label: "Início",
         icon: Home,
-        path: "/patient-dashboard",
+        path: "/dashboard",
       },
       {
         id: "dados",
         label: "Dados pessoais",
         icon: Users,
-        path: "/patient-profile",
+        path: "/profile",
       },
       {
         id: "indicadores",
         label: "Indicadores",
         icon: BarChart3,
-        path: "/patient/indicadores",
+        path: "/indicadores",
       },
     ];
     return items;
@@ -154,7 +154,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
   };
 
   const profilePath =
-    currentUser?.profession === "paciente" ? "/patient-profile" : "/profile";
+    currentUser?.profession === "paciente" ? "/profile" : "/profile";
 
   return (
     <div className="flex h-screen mobile-container bg-gray-50">

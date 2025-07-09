@@ -7,6 +7,13 @@ const config: CapacitorConfig = {
   bundledWebRuntime: false,
   server: {
     androidScheme: "https",
+    iosScheme: "https",
+    hostname: "localhost",
+  },
+  ios: {
+    contentInset: "automatic",
+    allowsLinkPreview: false,
+    handleApplicationNotifications: false,
   },
   plugins: {
     SplashScreen: {
@@ -17,6 +24,9 @@ const config: CapacitorConfig = {
     StatusBar: {
       style: "dark",
       backgroundColor: "#4285f4",
+    },
+    Keyboard: {
+      resize: "ionic",
     },
   },
 };
