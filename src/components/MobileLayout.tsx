@@ -250,13 +250,6 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Abrir menu</span>
               </Button>
-
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-gray-900 rounded flex items-center justify-center">
-                  <span className="text-white text-xs font-semibold">W</span>
-                </div>
-                <span className="font-semibold text-gray-900">WHITEX</span>
-              </div>
             </div>
           </div>
         </div>
