@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { profileImageAPI } from "@/lib/profile-image-api";
 import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
+import { useStatusBar } from "@/hooks/use-status-bar";
 
 interface SidebarItem {
   id: string;
