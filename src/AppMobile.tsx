@@ -103,6 +103,9 @@ const AppMobile = () => (
               }
             />
 
+            {/* Debug de conectividade - TEMPOR��RIO */}
+            <Route path="/debug" element={<DebugConnectivity />} />
+
             {/* Redirect old routes */}
             <Route
               path="/patient-dashboard"
