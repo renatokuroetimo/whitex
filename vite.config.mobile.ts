@@ -11,7 +11,9 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     rollupOptions: {
-      input: "./src/main-mobile.tsx",
+      input: {
+        main: "./index-mobile.html",
+      },
     },
   },
   define: {

@@ -16,6 +16,9 @@ echo "- Key: ${VITE_SUPABASE_ANON_KEY:0:20}..."
 # Build da aplicação web com configuração específica para mobile
 vite build --config vite.config.mobile.ts
 
+# Copiar index.html mobile para Capacitor
+cp dist/index-mobile.html dist/index.html
+
 # Sync com plataformas nativas
 npx cap sync
 
