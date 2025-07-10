@@ -12,6 +12,7 @@ import { isMobileApp } from "./mobile-utils";
 export class MobileSessionManager {
   private static readonly SESSION_KEY = "medical_app_current_user";
   private static readonly BACKUP_KEY = "medical_app_session_backup";
+  private static readonly OLD_KEY = "user"; // Legacy key for compatibility
 
   /**
    * Save user session with backup for mobile
