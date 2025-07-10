@@ -7,6 +7,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { profileImageAPI } from "@/lib/profile-image-api";
 import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
 import { useStatusBar } from "@/hooks/use-status-bar";
+import Logo from "@/components/Logo";
 
 interface SidebarItem {
   id: string;
@@ -162,12 +163,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
       <div className="hidden lg:flex w-64 flex-col bg-white border-r border-gray-200">
         {/* Header */}
         <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gray-900 rounded flex items-center justify-center">
-              <span className="text-white text-sm font-semibold">W</span>
-            </div>
-            <span className="font-semibold text-gray-900">WHITEX</span>
-          </div>
+          <Logo variant="primary" size="md" showText={true} />
         </div>
 
         {/* User Profile */}
