@@ -682,17 +682,8 @@ const PatientGraphView = () => {
                     />
                     <YAxis
                       stroke="#666"
-                      fontSize={window.innerWidth < 768 ? 10 : 12}
-                      tick={{ fontSize: window.innerWidth < 768 ? 10 : 12 }}
-                      label={
-                        window.innerWidth < 768
-                          ? undefined
-                          : {
-                              value: unit,
-                              angle: -90,
-                              position: "insideLeft",
-                            }
-                      }
+                      fontSize={11}
+                      tick={{ fontSize: 11 }}
                     />
                     <Tooltip
                       content={({ active, payload, label }) => {
