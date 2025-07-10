@@ -157,16 +157,28 @@ const PatientGraphView = () => {
 
   const loadData = async () => {
     const targetPatientId = patientId || user?.id;
-    if (!targetPatientId) return;
+    console.log("🔄 Starting loadData:", {
+      targetPatientId,
+      isHospitalContext,
+    });
+
+    if (!targetPatientId) {
+      console.log("❌ No target patient ID found");
+      return;
+    }
 
     // Em contexto hospitalar, verificar se há sessão hospitalar
     if (isHospitalContext) {
       const hospitalData = localStorage.getItem("hospital_session");
-      if (!hospitalData) return;
+      if (!hospitalData) {
+        console.log("❌ No hospital session found");
+        return;
+      }
     }
 
     setIsLoading(true);
     setHasLoadingError(false);
+    console.log("🔄 Loading patient and indicator data...");
     try {
       const shouldLoadPatientData =
         !!patientId && (user?.profession === "medico" || isHospitalContext);
