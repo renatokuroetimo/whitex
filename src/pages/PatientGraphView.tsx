@@ -705,7 +705,8 @@ const PatientGraphView = () => {
                   Progressão ao Longo do Tempo
                 </h3>
                 <p className="text-sm text-gray-600">
-                  Visualização dos valores de {parameter} em {unit}
+                  Visualização dos valores de {graphParams.parameter} em{" "}
+                  {graphParams.unit}
                 </p>
               </div>
 
