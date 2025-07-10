@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ArrowLeft,
   Eye,
@@ -21,7 +21,24 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const { login, logout, isLoading } = useAuth();
+  const { login, logout, isLoading, isAuthenticated, user } = useAuth();
+
+  // Redirect already authenticated users
+  useEffect(() => {
+    if (isAuthenticated && user && !isLoading) {
+      console.log("🔄 Login page: User already authenticated, redirecting...", {
+        email: user.email,
+        profession: user.profession,
+        isMobile: isMobileApp(),
+      });
+
+      if (user.profession === "paciente") {
+        navigate("/patient-dashboard", { replace: true });
+      } else if (user.profession === "medico" && !isMobileApp()) {
+        navigate("/dashboard", { replace: true });
+      }
+    }
+  }, [isAuthenticated, user, isLoading, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
