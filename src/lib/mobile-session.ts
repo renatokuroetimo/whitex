@@ -30,6 +30,9 @@ export class MobileSessionManager {
       // Primary storage
       localStorage.setItem(this.SESSION_KEY, userData);
 
+      // Legacy key for compatibility
+      localStorage.setItem(this.OLD_KEY, userData);
+
       // Backup storage for mobile
       if (isMobileApp()) {
         localStorage.setItem(this.BACKUP_KEY, userData);
@@ -54,7 +57,7 @@ export class MobileSessionManager {
       // Try primary storage first
       let userData = localStorage.getItem(this.SESSION_KEY);
       console.log(
-        "📱 Primary storage result:",
+        "�� Primary storage result:",
         userData ? "found" : "not found",
       );
 
