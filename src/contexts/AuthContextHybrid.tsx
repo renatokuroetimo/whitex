@@ -94,8 +94,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     console.log("🔄 AuthContext useEffect - checking stored session...");
 
+    let currentUser = null;
     try {
-      const currentUser = getAuthAPI().getCurrentUser();
+      currentUser = getAuthAPI().getCurrentUser();
       console.log("🔍 Initial auth check:", {
         currentUser: currentUser
           ? { email: currentUser.email, profession: currentUser.profession }
