@@ -22,6 +22,12 @@ const AutoRedirect: React.FC<AutoRedirectProps> = ({ children }) => {
       isMobile: isMobileApp(),
     });
 
+    // Don't redirect from login page - let the Login component handle it
+    if (location.pathname === "/login") {
+      console.log("⏭️ Skipping AutoRedirect on login page");
+      return;
+    }
+
     // Só redireciona se não estiver carregando e estiver na página inicial
     if (!isLoading && location.pathname === "/") {
       if (isAuthenticated && user) {
@@ -35,26 +41,29 @@ const AutoRedirect: React.FC<AutoRedirectProps> = ({ children }) => {
           return;
         }
 
-        // Redireciona para o dashboard apropriado baseado na profissão
-        if (user.profession === "paciente") {
-          console.log("🏠 Redirecting patient to dashboard");
-          navigate("/patient-dashboard", { replace: true });
-        } else if (user.profession === "medico") {
-          console.log("🏥 Redirecting doctor to dashboard");
-          navigate("/dashboard", { replace: true });
-        } else {
-          console.log("❓ User has no profession defined");
-          // Se tem usuário mas sem profissão definida
-          if (isMobileApp()) {
-            // Mobile: força cadastro como paciente
-            console.log("📱 Mobile: staying on registration page");
-            navigate("/", { replace: true });
+        // Add a small delay to ensure the page has rendered before redirect
+        setTimeout(() => {
+          // Redireciona para o dashboard apropriado baseado na profissão
+          if (user.profession === "paciente") {
+            console.log("🏠 Redirecting patient to dashboard");
+            navigate("/patient-dashboard", { replace: true });
+          } else if (user.profession === "medico") {
+            console.log("🏥 Redirecting doctor to dashboard");
+            navigate("/dashboard", { replace: true });
           } else {
-            // Web: vai para seleção de profissão
-            console.log("💻 Web: redirecting to profession selection");
-            navigate("/select-profession", { replace: true });
+            console.log("❓ User has no profession defined");
+            // Se tem usuário mas sem profissão definida
+            if (isMobileApp()) {
+              // Mobile: força cadastro como paciente
+              console.log("📱 Mobile: staying on registration page");
+              navigate("/", { replace: true });
+            } else {
+              // Web: vai para seleção de profissão
+              console.log("💻 Web: redirecting to profession selection");
+              navigate("/select-profession", { replace: true });
+            }
           }
-        }
+        }, 100);
       } else {
         console.log("❌ User not authenticated or no user data");
       }
