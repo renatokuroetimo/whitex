@@ -156,10 +156,19 @@ const Index = () => {
             {/* Create account button */}
             <Button
               type="submit"
-              disabled={!email || !password}
+              disabled={isLoading || !email || !password}
               className="w-full bg-[#00B1BB] hover:bg-[#01485E] text-white font-semibold py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
-              Criar uma conta
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  {isMobileApp() ? "Criando conta..." : "Criando uma conta"}
+                </div>
+              ) : isMobileApp() ? (
+                "Criar conta de paciente"
+              ) : (
+                "Criar uma conta"
+              )}
             </Button>
 
             {/* Terms text */}
