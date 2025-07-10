@@ -228,12 +228,9 @@ class AuthSupabaseAPI {
       async () => {
         const result = await this.loginUserSupabase(credentials);
 
-        // Salvar usuário atual
+        // Salvar usuário atual usando MobileSessionManager
         if (result.data) {
-          localStorage.setItem(
-            this.STORAGE_KEYS.CURRENT_USER,
-            JSON.stringify(result.data),
-          );
+          MobileSessionManager.saveSession(result.data);
         }
 
         return result;
@@ -242,12 +239,9 @@ class AuthSupabaseAPI {
       async () => {
         const result = await this.loginUserLocalStorage(credentials);
 
-        // Salvar usuário atual
+        // Salvar usuário atual usando MobileSessionManager
         if (result.data) {
-          localStorage.setItem(
-            this.STORAGE_KEYS.CURRENT_USER,
-            JSON.stringify(result.data),
-          );
+          MobileSessionManager.saveSession(result.data);
         }
 
         return result;
