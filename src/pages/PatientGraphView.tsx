@@ -83,6 +83,18 @@ const PatientGraphView = () => {
   const parameter = searchParams.get("parameter") || "";
   const unit = searchParams.get("unit") || "";
 
+  // Debug URL parameters
+  React.useEffect(() => {
+    console.log("🔍 PatientGraphView URL params:", {
+      fullURL: window.location.href,
+      searchParams: Object.fromEntries(searchParams.entries()),
+      category,
+      subcategory,
+      parameter,
+      unit,
+    });
+  }, [searchParams, category, subcategory, parameter, unit]);
+
   useEffect(() => {
     console.log("🔍 PatientGraphView useEffect triggered:", {
       patientId,
