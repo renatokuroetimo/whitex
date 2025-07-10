@@ -191,59 +191,124 @@ const PatientIndicators = () => {
     <MobileLayout>
       <div className="p-4 sm:p-6 lg:p-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => {
-                if (isHospitalContext) {
-                  navigate(`/gerenciamento/patients/${patientId}`);
-                } else {
-                  navigate(
-                    isViewingOtherPatient
-                      ? `/pacientes/${patientId}`
-                      : "/patient-dashboard",
-                  );
-                }
-              }}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-            >
-              <ArrowLeft className="h-5 w-5 text-gray-600" />
-            </button>
-            <h1 className="text-2xl font-semibold text-gray-900">
-              {isHospitalViewing || isViewingOtherPatient
-                ? "Indicadores do Paciente"
-                : "Meus Indicadores"}
-            </h1>
+        <div className="mb-6">
+          {/* Mobile Header */}
+          <div className="block md:hidden">
+            <div className="flex items-center gap-3 mb-4">
+              <button
+                onClick={() => {
+                  if (isHospitalContext) {
+                    navigate(`/gerenciamento/patients/${patientId}`);
+                  } else {
+                    navigate(
+                      isViewingOtherPatient
+                        ? `/pacientes/${patientId}`
+                        : "/patient-dashboard",
+                    );
+                  }
+                }}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <ArrowLeft className="h-5 w-5 text-gray-600" />
+              </button>
+              <h1 className="text-lg font-semibold text-gray-900 flex-1">
+                {isHospitalViewing || isViewingOtherPatient
+                  ? "Indicadores do Paciente"
+                  : "Meus Indicadores"}
+              </h1>
+            </div>
+
+            {/* Mobile Action Buttons */}
+            <div className="flex flex-col gap-2">
+              {indicators.length > 0 && (
+                <Button
+                  onClick={handleViewGraphs}
+                  variant="outline"
+                  className="border-[#00B1BB] text-[#00B1BB] hover:bg-[#00B1BB]/10 w-full"
+                  size="sm"
+                >
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  Ver Gráficos
+                </Button>
+              )}
+              {(isViewingOtherPatient || isHospitalViewing) && (
+                <Button
+                  onClick={handleAddIndicator}
+                  className="bg-green-600 hover:bg-green-700 text-white w-full"
+                  size="sm"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Adicionar indicador
+                </Button>
+              )}
+              {!isViewingOtherPatient && !isHospitalViewing && (
+                <Button
+                  onClick={handleAddIndicator}
+                  className="bg-green-600 hover:bg-green-700 text-white w-full"
+                  size="sm"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Adicionar Registro
+                </Button>
+              )}
+            </div>
           </div>
-          <div className="flex gap-3">
-            {indicators.length > 0 && (
-              <Button
-                onClick={handleViewGraphs}
-                variant="outline"
-                className="border-[#00B1BB] text-[#00B1BB] hover:bg-[#00B1BB]/10"
+
+          {/* Desktop Header */}
+          <div className="hidden md:flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => {
+                  if (isHospitalContext) {
+                    navigate(`/gerenciamento/patients/${patientId}`);
+                  } else {
+                    navigate(
+                      isViewingOtherPatient
+                        ? `/pacientes/${patientId}`
+                        : "/patient-dashboard",
+                    );
+                  }
+                }}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               >
-                <TrendingUp className="h-4 w-4 mr-2" />
-                Ver Gráficos
-              </Button>
-            )}
-            {(isViewingOtherPatient || isHospitalViewing) && (
-              <Button
-                onClick={handleAddIndicator}
-                className="bg-green-600 hover:bg-green-700 text-white"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Adicionar indicador
-              </Button>
-            )}
-            {!isViewingOtherPatient && !isHospitalViewing && (
-              <Button
-                onClick={handleAddIndicator}
-                className="bg-green-600 hover:bg-green-700 text-white"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Adicionar Registro
-              </Button>
-            )}
+                <ArrowLeft className="h-5 w-5 text-gray-600" />
+              </button>
+              <h1 className="text-2xl font-semibold text-gray-900">
+                {isHospitalViewing || isViewingOtherPatient
+                  ? "Indicadores do Paciente"
+                  : "Meus Indicadores"}
+              </h1>
+            </div>
+            <div className="flex gap-3">
+              {indicators.length > 0 && (
+                <Button
+                  onClick={handleViewGraphs}
+                  variant="outline"
+                  className="border-[#00B1BB] text-[#00B1BB] hover:bg-[#00B1BB]/10"
+                >
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  Ver Gráficos
+                </Button>
+              )}
+              {(isViewingOtherPatient || isHospitalViewing) && (
+                <Button
+                  onClick={handleAddIndicator}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Adicionar indicador
+                </Button>
+              )}
+              {!isViewingOtherPatient && !isHospitalViewing && (
+                <Button
+                  onClick={handleAddIndicator}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Adicionar Registro
+                </Button>
+              )}
+            </div>
           </div>
         </div>
 
