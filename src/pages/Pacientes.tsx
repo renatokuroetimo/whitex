@@ -58,7 +58,14 @@ const Pacientes = () => {
   };
 
   useEffect(() => {
-    loadPatients();
+    console.log("🏥 Pacientes component mounted", {
+      userId: user?.id,
+      profession: user?.profession,
+      isAuthenticated: !!user,
+    });
+    if (user?.id) {
+      loadPatients();
+    }
   }, [user?.id]);
 
   // Filter patients based on status and search
