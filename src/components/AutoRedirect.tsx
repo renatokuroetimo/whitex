@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContextHybrid";
+import { isMobileApp } from "@/lib/mobile-utils";
 
 interface AutoRedirectProps {
   children: React.ReactNode;
