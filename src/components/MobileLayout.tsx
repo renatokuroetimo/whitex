@@ -260,22 +260,14 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
           <div className="lg:hidden fixed inset-0 z-50 bg-black bg-opacity-50">
             <div className="w-64 h-full bg-white border-r border-gray-200 flex flex-col">
               {/* Header */}
-              <div className="p-6 border-b border-gray-200">
-                <div className="flex items-center justify-between">
+              <div className="p-3 border-b border-gray-200">
+                <div className="flex justify-center">
                   <Logo
                     variant="primary"
                     size="3xl"
                     showText={false}
                     className="justify-center"
                   />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="p-2"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    ×
-                  </Button>
                 </div>
               </div>
 
