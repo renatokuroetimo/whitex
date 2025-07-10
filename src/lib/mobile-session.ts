@@ -61,6 +61,21 @@ export class MobileSessionManager {
         userData ? "found" : "not found",
       );
 
+      // Debug: show all storage attempts
+      if (!userData) {
+        console.log("🔍 Checking all possible storage locations...");
+        console.log(
+          "- medical_app_current_user:",
+          !!localStorage.getItem(this.SESSION_KEY),
+        );
+        console.log("- user (legacy):", !!localStorage.getItem(this.OLD_KEY));
+        console.log("- backup:", !!localStorage.getItem(this.BACKUP_KEY));
+        console.log(
+          "- sessionStorage:",
+          !!sessionStorage.getItem(this.SESSION_KEY),
+        );
+      }
+
       // If not found, try legacy key (for existing users)
       if (!userData) {
         userData = localStorage.getItem(this.OLD_KEY);
