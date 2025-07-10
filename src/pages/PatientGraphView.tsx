@@ -693,7 +693,6 @@ const PatientGraphView = () => {
             </div>
           )}
         </div>
-      </div>
 
       {/* Diagnosis Question Modal */}
       <Dialog open={showDiagnosisModal} onOpenChange={setShowDiagnosisModal}>
