@@ -32,19 +32,33 @@ const Login = () => {
 
     const success = await login({ email, password });
     if (success) {
-      // Check if user is a doctor trying to access mobile app
-      const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+      // For mobile app, force logout if user is a doctor
+      if (isMobileApp()) {
+        // Give a moment for the auth state to update, then check
+        setTimeout(async () => {
+          try {
+            const currentUser = JSON.parse(
+              localStorage.getItem("user") || "{}",
+            );
+            console.log("🔍 Mobile login check - user:", currentUser);
 
-      if (isMobileApp() && currentUser.profession === "medico") {
-        // Block doctor access on mobile
-        await logout();
-        toast({
-          variant: "destructive",
-          title: "Acesso Restrito",
-          description:
-            "Este aplicativo é exclusivo para pacientes. Médicos devem acessar através da versão web.",
-        });
-        return;
+            if (currentUser.profession === "medico") {
+              console.log("🚫 Blocking doctor access on mobile");
+              await logout();
+              toast({
+                variant: "destructive",
+                title: "Acesso Restrito",
+                description:
+                  "Este aplicativo é exclusivo para pacientes. Médicos devem acessar através da versão web.",
+              });
+              // Force redirect back to login
+              navigate("/login", { replace: true });
+              return;
+            }
+          } catch (error) {
+            console.error("Error checking user profession:", error);
+          }
+        }, 200);
       }
 
       navigate("/dashboard");
