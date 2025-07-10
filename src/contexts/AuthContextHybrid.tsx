@@ -138,6 +138,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log("🔄 Migração de usuários concluída");
       });
     }
+
+    // Add listeners for app lifecycle events (mobile debugging)
+    const handleVisibilityChange = () => {
+      console.log(
+        "👁️ App visibility changed:",
+        document.hidden ? "hidden" : "visible",
+      );
+      if (!document.hidden) {
+        // App became visible - check if session is still there
+        const currentUser = getAuthAPI().getCurrentUser();
+        console.log("👁️ Session check on app focus:", !!currentUser);
+      }
+    };
+
+    const handlePageShow = () => {
+      console.log("🔄 Page show event - checking session...");
+      const currentUser = getAuthAPI().getCurrentUser();
+      console.log("🔄 Session status:", !!currentUser);
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("pageshow", handlePageShow);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("pageshow", handlePageShow);
+    };
   }, []);
 
   // Login function
