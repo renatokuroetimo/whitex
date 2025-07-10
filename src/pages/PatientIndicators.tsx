@@ -194,23 +194,7 @@ const PatientIndicators = () => {
         <div className="mb-6">
           {/* Mobile Header */}
           <div className="block md:hidden">
-            <div className="flex items-center gap-3 mb-4">
-              <button
-                onClick={() => {
-                  if (isHospitalContext) {
-                    navigate(`/gerenciamento/patients/${patientId}`);
-                  } else {
-                    navigate(
-                      isViewingOtherPatient
-                        ? `/pacientes/${patientId}`
-                        : "/patient-dashboard",
-                    );
-                  }
-                }}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <ArrowLeft className="h-5 w-5 text-gray-600" />
-              </button>
+            <div className="flex items-center mb-4">
               <h1 className="text-lg font-semibold text-gray-900 flex-1">
                 {isHospitalViewing || isViewingOtherPatient
                   ? "Indicadores do Paciente"
