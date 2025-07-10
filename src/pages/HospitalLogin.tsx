@@ -85,8 +85,13 @@ const HospitalLogin = () => {
     <div className="min-h-screen bg-gradient-to-br from-brand-light via-white to-brand-light flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
-        <div className="text-center mb-6">
-          <Logo variant="primary" size="lg" className="justify-center" />
+        <div className="text-center mb-8">
+          <Logo
+            variant="primary"
+            size="xl"
+            showText={false}
+            className="justify-center"
+          />
         </div>
 
         {/* Header */}
