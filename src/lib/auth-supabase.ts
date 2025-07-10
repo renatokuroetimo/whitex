@@ -253,7 +253,7 @@ class AuthSupabaseAPI {
     await this.delay(200);
 
     try {
-      localStorage.removeItem(this.STORAGE_KEYS.CURRENT_USER);
+      MobileSessionManager.clearSession();
       return { success: true };
     } catch (error) {
       return {
