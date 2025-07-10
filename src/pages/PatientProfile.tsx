@@ -462,14 +462,9 @@ const PatientProfile = () => {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <div className="hidden lg:block">
-        <Sidebar />
-      </div>
-
-      <div className="flex-1 overflow-auto">
-        <div className="p-4 sm:p-6 lg:p-8">
-          <div className="max-w-4xl mx-auto">
+    <MobileLayout>
+      <div className="p-4 sm:p-6 lg:p-8">
+        <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-4">
                 <h1 className="text-2xl font-semibold text-gray-900">
