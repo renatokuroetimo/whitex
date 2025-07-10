@@ -48,8 +48,14 @@ export class MobileSessionManager {
    */
   static getSession(): any | null {
     try {
+      console.log("🔍 Getting session... isMobile:", isMobileApp());
+
       // Try primary storage first
       let userData = localStorage.getItem(this.SESSION_KEY);
+      console.log(
+        "📱 Primary storage result:",
+        userData ? "found" : "not found",
+      );
 
       // If mobile and primary failed, try backup
       if (!userData && isMobileApp()) {
@@ -61,13 +67,20 @@ export class MobileSessionManager {
         // If we recovered from backup, restore primary
         if (userData) {
           localStorage.setItem(this.SESSION_KEY, userData);
-          console.log("📱 Session recovered from backup");
+          console.log("✅ Session recovered from backup");
+        } else {
+          console.log("❌ No backup session found");
         }
       }
 
-      return userData ? JSON.parse(userData) : null;
+      const result = userData ? JSON.parse(userData) : null;
+      console.log(
+        "🔍 Session result:",
+        result ? `Found user: ${result.email}` : "No session",
+      );
+      return result;
     } catch (error) {
-      console.error("Error getting mobile session:", error);
+      console.error("❌ Error getting session:", error);
       return null;
     }
   }
