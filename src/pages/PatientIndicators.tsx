@@ -365,7 +365,64 @@ const PatientIndicators = () => {
                 </div>
               )}
 
-              <div className="overflow-x-auto">
+              {/* Mobile view - Cards */}
+              <div className="block md:hidden space-y-3">
+                {filteredIndicators.length === 0 ? (
+                  <div className="py-8 text-center text-gray-500">
+                    Nenhum indicador encontrado com os filtros selecionados
+                  </div>
+                ) : (
+                  filteredIndicators.map((indicator) => (
+                    <div
+                      key={indicator.id}
+                      className="bg-gray-50 rounded-lg p-4 border border-gray-200"
+                    >
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex-1">
+                          <h4 className="font-medium text-gray-900 text-sm">
+                            {indicator.categoryName || "Categoria"} -{" "}
+                            {indicator.subcategoryName || "Subcategoria"}
+                          </h4>
+                          <p className="text-xs text-gray-600 mt-1">
+                            {indicator.parameter || "Parâmetro"}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-lg font-semibold text-[#00B1BB]">
+                            {indicator.value} {indicator.unitSymbol}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3 text-xs">
+                        <div>
+                          <span className="text-gray-500">Data:</span>
+                          <p className="text-gray-700 font-medium">
+                            {indicator.date
+                              ? formatDate(indicator.date)
+                              : "Não informado"}
+                          </p>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Horário:</span>
+                          <p className="text-gray-700 font-medium">
+                            {indicator.time || "Não informado"}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="mt-2 pt-2 border-t border-gray-200">
+                        <span className="text-xs text-gray-500">
+                          Registrado em: {formatDate(indicator.createdAt)}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Desktop view - Table */}
+              <div className="hidden md:block overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-gray-200">
