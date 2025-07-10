@@ -148,6 +148,8 @@
     position: sticky;
     top: 0;
     z-index: 50;
+    padding-top: 0 !important;
+    margin-top: 0 !important;
   }
 
   .mobile-content {
