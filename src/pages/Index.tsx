@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowLeft, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,32 @@ const Index = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const { register, isAuthenticated, user, logout } = useAuth();
+
+  // Handle already authenticated users
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      console.log("🔄 Index page: User already authenticated, redirecting...", {
+        email: user.email,
+        profession: user.profession,
+        isMobile: isMobileApp(),
+      });
+
+      // On mobile, if it's a doctor, logout instead of redirect
+      if (isMobileApp() && user.profession === "medico") {
+        console.log("🚫 Mobile: Doctor detected, logging out");
+        logout();
+        return;
+      }
+
+      // Redirect to appropriate dashboard
+      if (user.profession === "paciente") {
+        navigate("/patient-dashboard", { replace: true });
+      } else if (user.profession === "medico" && !isMobileApp()) {
+        navigate("/dashboard", { replace: true });
+      }
+    }
+  }, [isAuthenticated, user, navigate, logout]);
 
   const handleCreateAccount = async (e: React.FormEvent) => {
     e.preventDefault();
