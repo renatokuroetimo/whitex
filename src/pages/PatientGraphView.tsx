@@ -447,7 +447,7 @@ const PatientGraphView = () => {
 
     try {
       // Prepare data for API
-      const tipoDado = `${category} ${subcategory} em ${unit}`;
+      const tipoDado = `${graphParams.category} ${graphParams.subcategory} em ${graphParams.unit}`;
       const leituras = chartData.map((point) => ({
         data: point.originalDate.split("T")[0], // Extract date part only
         valor: point.value,
