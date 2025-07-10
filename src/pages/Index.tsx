@@ -32,10 +32,10 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-brand-light via-white to-brand-light flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
-        <div className="text-center mb-6">
+        <div className="text-center mb-4">
           <Logo
             variant="primary"
-            size="6xl"
+            size="3xl"
             showText={false}
             className="justify-center"
           />
