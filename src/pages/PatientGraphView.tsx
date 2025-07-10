@@ -667,14 +667,16 @@ const PatientGraphView = () => {
                         if (active && payload && payload.length) {
                           const data = payload[0].payload as ChartDataPoint;
                           return (
-                            <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3">
-                              <p className="font-medium">{label}</p>
+                            <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-2 md:p-3 text-xs md:text-sm max-w-48">
+                              <p className="font-medium text-xs md:text-sm">
+                                {label}
+                              </p>
                               {data.time && (
-                                <p className="text-sm text-gray-600">
+                                <p className="text-gray-600 text-xs">
                                   Horário: {data.time}
                                 </p>
                               )}
-                              <p className="text-blue-600 font-semibold">
+                              <p className="text-sm md:text-base text-blue-600 font-semibold">
                                 {payload[0].value} {unit}
                               </p>
                             </div>
