@@ -9,6 +9,7 @@ import { User, AuthState, LoginCredentials, RegisterData } from "@/lib/types";
 import { authAPI } from "@/lib/auth-api";
 import { authSupabaseAPI } from "@/lib/auth-supabase";
 import { isFeatureEnabled } from "@/lib/feature-flags";
+import { isMobileApp } from "@/lib/mobile-utils";
 import { toast } from "@/hooks/use-toast";
 
 // Action types
