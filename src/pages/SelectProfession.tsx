@@ -14,6 +14,12 @@ const SelectProfession = () => {
   const { register } = useAuth();
 
   useEffect(() => {
+    // If mobile app, auto-redirect to patient registration
+    if (isMobileApp()) {
+      navigate("/", { replace: true });
+      return;
+    }
+
     // Get temporary registration data
     const tempData = sessionStorage.getItem("temp_registration");
     if (!tempData) {
