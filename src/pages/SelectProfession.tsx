@@ -94,8 +94,13 @@ const SelectProfession = () => {
       <div className="flex-1 flex items-center justify-center px-4">
         <div className="w-full max-w-sm">
           {/* Logo */}
-          <div className="text-center mb-6">
-            <Logo variant="primary" size="lg" className="justify-center" />
+          <div className="text-center mb-8">
+            <Logo
+              variant="primary"
+              size="xl"
+              showText={false}
+              className="justify-center"
+            />
           </div>
 
           {/* Title */}
