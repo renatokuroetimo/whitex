@@ -139,6 +139,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
     }
 
+    // Add delayed session check for mobile (sometimes needed for timing)
+    if (isMobileApp() && !currentUser) {
+      console.log("📱 Mobile delayed session check scheduled...");
+      setTimeout(() => {
+        const delayedCheck = getAuthAPI().getCurrentUser();
+        if (delayedCheck && !state.user) {
+          console.log(
+            "✅ Delayed session check found user:",
+            delayedCheck.email,
+          );
+          if (delayedCheck.profession !== "medico") {
+            dispatch({ type: "AUTH_SUCCESS", payload: delayedCheck });
+          }
+        }
+      }, 500);
+    }
+
     // Add listeners for app lifecycle events (mobile debugging)
     const handleVisibilityChange = () => {
       console.log(
@@ -149,6 +166,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // App became visible - check if session is still there
         const currentUser = getAuthAPI().getCurrentUser();
         console.log("👁️ Session check on app focus:", !!currentUser);
+        if (currentUser && !state.user && currentUser.profession !== "medico") {
+          dispatch({ type: "AUTH_SUCCESS", payload: currentUser });
+        }
       }
     };
 
@@ -156,6 +176,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log("🔄 Page show event - checking session...");
       const currentUser = getAuthAPI().getCurrentUser();
       console.log("🔄 Session status:", !!currentUser);
+      if (currentUser && !state.user && currentUser.profession !== "medico") {
+        dispatch({ type: "AUTH_SUCCESS", payload: currentUser });
+      }
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -174,7 +197,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const authAPI = getAuthAPI();
       console.log(
-        "🔍 Usando API para login:",
+        "���� Usando API para login:",
         authAPI === authSupabaseAPI ? "Supabase" : "localStorage",
       );
       const response = await authAPI.login(credentials);
