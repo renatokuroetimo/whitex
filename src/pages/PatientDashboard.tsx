@@ -20,11 +20,17 @@ const PatientDashboard = () => {
   useEffect(() => {
     if (user?.id && user.profession === "paciente") {
       loadRecentIndicators();
+    } else if (user && user.profession !== "paciente") {
+      // Se não é paciente, para o loading
+      setIsLoading(false);
     }
   }, [user]);
 
   const loadRecentIndicators = async () => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      setIsLoading(false);
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -35,11 +41,14 @@ const PatientDashboard = () => {
       const recent = allIndicators.slice(0, 6);
       setRecentIndicators(recent);
     } catch (error) {
+      console.error("Erro ao carregar indicadores:", error);
       toast({
         variant: "destructive",
         title: "Erro",
         description: "Erro ao carregar indicadores recentes",
       });
+      // Se der erro, deixa vazio mas para o loading
+      setRecentIndicators([]);
     } finally {
       setIsLoading(false);
     }
