@@ -149,7 +149,7 @@ const Sidebar: React.FC = () => {
       <div className="p-6 border-b border-gray-200">
         <Logo
           variant="primary"
-          size="lg"
+          size="3xl"
           showText={false}
           className="justify-center"
         />
