@@ -1,5 +1,6 @@
 import { User, LoginCredentials, RegisterData, ApiResponse } from "./types";
 import { supabase, withSupabaseFallback } from "./supabase";
+import { MobileSessionManager } from "./mobile-session";
 
 class AuthSupabaseAPI {
   private readonly STORAGE_KEYS = {
