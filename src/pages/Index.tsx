@@ -12,17 +12,39 @@ const Index = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { register } = useAuth();
 
-  const handleCreateAccount = (e: React.FormEvent) => {
+  const handleCreateAccount = async (e: React.FormEvent) => {
     e.preventDefault();
     if (email && password) {
-      // Store temporary data and navigate to profession selection
-      sessionStorage.setItem(
-        "temp_registration",
-        JSON.stringify({ email, password }),
-      );
-      navigate("/select-profession");
+      if (isMobileApp()) {
+        // Mobile: register directly as patient
+        setIsLoading(true);
+        try {
+          const success = await register({
+            email,
+            password,
+            profession: "paciente",
+          });
+
+          if (success) {
+            navigate("/patient-dashboard");
+          }
+        } catch (error) {
+          console.error("Registration error:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      } else {
+        // Web: store temporary data and navigate to profession selection
+        sessionStorage.setItem(
+          "temp_registration",
+          JSON.stringify({ email, password }),
+        );
+        navigate("/select-profession");
+      }
     }
   };
 
