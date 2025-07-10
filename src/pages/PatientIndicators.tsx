@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { ArrowLeft, Plus, Activity, TrendingUp, Filter } from "lucide-react";
+import { Plus, Activity, TrendingUp, Filter } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import MobileLayout from "@/components/MobileLayout";
 import { Button } from "@/components/ui/button";
