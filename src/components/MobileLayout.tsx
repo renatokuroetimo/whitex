@@ -205,8 +205,8 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
                     onClick={() => handleNavigation(item.path)}
                     className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
                       active
-                        ? "bg-blue-50 text-blue-700 border border-blue-200"
-                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                        ? "bg-brand-teal/10 text-brand-primary border border-brand-teal/20"
+                        : "text-gray-600 hover:bg-brand-light hover:text-brand-primary"
                     }`}
                   >
                     <Icon className="w-4 h-4 flex-shrink-0" />
@@ -318,8 +318,8 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
                           onClick={() => handleNavigation(item.path)}
                           className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
                             active
-                              ? "bg-blue-50 text-blue-700 border border-blue-200"
-                              : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                              ? "bg-brand-teal/10 text-brand-primary border border-brand-teal/20"
+                              : "text-gray-600 hover:bg-brand-light hover:text-brand-primary"
                           }`}
                         >
                           <Icon className="w-4 h-4 flex-shrink-0" />
