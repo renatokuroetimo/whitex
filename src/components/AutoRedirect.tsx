@@ -16,14 +16,27 @@ const AutoRedirect: React.FC<AutoRedirectProps> = ({ children }) => {
     // Só redireciona se não estiver carregando e estiver na página inicial
     if (!isLoading && location.pathname === "/") {
       if (isAuthenticated && user) {
+        // Mobile app: força logout se usuário for médico
+        if (isMobileApp() && user.profession === "medico") {
+          console.log("🚫 Mobile app: blocking doctor access");
+          // Don't redirect, let them stay on main page to see the mobile notice
+          return;
+        }
+
         // Redireciona para o dashboard apropriado baseado na profissão
         if (user.profession === "paciente") {
           navigate("/patient-dashboard", { replace: true });
         } else if (user.profession === "medico") {
           navigate("/dashboard", { replace: true });
         } else {
-          // Se tem usuário mas sem profissão definida, vai para seleção
-          navigate("/select-profession", { replace: true });
+          // Se tem usuário mas sem profissão definida
+          if (isMobileApp()) {
+            // Mobile: força cadastro como paciente
+            navigate("/", { replace: true });
+          } else {
+            // Web: vai para seleção de profissão
+            navigate("/select-profession", { replace: true });
+          }
         }
       }
       // Se não está autenticado, permanece na página de cadastro (/)
