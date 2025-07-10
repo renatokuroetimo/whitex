@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContextHybrid";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import AdminProtectedRoute from "@/components/AdminProtectedRoute";
 import MigrationPanel from "@/components/MigrationPanel";
+import AutoRedirect from "@/components/AutoRedirect";
 
 // Supabase test disponível via console em desenvolvimento
 import Index from "./pages/Index";
@@ -56,7 +57,8 @@ const App = () => (
         <Sonner />
         <MigrationPanel />
         <BrowserRouter>
-          <Routes>
+          <AutoRedirect>
+            <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/select-profession" element={<SelectProfession />} />
