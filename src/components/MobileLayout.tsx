@@ -172,8 +172,8 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
             onClick={() => navigate(profilePath)}
             className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
               isActive(profilePath)
-                ? "bg-blue-50 text-blue-700 border border-blue-200"
-                : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                ? "bg-brand-teal/10 text-brand-primary border border-brand-teal/20"
+                : "text-gray-600 hover:bg-brand-light hover:text-brand-primary"
             }`}
           >
             <div className="w-8 h-8 bg-gray-100 rounded-full overflow-hidden flex items-center justify-center border border-gray-200">
@@ -285,8 +285,8 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
                   }}
                   className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
                     isActive(profilePath)
-                      ? "bg-blue-50 text-blue-700 border border-blue-200"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      ? "bg-brand-teal/10 text-brand-primary border border-brand-teal/20"
+                      : "text-gray-600 hover:bg-brand-light hover:text-brand-primary"
                   }`}
                 >
                   <div className="w-8 h-8 bg-gray-100 rounded-full overflow-hidden flex items-center justify-center border border-gray-200">
