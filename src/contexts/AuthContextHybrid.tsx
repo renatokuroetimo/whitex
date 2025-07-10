@@ -110,6 +110,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const currentUser = getAuthAPI().getCurrentUser();
     if (currentUser) {
+      // Block doctor access on mobile during initial load
+      if (isMobileApp() && currentUser.profession === "medico") {
+        console.log("🚫 Initial load: blocking doctor on mobile");
+        // Logout the doctor immediately
+        getAuthAPI().logout();
+        toast({
+          variant: "destructive",
+          title: "Acesso Restrito",
+          description: "Este aplicativo é exclusivo para pacientes.",
+        });
+        return;
+      }
       dispatch({ type: "AUTH_SUCCESS", payload: currentUser });
     }
 
