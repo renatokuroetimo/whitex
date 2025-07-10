@@ -667,12 +667,7 @@ const PatientGraphView = () => {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
                     data={chartData}
-                    margin={{
-                      top: 5,
-                      right: window.innerWidth < 768 ? 10 : 30,
-                      left: window.innerWidth < 768 ? 10 : 20,
-                      bottom: window.innerWidth < 768 ? 40 : 5,
-                    }}
+                    margin={{ top: 5, right: 20, left: 15, bottom: 40 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                     <XAxis
