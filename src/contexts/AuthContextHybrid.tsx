@@ -109,20 +109,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Check if user is already logged in on mount
   useEffect(() => {
     const currentUser = getAuthAPI().getCurrentUser();
+    console.log("🔍 Initial auth check:", {
+      currentUser,
+      isMobile: isMobileApp(),
+    });
+
     if (currentUser) {
-      // Block doctor access on mobile during initial load
+      // On mobile app, only allow patients
       if (isMobileApp() && currentUser.profession === "medico") {
-        console.log("🚫 Initial load: blocking doctor on mobile");
-        // Logout the doctor immediately
+        console.log(
+          "🚫 Initial load: blocking doctor on mobile, clearing session",
+        );
+        // Clear the session completely but don't show repeated toasts
         getAuthAPI().logout();
-        toast({
-          variant: "destructive",
-          title: "Acesso Restrito",
-          description: "Este aplicativo é exclusivo para pacientes.",
-        });
         return;
       }
+
+      // For valid users (patients on mobile, or any user on web), restore session
+      console.log("✅ Restoring user session:", currentUser.email);
       dispatch({ type: "AUTH_SUCCESS", payload: currentUser });
+    } else {
+      console.log("❌ No stored user session found");
     }
 
     // Migrar dados existentes se Supabase estiver ativado
