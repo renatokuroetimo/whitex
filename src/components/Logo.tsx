@@ -2,7 +2,7 @@ import React from "react";
 
 interface LogoProps {
   variant?: "primary" | "white" | "dark" | "compact";
-  size?: "sm" | "md" | "lg" | "xl" | "3xl";
+  size?: "sm" | "md" | "lg" | "xl" | "3xl" | "6xl";
   className?: string;
   showText?: boolean;
 }
@@ -19,6 +19,7 @@ const Logo: React.FC<LogoProps> = ({
     lg: "h-12",
     xl: "h-16",
     "3xl": "h-36",
+    "6xl": "h-72",
   };
 
   const textSizeClasses = {
@@ -27,6 +28,7 @@ const Logo: React.FC<LogoProps> = ({
     lg: "text-3xl",
     xl: "text-5xl",
     "3xl": "text-8xl",
+    "6xl": "text-9xl",
   };
 
   const getLogoImage = () => {
