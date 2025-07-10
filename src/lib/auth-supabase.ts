@@ -313,7 +313,7 @@ class AuthSupabaseAPI {
         const updatedUsers = users.filter((user) => user.id !== currentUser.id);
         this.saveUsers(updatedUsers);
         localStorage.removeItem(`profile_${currentUser.id}`);
-        localStorage.removeItem(this.STORAGE_KEYS.CURRENT_USER);
+        MobileSessionManager.clearSession();
 
         return { success: true };
       },
