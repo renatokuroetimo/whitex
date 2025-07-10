@@ -11,7 +11,7 @@ const Logo: React.FC<LogoProps> = ({
   variant = "primary",
   size = "md",
   className = "",
-  showText = true,
+  showText = false,
 }) => {
   const sizeClasses = {
     sm: "h-6",
