@@ -452,247 +452,247 @@ const PatientGraphView = () => {
   return (
     <MobileLayout>
       <div className="p-4 sm:p-6 lg:p-8">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={handleBack}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <ArrowLeft className="h-5 w-5 text-gray-600" />
-              </button>
-              <div>
-                <h1 className="text-2xl font-semibold text-gray-900">
-                  {subcategory} - {parameter}
-                </h1>
-                <p className="text-sm text-gray-600">
-                  {patientId
-                    ? `${patient?.name || "Paciente"} • ${category}`
-                    : `Seus dados • ${category}`}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Select value={timeRange} onValueChange={setTimeRange}>
-                <SelectTrigger className="w-40">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todo período</SelectItem>
-                  <SelectItem value="7d">Últimos 7 dias</SelectItem>
-                  <SelectItem value="30d">Últimos 30 dias</SelectItem>
-                  <SelectItem value="90d">Últimos 90 dias</SelectItem>
-                  <SelectItem value="1y">Último ano</SelectItem>
-                </SelectContent>
-              </Select>
-
-              {/* Diagnosis button - only show for doctors */}
-              {user?.profession === "medico" && (
-                <Button
-                  onClick={handleOpenDiagnosisModal}
-                  className="bg-green-600 hover:bg-green-700 text-white"
-                  disabled={chartData.length === 0}
-                >
-                  <Stethoscope className="h-4 w-4 mr-2" />
-                  Realizar diagnóstico
-                </Button>
-              )}
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleBack}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <ArrowLeft className="h-5 w-5 text-gray-600" />
+            </button>
+            <div>
+              <h1 className="text-2xl font-semibold text-gray-900">
+                {subcategory} - {parameter}
+              </h1>
+              <p className="text-sm text-gray-600">
+                {patientId
+                  ? `${patient?.name || "Paciente"} • ${category}`
+                  : `Seus dados • ${category}`}
+              </p>
             </div>
           </div>
+          <div className="flex items-center gap-3">
+            <Select value={timeRange} onValueChange={setTimeRange}>
+              <SelectTrigger className="w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todo período</SelectItem>
+                <SelectItem value="7d">Últimos 7 dias</SelectItem>
+                <SelectItem value="30d">Últimos 30 dias</SelectItem>
+                <SelectItem value="90d">Últimos 90 dias</SelectItem>
+                <SelectItem value="1y">Último ano</SelectItem>
+              </SelectContent>
+            </Select>
 
-          {chartData.length === 0 ? (
-            /* Empty State */
-            <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
-              <div className="max-w-md mx-auto">
-                <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  {hasLoadingError
-                    ? "Erro ao carregar dados"
-                    : "Nenhum dado no período selecionado"}
-                </h3>
-                <p className="text-gray-600 mb-6">
-                  {hasLoadingError
-                    ? "Houve um problema ao carregar os dados. Tente novamente ou verifique sua conexão."
-                    : `Não há registros de ${parameter} para o período selecionado. Tente selecionar um período maior ou adicione mais registros.`}
-                </p>
-                <div className="flex gap-3 justify-center">
-                  {hasLoadingError ? (
-                    <Button
-                      onClick={loadData}
-                      className="bg-[#00B1BB] hover:bg-[#01485E] text-white"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? "Carregando..." : "Tentar novamente"}
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={() => {
-                        const addIndicatorPath = isHospitalContext
-                          ? `/gerenciamento/patients/${patientId}/adicionar-indicador`
-                          : `/pacientes/${patientId}/adicionar-indicador`;
-                        navigate(addIndicatorPath);
-                      }}
-                      className="bg-green-600 hover:bg-green-700 text-white"
-                    >
-                      Adicionar Registro
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {/* Statistics Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                <div className="bg-white rounded-lg border border-gray-200 p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-600">Último Valor</p>
-                      <p className="text-2xl font-semibold text-gray-900">
-                        {stats.latest.toFixed(1)} {unit}
-                      </p>
-                    </div>
-                    <div
-                      className={`p-2 rounded-full ${
-                        trend.type === "up"
-                          ? "bg-green-100"
-                          : trend.type === "down"
-                            ? "bg-red-100"
-                            : "bg-gray-100"
-                      }`}
-                    >
-                      {trend.type === "up" && (
-                        <TrendingUp className="h-5 w-5 text-green-600" />
-                      )}
-                      {trend.type === "down" && (
-                        <TrendingDown className="h-5 w-5 text-red-600" />
-                      )}
-                      {trend.type === "neutral" && (
-                        <Minus className="h-5 w-5 text-gray-600" />
-                      )}
-                    </div>
-                  </div>
-                  {trend.type !== "neutral" && (
-                    <p
-                      className={`text-xs mt-1 ${
-                        trend.type === "up" ? "text-green-600" : "text-red-600"
-                      }`}
-                    >
-                      {trend.percentage > 0 ? "+" : ""}
-                      {trend.percentage.toFixed(1)}% vs início
-                    </p>
-                  )}
-                </div>
-
-                <div className="bg-white rounded-lg border border-gray-200 p-4">
-                  <p className="text-sm text-gray-600">Máximo</p>
-                  <p className="text-2xl font-semibold text-gray-900">
-                    {stats.max.toFixed(1)} {unit}
-                  </p>
-                </div>
-
-                <div className="bg-white rounded-lg border border-gray-200 p-4">
-                  <p className="text-sm text-gray-600">Mínimo</p>
-                  <p className="text-2xl font-semibold text-gray-900">
-                    {stats.min.toFixed(1)} {unit}
-                  </p>
-                </div>
-
-                <div className="bg-white rounded-lg border border-gray-200 p-4">
-                  <p className="text-sm text-gray-600">Média</p>
-                  <p className="text-2xl font-semibold text-gray-900">
-                    {stats.avg.toFixed(1)} {unit}
-                  </p>
-                </div>
-
-                <div className="bg-white rounded-lg border border-gray-200 p-4">
-                  <p className="text-sm text-gray-600">Total de Registros</p>
-                  <p className="text-2xl font-semibold text-gray-900">
-                    {chartData.length}
-                  </p>
-                </div>
-              </div>
-
-              {/* Chart */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="mb-6">
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Progressão ao Longo do Tempo
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    Visualização dos valores de {parameter} em {unit}
-                  </p>
-                </div>
-
-                <div className="h-96">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart
-                      data={chartData}
-                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                      <XAxis
-                        dataKey="formattedDate"
-                        stroke="#666"
-                        fontSize={12}
-                        tick={{ fontSize: 12 }}
-                      />
-                      <YAxis
-                        stroke="#666"
-                        fontSize={12}
-                        tick={{ fontSize: 12 }}
-                        label={{
-                          value: unit,
-                          angle: -90,
-                          position: "insideLeft",
-                        }}
-                      />
-                      <Tooltip
-                        content={({ active, payload, label }) => {
-                          if (active && payload && payload.length) {
-                            const data = payload[0].payload as ChartDataPoint;
-                            return (
-                              <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3">
-                                <p className="font-medium">{label}</p>
-                                {data.time && (
-                                  <p className="text-sm text-gray-600">
-                                    Horário: {data.time}
-                                  </p>
-                                )}
-                                <p className="text-blue-600 font-semibold">
-                                  {payload[0].value} {unit}
-                                </p>
-                              </div>
-                            );
-                          }
-                          return null;
-                        }}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="value"
-                        stroke="#3b82f6"
-                        strokeWidth={2}
-                        dot={{ fill: "#3b82f6", strokeWidth: 2, r: 4 }}
-                        activeDot={{ r: 6, fill: "#3b82f6" }}
-                      />
-                      {/* Linha de referência da média */}
-                      <ReferenceLine
-                        y={stats.avg}
-                        stroke="#6b7280"
-                        strokeDasharray="5 5"
-                        label={{
-                          value: `Média: ${stats.avg.toFixed(1)}`,
-                          position: "topRight",
-                        }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            </div>
-          )}
+            {/* Diagnosis button - only show for doctors */}
+            {user?.profession === "medico" && (
+              <Button
+                onClick={handleOpenDiagnosisModal}
+                className="bg-green-600 hover:bg-green-700 text-white"
+                disabled={chartData.length === 0}
+              >
+                <Stethoscope className="h-4 w-4 mr-2" />
+                Realizar diagnóstico
+              </Button>
+            )}
+          </div>
         </div>
+
+        {chartData.length === 0 ? (
+          /* Empty State */
+          <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
+            <div className="max-w-md mx-auto">
+              <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                {hasLoadingError
+                  ? "Erro ao carregar dados"
+                  : "Nenhum dado no período selecionado"}
+              </h3>
+              <p className="text-gray-600 mb-6">
+                {hasLoadingError
+                  ? "Houve um problema ao carregar os dados. Tente novamente ou verifique sua conexão."
+                  : `Não há registros de ${parameter} para o período selecionado. Tente selecionar um período maior ou adicione mais registros.`}
+              </p>
+              <div className="flex gap-3 justify-center">
+                {hasLoadingError ? (
+                  <Button
+                    onClick={loadData}
+                    className="bg-[#00B1BB] hover:bg-[#01485E] text-white"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Carregando..." : "Tentar novamente"}
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => {
+                      const addIndicatorPath = isHospitalContext
+                        ? `/gerenciamento/patients/${patientId}/adicionar-indicador`
+                        : `/pacientes/${patientId}/adicionar-indicador`;
+                      navigate(addIndicatorPath);
+                    }}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    Adicionar Registro
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {/* Statistics Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="bg-white rounded-lg border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Último Valor</p>
+                    <p className="text-2xl font-semibold text-gray-900">
+                      {stats.latest.toFixed(1)} {unit}
+                    </p>
+                  </div>
+                  <div
+                    className={`p-2 rounded-full ${
+                      trend.type === "up"
+                        ? "bg-green-100"
+                        : trend.type === "down"
+                          ? "bg-red-100"
+                          : "bg-gray-100"
+                    }`}
+                  >
+                    {trend.type === "up" && (
+                      <TrendingUp className="h-5 w-5 text-green-600" />
+                    )}
+                    {trend.type === "down" && (
+                      <TrendingDown className="h-5 w-5 text-red-600" />
+                    )}
+                    {trend.type === "neutral" && (
+                      <Minus className="h-5 w-5 text-gray-600" />
+                    )}
+                  </div>
+                </div>
+                {trend.type !== "neutral" && (
+                  <p
+                    className={`text-xs mt-1 ${
+                      trend.type === "up" ? "text-green-600" : "text-red-600"
+                    }`}
+                  >
+                    {trend.percentage > 0 ? "+" : ""}
+                    {trend.percentage.toFixed(1)}% vs início
+                  </p>
+                )}
+              </div>
+
+              <div className="bg-white rounded-lg border border-gray-200 p-4">
+                <p className="text-sm text-gray-600">Máximo</p>
+                <p className="text-2xl font-semibold text-gray-900">
+                  {stats.max.toFixed(1)} {unit}
+                </p>
+              </div>
+
+              <div className="bg-white rounded-lg border border-gray-200 p-4">
+                <p className="text-sm text-gray-600">Mínimo</p>
+                <p className="text-2xl font-semibold text-gray-900">
+                  {stats.min.toFixed(1)} {unit}
+                </p>
+              </div>
+
+              <div className="bg-white rounded-lg border border-gray-200 p-4">
+                <p className="text-sm text-gray-600">Média</p>
+                <p className="text-2xl font-semibold text-gray-900">
+                  {stats.avg.toFixed(1)} {unit}
+                </p>
+              </div>
+
+              <div className="bg-white rounded-lg border border-gray-200 p-4">
+                <p className="text-sm text-gray-600">Total de Registros</p>
+                <p className="text-2xl font-semibold text-gray-900">
+                  {chartData.length}
+                </p>
+              </div>
+            </div>
+
+            {/* Chart */}
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <div className="mb-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  Progressão ao Longo do Tempo
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Visualização dos valores de {parameter} em {unit}
+                </p>
+              </div>
+
+              <div className="h-96">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart
+                    data={chartData}
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                    <XAxis
+                      dataKey="formattedDate"
+                      stroke="#666"
+                      fontSize={12}
+                      tick={{ fontSize: 12 }}
+                    />
+                    <YAxis
+                      stroke="#666"
+                      fontSize={12}
+                      tick={{ fontSize: 12 }}
+                      label={{
+                        value: unit,
+                        angle: -90,
+                        position: "insideLeft",
+                      }}
+                    />
+                    <Tooltip
+                      content={({ active, payload, label }) => {
+                        if (active && payload && payload.length) {
+                          const data = payload[0].payload as ChartDataPoint;
+                          return (
+                            <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3">
+                              <p className="font-medium">{label}</p>
+                              {data.time && (
+                                <p className="text-sm text-gray-600">
+                                  Horário: {data.time}
+                                </p>
+                              )}
+                              <p className="text-blue-600 font-semibold">
+                                {payload[0].value} {unit}
+                              </p>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="value"
+                      stroke="#3b82f6"
+                      strokeWidth={2}
+                      dot={{ fill: "#3b82f6", strokeWidth: 2, r: 4 }}
+                      activeDot={{ r: 6, fill: "#3b82f6" }}
+                    />
+                    {/* Linha de referência da média */}
+                    <ReferenceLine
+                      y={stats.avg}
+                      stroke="#6b7280"
+                      strokeDasharray="5 5"
+                      label={{
+                        value: `Média: ${stats.avg.toFixed(1)}`,
+                        position: "topRight",
+                      }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Diagnosis Question Modal */}
       <Dialog open={showDiagnosisModal} onOpenChange={setShowDiagnosisModal}>
@@ -764,7 +764,7 @@ const PatientGraphView = () => {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </MobileLayout>
   );
 };
 
