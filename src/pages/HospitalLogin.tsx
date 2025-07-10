@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { hospitalAPI } from "@/lib/hospital-api";
 import { toast } from "@/hooks/use-toast";
+import Logo from "@/components/Logo";
 
 const HospitalLogin = () => {
   const navigate = useNavigate();
@@ -81,17 +82,22 @@ const HospitalLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-200 to-gray-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-brand-light via-white to-brand-light flex items-center justify-center p-4">
       <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="text-center mb-6">
+          <Logo variant="primary" size="lg" className="justify-center" />
+        </div>
+
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-brand-primary rounded-full flex items-center justify-center mx-auto mb-4">
             <Building2 className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+          <h1 className="text-3xl font-bold text-brand-primary mb-2">
             Acesso Institucional
           </h1>
-          <p className="text-gray-600">
+          <p className="text-brand-dark-teal">
             Faça login para gerenciar sua instituição
           </p>
         </div>
