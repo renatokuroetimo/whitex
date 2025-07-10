@@ -168,15 +168,7 @@ const PatientGraphView = () => {
     } else {
       console.log("❌ Not loading - missing conditions");
     }
-  }, [
-    patientId,
-    user,
-    category,
-    subcategory,
-    parameter,
-    unit,
-    isHospitalContext,
-  ]);
+  }, [patientId, user, graphParams, isHospitalContext]);
 
   useEffect(() => {
     if (indicators.length > 0) {
