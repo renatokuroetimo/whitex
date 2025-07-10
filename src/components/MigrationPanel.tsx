@@ -44,7 +44,7 @@ const MigrationPanel: React.FC = () => {
           onClick={() => setIsVisible(true)}
           variant="outline"
           size="sm"
-          className="bg-blue-600 text-white hover:bg-blue-700"
+          className="bg-[#00B1BB] text-white hover:bg-[#01485E]"
         >
           🔧 Migração
         </Button>
@@ -88,7 +88,7 @@ const MigrationPanel: React.FC = () => {
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div
-              className="bg-blue-600 h-2 rounded-full transition-all"
+              className="bg-[#00B1BB] h-2 rounded-full transition-all"
               style={{ width: `${(status.overallProgress / 4) * 100}%` }}
             />
           </div>

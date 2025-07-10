@@ -513,7 +513,7 @@ const PatientProfile = () => {
                       </div>
                       <button
                         onClick={handleImageClick}
-                        className="absolute -bottom-1 -right-1 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700 transition-colors"
+                        className="absolute -bottom-1 -right-1 w-8 h-8 bg-[#00B1BB] rounded-full flex items-center justify-center text-white hover:bg-[#01485E] transition-colors"
                       >
                         <Camera className="w-4 h-4" />
                       </button>
