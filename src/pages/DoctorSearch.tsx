@@ -144,8 +144,13 @@ const DoctorSearch = () => {
     return `${crm}-${state}`;
   };
 
+  useEffect(() => {
+    if (user && user.profession !== "paciente") {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
+
   if (!user || user.profession !== "paciente") {
-    navigate("/dashboard");
     return null;
   }
 
