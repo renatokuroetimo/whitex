@@ -190,264 +190,263 @@ const PatientIndicators = () => {
   return (
     <MobileLayout>
       <div className="p-4 sm:p-6 lg:p-8">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => {
-                  if (isHospitalContext) {
-                    navigate(`/gerenciamento/patients/${patientId}`);
-                  } else {
-                    navigate(
-                      isViewingOtherPatient
-                        ? `/pacientes/${patientId}`
-                        : "/patient-dashboard",
-                    );
-                  }
-                }}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => {
+                if (isHospitalContext) {
+                  navigate(`/gerenciamento/patients/${patientId}`);
+                } else {
+                  navigate(
+                    isViewingOtherPatient
+                      ? `/pacientes/${patientId}`
+                      : "/patient-dashboard",
+                  );
+                }
+              }}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <ArrowLeft className="h-5 w-5 text-gray-600" />
+            </button>
+            <h1 className="text-2xl font-semibold text-gray-900">
+              {isHospitalViewing || isViewingOtherPatient
+                ? "Indicadores do Paciente"
+                : "Meus Indicadores"}
+            </h1>
+          </div>
+          <div className="flex gap-3">
+            {indicators.length > 0 && (
+              <Button
+                onClick={handleViewGraphs}
+                variant="outline"
+                className="border-[#00B1BB] text-[#00B1BB] hover:bg-[#00B1BB]/10"
               >
-                <ArrowLeft className="h-5 w-5 text-gray-600" />
-              </button>
-              <h1 className="text-2xl font-semibold text-gray-900">
-                {isHospitalViewing || isViewingOtherPatient
-                  ? "Indicadores do Paciente"
-                  : "Meus Indicadores"}
-              </h1>
-            </div>
-            <div className="flex gap-3">
-              {indicators.length > 0 && (
-                <Button
-                  onClick={handleViewGraphs}
-                  variant="outline"
-                  className="border-[#00B1BB] text-[#00B1BB] hover:bg-[#00B1BB]/10"
-                >
-                  <TrendingUp className="h-4 w-4 mr-2" />
-                  Ver Gráficos
-                </Button>
-              )}
-              {(isViewingOtherPatient || isHospitalViewing) && (
-                <Button
-                  onClick={handleAddIndicator}
-                  className="bg-green-600 hover:bg-green-700 text-white"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Adicionar indicador
-                </Button>
-              )}
-              {!isViewingOtherPatient && !isHospitalViewing && (
-                <Button
-                  onClick={handleAddIndicator}
-                  className="bg-green-600 hover:bg-green-700 text-white"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Adicionar Registro
-                </Button>
-              )}
+                <TrendingUp className="h-4 w-4 mr-2" />
+                Ver Gráficos
+              </Button>
+            )}
+            {(isViewingOtherPatient || isHospitalViewing) && (
+              <Button
+                onClick={handleAddIndicator}
+                className="bg-green-600 hover:bg-green-700 text-white"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Adicionar indicador
+              </Button>
+            )}
+            {!isViewingOtherPatient && !isHospitalViewing && (
+              <Button
+                onClick={handleAddIndicator}
+                className="bg-green-600 hover:bg-green-700 text-white"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Adicionar Registro
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Content */}
+        {indicators.length === 0 ? (
+          /* Empty State */
+          <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
+            <div className="max-w-md mx-auto">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Activity className="w-8 h-8 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                Nenhum indicador registrado
+              </h3>
+              <p className="text-gray-600 mb-6">
+                {isViewingOtherPatient || isHospitalViewing
+                  ? "Este paciente ainda não registrou nenhum indicador de saúde."
+                  : "Comece a registrar seus indicadores de saúde para acompanhar sua evolução e compartilhar com seus médicos."}
+              </p>
+              <Button
+                onClick={handleAddIndicator}
+                className="bg-[#00B1BB] hover:bg-[#01485E] text-white"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                {isViewingOtherPatient || isHospitalViewing
+                  ? "Adicionar Indicador"
+                  : "Registrar Primeiro Indicador"}
+              </Button>
             </div>
           </div>
-
-          {/* Content */}
-          {indicators.length === 0 ? (
-            /* Empty State */
-            <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
-              <div className="max-w-md mx-auto">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Activity className="w-8 h-8 text-gray-400" />
-                </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  Nenhum indicador registrado
-                </h3>
-                <p className="text-gray-600 mb-6">
-                  {isViewingOtherPatient || isHospitalViewing
-                    ? "Este paciente ainda não registrou nenhum indicador de saúde."
-                    : "Comece a registrar seus indicadores de saúde para acompanhar sua evolução e compartilhar com seus médicos."}
-                </p>
-                <Button
-                  onClick={handleAddIndicator}
-                  className="bg-[#00B1BB] hover:bg-[#01485E] text-white"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  {isViewingOtherPatient || isHospitalViewing
-                    ? "Adicionar Indicador"
-                    : "Registrar Primeiro Indicador"}
-                </Button>
+        ) : (
+          /* Indicators List */
+          <div className="bg-white rounded-lg border border-gray-200">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Registros de Indicadores ({filteredIndicators.length})
+                </h2>
               </div>
-            </div>
-          ) : (
-            /* Indicators List */
-            <div className="bg-white rounded-lg border border-gray-200">
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-lg font-semibold text-gray-900">
-                    Registros de Indicadores ({filteredIndicators.length})
-                  </h2>
-                </div>
 
-                {/* Filters */}
-                {indicators.length > 0 && (
-                  <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Filter className="h-4 w-4 text-gray-600" />
-                      <span className="text-sm font-medium text-gray-700">
-                        Filtros
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* Category Filter */}
-                      <div>
-                        <label className="block text-sm text-gray-600 mb-1">
-                          Categoria
-                        </label>
-                        <Select
-                          value={selectedCategory}
-                          onValueChange={handleCategoryChange}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Todas as categorias" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="all">
-                              Todas as categorias
-                            </SelectItem>
-                            {uniqueCategories.map((category) => (
-                              <SelectItem key={category} value={category}>
-                                {category}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      {/* Subcategory Filter */}
-                      <div>
-                        <label className="block text-sm text-gray-600 mb-1">
-                          Subcategoria
-                        </label>
-                        <Select
-                          value={selectedSubcategory}
-                          onValueChange={setSelectedSubcategory}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Todas as subcategorias" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="all">
-                              Todas as subcategorias
-                            </SelectItem>
-                            {uniqueSubcategories.map((subcategory) => (
-                              <SelectItem key={subcategory} value={subcategory}>
-                                {subcategory}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    {/* Clear Filters */}
-                    {(selectedCategory !== "all" ||
-                      selectedSubcategory !== "all") && (
-                      <div className="mt-3">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setSelectedCategory("all");
-                            setSelectedSubcategory("all");
-                          }}
-                          className="text-gray-600 border-gray-300"
-                        >
-                          Limpar filtros
-                        </Button>
-                      </div>
-                    )}
+              {/* Filters */}
+              {indicators.length > 0 && (
+                <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Filter className="h-4 w-4 text-gray-600" />
+                    <span className="text-sm font-medium text-gray-700">
+                      Filtros
+                    </span>
                   </div>
-                )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Category Filter */}
+                    <div>
+                      <label className="block text-sm text-gray-600 mb-1">
+                        Categoria
+                      </label>
+                      <Select
+                        value={selectedCategory}
+                        onValueChange={handleCategoryChange}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Todas as categorias" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">
+                            Todas as categorias
+                          </SelectItem>
+                          {uniqueCategories.map((category) => (
+                            <SelectItem key={category} value={category}>
+                              {category}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-gray-200">
-                        <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm">
-                          Indicador
-                        </th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm">
-                          Valor
-                        </th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm">
-                          Data
-                        </th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm">
-                          Horário
-                        </th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm">
-                          Registrado em
-                        </th>
+                    {/* Subcategory Filter */}
+                    <div>
+                      <label className="block text-sm text-gray-600 mb-1">
+                        Subcategoria
+                      </label>
+                      <Select
+                        value={selectedSubcategory}
+                        onValueChange={setSelectedSubcategory}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Todas as subcategorias" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">
+                            Todas as subcategorias
+                          </SelectItem>
+                          {uniqueSubcategories.map((subcategory) => (
+                            <SelectItem key={subcategory} value={subcategory}>
+                              {subcategory}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Clear Filters */}
+                  {(selectedCategory !== "all" ||
+                    selectedSubcategory !== "all") && (
+                    <div className="mt-3">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedCategory("all");
+                          setSelectedSubcategory("all");
+                        }}
+                        className="text-gray-600 border-gray-300"
+                      >
+                        Limpar filtros
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-gray-200">
+                      <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm">
+                        Indicador
+                      </th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm">
+                        Valor
+                      </th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm">
+                        Data
+                      </th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm">
+                        Horário
+                      </th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-700 text-sm">
+                        Registrado em
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredIndicators.length === 0 ? (
+                      <tr>
+                        <td
+                          colSpan={5}
+                          className="py-8 text-center text-gray-500"
+                        >
+                          Nenhum indicador encontrado com os filtros
+                          selecionados
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {filteredIndicators.length === 0 ? (
-                        <tr>
-                          <td
-                            colSpan={5}
-                            className="py-8 text-center text-gray-500"
-                          >
-                            Nenhum indicador encontrado com os filtros
-                            selecionados
+                    ) : (
+                      filteredIndicators.map((indicator) => (
+                        <tr
+                          key={indicator.id}
+                          className="border-b border-gray-100 hover:bg-gray-50"
+                        >
+                          <td className="py-3 px-4">
+                            <div>
+                              <span className="text-sm font-medium text-gray-900">
+                                {indicator.categoryName || "Categoria"} -{" "}
+                                {indicator.subcategoryName || "Subcategoria"}
+                              </span>
+                              <p className="text-xs text-gray-600">
+                                {indicator.parameter || "Parâmetro"}
+                              </p>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className="text-sm font-medium text-gray-900">
+                              {indicator.value} {indicator.unitSymbol}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className="text-sm text-gray-600">
+                              {indicator.date
+                                ? formatDate(indicator.date)
+                                : "Não informado"}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className="text-sm text-gray-600">
+                              {indicator.time || "Não informado"}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className="text-sm text-gray-600">
+                              {formatDate(indicator.createdAt)}
+                            </span>
                           </td>
                         </tr>
-                      ) : (
-                        filteredIndicators.map((indicator) => (
-                          <tr
-                            key={indicator.id}
-                            className="border-b border-gray-100 hover:bg-gray-50"
-                          >
-                            <td className="py-3 px-4">
-                              <div>
-                                <span className="text-sm font-medium text-gray-900">
-                                  {indicator.categoryName || "Categoria"} -{" "}
-                                  {indicator.subcategoryName || "Subcategoria"}
-                                </span>
-                                <p className="text-xs text-gray-600">
-                                  {indicator.parameter || "Parâmetro"}
-                                </p>
-                              </div>
-                            </td>
-                            <td className="py-3 px-4">
-                              <span className="text-sm font-medium text-gray-900">
-                                {indicator.value} {indicator.unitSymbol}
-                              </span>
-                            </td>
-                            <td className="py-3 px-4">
-                              <span className="text-sm text-gray-600">
-                                {indicator.date
-                                  ? formatDate(indicator.date)
-                                  : "Não informado"}
-                              </span>
-                            </td>
-                            <td className="py-3 px-4">
-                              <span className="text-sm text-gray-600">
-                                {indicator.time || "Não informado"}
-                              </span>
-                            </td>
-                            <td className="py-3 px-4">
-                              <span className="text-sm text-gray-600">
-                                {formatDate(indicator.createdAt)}
-                              </span>
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+                      ))
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
-    </div>
+    </MobileLayout>
   );
 };
 
