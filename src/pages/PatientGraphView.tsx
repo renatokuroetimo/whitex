@@ -624,28 +624,43 @@ const PatientGraphView = () => {
                 </p>
               </div>
 
-              <div className="h-96">
+              <div className="h-64 md:h-96">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
                     data={chartData}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                    margin={{
+                      top: 5,
+                      right: window.innerWidth < 768 ? 10 : 30,
+                      left: window.innerWidth < 768 ? 10 : 20,
+                      bottom: window.innerWidth < 768 ? 40 : 5,
+                    }}
                   >
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                     <XAxis
                       dataKey="formattedDate"
                       stroke="#666"
-                      fontSize={12}
-                      tick={{ fontSize: 12 }}
+                      fontSize={window.innerWidth < 768 ? 10 : 12}
+                      tick={{ fontSize: window.innerWidth < 768 ? 10 : 12 }}
+                      angle={window.innerWidth < 768 ? -45 : 0}
+                      textAnchor={window.innerWidth < 768 ? "end" : "middle"}
+                      height={window.innerWidth < 768 ? 50 : 30}
+                      interval={
+                        window.innerWidth < 768 ? "preserveStartEnd" : 0
+                      }
                     />
                     <YAxis
                       stroke="#666"
-                      fontSize={12}
-                      tick={{ fontSize: 12 }}
-                      label={{
-                        value: unit,
-                        angle: -90,
-                        position: "insideLeft",
-                      }}
+                      fontSize={window.innerWidth < 768 ? 10 : 12}
+                      tick={{ fontSize: window.innerWidth < 768 ? 10 : 12 }}
+                      label={
+                        window.innerWidth < 768
+                          ? undefined
+                          : {
+                              value: unit,
+                              angle: -90,
+                              position: "insideLeft",
+                            }
+                      }
                     />
                     <Tooltip
                       content={({ active, payload, label }) => {
