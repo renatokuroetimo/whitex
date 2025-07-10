@@ -351,14 +351,14 @@ const PatientIndicators = () => {
 
               {/* Filters */}
               {indicators.length > 0 && (
-                <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                <div className="mb-6 p-3 md:p-4 bg-gray-50 rounded-lg">
                   <div className="flex items-center gap-2 mb-3">
                     <Filter className="h-4 w-4 text-gray-600" />
                     <span className="text-sm font-medium text-gray-700">
                       Filtros
                     </span>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-3 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
                     {/* Category Filter */}
                     <div>
                       <label className="block text-sm text-gray-600 mb-1">
@@ -421,7 +421,7 @@ const PatientIndicators = () => {
                           setSelectedCategory("all");
                           setSelectedSubcategory("all");
                         }}
-                        className="text-gray-600 border-gray-300"
+                        className="text-gray-600 border-gray-300 w-full md:w-auto"
                       >
                         Limpar filtros
                       </Button>
