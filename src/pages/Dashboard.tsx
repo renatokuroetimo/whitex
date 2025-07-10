@@ -578,17 +578,17 @@ const Dashboard = () => {
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900">
+            <h1 className="text-2xl font-semibold text-brand-primary">
               Dashboard Médico
             </h1>
-            <p className="text-gray-600 mt-1">
+            <p className="text-brand-dark-teal mt-1">
               Bem-vindo, Dr. {user.fullName || "Doutor"}
             </p>
           </div>
           <div className="flex gap-3">
             <Button
               onClick={() => navigate("/pacientes/novo")}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-brand-teal hover:bg-brand-dark-teal"
             >
               <Plus className="h-4 w-4 mr-2" />
               Novo Paciente
@@ -609,8 +609,8 @@ const Dashboard = () => {
                   {stats.activePatients} ativos
                 </p>
               </div>
-              <div className="p-3 bg-blue-100 rounded-full">
-                <Users className="h-6 w-6 text-blue-600" />
+              <div className="p-3 bg-brand-teal/10 rounded-full">
+                <Users className="h-6 w-6 text-brand-teal" />
               </div>
             </div>
           </div>
@@ -622,10 +622,12 @@ const Dashboard = () => {
                 <p className="text-3xl font-bold text-gray-900">
                   {stats.totalIndicators}
                 </p>
-                <p className="text-sm text-blue-600 mt-1">Tipos disponíveis</p>
+                <p className="text-sm text-brand-teal mt-1">
+                  Tipos disponíveis
+                </p>
               </div>
-              <div className="p-3 bg-green-100 rounded-full">
-                <Activity className="h-6 w-6 text-green-600" />
+              <div className="p-3 bg-brand-primary/10 rounded-full">
+                <Activity className="h-6 w-6 text-brand-primary" />
               </div>
             </div>
           </div>
@@ -644,8 +646,8 @@ const Dashboard = () => {
                   {trend.percentage.toFixed(0)}% vs ontem
                 </p>
               </div>
-              <div className="p-3 bg-purple-100 rounded-full">
-                <TrendingUp className="h-6 w-6 text-purple-600" />
+              <div className="p-3 bg-brand-dark-teal/10 rounded-full">
+                <TrendingUp className="h-6 w-6 text-brand-dark-teal" />
               </div>
             </div>
           </div>
@@ -673,7 +675,7 @@ const Dashboard = () => {
           {/* Real Recent Activities */}
           <div className="lg:col-span-2 bg-white rounded-lg border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold text-brand-primary">
                 Atividades Recentes
               </h2>
               <Button
@@ -720,7 +722,7 @@ const Dashboard = () => {
             {/* Medical Alerts */}
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">
+                <h2 className="text-lg font-semibold text-brand-primary">
                   Alertas Médicos
                 </h2>
                 {medicalAlerts.length > 0 && (
@@ -790,7 +792,7 @@ const Dashboard = () => {
 
             {/* Quick Actions */}
             <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <h2 className="text-lg font-semibold text-brand-primary mb-4">
                 Ações Rápidas
               </h2>
               <div className="space-y-3">
