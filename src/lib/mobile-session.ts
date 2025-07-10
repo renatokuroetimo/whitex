@@ -39,6 +39,16 @@ export class MobileSessionManager {
         // Also try sessionStorage as additional backup
         sessionStorage.setItem(this.SESSION_KEY, userData);
         console.log("📱 Mobile session saved with backup for:", user.email);
+
+        // Force persistence with a delay for mobile
+        setTimeout(() => {
+          localStorage.setItem(this.SESSION_KEY, userData);
+          localStorage.setItem(this.BACKUP_KEY, userData);
+          console.log(
+            "📱 Mobile session re-saved after delay for:",
+            user.email,
+          );
+        }, 100);
       } else {
         console.log("💻 Web session saved for:", user.email);
       }
