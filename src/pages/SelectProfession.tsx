@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContextHybrid";
+import { isMobileApp } from "@/lib/mobile-utils";
 import Logo from "@/components/Logo";
 
 const SelectProfession = () => {
