@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContextHybrid";
+import Logo from "@/components/Logo";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -31,23 +32,23 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-200 to-gray-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-brand-light via-white to-brand-light flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* WhiteX Brand */}
         <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-8">
-            WhiteX
-          </h1>
+          <Logo variant="primary" size="xl" className="justify-center" />
         </div>
 
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Fazer login</h1>
-          <p className="text-gray-600">
+          <h1 className="text-3xl font-bold text-brand-primary mb-2">
+            Fazer login
+          </h1>
+          <p className="text-brand-dark-teal">
             Não tem uma conta?{" "}
             <Link
               to="/"
-              className="text-gray-700 hover:text-gray-800 underline transition-colors"
+              className="text-brand-teal hover:text-brand-dark-teal underline transition-colors"
             >
               Criar conta
             </Link>
@@ -70,7 +71,7 @@ const Login = () => {
                   placeholder="Digite seu e-mail"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 bg-white border-gray-300 text-gray-800 placeholder:text-gray-400 focus:border-gray-500 focus:ring-gray-500"
+                  className="pl-10 bg-white border-gray-300 text-brand-primary placeholder:text-gray-400 focus:border-brand-teal focus:ring-brand-teal"
                   required
                   disabled={isLoading}
                 />
@@ -90,7 +91,7 @@ const Login = () => {
                   placeholder="Digite sua senha"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-10 bg-white border-gray-300 text-gray-800 placeholder:text-gray-400 focus:border-gray-500 focus:ring-gray-500"
+                  className="pl-10 pr-10 bg-white border-gray-300 text-brand-primary placeholder:text-gray-400 focus:border-brand-teal focus:ring-brand-teal"
                   required
                   disabled={isLoading}
                 />
@@ -113,7 +114,7 @@ const Login = () => {
             <Button
               type="submit"
               disabled={isLoading || !email || !password}
-              className="w-full bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-full bg-gradient-to-r from-brand-primary to-brand-dark-teal hover:from-brand-dark-teal hover:to-brand-primary text-white font-semibold py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {isLoading ? (
                 <div className="flex items-center justify-center gap-2">
@@ -128,7 +129,7 @@ const Login = () => {
 
           {/* Forgot password link */}
           <div className="mt-6 text-center">
-            <button className="text-gray-500 hover:text-gray-700 text-sm underline transition-colors">
+            <button className="text-brand-teal hover:text-brand-dark-teal text-sm underline transition-colors">
               Esqueceu sua senha?
             </button>
           </div>
@@ -138,7 +139,7 @@ const Login = () => {
         <div className="text-center mt-6">
           <button
             onClick={handleBack}
-            className="text-gray-600 hover:text-gray-800 text-sm underline transition-colors flex items-center justify-center gap-2 mx-auto"
+            className="text-brand-dark-teal hover:text-brand-primary text-sm underline transition-colors flex items-center justify-center gap-2 mx-auto"
           >
             <ArrowLeft className="h-4 w-4" />
             Voltar para criação de conta
