@@ -36,8 +36,10 @@ const PatientAddIndicator = () => {
   useEffect(() => {
     if (user?.id && user.profession === "paciente") {
       loadData();
+    } else if (user && user.profession !== "paciente") {
+      navigate("/dashboard");
     }
-  }, [user]);
+  }, [user, navigate]);
 
   useEffect(() => {
     if (selectedIndicator) {
@@ -169,7 +171,6 @@ const PatientAddIndicator = () => {
   };
 
   if (!user || user.profession !== "paciente") {
-    navigate("/dashboard");
     return null;
   }
 
