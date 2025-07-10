@@ -146,7 +146,6 @@
 
   /* Ensure content respects safe areas */
   .mobile-header {
-    padding-top: env(safe-area-inset-top, 0rem);
     background-color: white;
     border-bottom: 1px solid #e5e7eb;
     position: sticky;
@@ -162,20 +161,11 @@
 
 /* Prevent content from going under notch on iOS */
 @supports (padding-top: constant(safe-area-inset-top)) {
-  .mobile-header {
-    padding-top: constant(safe-area-inset-top);
-  }
-
   .mobile-container {
     padding-top: constant(safe-area-inset-top);
     padding-bottom: constant(safe-area-inset-bottom);
   }
 }
-
-@supports (padding-top: env(safe-area-inset-top)) {
-  .mobile-header {
-    padding-top: env(safe-area-inset-top);
-  }
 
   .mobile-container {
     padding-top: env(safe-area-inset-top);
