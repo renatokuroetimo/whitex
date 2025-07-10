@@ -19,6 +19,12 @@ export class MobileSessionManager {
   static saveSession(user: any): void {
     try {
       const userData = JSON.stringify(user);
+      console.log(
+        "💾 Saving session for user:",
+        user.email,
+        "isMobile:",
+        isMobileApp(),
+      );
 
       // Primary storage
       localStorage.setItem(this.SESSION_KEY, userData);
@@ -28,10 +34,12 @@ export class MobileSessionManager {
         localStorage.setItem(this.BACKUP_KEY, userData);
         // Also try sessionStorage as additional backup
         sessionStorage.setItem(this.SESSION_KEY, userData);
-        console.log("📱 Mobile session saved with backup");
+        console.log("📱 Mobile session saved with backup for:", user.email);
+      } else {
+        console.log("💻 Web session saved for:", user.email);
       }
     } catch (error) {
-      console.error("Error saving mobile session:", error);
+      console.error("❌ Error saving session:", error);
     }
   }
 
