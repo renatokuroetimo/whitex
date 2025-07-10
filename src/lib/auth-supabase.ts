@@ -271,12 +271,8 @@ class AuthSupabaseAPI {
 
   // Métodos que não mudam
   getCurrentUser(): User | null {
-    try {
-      const user = localStorage.getItem(this.STORAGE_KEYS.CURRENT_USER);
-      return user ? JSON.parse(user) : null;
-    } catch {
-      return null;
-    }
+    // Use MobileSessionManager for better persistence
+    return MobileSessionManager.getSession();
   }
 
   isAuthenticated(): boolean {
