@@ -747,7 +747,7 @@ const PatientGraphView = () => {
                                 </p>
                               )}
                               <p className="text-sm md:text-base text-blue-600 font-semibold">
-                                {payload[0].value} {unit}
+                                {payload[0].value} {graphParams.unit}
                               </p>
                             </div>
                           );
