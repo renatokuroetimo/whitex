@@ -6,7 +6,20 @@
  * Checks if the app is running in mobile mode (Capacitor)
  */
 export const isMobileApp = (): boolean => {
-  return import.meta.env.VITE_APP_MODE === "mobile";
+  const mode = import.meta.env.VITE_APP_MODE;
+  const isCapacitor = !!(window as any).Capacitor;
+  const userAgent = navigator.userAgent.toLowerCase();
+  const isMobileUA = /android|ios|iphone|ipad|mobile/.test(userAgent);
+
+  console.log("🔍 Mobile detection:", {
+    VITE_APP_MODE: mode,
+    hasCapacitor: isCapacitor,
+    mobileUserAgent: isMobileUA,
+    userAgent: userAgent.substring(0, 50) + "...",
+  });
+
+  // Consider it mobile if any of these conditions are true
+  return mode === "mobile" || isCapacitor || isMobileUA;
 };
 
 /**
