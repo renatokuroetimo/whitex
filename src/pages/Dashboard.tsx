@@ -588,7 +588,7 @@ const Dashboard = () => {
           <div className="flex gap-3">
             <Button
               onClick={() => navigate("/pacientes/novo")}
-              className="bg-brand-teal hover:bg-brand-dark-teal"
+              className="bg-[#00B1BB] hover:bg-[#01485E]"
             >
               <Plus className="h-4 w-4 mr-2" />
               Novo Paciente

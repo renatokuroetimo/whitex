@@ -111,7 +111,7 @@ const AddCRM = () => {
             <Button
               type="submit"
               disabled={!crm.trim() || isLoading}
-              className="w-full h-12 bg-brand-blue hover:bg-blue-600 text-white font-medium rounded-md transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+              className="w-full h-12 bg-[#00B1BB] hover:bg-[#01485E] text-white font-medium rounded-md transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               {isLoading ? "Criando conta..." : "Criar uma conta"}
             </Button>
