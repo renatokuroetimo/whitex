@@ -16,10 +16,11 @@ const AutoRedirect: React.FC<AutoRedirectProps> = ({ children }) => {
     // Só redireciona se não estiver carregando e estiver na página inicial
     if (!isLoading && location.pathname === "/") {
       if (isAuthenticated && user) {
-        // Mobile app: força logout se usuário for médico
+        // Mobile app: handle doctor access but don't logout here to avoid session issues
         if (isMobileApp() && user.profession === "medico") {
-          console.log("🚫 Mobile app: blocking doctor access");
-          // Don't redirect, let them stay on main page to see the mobile notice
+          console.log("🚫 Mobile app: doctor detected, staying on main page");
+          // Just don't redirect, let them see the mobile notice on the main page
+          // Don't logout here as it interferes with session persistence
           return;
         }
 
