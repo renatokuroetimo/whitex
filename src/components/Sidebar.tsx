@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContextHybrid";
 import { Button } from "@/components/ui/button";
 import { profileImageAPI } from "@/lib/profile-image-api";
 import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
+import Logo from "@/components/Logo";
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
@@ -146,12 +147,7 @@ const Sidebar: React.FC = () => {
     <div className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col">
       {/* Header com timestamp para forçar atualização */}
       <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-gray-900 rounded flex items-center justify-center">
-            <span className="text-white text-sm font-semibold">W</span>
-          </div>
-          <span className="font-semibold text-gray-900">WHITEX</span>
-        </div>
+        <Logo variant="primary" size="md" showText={true} />
       </div>
 
       {/* User Profile */}
@@ -160,8 +156,8 @@ const Sidebar: React.FC = () => {
           onClick={() => navigate(profilePath)}
           className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
             isActive(profilePath)
-              ? "bg-blue-50 text-blue-700 border border-blue-200"
-              : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              ? "bg-brand-teal/10 text-brand-primary border border-brand-teal/20"
+              : "text-gray-600 hover:bg-brand-light hover:text-brand-primary"
           }`}
         >
           <div className="w-8 h-8 bg-gray-100 rounded-full overflow-hidden flex items-center justify-center border border-gray-200">
@@ -193,8 +189,8 @@ const Sidebar: React.FC = () => {
                   onClick={() => handleNavigation(item.path)}
                   className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
                     active
-                      ? "bg-blue-50 text-blue-700 border border-blue-200"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      ? "bg-brand-teal/10 text-brand-primary border border-brand-teal/20"
+                      : "text-gray-600 hover:bg-brand-light hover:text-brand-primary"
                   }`}
                 >
                   <Icon className="w-4 h-4 flex-shrink-0" />
