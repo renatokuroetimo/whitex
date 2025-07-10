@@ -598,7 +598,7 @@ const PatientGraphView = () => {
               <p className="text-gray-600 mb-6">
                 {hasLoadingError
                   ? "Houve um problema ao carregar os dados. Tente novamente ou verifique sua conexão."
-                  : `Não há registros de ${parameter} para o período selecionado. Tente selecionar um período maior ou adicione mais registros.`}
+                  : `Não há registros de ${graphParams.parameter} para o período selecionado. Tente selecionar um período maior ou adicione mais registros.`}
               </p>
               <div className="flex gap-3 justify-center">
                 {hasLoadingError ? (
