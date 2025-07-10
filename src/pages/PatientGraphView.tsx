@@ -166,7 +166,7 @@ const PatientGraphView = () => {
       console.log("✅ Loading graph data...");
       loadData();
     } else {
-      console.log("❌ Not loading - missing conditions");
+      console.log("��� Not loading - missing conditions");
     }
   }, [patientId, user, graphParams, isHospitalContext]);
 
