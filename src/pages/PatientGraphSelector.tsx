@@ -166,21 +166,30 @@ const PatientGraphSelector = () => {
       unit: summary.unitSymbol,
     });
 
+    console.log("🔍 Navigating to graph with params:", {
+      summary,
+      params: params.toString(),
+      patientId,
+      isHospitalContext,
+    });
+
     if (patientId) {
       if (isHospitalContext) {
         // Hospital visualizando gráfico de paciente
-        navigate(
-          `/gerenciamento/patients/${patientId}/graficos/visualizar?${params.toString()}`,
-        );
+        const url = `/gerenciamento/patients/${patientId}/graficos/visualizar?${params.toString()}`;
+        console.log("🔗 Hospital navigation URL:", url);
+        navigate(url);
       } else {
         // Médico visualizando gráfico de paciente
-        navigate(
-          `/pacientes/${patientId}/graficos/visualizar?${params.toString()}`,
-        );
+        const url = `/pacientes/${patientId}/graficos/visualizar?${params.toString()}`;
+        console.log("🔗 Doctor navigation URL:", url);
+        navigate(url);
       }
     } else {
       // Paciente visualizando próprio gráfico
-      navigate(`/patient/graficos/visualizar?${params.toString()}`);
+      const url = `/patient/graficos/visualizar?${params.toString()}`;
+      console.log("🔗 Patient navigation URL:", url);
+      navigate(url);
     }
   };
 
