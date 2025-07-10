@@ -450,8 +450,13 @@ const PatientProfile = () => {
     );
   }
 
+  useEffect(() => {
+    if (user && user.profession !== "paciente") {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
+
   if (user.profession !== "paciente") {
-    navigate("/dashboard");
     return null;
   }
 
