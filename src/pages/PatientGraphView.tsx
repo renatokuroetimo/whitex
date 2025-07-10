@@ -433,19 +433,14 @@ const PatientGraphView = () => {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen bg-gray-50">
-        {!isHospitalContext && (
-          <div className="hidden lg:block">
-            <Sidebar />
-          </div>
-        )}
-        <div className="flex-1 flex items-center justify-center">
+      <MobileLayout>
+        <div className="p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-64">
           <div className="text-center">
             <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
             <p className="text-gray-600">Carregando gráfico...</p>
           </div>
         </div>
-      </div>
+      </MobileLayout>
     );
   }
 
