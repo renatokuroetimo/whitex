@@ -159,16 +159,20 @@ const PatientGraphSelector = () => {
   };
 
   const handleViewGraph = (summary: IndicatorSummary) => {
-    const params = new URLSearchParams({
+    // Store graph parameters in localStorage for mobile compatibility
+    const graphParams = {
       category: summary.categoryName,
       subcategory: summary.subcategoryName,
       parameter: summary.parameter,
       unit: summary.unitSymbol,
-    });
+      timestamp: Date.now(), // For cache invalidation
+    };
+
+    localStorage.setItem("currentGraphParams", JSON.stringify(graphParams));
 
     console.log("🔍 Navigating to graph with params:", {
       summary,
-      params: params.toString(),
+      graphParams,
       patientId,
       isHospitalContext,
     });
@@ -176,18 +180,18 @@ const PatientGraphSelector = () => {
     if (patientId) {
       if (isHospitalContext) {
         // Hospital visualizando gráfico de paciente
-        const url = `/gerenciamento/patients/${patientId}/graficos/visualizar?${params.toString()}`;
+        const url = `/gerenciamento/patients/${patientId}/graficos/visualizar`;
         console.log("🔗 Hospital navigation URL:", url);
         navigate(url);
       } else {
         // Médico visualizando gráfico de paciente
-        const url = `/pacientes/${patientId}/graficos/visualizar?${params.toString()}`;
+        const url = `/pacientes/${patientId}/graficos/visualizar`;
         console.log("🔗 Doctor navigation URL:", url);
         navigate(url);
       }
     } else {
       // Paciente visualizando próprio gráfico
-      const url = `/patient/graficos/visualizar?${params.toString()}`;
+      const url = `/patient/graficos/visualizar`;
       console.log("🔗 Patient navigation URL:", url);
       navigate(url);
     }
