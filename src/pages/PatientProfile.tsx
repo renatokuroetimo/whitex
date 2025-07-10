@@ -1027,7 +1027,6 @@ const PatientProfile = () => {
             </Tabs>
           </div>
         </div>
-      </div>
 
       {/* Dialog para adicionar médico */}
       <Dialog open={showAddDoctorDialog} onOpenChange={setShowAddDoctorDialog}>
