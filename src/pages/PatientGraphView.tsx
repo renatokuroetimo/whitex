@@ -532,7 +532,7 @@ const PatientGraphView = () => {
                   {hasLoadingError ? (
                     <Button
                       onClick={loadData}
-                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                      className="bg-[#00B1BB] hover:bg-[#01485E] text-white"
                       disabled={isLoading}
                     >
                       {isLoading ? "Carregando..." : "Tentar novamente"}

@@ -102,7 +102,7 @@ const HospitalDoctors = () => {
 
             <Button
               onClick={() => navigate("/gerenciamento/doctors/create")}
-              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:shadow-lg transition-all duration-200 flex items-center gap-2"
+              className="bg-[#00B1BB] hover:shadow-lg transition-all duration-200 flex items-center gap-2"
             >
               <UserPlus className="w-4 h-4" />
               Cadastrar Novo Médico
@@ -140,7 +140,7 @@ const HospitalDoctors = () => {
             {!searchTerm && (
               <Button
                 onClick={() => navigate("/gerenciamento/doctors/create")}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:shadow-lg transition-all duration-200"
+                className="bg-[#00B1BB] hover:shadow-lg transition-all duration-200"
               >
                 <UserPlus className="w-4 h-4 mr-2" />
                 Cadastrar Primeiro Médico

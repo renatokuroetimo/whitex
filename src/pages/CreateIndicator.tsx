@@ -665,7 +665,7 @@ const CreateIndicator = () => {
                   <Button
                     type="submit"
                     disabled={isLoading}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-[#00B1BB] hover:bg-[#01485E]"
                   >
                     {isLoading
                       ? isEditMode

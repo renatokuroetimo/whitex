@@ -199,7 +199,7 @@ const DoctorSearch = () => {
                 <Button
                   onClick={handleSearch}
                   disabled={isSearching}
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-[#00B1BB] hover:bg-[#01485E]"
                 >
                   {isSearching ? (
                     <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
@@ -452,7 +452,7 @@ const DoctorSearch = () => {
             </Button>
             <Button
               onClick={handleShareWithDoctor}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-[#00B1BB] hover:bg-[#01485E]"
             >
               Confirmar Compartilhamento
             </Button>

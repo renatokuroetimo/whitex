@@ -152,7 +152,7 @@ const Indicadores = () => {
                 </div>
                 <Button
                   onClick={handleCreateIndicator}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-[#00B1BB] hover:bg-[#01485E] text-white"
                 >
                   Criar
                 </Button>
@@ -175,7 +175,7 @@ const Indicadores = () => {
                 <Button
                   onClick={handleViewCreatedIndicators}
                   variant="outline"
-                  className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                  className="border-[#00B1BB] text-[#00B1BB] hover:bg-[#00B1BB]/10"
                 >
                   Ver
                 </Button>
@@ -196,7 +196,7 @@ const Indicadores = () => {
                 <Button
                   onClick={handleViewStandardIndicators}
                   variant="outline"
-                  className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                  className="border-[#00B1BB] text-[#00B1BB] hover:bg-[#00B1BB]/10"
                 >
                   Ver
                 </Button>

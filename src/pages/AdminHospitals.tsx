@@ -227,7 +227,7 @@ const AdminHospitals = () => {
               onOpenChange={setIsCreateDialogOpen}
             >
               <DialogTrigger asChild>
-                <Button className="bg-blue-600 hover:bg-blue-700">
+                <Button className="bg-[#00B1BB] hover:bg-[#01485E]">
                   <Plus className="w-4 h-4 mr-2" />
                   Novo Hospital
                 </Button>

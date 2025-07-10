@@ -698,7 +698,7 @@ const PatientProfile = () => {
                     <Button
                       onClick={handlePersonalDataSave}
                       disabled={isLoading}
-                      className="bg-blue-600 hover:bg-blue-700"
+                      className="bg-[#00B1BB] hover:bg-[#01485E]"
                     >
                       {isLoading ? "Salvando..." : "Salvar"}
                     </Button>
@@ -915,7 +915,7 @@ const PatientProfile = () => {
                     <Button
                       onClick={handleSaveMedicalData}
                       disabled={isSavingMedicalData}
-                      className="bg-blue-600 hover:bg-blue-700"
+                      className="bg-[#00B1BB] hover:bg-[#01485E]"
                     >
                       {isLoading ? "Salvando..." : "Salvar"}
                     </Button>
@@ -938,7 +938,7 @@ const PatientProfile = () => {
                       </div>
                       <Button
                         onClick={() => navigate("/patient/buscar-medicos")}
-                        className="bg-blue-600 hover:bg-blue-700"
+                        className="bg-[#00B1BB] hover:bg-[#01485E]"
                       >
                         <Plus className="h-4 w-4 mr-2" />
                         Buscar médico
@@ -961,7 +961,7 @@ const PatientProfile = () => {
                         </p>
                         <Button
                           onClick={() => navigate("/patient/buscar-medicos")}
-                          className="bg-blue-600 hover:bg-blue-700"
+                          className="bg-[#00B1BB] hover:bg-[#01485E]"
                         >
                           <Search className="h-4 w-4 mr-2" />
                           Buscar médico
@@ -1083,7 +1083,7 @@ const PatientProfile = () => {
                         setShowAddDoctorDialog(false);
                       }}
                       disabled={sharedDoctors.some((d) => d.id === doctor.id)}
-                      className="bg-blue-600 hover:bg-blue-700"
+                      className="bg-[#00B1BB] hover:bg-[#01485E]"
                     >
                       {sharedDoctors.some((d) => d.id === doctor.id) ? (
                         "Já compartilhado"
@@ -1140,7 +1140,7 @@ const PatientProfile = () => {
               </Button>
               <Button
                 onClick={handleShareData}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-[#00B1BB] hover:bg-[#01485E]"
               >
                 Confirmar compartilhamento
               </Button>

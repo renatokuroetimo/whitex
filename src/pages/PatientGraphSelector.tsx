@@ -333,7 +333,7 @@ const PatientGraphSelector = () => {
 
                   <Button
                     onClick={() => handleViewGraph(summary)}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    className="w-full bg-[#00B1BB] hover:bg-[#01485E] text-white"
                     disabled={summary.count < 2}
                   >
                     <BarChart3 className="h-4 w-4 mr-2" />

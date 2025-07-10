@@ -233,7 +233,7 @@ const PatientIndicators = () => {
                 <Button
                   onClick={handleViewGraphs}
                   variant="outline"
-                  className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                  className="border-[#00B1BB] text-[#00B1BB] hover:bg-[#00B1BB]/10"
                 >
                   <TrendingUp className="h-4 w-4 mr-2" />
                   Ver Gráficos
@@ -278,7 +278,7 @@ const PatientIndicators = () => {
                 </p>
                 <Button
                   onClick={handleAddIndicator}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-[#00B1BB] hover:bg-[#01485E] text-white"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   {isViewingOtherPatient || isHospitalViewing

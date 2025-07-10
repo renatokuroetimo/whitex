@@ -45,7 +45,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             className={
               variant === "destructive"
                 ? "bg-red-600 hover:bg-red-700"
-                : "bg-blue-600 hover:bg-blue-700"
+                : "bg-[#00B1BB] hover:bg-[#01485E]"
             }
           >
             {confirmText}

@@ -116,7 +116,7 @@ const PatientDashboard = () => {
               <Button
                 onClick={handleViewAllIndicators}
                 variant="outline"
-                className="w-full border-blue-600 text-blue-600 hover:bg-blue-50"
+                className="w-full border-[#00B1BB] text-[#00B1BB] hover:bg-[#00B1BB]/10"
               >
                 Ver Indicadores
               </Button>

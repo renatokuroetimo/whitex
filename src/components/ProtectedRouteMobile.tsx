@@ -42,7 +42,7 @@ const ProtectedRouteMobile = ({
           </p>
           <button
             onClick={() => (window.location.href = "/login")}
-            className="bg-brand-blue text-white px-6 py-2 rounded-lg"
+            className="bg-[#00B1BB] text-white px-6 py-2 rounded-lg"
           >
             Fazer Login como Paciente
           </button>

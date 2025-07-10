@@ -177,7 +177,7 @@ const HospitalPatients = () => {
                 {/* Ver gráficos button */}
                 <Button
                   onClick={() => navigate("/gerenciamento/patients/graphs")}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-[#00B1BB] hover:bg-[#01485E] text-white"
                 >
                   <TrendingUp className="h-4 w-4 mr-2" />
                   Ver gráficos

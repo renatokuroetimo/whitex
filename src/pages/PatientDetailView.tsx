@@ -451,7 +451,7 @@ const PatientDetailView = () => {
                       navigate(`/pacientes/${patient.id}/indicadores`);
                     }
                   }}
-                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  className="w-full bg-[#00B1BB] hover:bg-[#01485E]"
                 >
                   Ver indicadores
                 </Button>

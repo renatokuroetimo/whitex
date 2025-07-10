@@ -305,7 +305,7 @@ const EditPatientIndicator = () => {
                   <Button
                     type="submit"
                     disabled={isSaving}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-[#00B1BB] hover:bg-[#01485E]"
                   >
                     {isSaving ? "Salvando..." : "Salvar alterações"}
                   </Button>

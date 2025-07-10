@@ -342,7 +342,7 @@ const Pacientes = () => {
                   <Button
                     size="sm"
                     onClick={() => navigate("/pacientes/novo")}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-[#00B1BB] hover:bg-[#01485E]"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Criar paciente
@@ -412,7 +412,7 @@ const Pacientes = () => {
                           {!searchTerm && statusFilters.length >= 3 && (
                             <Button
                               onClick={() => navigate("/pacientes/novo")}
-                              className="bg-blue-600 hover:bg-blue-700"
+                              className="bg-[#00B1BB] hover:bg-[#01485E]"
                             >
                               <Plus className="h-4 w-4 mr-2" />
                               Adicionar paciente
@@ -506,7 +506,7 @@ const Pacientes = () => {
                                 }
                                 navigate(`/pacientes/${patient.id}`);
                               }}
-                              className="bg-blue-600 hover:bg-blue-700 text-white"
+                              className="bg-[#00B1BB] hover:bg-[#01485E] text-white"
                               disabled={patient.status === "inativo"}
                             >
                               Ver Perfil
@@ -574,7 +574,7 @@ const Pacientes = () => {
               <div className="px-4 sm:px-6 py-4 border-t border-gray-200 bg-gray-50">
                 <Button
                   onClick={() => navigate("/pacientes/novo")}
-                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  className="w-full bg-[#00B1BB] hover:bg-[#01485E]"
                 >
                   Criar novo paciente
                 </Button>

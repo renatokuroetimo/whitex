@@ -121,7 +121,7 @@ const CreatedIndicators = () => {
             </div>
             <Button
               onClick={() => navigate("/indicadores/criar")}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-[#00B1BB] hover:bg-[#01485E] text-white"
             >
               <Plus className="h-4 w-4 mr-2" />
               Novo Indicador
@@ -144,7 +144,7 @@ const CreatedIndicators = () => {
                 </p>
                 <Button
                   onClick={() => navigate("/indicadores/criar")}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-[#00B1BB] hover:bg-[#01485E] text-white"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Criar Primeiro Indicador
