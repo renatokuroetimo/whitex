@@ -57,7 +57,7 @@ export class MobileSessionManager {
       // Try primary storage first
       let userData = localStorage.getItem(this.SESSION_KEY);
       console.log(
-        "�� Primary storage result:",
+        "📱 Primary storage result:",
         userData ? "found" : "not found",
       );
 
@@ -104,6 +104,7 @@ export class MobileSessionManager {
   static clearSession(): void {
     try {
       localStorage.removeItem(this.SESSION_KEY);
+      localStorage.removeItem(this.OLD_KEY);
       sessionStorage.removeItem(this.SESSION_KEY);
 
       if (isMobileApp()) {
