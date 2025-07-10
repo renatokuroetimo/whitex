@@ -23,19 +23,19 @@ const getSidebarItems = (userProfession?: string): SidebarItem[] => {
         id: "inicio",
         label: "Início",
         icon: Home,
-        path: "/dashboard",
+        path: "/patient-dashboard",
       },
       {
         id: "dados",
         label: "Dados pessoais",
         icon: Users,
-        path: "/profile",
+        path: "/patient-profile",
       },
       {
         id: "indicadores",
         label: "Indicadores",
         icon: BarChart3,
-        path: "/indicadores",
+        path: "/patient/indicadores",
       },
     ];
     return items;
