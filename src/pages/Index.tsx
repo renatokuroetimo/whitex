@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNavigate, Link } from "react-router-dom";
+import Logo from "@/components/Logo";
 
 const Index = () => {
   const [email, setEmail] = useState("");
@@ -28,25 +29,23 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-200 to-gray-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-brand-light via-white to-brand-light flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* WhiteX Brand */}
         <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-8">
-            WhiteX
-          </h1>
+          <Logo variant="primary" size="xl" className="justify-center" />
         </div>
 
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+          <h1 className="text-3xl font-bold text-brand-primary mb-2">
             Criar uma conta
           </h1>
-          <p className="text-gray-600">
+          <p className="text-brand-dark-teal">
             Já tem uma conta?{" "}
             <Link
               to="/login"
-              className="text-gray-700 hover:text-gray-800 underline transition-colors"
+              className="text-brand-teal hover:text-brand-dark-teal underline transition-colors"
             >
               Entre aqui
             </Link>
@@ -69,7 +68,7 @@ const Index = () => {
                   placeholder="Digite seu e-mail"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 bg-white border-gray-300 text-gray-800 placeholder:text-gray-400 focus:border-gray-500 focus:ring-gray-500"
+                  className="pl-10 bg-white border-gray-300 text-brand-primary placeholder:text-gray-400 focus:border-brand-teal focus:ring-brand-teal"
                   required
                 />
               </div>
@@ -88,7 +87,7 @@ const Index = () => {
                   placeholder="Digite sua senha"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-10 bg-white border-gray-300 text-gray-800 placeholder:text-gray-400 focus:border-gray-500 focus:ring-gray-500"
+                  className="pl-10 pr-10 bg-white border-gray-300 text-brand-primary placeholder:text-gray-400 focus:border-brand-teal focus:ring-brand-teal"
                   required
                   minLength={6}
                 />
@@ -110,7 +109,7 @@ const Index = () => {
             <Button
               type="submit"
               disabled={!email || !password}
-              className="w-full bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-full bg-gradient-to-r from-brand-primary to-brand-dark-teal hover:from-brand-dark-teal hover:to-brand-primary text-white font-semibold py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               Criar uma conta
             </Button>
@@ -118,7 +117,7 @@ const Index = () => {
             {/* Terms text */}
             <p className="text-xs text-gray-500 text-center mt-4">
               Ao criar uma conta você concorda com os{" "}
-              <button className="text-gray-600 hover:text-gray-700 underline transition-colors">
+              <button className="text-brand-teal hover:text-brand-dark-teal underline transition-colors">
                 Termos de Serviço
               </button>
             </p>
@@ -129,7 +128,7 @@ const Index = () => {
         <div className="text-center mt-6">
           <button
             onClick={handleBack}
-            className="text-gray-600 hover:text-gray-800 text-sm underline transition-colors flex items-center justify-center gap-2 mx-auto"
+            className="text-brand-dark-teal hover:text-brand-primary text-sm underline transition-colors flex items-center justify-center gap-2 mx-auto"
           >
             <ArrowLeft className="h-4 w-4" />
             Voltar para login
