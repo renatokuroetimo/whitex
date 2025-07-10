@@ -147,7 +147,12 @@ const Sidebar: React.FC = () => {
     <div className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col">
       {/* Header com timestamp para forçar atualização */}
       <div className="p-6 border-b border-gray-200">
-        <Logo variant="primary" size="md" showText={true} />
+        <Logo
+          variant="primary"
+          size="lg"
+          showText={false}
+          className="justify-center"
+        />
       </div>
 
       {/* User Profile */}
