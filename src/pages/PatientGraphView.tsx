@@ -634,7 +634,7 @@ const PatientGraphView = () => {
                   <div>
                     <p className="text-sm text-gray-600">Último Valor</p>
                     <p className="text-2xl font-semibold text-gray-900">
-                      {stats.latest.toFixed(1)} {unit}
+                      {stats.latest.toFixed(1)} {graphParams.unit}
                     </p>
                   </div>
                   <div
