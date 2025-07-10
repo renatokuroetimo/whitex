@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContextHybrid";
+import Logo from "@/components/Logo";
 
 const SelectProfession = () => {
   const [selectedProfession, setSelectedProfession] = useState<string>("");
@@ -78,26 +79,31 @@ const SelectProfession = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-brand-light via-white to-brand-light flex flex-col">
       {/* Header with back arrow */}
       <div className="p-4">
         <button
           onClick={handleBack}
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          className="p-2 hover:bg-brand-light rounded-full transition-colors"
         >
-          <ArrowLeft className="h-5 w-5 text-gray-600" />
+          <ArrowLeft className="h-5 w-5 text-brand-dark-teal" />
         </button>
       </div>
 
       {/* Main content */}
       <div className="flex-1 flex items-center justify-center px-4">
         <div className="w-full max-w-sm">
+          {/* Logo */}
+          <div className="text-center mb-6">
+            <Logo variant="primary" size="lg" className="justify-center" />
+          </div>
+
           {/* Title */}
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-medium text-gray-900 mb-2">
+            <h1 className="text-2xl font-medium text-brand-primary mb-2">
               Estamos quase lá
             </h1>
-            <p className="text-sm text-gray-600">O que você é?</p>
+            <p className="text-sm text-brand-dark-teal">O que você é?</p>
           </div>
 
           {/* Profession Selection */}
@@ -107,11 +113,11 @@ const SelectProfession = () => {
               onClick={() => setSelectedProfession("medico")}
               className={`w-full p-4 rounded-lg border-2 transition-all ${
                 selectedProfession === "medico"
-                  ? "border-brand-blue bg-blue-50"
-                  : "border-gray-200 bg-white hover:border-gray-300"
+                  ? "border-brand-teal bg-brand-teal/10"
+                  : "border-gray-200 bg-white hover:border-brand-teal/50"
               }`}
             >
-              <span className="text-gray-900 font-medium">Médico</span>
+              <span className="text-brand-primary font-medium">Médico</span>
             </button>
 
             {/* Patient option */}
@@ -119,11 +125,11 @@ const SelectProfession = () => {
               onClick={() => setSelectedProfession("paciente")}
               className={`w-full p-4 rounded-lg border-2 transition-all ${
                 selectedProfession === "paciente"
-                  ? "border-brand-blue bg-blue-50"
-                  : "border-gray-200 bg-white hover:border-gray-300"
+                  ? "border-brand-teal bg-brand-teal/10"
+                  : "border-gray-200 bg-white hover:border-brand-teal/50"
               }`}
             >
-              <span className="text-gray-900 font-medium">Paciente</span>
+              <span className="text-brand-primary font-medium">Paciente</span>
             </button>
           </div>
 
@@ -131,7 +137,7 @@ const SelectProfession = () => {
           <Button
             onClick={handleContinue}
             disabled={!selectedProfession || isLoading}
-            className="w-full h-12 bg-brand-blue hover:bg-blue-600 text-white font-medium rounded-md transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+            className="w-full h-12 bg-gradient-to-r from-brand-primary to-brand-dark-teal hover:from-brand-dark-teal hover:to-brand-primary text-white font-medium rounded-md transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
             {isLoading ? "Criando conta..." : "Continuar"}
           </Button>
