@@ -689,9 +689,16 @@ const PatientGraphView = () => {
                       type="monotone"
                       dataKey="value"
                       stroke="#3b82f6"
-                      strokeWidth={2}
-                      dot={{ fill: "#3b82f6", strokeWidth: 2, r: 4 }}
-                      activeDot={{ r: 6, fill: "#3b82f6" }}
+                      strokeWidth={window.innerWidth < 768 ? 1.5 : 2}
+                      dot={{
+                        fill: "#3b82f6",
+                        strokeWidth: window.innerWidth < 768 ? 1 : 2,
+                        r: window.innerWidth < 768 ? 3 : 4,
+                      }}
+                      activeDot={{
+                        r: window.innerWidth < 768 ? 5 : 6,
+                        fill: "#3b82f6",
+                      }}
                     />
                     {/* Linha de referência da média */}
                     <ReferenceLine
