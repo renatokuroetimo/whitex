@@ -139,9 +139,6 @@
   .mobile-container {
     min-height: 100vh;
     min-height: 100dvh; /* Dynamic viewport height */
-    /* Ensure container respects safe areas */
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
   }
 
   /* Ensure content respects safe areas */
@@ -160,16 +157,3 @@
 }
 
 /* Prevent content from going under notch on iOS */
-@supports (padding-top: constant(safe-area-inset-top)) {
-  .mobile-container {
-    padding-top: constant(safe-area-inset-top);
-    padding-bottom: constant(safe-area-inset-bottom);
-  }
-}
-
-@supports (padding-top: env(safe-area-inset-top)) {
-  .mobile-container {
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-}
