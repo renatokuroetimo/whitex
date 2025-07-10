@@ -84,18 +84,45 @@ const PatientGraphView = () => {
   const unit = searchParams.get("unit") || "";
 
   useEffect(() => {
-    if (
-      (patientId ||
-        (user?.profession === "paciente" && user?.id) ||
-        (isHospitalContext && patientId)) &&
-      category &&
-      subcategory &&
-      parameter &&
-      unit
-    ) {
+    console.log("🔍 PatientGraphView useEffect triggered:", {
+      patientId,
+      userProfession: user?.profession,
+      userId: user?.id,
+      isHospitalContext,
+      category,
+      subcategory,
+      parameter,
+      unit,
+    });
+
+    const hasValidPatient =
+      patientId ||
+      (user?.profession === "paciente" && user?.id) ||
+      (isHospitalContext && patientId);
+
+    const hasAllParams = category && subcategory && parameter && unit;
+
+    console.log("📊 Graph load conditions:", {
+      hasValidPatient,
+      hasAllParams,
+      willLoad: hasValidPatient && hasAllParams,
+    });
+
+    if (hasValidPatient && hasAllParams) {
+      console.log("✅ Loading graph data...");
       loadData();
+    } else {
+      console.log("❌ Not loading - missing conditions");
     }
-  }, [patientId, user, category, subcategory, parameter, unit]);
+  }, [
+    patientId,
+    user,
+    category,
+    subcategory,
+    parameter,
+    unit,
+    isHospitalContext,
+  ]);
 
   useEffect(() => {
     if (indicators.length > 0) {
