@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { adminAPI } from "@/lib/admin-api";
 import { toast } from "@/hooks/use-toast";
+import Logo from "@/components/Logo";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -77,14 +78,19 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-200 to-gray-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-brand-light via-white to-brand-light flex items-center justify-center p-4">
       <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="text-center mb-6">
+          <Logo variant="primary" size="lg" className="justify-center" />
+        </div>
+
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+          <h1 className="text-3xl font-bold text-brand-primary mb-2">
             Acesso Administrativo
           </h1>
-          <p className="text-gray-600">
+          <p className="text-brand-dark-teal">
             Faça login para gerenciar indicadores padrão
           </p>
         </div>
@@ -104,7 +110,7 @@ const AdminLogin = () => {
                   value={formData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
                   placeholder="Digite seu email administrativo"
-                  className="pl-10 bg-white border-gray-300 text-gray-800 placeholder:text-gray-400 focus:border-gray-500 focus:ring-gray-500"
+                  className="pl-10 bg-white border-gray-300 text-brand-primary placeholder:text-gray-400 focus:border-brand-teal focus:ring-brand-teal"
                   disabled={isLoading}
                 />
               </div>
@@ -124,7 +130,7 @@ const AdminLogin = () => {
                     handleInputChange("password", e.target.value)
                   }
                   placeholder="Digite sua senha"
-                  className="pl-10 pr-10 bg-white border-gray-300 text-gray-800 placeholder:text-gray-400 focus:border-gray-500 focus:ring-gray-500"
+                  className="pl-10 pr-10 bg-white border-gray-300 text-brand-primary placeholder:text-gray-400 focus:border-brand-teal focus:ring-brand-teal"
                   disabled={isLoading}
                 />
                 <button
@@ -146,7 +152,7 @@ const AdminLogin = () => {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-full bg-gradient-to-r from-brand-primary to-brand-dark-teal hover:from-brand-dark-teal hover:to-brand-primary text-white font-semibold py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {isLoading ? (
                 <div className="flex items-center justify-center gap-2">
@@ -171,7 +177,7 @@ const AdminLogin = () => {
         <div className="text-center mt-6">
           <button
             onClick={() => navigate("/")}
-            className="text-gray-600 hover:text-gray-800 text-sm underline transition-colors"
+            className="text-brand-dark-teal hover:text-brand-primary text-sm underline transition-colors"
           >
             ← Voltar ao site principal
           </button>
