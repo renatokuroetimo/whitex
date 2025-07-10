@@ -32,6 +32,21 @@ const Login = () => {
 
     const success = await login({ email, password });
     if (success) {
+      // Check if user is a doctor trying to access mobile app
+      const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+
+      if (isMobileApp() && currentUser.profession === "medico") {
+        // Block doctor access on mobile
+        await logout();
+        toast({
+          variant: "destructive",
+          title: "Acesso Restrito",
+          description:
+            "Este aplicativo é exclusivo para pacientes. Médicos devem acessar através da versão web.",
+        });
+        return;
+      }
+
       navigate("/dashboard");
     }
   };
