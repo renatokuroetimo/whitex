@@ -191,136 +191,127 @@ const PatientAddIndicator = () => {
 
   return (
     <MobileLayout>
-        <div className="p-4 sm:p-6 lg:p-8">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={handleCancel}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <ArrowLeft className="h-5 w-5 text-gray-600" />
-              </button>
-              <h1 className="text-2xl font-semibold text-gray-900">
-                Registrar indicador
-              </h1>
-            </div>
+      <div className="p-4 sm:p-6 lg:p-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
             <button
               onClick={handleCancel}
-              className="text-sm text-blue-600 hover:text-blue-800"
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
             >
-              ← Voltar
+              <ArrowLeft className="h-5 w-5 text-gray-600" />
             </button>
+            <h1 className="text-2xl font-semibold text-gray-900">
+              Registrar indicador
+            </h1>
           </div>
+          <button
+            onClick={handleCancel}
+            className="text-sm text-blue-600 hover:text-blue-800"
+          >
+            ← Voltar
+          </button>
+        </div>
 
-          {/* Form */}
-          <div className="max-w-2xl">
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <div className="mb-6">
-                <h2 className="text-lg font-medium text-gray-900 mb-1">
-                  Registro de indicador de saúde
-                </h2>
-                <p className="text-sm text-gray-600">
-                  Registre um novo valor para acompanhar sua saúde
+        {/* Form */}
+        <div className="max-w-2xl">
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="mb-6">
+              <h2 className="text-lg font-medium text-gray-900 mb-1">
+                Registro de indicador de saúde
+              </h2>
+              <p className="text-sm text-gray-600">
+                Registre um novo valor para acompanhar sua saúde
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                {/* Indicador */}
+                <div className="sm:col-span-2">
+                  <Label className="text-sm font-medium text-gray-700 mb-2">
+                    Indicador *
+                  </Label>
+                  <Select
+                    value={selectedIndicator}
+                    onValueChange={setSelectedIndicator}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione um indicador" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {indicators.map((indicator) => (
+                        <SelectItem key={indicator.id} value={indicator.id}>
+                          {indicator.displayName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Valor */}
+                <div>
+                  <Label className="text-sm text-gray-700 mb-2">Valor *</Label>
+                  <Input
+                    type="number"
+                    step="any"
+                    value={value}
+                    onChange={(e) => setValue(e.target.value)}
+                    placeholder="Digite o valor"
+                    className="w-full"
+                  />
+                </div>
+
+                {/* Data */}
+                <div>
+                  <Label className="text-sm text-gray-700 mb-2">Data</Label>
+                  <Input
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    disabled={!selectedIndicatorData?.requiresDate}
+                    className="w-full"
+                  />
+                </div>
+
+                {/* Horário */}
+                <div className="sm:col-span-2">
+                  <Label className="text-sm text-gray-700 mb-2">Horário</Label>
+                  <Input
+                    type="time"
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                    disabled={!selectedIndicatorData?.requiresTime}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+
+              {/* Info */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-sm text-blue-800">
+                  💡 Seus registros serão automaticamente compartilhados com os
+                  médicos que você autorizou em seu perfil.
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                  {/* Indicador */}
-                  <div className="sm:col-span-2">
-                    <Label className="text-sm font-medium text-gray-700 mb-2">
-                      Indicador *
-                    </Label>
-                    <Select
-                      value={selectedIndicator}
-                      onValueChange={setSelectedIndicator}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione um indicador" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {indicators.map((indicator) => (
-                          <SelectItem key={indicator.id} value={indicator.id}>
-                            {indicator.displayName}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Valor */}
-                  <div>
-                    <Label className="text-sm text-gray-700 mb-2">
-                      Valor *
-                    </Label>
-                    <Input
-                      type="number"
-                      step="any"
-                      value={value}
-                      onChange={(e) => setValue(e.target.value)}
-                      placeholder="Digite o valor"
-                      className="w-full"
-                    />
-                  </div>
-
-                  {/* Data */}
-                  <div>
-                    <Label className="text-sm text-gray-700 mb-2">Data</Label>
-                    <Input
-                      type="date"
-                      value={date}
-                      onChange={(e) => setDate(e.target.value)}
-                      disabled={!selectedIndicatorData?.requiresDate}
-                      className="w-full"
-                    />
-                  </div>
-
-                  {/* Horário */}
-                  <div className="sm:col-span-2">
-                    <Label className="text-sm text-gray-700 mb-2">
-                      Horário
-                    </Label>
-                    <Input
-                      type="time"
-                      value={time}
-                      onChange={(e) => setTime(e.target.value)}
-                      disabled={!selectedIndicatorData?.requiresTime}
-                      className="w-full"
-                    />
-                  </div>
-                </div>
-
-                {/* Info */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <p className="text-sm text-blue-800">
-                    💡 Seus registros serão automaticamente compartilhados com
-                    os médicos que você autorizou em seu perfil.
-                  </p>
-                </div>
-
-                {/* Buttons */}
-                <div className="flex justify-end gap-3 pt-6">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleCancel}
-                  >
-                    Cancelar
-                  </Button>
-                  <Button
-                    type="submit"
-                    className="bg-[#00B1BB] hover:bg-[#01485E]"
-                  >
-                    Registrar
-                  </Button>
-                </div>
-              </form>
-            </div>
+              {/* Buttons */}
+              <div className="flex justify-end gap-3 pt-6">
+                <Button type="button" variant="outline" onClick={handleCancel}>
+                  Cancelar
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-[#00B1BB] hover:bg-[#01485E]"
+                >
+                  Registrar
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
-    </div>
+    </MobileLayout>
   );
 };
 
