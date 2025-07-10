@@ -548,12 +548,12 @@ const PatientGraphView = () => {
             </button>
             <div>
               <h1 className="text-2xl font-semibold text-gray-900">
-                {subcategory} - {parameter}
+                {graphParams.subcategory} - {graphParams.parameter}
               </h1>
               <p className="text-sm text-gray-600">
                 {patientId
-                  ? `${patient?.name || "Paciente"} • ${category}`
-                  : `Seus dados • ${category}`}
+                  ? `${patient?.name || "Paciente"} • ${graphParams.category}`
+                  : `Seus dados • ${graphParams.category}`}
               </p>
             </div>
           </div>
