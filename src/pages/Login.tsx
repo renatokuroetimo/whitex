@@ -30,35 +30,48 @@ const Login = () => {
       return;
     }
 
+    // Check if it's a doctor trying to login on mobile before attempting login
+    if (isMobileApp()) {
+      // First do a pre-check by attempting to find the user in localStorage
+      try {
+        const storedUsers = JSON.parse(
+          localStorage.getItem("medical_app_users") || "[]",
+        );
+        const existingUser = storedUsers.find(
+          (u: any) => u.email === email.toLowerCase(),
+        );
+
+        if (existingUser && existingUser.profession === "medico") {
+          toast({
+            variant: "destructive",
+            title: "Acesso Restrito",
+            description:
+              "Este aplicativo é exclusivo para pacientes. Médicos devem acessar através da versão web.",
+          });
+          return;
+        }
+      } catch (error) {
+        console.log("Could not pre-check user profession");
+      }
+    }
+
     const success = await login({ email, password });
     if (success) {
-      // For mobile app, force logout if user is a doctor
+      // Additional check for mobile after successful login
       if (isMobileApp()) {
-        // Give a moment for the auth state to update, then check
-        setTimeout(async () => {
-          try {
-            const currentUser = JSON.parse(
-              localStorage.getItem("user") || "{}",
-            );
-            console.log("🔍 Mobile login check - user:", currentUser);
-
-            if (currentUser.profession === "medico") {
-              console.log("🚫 Blocking doctor access on mobile");
-              await logout();
-              toast({
-                variant: "destructive",
-                title: "Acesso Restrito",
-                description:
-                  "Este aplicativo é exclusivo para pacientes. Médicos devem acessar através da versão web.",
-              });
-              // Force redirect back to login
-              navigate("/login", { replace: true });
-              return;
-            }
-          } catch (error) {
-            console.error("Error checking user profession:", error);
-          }
-        }, 200);
+        const currentUser = JSON.parse(
+          localStorage.getItem("medical_app_current_user") || "{}",
+        );
+        if (currentUser.profession === "medico") {
+          console.log("🚫 Doctor detected after login on mobile - logging out");
+          await logout();
+          toast({
+            variant: "destructive",
+            title: "Acesso Restrito",
+            description: "Este aplicativo é exclusivo para pacientes.",
+          });
+          return;
+        }
       }
 
       navigate("/dashboard");
