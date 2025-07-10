@@ -255,9 +255,9 @@ const PatientGraphView = () => {
       // Filtrar indicadores pelo tipo selecionado
       const filteredIndicators = indicatorValues.filter(
         (indicator) =>
-          indicator.categoryName === category &&
-          indicator.subcategoryName === subcategory &&
-          indicator.parameter === parameter,
+          indicator.categoryName === graphParams.category &&
+          indicator.subcategoryName === graphParams.subcategory &&
+          indicator.parameter === graphParams.parameter,
       );
 
       setIndicators(filteredIndicators);
