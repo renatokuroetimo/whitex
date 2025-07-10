@@ -142,10 +142,7 @@ const PatientGraphView = () => {
       userProfession: user?.profession,
       userId: user?.id,
       isHospitalContext,
-      category,
-      subcategory,
-      parameter,
-      unit,
+      graphParams,
     });
 
     const hasValidPatient =
@@ -153,7 +150,11 @@ const PatientGraphView = () => {
       (user?.profession === "paciente" && user?.id) ||
       (isHospitalContext && patientId);
 
-    const hasAllParams = category && subcategory && parameter && unit;
+    const hasAllParams =
+      graphParams.category &&
+      graphParams.subcategory &&
+      graphParams.parameter &&
+      graphParams.unit;
 
     console.log("📊 Graph load conditions:", {
       hasValidPatient,
