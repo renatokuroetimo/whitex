@@ -163,7 +163,12 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
       <div className="hidden lg:flex w-64 flex-col bg-white border-r border-gray-200">
         {/* Header */}
         <div className="p-6 border-b border-gray-200">
-          <Logo variant="primary" size="md" showText={true} />
+          <Logo
+            variant="primary"
+            size="lg"
+            showText={false}
+            className="justify-center"
+          />
         </div>
 
         {/* User Profile */}
@@ -257,7 +262,12 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
               {/* Header */}
               <div className="p-6 border-b border-gray-200">
                 <div className="flex items-center justify-between">
-                  <Logo variant="primary" size="md" showText={true} />
+                  <Logo
+                    variant="primary"
+                    size="lg"
+                    showText={false}
+                    className="justify-center"
+                  />
                   <Button
                     variant="ghost"
                     size="sm"
