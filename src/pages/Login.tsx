@@ -38,7 +38,7 @@ const Login = () => {
         <div className="text-center mb-12">
           <Logo
             variant="primary"
-            size="xl"
+            size="3xl"
             showText={false}
             className="justify-center"
           />
