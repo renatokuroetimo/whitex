@@ -92,28 +92,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Check if user is already logged in on mount
   useEffect(() => {
-    const currentUser = getAuthAPI().getCurrentUser();
-    console.log("🔍 Initial auth check:", {
-      currentUser,
-      isMobile: isMobileApp(),
-    });
+    console.log("🔄 AuthContext useEffect - checking stored session...");
 
-    if (currentUser) {
-      // On mobile app, only allow patients
-      if (isMobileApp() && currentUser.profession === "medico") {
-        console.log(
-          "🚫 Initial load: blocking doctor on mobile, clearing session",
+    try {
+      const currentUser = getAuthAPI().getCurrentUser();
+      console.log("🔍 Initial auth check:", {
+        currentUser: currentUser
+          ? { email: currentUser.email, profession: currentUser.profession }
+          : null,
+        isMobile: isMobileApp(),
+        hasUser: !!currentUser,
+      });
+
+      if (currentUser) {
+        // On mobile app, only allow patients
+        if (isMobileApp() && currentUser.profession === "medico") {
+          console.log(
+            "🚫 Initial load: blocking doctor on mobile, clearing session",
+          );
+          // Clear the session completely but don't show repeated toasts
+          getAuthAPI().logout();
+          return;
+        }
+
+        // For valid users (patients on mobile, or any user on web), restore session
+        console.log("✅ Restoring user session:", currentUser.email);
+        dispatch({ type: "AUTH_SUCCESS", payload: currentUser });
+      } else {
+        console.log("❌ No stored user session found");
+
+        // Debug: check what's actually in localStorage
+        const keys = Object.keys(localStorage);
+        const relevantKeys = keys.filter(
+          (key) => key.includes("medical_app") || key.includes("user"),
         );
-        // Clear the session completely but don't show repeated toasts
-        getAuthAPI().logout();
-        return;
+        console.log("🔍 Relevant localStorage keys:", relevantKeys);
       }
-
-      // For valid users (patients on mobile, or any user on web), restore session
-      console.log("✅ Restoring user session:", currentUser.email);
-      dispatch({ type: "AUTH_SUCCESS", payload: currentUser });
-    } else {
-      console.log("❌ No stored user session found");
+    } catch (error) {
+      console.error("❌ Error during session restoration:", error);
     }
 
     // Migrar dados existentes se Supabase estiver ativado
