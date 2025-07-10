@@ -257,14 +257,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
               {/* Header */}
               <div className="p-6 border-b border-gray-200">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-gray-900 rounded flex items-center justify-center">
-                      <span className="text-white text-sm font-semibold">
-                        W
-                      </span>
-                    </div>
-                    <span className="font-semibold text-gray-900">WHITEX</span>
-                  </div>
+                  <Logo variant="primary" size="md" showText={true} />
                   <Button
                     variant="ghost"
                     size="sm"
