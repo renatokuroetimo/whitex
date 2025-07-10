@@ -264,7 +264,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
                 <div className="flex items-center justify-between">
                   <Logo
                     variant="primary"
-                    size="lg"
+                    size="3xl"
                     showText={false}
                     className="justify-center"
                   />
