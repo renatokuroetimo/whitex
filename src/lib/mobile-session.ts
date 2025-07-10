@@ -58,9 +58,18 @@ export class MobileSessionManager {
         userData ? "found" : "not found",
       );
 
-      // If mobile and primary failed, try backup
+      // If not found, try legacy key (for existing users)
+      if (!userData) {
+        userData = localStorage.getItem(this.OLD_KEY);
+        if (userData) {
+          console.log("📱 Found session in legacy key, migrating...");
+          localStorage.setItem(this.SESSION_KEY, userData);
+        }
+      }
+
+      // If mobile and still not found, try backup
       if (!userData && isMobileApp()) {
-        console.log("📱 Primary session not found, trying backup...");
+        console.log("📱 Trying backup storage...");
         userData =
           localStorage.getItem(this.BACKUP_KEY) ||
           sessionStorage.getItem(this.SESSION_KEY);
