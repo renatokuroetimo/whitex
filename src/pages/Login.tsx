@@ -21,7 +21,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const { login, isLoading } = useAuth();
+  const { login, logout, isLoading } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
