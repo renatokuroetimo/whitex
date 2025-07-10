@@ -240,23 +240,7 @@ const PatientIndicators = () => {
 
           {/* Desktop Header */}
           <div className="hidden md:flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => {
-                  if (isHospitalContext) {
-                    navigate(`/gerenciamento/patients/${patientId}`);
-                  } else {
-                    navigate(
-                      isViewingOtherPatient
-                        ? `/pacientes/${patientId}`
-                        : "/patient-dashboard",
-                    );
-                  }
-                }}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <ArrowLeft className="h-5 w-5 text-gray-600" />
-              </button>
+            <div className="flex items-center">
               <h1 className="text-2xl font-semibold text-gray-900">
                 {isHospitalViewing || isViewingOtherPatient
                   ? "Indicadores do Paciente"
