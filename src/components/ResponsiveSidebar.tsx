@@ -68,12 +68,12 @@ const SidebarContent: React.FC<SidebarContentProps> = ({ onItemClick }) => {
     <div className="h-full bg-white border-r border-gray-200 flex flex-col">
       {/* Header */}
       <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-gray-900 rounded flex items-center justify-center">
-            <span className="text-white text-sm font-semibold">W</span>
-          </div>
-          <span className="font-semibold text-gray-900">WHITEX</span>
-        </div>
+        <Logo
+          variant="primary"
+          size="lg"
+          showText={false}
+          className="justify-center"
+        />
       </div>
 
       {/* User Profile */}
@@ -176,12 +176,7 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ children }) => {
                 </SheetContent>
               </Sheet>
 
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-gray-900 rounded flex items-center justify-center">
-                  <span className="text-white text-xs font-semibold">W</span>
-                </div>
-                <span className="font-semibold text-gray-900">WHITEX</span>
-              </div>
+              <Logo variant="primary" size="md" showText={false} />
             </div>
           </div>
         </div>
