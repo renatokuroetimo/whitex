@@ -142,7 +142,7 @@ const SelectProfession = () => {
           <Button
             onClick={handleContinue}
             disabled={!selectedProfession || isLoading}
-            className="w-full h-12 bg-gradient-to-r from-brand-primary to-brand-dark-teal hover:from-brand-dark-teal hover:to-brand-primary text-white font-medium rounded-md transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+            className="w-full h-12 bg-[#00B1BB] hover:bg-[#01485E] text-white font-medium rounded-md transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
             {isLoading ? "Criando conta..." : "Continuar"}
           </Button>
