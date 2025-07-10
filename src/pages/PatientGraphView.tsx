@@ -673,14 +673,12 @@ const PatientGraphView = () => {
                     <XAxis
                       dataKey="formattedDate"
                       stroke="#666"
-                      fontSize={window.innerWidth < 768 ? 10 : 12}
-                      tick={{ fontSize: window.innerWidth < 768 ? 10 : 12 }}
-                      angle={window.innerWidth < 768 ? -45 : 0}
-                      textAnchor={window.innerWidth < 768 ? "end" : "middle"}
-                      height={window.innerWidth < 768 ? 50 : 30}
-                      interval={
-                        window.innerWidth < 768 ? "preserveStartEnd" : 0
-                      }
+                      fontSize={11}
+                      tick={{ fontSize: 11 }}
+                      angle={-45}
+                      textAnchor="end"
+                      height={50}
+                      interval="preserveStartEnd"
                     />
                     <YAxis
                       stroke="#666"
