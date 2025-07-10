@@ -77,23 +77,64 @@ const PatientGraphView = () => {
   const [diagnosisResult, setDiagnosisResult] = useState("");
   const [hasLoadingError, setHasLoadingError] = useState(false);
 
-  // Parâmetros da URL
-  const category = searchParams.get("category") || "";
-  const subcategory = searchParams.get("subcategory") || "";
-  const parameter = searchParams.get("parameter") || "";
-  const unit = searchParams.get("unit") || "";
+  // Get parameters from localStorage (mobile-friendly) or URL fallback
+  const [graphParams, setGraphParams] = useState({
+    category: "",
+    subcategory: "",
+    parameter: "",
+    unit: "",
+  });
 
-  // Debug URL parameters
+  // Load graph parameters
   React.useEffect(() => {
-    console.log("🔍 PatientGraphView URL params:", {
+    // Try to get from localStorage first (mobile compatibility)
+    try {
+      const storedParams = localStorage.getItem("currentGraphParams");
+      if (storedParams) {
+        const parsed = JSON.parse(storedParams);
+        setGraphParams({
+          category: parsed.category || "",
+          subcategory: parsed.subcategory || "",
+          parameter: parsed.parameter || "",
+          unit: parsed.unit || "",
+        });
+        console.log("📱 Loaded graph params from localStorage:", parsed);
+        return;
+      }
+    } catch (error) {
+      console.warn("Failed to parse stored graph params:", error);
+    }
+
+    // Fallback to URL parameters
+    const urlCategory = searchParams.get("category") || "";
+    const urlSubcategory = searchParams.get("subcategory") || "";
+    const urlParameter = searchParams.get("parameter") || "";
+    const urlUnit = searchParams.get("unit") || "";
+
+    if (urlCategory || urlSubcategory || urlParameter || urlUnit) {
+      setGraphParams({
+        category: urlCategory,
+        subcategory: urlSubcategory,
+        parameter: urlParameter,
+        unit: urlUnit,
+      });
+      console.log("🔗 Loaded graph params from URL:", {
+        category: urlCategory,
+        subcategory: urlSubcategory,
+        parameter: urlParameter,
+        unit: urlUnit,
+      });
+    }
+  }, [searchParams]);
+
+  // Debug parameters
+  React.useEffect(() => {
+    console.log("🔍 PatientGraphView current params:", {
       fullURL: window.location.href,
       searchParams: Object.fromEntries(searchParams.entries()),
-      category,
-      subcategory,
-      parameter,
-      unit,
+      graphParams,
     });
-  }, [searchParams, category, subcategory, parameter, unit]);
+  }, [searchParams, graphParams]);
 
   useEffect(() => {
     console.log("🔍 PatientGraphView useEffect triggered:", {
