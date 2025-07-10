@@ -672,21 +672,21 @@ const PatientGraphView = () => {
               <div className="bg-white rounded-lg border border-gray-200 p-4">
                 <p className="text-sm text-gray-600">Máximo</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {stats.max.toFixed(1)} {unit}
+                  {stats.max.toFixed(1)} {graphParams.unit}
                 </p>
               </div>
 
               <div className="bg-white rounded-lg border border-gray-200 p-4">
                 <p className="text-sm text-gray-600">Mínimo</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {stats.min.toFixed(1)} {unit}
+                  {stats.min.toFixed(1)} {graphParams.unit}
                 </p>
               </div>
 
               <div className="bg-white rounded-lg border border-gray-200 p-4">
                 <p className="text-sm text-gray-600">Média</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {stats.avg.toFixed(1)} {unit}
+                  {stats.avg.toFixed(1)} {graphParams.unit}
                 </p>
               </div>
 
