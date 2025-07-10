@@ -45,6 +45,22 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
         isLoading: true,
       };
     case "AUTH_SUCCESS":
+      // Block doctor access on mobile app
+      if (isMobileApp() && action.payload.profession === "medico") {
+        console.log("🚫 Auth reducer: blocking doctor on mobile");
+        toast({
+          variant: "destructive",
+          title: "Acesso Restrito",
+          description: "Este aplicativo é exclusivo para pacientes.",
+        });
+        return {
+          ...state,
+          isLoading: false,
+          user: null,
+          isAuthenticated: false,
+        };
+      }
+
       return {
         ...state,
         isLoading: false,
