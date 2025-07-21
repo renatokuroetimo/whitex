@@ -73,8 +73,6 @@ const Index = () => {
     }
   };
 
-
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-brand-light via-white to-brand-light flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -184,8 +182,6 @@ const Index = () => {
             </p>
           </form>
         </div>
-
-
       </div>
     </div>
   );
