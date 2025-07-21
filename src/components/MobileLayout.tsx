@@ -8,7 +8,7 @@ import { profileImageAPI } from "@/lib/profile-image-api";
 import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
 import { useStatusBar } from "@/hooks/use-status-bar";
 import { useSafeArea } from "@/hooks/use-safe-area";
-
+import Logo from "@/components/Logo";
 import ConnectivityStatus from "@/components/ConnectivityStatus";
 import SafeImage from "@/components/SafeImage";
 
