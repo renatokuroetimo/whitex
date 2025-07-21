@@ -176,15 +176,15 @@ class AuthSupabaseAPI {
     }
   }
 
-  // RECUPERAÇÃO DE SENHA
-  async requestPasswordReset(email: string): Promise<ApiResponse> {
+  // RECUPERAÇÃO DE SENHA (Sistema próprio - não usa Supabase Auth)
+  async requestPasswordReset(email: string): Promise<ApiResponse<{ resetToken: string }>> {
     await this.delay(500);
 
     if (!supabase) {
       throw new Error("Sistema de recuperação de senha não disponível");
     }
 
-    // Verificar se o usuário existe primeiro
+    // Verificar se o usuário existe na nossa tabela
     const { data: users, error: queryError } = await supabase
       .from("users")
       .select("id, email, profession")
@@ -197,24 +197,34 @@ class AuthSupabaseAPI {
       throw new Error("Email não encontrado");
     }
 
-    // Configurações detalhadas para debug
-    const redirectUrl = `${window.location.origin}/reset-password`;
-    console.log("🔧 Configurações do reset de senha:");
-    console.log("- Email:", email);
-    console.log("- Redirect URL:", redirectUrl);
+    console.log("🔧 Gerando token de reset para:", email);
 
-    // Solicitar reset via Supabase Auth
-    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: redirectUrl,
-    });
+    // Gerar token de reset
+    const resetToken = Math.random().toString(36).substring(2, 15) +
+                      Math.random().toString(36).substring(2, 15) +
+                      Date.now().toString(36);
 
-    if (error) {
-      console.error("❌ Erro detalhado do Supabase:", error);
-      throw new Error(`Erro ao enviar email: ${error.message}`);
+    // Salvar token temporário na tabela users
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({
+        reset_token: resetToken,
+        reset_token_expires: new Date(Date.now() + 60 * 60 * 1000).toISOString() // 1 hora
+      })
+      .eq("email", email.toLowerCase());
+
+    if (updateError) {
+      console.error("❌ Erro ao salvar token:", updateError);
+      throw new Error("Erro interno do sistema");
     }
 
-    console.log("✅ Email de recuperação enviado via Supabase");
-    return { success: true };
+    console.log("✅ Token de reset gerado com sucesso");
+    console.log("🔗 Link de reset:", `${window.location.origin}/reset-password?token=${resetToken}`);
+
+    return {
+      success: true,
+      data: { resetToken }
+    };
   }
 
   async resetPassword(
@@ -227,13 +237,45 @@ class AuthSupabaseAPI {
       throw new Error("Sistema de redefinição de senha não disponível");
     }
 
-    const { error } = await supabase.auth.updateUser({
-      password: newPassword,
-    });
+    console.log("🔍 Validando token de reset:", token);
 
-    if (error) throw error;
+    // Buscar usuário pelo token
+    const { data: users, error: queryError } = await supabase
+      .from("users")
+      .select("id, email, reset_token, reset_token_expires")
+      .eq("reset_token", token)
+      .limit(1);
 
-    console.log("✅ Senha redefinida via Supabase");
+    if (queryError) {
+      throw new Error("Erro ao validar token");
+    }
+
+    if (!users || users.length === 0) {
+      throw new Error("Token inválido ou expirado");
+    }
+
+    const user = users[0];
+
+    // Verificar se token não expirou
+    if (user.reset_token_expires && new Date(user.reset_token_expires) < new Date()) {
+      throw new Error("Token expirado");
+    }
+
+    // Atualizar senha e limpar token
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({
+        password: newPassword,
+        reset_token: null,
+        reset_token_expires: null
+      })
+      .eq("id", user.id);
+
+    if (updateError) {
+      throw new Error("Erro ao redefinir senha");
+    }
+
+    console.log("✅ Senha redefinida com sucesso para:", user.email);
     return { success: true };
   }
 
