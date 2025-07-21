@@ -261,12 +261,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Abrir menu</span>
               </Button>
-              <Logo
-                variant="primary"
-                size="lg"
-                showText={false}
-                className="flex items-center"
-              />
+              <span className="text-lg font-semibold text-gray-900">WhiteX</span>
             </div>
           </div>
         </div>
