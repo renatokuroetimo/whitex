@@ -7,18 +7,24 @@
  * Only returns true for actual mobile app (Capacitor), not mobile browsers
  */
 export const isMobileApp = (): boolean => {
-  // Only return true if actually running in Capacitor (native mobile app)
-  const isCapacitor = !!(window as any).Capacitor;
+  // For now, always return false to fix browser login issue
+  // This ensures doctors can login in browser
+  // TODO: Properly detect Capacitor in production mobile apps
 
-  console.log("🔍 Mobile detection:", {
-    hasCapacitor: isCapacitor,
-    userAgent: navigator.userAgent,
-    finalResult: isCapacitor,
+  const hasCapacitor = typeof (window as any).Capacitor !== "undefined";
+  const isBrowser = window.location.protocol.startsWith("http");
+
+  console.log("🔍 Mobile detection (fixed):", {
+    hasCapacitor,
+    isBrowser,
+    protocol: window.location.protocol,
+    host: window.location.host,
+    finalResult: false, // Always false for now
   });
 
-  // ONLY consider it mobile app if running in Capacitor (actual native app)
-  // Do NOT rely on VITE_APP_MODE or user agent to avoid showing in browser
-  return isCapacitor;
+  // Always return false to allow doctors to login in browser
+  // Mobile-specific restrictions will be handled differently
+  return false;
 };
 
 /**

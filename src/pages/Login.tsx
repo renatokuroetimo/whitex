@@ -128,25 +128,6 @@ const Login = () => {
           </p>
         </div>
 
-        {/* Mobile Patient-Only Notice */}
-        {isMobileApp() && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <div className="flex items-center gap-2">
-              <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full">
-                <span className="text-blue-600 text-sm font-semibold">📱</span>
-              </div>
-              <div>
-                <p className="text-blue-800 font-medium text-sm">
-                  App Exclusivo para Pacientes
-                </p>
-                <p className="text-blue-600 text-xs">
-                  Médicos devem acessar a versão web
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Form */}
         <div className="bg-white/90 backdrop-blur-lg rounded-2xl border border-gray-200 p-8 shadow-xl">
           <form onSubmit={handleLogin} className="space-y-6">
