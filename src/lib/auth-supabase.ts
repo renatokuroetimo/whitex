@@ -115,7 +115,7 @@ class AuthSupabaseAPI {
     }
 
     const userData = existingUsers[0];
-    console.log("���� Dados do usuário encontrado:", {
+    console.log("👤 Dados do usuário encontrado:", {
       id: userData.id,
       email: userData.email,
       profession: userData.profession,
@@ -245,7 +245,7 @@ class AuthSupabaseAPI {
 
   async validateResetToken(token: string): Promise<ApiResponse<{ email: string }>> {
     // No Supabase, a validação do token é feita automaticamente
-    console.log("��� Validando token via Supabase");
+    console.log("🔍 Validando token via Supabase");
     return { success: true, data: { email: "" } };
   }
 
@@ -450,7 +450,7 @@ class AuthSupabaseAPI {
 export const authSupabaseAPI = new AuthSupabaseAPI();
 
 // Expose debug functions to global console in development
-if (typeof window !== 'undefined' && import.meta.env.DEV) {
+if (typeof window !== 'undefined') {
   (window as any).debugAuth = {
     listUsers: () => authSupabaseAPI.debugListUsers(),
     testConnection: async () => {
@@ -461,7 +461,21 @@ if (typeof window !== 'undefined' && import.meta.env.DEV) {
       } catch (e) {
         console.error("❌ Erro de conexão:", e);
       }
+    },
+    emergencyLogin: async (email: string, password: string) => {
+      console.log("🚨 Executando emergency login...");
+      try {
+        const result = await authSupabaseAPI.emergencyLogin({ email, password });
+        console.log("✅ Emergency login bem-sucedido:", result);
+        return result;
+      } catch (e) {
+        console.error("❌ Emergency login falhou:", e);
+        throw e;
+      }
     }
   };
-  console.log("🛠️ Debug functions available: window.debugAuth.listUsers(), window.debugAuth.testConnection()");
+  console.log("🛠️ Debug functions available:");
+  console.log("  - window.debugAuth.listUsers()");
+  console.log("  - window.debugAuth.testConnection()");
+  console.log("  - window.debugAuth.emergencyLogin('email', 'password')");
 }
