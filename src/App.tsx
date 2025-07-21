@@ -48,6 +48,7 @@ import HospitalGraphView from "./pages/HospitalGraphView";
 import NotFound from "./pages/NotFound";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import MigrateUser from "./pages/MigrateUser";
 
 const queryClient = new QueryClient();
 
@@ -65,6 +66,7 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/migrate-user" element={<MigrateUser />} />
               <Route path="/select-profession" element={<SelectProfession />} />
               <Route path="/add-crm" element={<AddCRM />} />
               <Route
