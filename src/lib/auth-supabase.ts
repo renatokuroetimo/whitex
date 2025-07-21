@@ -301,7 +301,34 @@ class AuthSupabaseAPI {
     return { success: true };
   }
 
-  // MIGRAÇÃO DE USU��RIO EXISTENTE
+  // DEBUG FUNCTION - List all users in database
+  async debugListUsers(): Promise<void> {
+    if (!supabase) {
+      console.log("❌ Supabase não disponível");
+      return;
+    }
+
+    console.log("🔍 Listando usuários na tabela users...");
+
+    const { data: users, error } = await supabase
+      .from("users")
+      .select("id, email, profession, full_name, created_at")
+      .limit(10);
+
+    if (error) {
+      console.error("❌ Erro ao listar usuários:", error);
+      return;
+    }
+
+    console.log("📋 Usuários encontrados:", users?.length || 0);
+    if (users && users.length > 0) {
+      console.table(users);
+    } else {
+      console.log("ℹ️ Nenhum usuário encontrado na tabela");
+    }
+  }
+
+  // MIGRAÇÃO DE USUÁRIO EXISTENTE
   async migrateExistingUser(email: string, newPassword: string): Promise<ApiResponse<User>> {
     await this.delay(500);
 
