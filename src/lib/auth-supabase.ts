@@ -13,7 +13,7 @@ class AuthSupabaseAPI {
     await this.delay(500);
 
     if (!supabase) {
-      throw new Error("Sistema de autenticação não disponível");
+      throw new Error("Sistema de autenticação não dispon��vel");
     }
 
     console.log("🚀 Iniciando registro no Supabase para:", data.email);
@@ -89,93 +89,77 @@ class AuthSupabaseAPI {
     }
 
     console.log("🔍 Fazendo login no Supabase para:", credentials.email);
-    console.log("🔐 Tentando autenticação via Supabase Auth...");
 
-    // 🔐 SECURITY: Use Supabase Auth for proper password validation
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email: credentials.email.toLowerCase(),
-      password: credentials.password
-    });
-
-    console.log("📊 Resultado da autenticação Supabase:", {
-      success: !authError,
-      user: authData?.user?.email,
-      error: authError?.message,
-      errorCode: authError?.status
-    });
-
-    if (authError) {
-      console.error("❌ Erro de autenticação:", authError.message);
-
-      // Verificar se o usuário existe na tabela mas não no Auth
-      if (authError.message.includes("Invalid login credentials")) {
-        console.log("🔍 Verificando se usuário existe na tabela users...");
-
-        const { data: existingUsers, error: dbError } = await supabase
-          .from("users")
-          .select("email, profession, id, full_name")
-          .eq("email", credentials.email.toLowerCase())
-          .limit(1);
-
-        console.log("📋 Resultado da busca na tabela users:", {
-          found: existingUsers?.length || 0,
-          error: dbError?.message,
-          users: existingUsers
-        });
-
-        if (!dbError && existingUsers && existingUsers.length > 0) {
-          console.warn("⚠️ Usuário existe na tabela mas não no Auth - MIGRAÇÃO NECESSÁRIA");
-          console.log("👤 Dados do usuário encontrado:", existingUsers[0]);
-          throw new Error("MIGRATION_REQUIRED");
-        } else {
-          console.log("ℹ️ Usuário não encontrado na tabela users");
-        }
-
-        throw new Error("Email ou senha incorretos");
-      }
-      throw new Error(authError.message);
-    }
-
-    if (!authData.user) {
-      throw new Error("Falha na autenticação");
-    }
-
-    // Buscar dados adicionais do usuário na tabela users
-    const { data: users, error: dbError } = await supabase
+    // STEP 1: Verificar se usuário existe na tabela users
+    console.log("1️⃣ Verificando se usuário existe na tabela users...");
+    const { data: existingUsers, error: dbError } = await supabase
       .from("users")
       .select("*")
       .eq("email", credentials.email.toLowerCase())
       .limit(1);
 
+    console.log("📋 Resultado da busca na tabela users:", {
+      found: existingUsers?.length || 0,
+      error: dbError?.message,
+      users: existingUsers
+    });
+
     if (dbError) {
-      console.error("❌ Erro ao buscar dados do usuário:", dbError);
-      throw dbError;
+      console.error("❌ Erro ao buscar na tabela users:", dbError);
+      throw new Error("Erro interno do sistema");
     }
 
-    if (!users || users.length === 0) {
-      throw new Error("Dados do usuário não encontrados");
+    if (!existingUsers || existingUsers.length === 0) {
+      console.log("❌ Usuário não encontrado na tabela users");
+      throw new Error("Email não encontrado");
     }
 
-    const user = users[0];
+    const userData = existingUsers[0];
+    console.log("👤 Dados do usuário encontrado:", {
+      id: userData.id,
+      email: userData.email,
+      profession: userData.profession,
+      full_name: userData.full_name
+    });
 
-    // Converter formato Supabase para formato local
+    // STEP 2: Tentar autenticação via Supabase Auth
+    console.log("2️⃣ Tentando autenticação via Supabase Auth...");
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      email: credentials.email.toLowerCase(),
+      password: credentials.password
+    });
+
+    if (authError) {
+      console.warn("⚠️ Falha na autenticação Supabase Auth:", authError.message);
+
+      if (authError.message.includes("Invalid login credentials")) {
+        console.log("🔄 Usuário existe na tabela mas não no Auth - sugerindo migração");
+        throw new Error("MIGRATION_REQUIRED");
+      }
+
+      throw new Error("Email ou senha incorretos");
+    }
+
+    console.log("✅ Autenticação Supabase Auth bem-sucedida");
+
+    // Converter formato para o sistema
     const convertedUser: User = {
-      id: user.id,
-      email: user.email,
-      profession: user.profession,
-      crm: user.crm,
-      fullName: user.full_name || user.name,
-      city: user.city,
-      state: user.state,
-      specialty: user.specialty,
-      phone: user.phone,
-      createdAt: user.created_at,
+      id: userData.id,
+      email: userData.email,
+      profession: userData.profession,
+      crm: userData.crm,
+      fullName: userData.full_name || userData.name,
+      city: userData.city,
+      state: userData.state,
+      specialty: userData.specialty,
+      phone: userData.phone,
+      createdAt: userData.created_at,
     };
 
     // Salvar sessão ativa
     MobileSessionManager.saveSession(convertedUser);
 
-    console.log("✅ Usuário autenticado com segurança:", convertedUser.email);
+    console.log("✅ Login completo - usuário autenticado:", convertedUser.email);
     return { success: true, data: convertedUser };
   }
 
