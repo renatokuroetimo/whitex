@@ -46,6 +46,8 @@ import HospitalPatients from "./pages/HospitalPatients";
 import HospitalGraphSelector from "./pages/HospitalGraphSelector";
 import HospitalGraphView from "./pages/HospitalGraphView";
 import NotFound from "./pages/NotFound";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
