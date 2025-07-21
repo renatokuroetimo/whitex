@@ -172,9 +172,12 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ children }) => {
                 </SheetContent>
               </Sheet>
 
-              <span className="text-lg font-semibold text-gray-900">
-                WhiteX
-              </span>
+              <Logo
+                variant="primary"
+                size="md"
+                showText={false}
+                className="flex items-center"
+              />
             </div>
           </div>
         </div>
