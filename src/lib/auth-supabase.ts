@@ -410,3 +410,20 @@ class AuthSupabaseAPI {
 }
 
 export const authSupabaseAPI = new AuthSupabaseAPI();
+
+// Expose debug functions to global console in development
+if (typeof window !== 'undefined' && import.meta.env.DEV) {
+  (window as any).debugAuth = {
+    listUsers: () => authSupabaseAPI.debugListUsers(),
+    testConnection: async () => {
+      console.log("🔧 Testando conexão com Supabase...");
+      try {
+        const { data, error } = await supabase.from("users").select("count").limit(1);
+        console.log("✅ Conexão OK:", { data, error });
+      } catch (e) {
+        console.error("❌ Erro de conexão:", e);
+      }
+    }
+  };
+  console.log("🛠️ Debug functions available: window.debugAuth.listUsers(), window.debugAuth.testConnection()");
+}
