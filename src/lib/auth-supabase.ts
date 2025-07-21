@@ -206,6 +206,10 @@ class AuthSupabaseAPI {
   private async loginUserLocalStorage(
     credentials: LoginCredentials,
   ): Promise<ApiResponse<User>> {
+    // 🚨 SECURITY NOTE: localStorage fallback is for development only
+    // In production, we should ONLY use Supabase Auth with proper password validation
+    console.warn("⚠️ Using localStorage fallback - this should only happen in development!");
+
     const users = this.getStoredUsers();
 
     // Encontra usuário por email
@@ -217,6 +221,13 @@ class AuthSupabaseAPI {
       throw new Error("Email não encontrado");
     }
 
+    // 🚨 TEMPORARY SECURITY MEASURE: In localStorage mode, any password works
+    // This is ONLY for development - production MUST use Supabase Auth
+    if (!credentials.password || credentials.password.length < 1) {
+      throw new Error("Senha é obrigatória");
+    }
+
+    console.warn("⚠️ localStorage mode: password validation bypassed for development");
     return { success: true, data: user };
   }
 
