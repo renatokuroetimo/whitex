@@ -15,7 +15,7 @@ const simulateDoctor = {
 
 // Simular tentativa de login como paciente
 const simulatePatient = {
-  email: "paciente@exemplo.com", 
+  email: "paciente@exemplo.com",
   profession: "paciente",
 };
 
@@ -24,7 +24,7 @@ console.log("🏥 Simulação paciente:", simulatePatient);
 
 if (isMobile) {
   console.log("✅ Versão mobile - apenas pacientes permitidos");
-  console.log("❌ Médicos serão bloqueados"); 
+  console.log("❌ Médicos serão bloqueados");
 } else {
   console.log("🌐 Versão web - médicos e pacientes permitidos");
 }

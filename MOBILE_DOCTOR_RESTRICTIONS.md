@@ -3,8 +3,9 @@
 ## Alterações Implementadas
 
 ### 1. Correção da Detecção Mobile (`src/lib/mobile-utils.ts`)
+
 - **Problema**: A função `isMobileApp()` sempre retornava `false`
-- **Solução**: Modificada para usar `import.meta.env.VITE_APP_MODE` 
+- **Solução**: Modificada para usar `import.meta.env.VITE_APP_MODE`
 - **Resultado**: Agora detecta corretamente quando está rodando a versão mobile
 
 ```typescript
@@ -15,15 +16,18 @@ export const isMobileApp = (): boolean => {
 ```
 
 ### 2. Bloqueio de Cadastro Mobile (`src/pages/AddCRM.tsx`)
+
 - **Adicionado**: Verificação mobile que redireciona para página inicial
 - **Resultado**: Médicos não conseguem acessar a página de cadastro com CRM no mobile
 
 ### 3. Componente de Acesso Restrito (`src/components/MobileAccessRestricted.tsx`)
+
 - **Criado**: Componente reutilizável para mostrar mensagens de restrição
 - **Benefício**: Interface consistente e melhor experiência do usuário
 - **Usado em**: `ProtectedRouteMobile`, `SelectProfession`
 
 ### 4. Melhorias nas Mensagens de Erro
+
 - **Padronizadas**: Todas as mensagens agora são consistentes
 - **Informativas**: Explicam claramente que médicos devem usar a versão web
 - **Design**: Interface visual atrativa com logo e cores do app
@@ -31,12 +35,14 @@ export const isMobileApp = (): boolean => {
 ## Como Funciona
 
 ### Versão Web (VITE_APP_MODE ≠ "mobile")
+
 - ✅ Médicos podem fazer login
 - ✅ Médicos podem se cadastrar
 - ✅ Pacientes podem fazer login
 - ✅ Pacientes podem se cadastrar
 
 ### Versão Mobile (VITE_APP_MODE = "mobile")
+
 - ❌ Médicos NÃO podem fazer login (bloqueado com toast)
 - ❌ Médicos NÃO podem se cadastrar (rota não disponível)
 - ✅ Pacientes podem fazer login normalmente
