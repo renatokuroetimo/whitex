@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContextHybrid";
 import { isMobileApp } from "@/lib/mobile-utils";
 import Logo from "@/components/Logo";
+import MobileAccessRestricted from "@/components/MobileAccessRestricted";
 
 const SelectProfession = () => {
   const [selectedProfession, setSelectedProfession] = useState<string>("");
