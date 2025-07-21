@@ -95,9 +95,7 @@ const Login = () => {
     }
   };
 
-  const handleBack = () => {
-    navigate("/");
-  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-brand-light via-white to-brand-light flex items-center justify-center p-4">
@@ -208,16 +206,7 @@ const Login = () => {
           </div>
         </div>
 
-        {/* Back to Registration */}
-        <div className="text-center mt-6">
-          <button
-            onClick={handleBack}
-            className="text-brand-dark-teal hover:text-brand-primary text-sm underline transition-colors flex items-center justify-center gap-2 mx-auto"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Voltar para criação de conta
-          </button>
-        </div>
+
       </div>
     </div>
   );
