@@ -14,7 +14,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContextHybrid";
 import { toast } from "@/hooks/use-toast";
 import { isMobileApp } from "@/lib/mobile-utils";
-import { authSupabaseAPI } from "@/lib/auth-supabase";
 import Logo from "@/components/Logo";
 
 const Login = () => {
@@ -40,44 +39,6 @@ const Login = () => {
       }
     }
   }, [isAuthenticated, user, isLoading, navigate]);
-
-  const handleEmergencyLogin = async () => {
-    if (!email || !password) {
-      toast({
-        variant: "destructive",
-        title: "Campos obrigatórios",
-        description: "Digite email e senha para o login de emergência",
-      });
-      return;
-    }
-
-    console.log("🚨 Executando emergency login...");
-
-    try {
-      const result = await authSupabaseAPI.emergencyLogin({ email, password });
-
-      if (result.success && result.data) {
-        toast({
-          title: "🚨 Emergency Login",
-          description: "Login de emergência bem-sucedido!",
-        });
-
-        // Redirecionar baseado na profissão
-        if (result.data.profession === "paciente") {
-          navigate("/patient-dashboard");
-        } else {
-          navigate("/dashboard");
-        }
-      }
-    } catch (error: any) {
-      console.error("❌ Emergency login falhou:", error);
-      toast({
-        variant: "destructive",
-        title: "Emergency Login falhou",
-        description: error.message,
-      });
-    }
-  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -264,32 +225,15 @@ const Login = () => {
                 "Entrar"
               )}
             </Button>
-
-            {/* Emergency Login Button (DEBUG) */}
-            <Button
-              type="button"
-              onClick={handleEmergencyLogin}
-              disabled={isLoading || !email || !password}
-              variant="outline"
-              className="w-full border-orange-300 text-orange-600 hover:bg-orange-50 font-semibold py-3 rounded-lg transition-all duration-200"
-            >
-              🚨 Login de Emergência (Debug)
-            </Button>
           </form>
 
           {/* Forgot password link */}
-          <div className="mt-6 text-center space-y-2">
+          <div className="mt-6 text-center">
             <Link
               to="/forgot-password"
-              className="text-brand-teal hover:text-brand-dark-teal text-sm underline transition-colors block"
+              className="text-brand-teal hover:text-brand-dark-teal text-sm underline transition-colors"
             >
               Esqueceu sua senha?
-            </Link>
-            <Link
-              to="/migrate-user"
-              className="text-orange-600 hover:text-orange-800 text-sm underline transition-colors block"
-            >
-              Usuário existente? Migrar conta
             </Link>
           </div>
         </div>
