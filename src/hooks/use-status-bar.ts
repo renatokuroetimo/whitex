@@ -7,8 +7,8 @@ export const useStatusBar = () => {
     const initStatusBar = async () => {
       if (Capacitor.isNativePlatform()) {
         try {
-          // Configurar estilo da status bar
-          await StatusBar.setStyle({ style: Style.Dark });
+          // Configurar estilo da status bar para preto
+          await StatusBar.setStyle({ style: Style.Light });
 
           // Definir cor de fundo (deve coincidir com a cor do header)
           await StatusBar.setBackgroundColor({ color: "#ffffff" });
