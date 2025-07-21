@@ -154,10 +154,10 @@ const ResetPassword = () => {
             </p>
 
             <Button
-              onClick={() => navigate("/login")}
+              onClick={() => window.location.href = "https://whitex.app.br"}
               className="w-full bg-[#00B1BB] hover:bg-[#01485E] text-white"
             >
-              Ir para o Login
+              Ir para o WhiteX
             </Button>
           </div>
         </div>
