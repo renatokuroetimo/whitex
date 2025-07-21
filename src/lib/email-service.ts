@@ -13,44 +13,44 @@ export class EmailService {
     const resetUrl = `${window.location.origin}/reset-password?token=${resetToken}`;
 
     try {
-      console.log("📧 Enviando email via Web3Forms para:", email);
+      console.log("📧 Enviando email via Netlify Forms para:", email);
 
-      // Web3Forms - serviço gratuito para envio de emails do frontend
+      // Netlify Forms - funciona sem CORS
       const formData = new FormData();
-      formData.append('access_key', '8b5f4e3d-2c1a-4567-8901-234567890abc'); // Chave real do Web3Forms para WhiteX
-      formData.append('from_name', 'WhiteX');
-      formData.append('from_email', 'noreply@whitex.com');
-      formData.append('to_email', email);
+      formData.append('form-name', 'password-reset');
+      formData.append('email', email);
       formData.append('subject', 'WhiteX - Redefinir sua senha');
       formData.append('message', this.createPasswordResetMessage(resetUrl));
-      formData.append('email_template', 'table'); // Template HTML
+      formData.append('reset_url', resetUrl);
+      formData.append('app_name', 'WhiteX');
 
-      const response = await fetch('https://api.web3forms.com/submit', {
+      const response = await fetch('/', {
         method: 'POST',
-        body: formData
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams(formData as any).toString()
       });
 
-      const result = await response.json();
-
-      if (result.success) {
-        console.log("✅ Email enviado com sucesso via Web3Forms:", result);
+      if (response.ok) {
+        console.log("✅ Email enviado com sucesso via Netlify Forms");
         return true;
       } else {
-        console.error("❌ Erro no Web3Forms:", result);
+        console.error("❌ Erro no Netlify Forms:", response.status);
 
-        // Tentar com EmailJS real
-        return await this.sendEmailWithEmailJS(email, resetToken);
+        // Tentar alternativa simples
+        return await this.sendEmailSimple(email, resetToken);
       }
 
     } catch (error) {
-      console.error("❌ Erro no Web3Forms:", error);
+      console.error("❌ Erro no Netlify Forms:", error);
 
-      // Fallback: tentar EmailJS
+      // Fallback direto
       try {
-        console.log("🔄 Tentando EmailJS...");
-        return await this.sendEmailWithEmailJS(email, resetToken);
+        console.log("🔄 Tentando método direto...");
+        return await this.sendEmailSimple(email, resetToken);
       } catch (fallbackError) {
-        console.error("❌ Erro no EmailJS:", fallbackError);
+        console.error("❌ Erro no método direto:", fallbackError);
         return false;
       }
     }
