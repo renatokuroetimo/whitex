@@ -356,7 +356,7 @@ class AuthSupabaseAPI {
   }
 
   // MÉTODOS DE RECUPERAÇÃO DE SENHA
-  async requestPasswordReset(email: string): Promise<ApiResponse> {
+  async requestPasswordReset(email: string): Promise<ApiResponse<{ resetUrl?: string }>> {
     await this.delay(500);
 
     return withSupabaseFallback(
@@ -377,17 +377,21 @@ class AuthSupabaseAPI {
           throw new Error("Email não encontrado");
         }
 
-        // Solicitar reset de senha via Supabase Auth
+        // Tentar Supabase Auth primeiro
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${window.location.origin}/reset-password`
         });
 
-        if (error) throw error;
+        if (error) {
+          console.warn("⚠️ Supabase email failed, using fallback:", error.message);
+          // Se falhar, usar fallback local
+          throw error;
+        }
 
         console.log("✅ Email de recuperação enviado via Supabase");
         return { success: true };
       },
-      // Fallback localStorage (simular envio de email)
+      // Fallback localStorage (gerar link direto)
       async () => {
         const users = this.getStoredUsers();
         const user = users.find(
@@ -398,18 +402,21 @@ class AuthSupabaseAPI {
           throw new Error("Email não encontrado");
         }
 
-        // Em ambiente local, apenas simular o envio
-        console.log("📧 Simulando envio de email de recuperação para:", email);
-
-        // Salvar token temporário no localStorage para teste
-        const resetToken = Math.random().toString(36).substring(2, 15);
+        // Criar token temporário
+        const resetToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
         localStorage.setItem(`reset_token_${email}`, JSON.stringify({
           token: resetToken,
           email: email,
           expiry: Date.now() + (60 * 60 * 1000) // 1 hora
         }));
 
-        return { success: true };
+        const resetUrl = `${window.location.origin}/reset-password?token=${resetToken}`;
+        console.log("🔗 Link de recuperação gerado:", resetUrl);
+
+        return {
+          success: true,
+          data: { resetUrl }
+        };
       }
     );
   }
