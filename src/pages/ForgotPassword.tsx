@@ -44,14 +44,15 @@ const ForgotPassword = () => {
       const result = await authSupabaseAPI.requestPasswordReset(email);
       setEmailSent(true);
 
-      // Se retornou uma URL de reset (fallback), mostrá-la
+      // Sempre mostrar URL de reset como alternativa
       if (result.data && result.data.resetUrl) {
         setResetUrl(result.data.resetUrl);
         toast({
-          title: "Link de recuperação gerado",
-          description: "Use o link abaixo para redefinir sua senha",
+          title: "Email enviado + Link alternativo",
+          description: "Verifique seu email OU use o link direto abaixo",
         });
       } else {
+        // Fallback caso não tenha URL
         toast({
           title: "Email enviado",
           description: "Verifique sua caixa de entrada para redefinir sua senha",
@@ -90,27 +91,25 @@ const ForgotPassword = () => {
             </div>
             
             <h1 className="text-2xl font-bold text-brand-primary mb-2">
-              {resetUrl ? "Link de recuperação gerado!" : "Email enviado!"}
+              Email enviado + Link alternativo!
             </h1>
 
             {resetUrl ? (
               <div className="mb-6">
                 <p className="text-brand-dark-teal mb-4">
-                  O email pode demorar para chegar. Use o link direto abaixo:
+                  Enviamos um email para <strong>{email}</strong>. Se não chegar, use o link direto:
                 </p>
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                  <p className="text-sm text-blue-800 mb-2 font-medium">Link direto:</p>
+                  <p className="text-sm text-blue-800 mb-2 font-medium">Link direto (clique para usar):</p>
                   <a
                     href={resetUrl}
-                    className="text-sm text-blue-600 hover:text-blue-800 underline break-all"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    className="text-sm text-blue-600 hover:text-blue-800 underline break-all font-mono"
                   >
                     {resetUrl}
                   </a>
                 </div>
                 <p className="text-xs text-gray-500">
-                  Este link expira em 1 hora
+                  ⏱️ Este link expira em 1 hora
                 </p>
               </div>
             ) : (
