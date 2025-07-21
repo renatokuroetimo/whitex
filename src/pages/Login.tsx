@@ -228,12 +228,18 @@ const Login = () => {
           </form>
 
           {/* Forgot password link */}
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center space-y-2">
             <Link
               to="/forgot-password"
-              className="text-brand-teal hover:text-brand-dark-teal text-sm underline transition-colors"
+              className="text-brand-teal hover:text-brand-dark-teal text-sm underline transition-colors block"
             >
               Esqueceu sua senha?
+            </Link>
+            <Link
+              to="/migrate-user"
+              className="text-orange-600 hover:text-orange-800 text-sm underline transition-colors block"
+            >
+              Usuário existente? Migrar conta
             </Link>
           </div>
         </div>
