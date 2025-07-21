@@ -7,19 +7,18 @@
  * Only returns true for actual mobile app (Capacitor), not mobile browsers
  */
 export const isMobileApp = (): boolean => {
-  const mode = import.meta.env.VITE_APP_MODE;
+  // Only return true if actually running in Capacitor (native mobile app)
   const isCapacitor = !!(window as any).Capacitor;
 
   console.log("🔍 Mobile detection:", {
-    VITE_APP_MODE: mode,
     hasCapacitor: isCapacitor,
-    isWebBrowser: !isCapacitor && !mode,
-    finalResult: mode === "mobile" || isCapacitor,
+    userAgent: navigator.userAgent,
+    finalResult: isCapacitor,
   });
 
-  // Only consider it mobile app if explicitly set to mobile mode OR running in Capacitor
-  // Do NOT use user agent detection as it would affect mobile browsers
-  return mode === "mobile" || isCapacitor;
+  // ONLY consider it mobile app if running in Capacitor (actual native app)
+  // Do NOT rely on VITE_APP_MODE or user agent to avoid showing in browser
+  return isCapacitor;
 };
 
 /**
