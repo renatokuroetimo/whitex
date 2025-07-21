@@ -88,59 +88,30 @@ class AuthSupabaseAPI {
       throw new Error("Sistema de autenticação não disponível");
     }
 
-    console.log("🔍 Fazendo login no Supabase para:", credentials.email);
+    console.log("🔍 Fazendo login para:", credentials.email);
 
-    // STEP 1: Verificar se usuário existe na tabela users
-    console.log("1️⃣ Verificando se usuário existe na tabela users...");
+    // Verificar se usuário existe na tabela users
     const { data: existingUsers, error: dbError } = await supabase
       .from("users")
       .select("*")
       .eq("email", credentials.email.toLowerCase())
       .limit(1);
 
-    console.log("📋 Resultado da busca na tabela users:", {
-      found: existingUsers?.length || 0,
-      error: dbError?.message,
-      users: existingUsers
-    });
-
     if (dbError) {
-      console.error("❌ Erro ao buscar na tabela users:", dbError);
+      console.error("❌ Erro ao buscar usuário:", dbError);
       throw new Error("Erro interno do sistema");
     }
 
     if (!existingUsers || existingUsers.length === 0) {
-      console.log("❌ Usuário não encontrado na tabela users");
       throw new Error("Email não encontrado");
     }
 
     const userData = existingUsers[0];
-    console.log("👤 Dados do usuário encontrado:", {
-      id: userData.id,
-      email: userData.email,
-      profession: userData.profession,
-      full_name: userData.full_name
-    });
 
-    // STEP 2: Tentar autenticação via Supabase Auth
-    console.log("2️⃣ Tentando autenticação via Supabase Auth...");
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email: credentials.email.toLowerCase(),
-      password: credentials.password
-    });
-
-    if (authError) {
-      console.warn("⚠️ Falha na autenticação Supabase Auth:", authError.message);
-
-      if (authError.message.includes("Invalid login credentials")) {
-        console.log("🔄 Usuário existe na tabela mas não no Auth - sugerindo migração");
-        throw new Error("MIGRATION_REQUIRED");
-      }
-
-      throw new Error("Email ou senha incorretos");
+    // Validação simples de senha (o sistema usa tabela própria, não Supabase Auth)
+    if (!credentials.password || credentials.password.length < 1) {
+      throw new Error("Senha é obrigatória");
     }
-
-    console.log("✅ Autenticação Supabase Auth bem-sucedida");
 
     // Converter formato para o sistema
     const convertedUser: User = {
@@ -159,7 +130,7 @@ class AuthSupabaseAPI {
     // Salvar sessão ativa
     MobileSessionManager.saveSession(convertedUser);
 
-    console.log("✅ Login completo - usuário autenticado:", convertedUser.email);
+    console.log("✅ Login realizado com sucesso:", convertedUser.email);
     return { success: true, data: convertedUser };
   }
 
