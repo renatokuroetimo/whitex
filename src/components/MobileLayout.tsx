@@ -162,9 +162,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
     currentUser?.profession === "paciente" ? "/profile" : "/profile";
 
   return (
-    <div
-      className={`flex h-screen bg-gray-50 ${isIOS ? "capacitor-safe-area" : ""}`}
-    >
+    <div className="flex h-screen bg-gray-50">
       {/* Desktop Sidebar */}
       <div className="hidden lg:flex w-64 flex-col bg-white border-r border-gray-200">
         {/* Header */}
