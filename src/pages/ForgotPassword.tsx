@@ -12,6 +12,7 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [resetUrl, setResetUrl] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,12 +41,22 @@ const ForgotPassword = () => {
     setIsLoading(true);
 
     try {
-      await authSupabaseAPI.requestPasswordReset(email);
+      const result = await authSupabaseAPI.requestPasswordReset(email);
       setEmailSent(true);
-      toast({
-        title: "Email enviado",
-        description: "Verifique sua caixa de entrada para redefinir sua senha",
-      });
+
+      // Se retornou uma URL de reset (fallback), mostrá-la
+      if (result.data && result.data.resetUrl) {
+        setResetUrl(result.data.resetUrl);
+        toast({
+          title: "Link de recuperação gerado",
+          description: "Use o link abaixo para redefinir sua senha",
+        });
+      } else {
+        toast({
+          title: "Email enviado",
+          description: "Verifique sua caixa de entrada para redefinir sua senha",
+        });
+      }
     } catch (error: any) {
       console.error("Erro ao solicitar reset de senha:", error);
       toast({
@@ -79,13 +90,35 @@ const ForgotPassword = () => {
             </div>
             
             <h1 className="text-2xl font-bold text-brand-primary mb-2">
-              Email enviado!
+              {resetUrl ? "Link de recuperação gerado!" : "Email enviado!"}
             </h1>
-            
-            <p className="text-brand-dark-teal mb-6">
-              Enviamos um link de recuperação para <strong>{email}</strong>. 
-              Verifique sua caixa de entrada e clique no link para redefinir sua senha.
-            </p>
+
+            {resetUrl ? (
+              <div className="mb-6">
+                <p className="text-brand-dark-teal mb-4">
+                  O email pode demorar para chegar. Use o link direto abaixo:
+                </p>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                  <p className="text-sm text-blue-800 mb-2 font-medium">Link direto:</p>
+                  <a
+                    href={resetUrl}
+                    className="text-sm text-blue-600 hover:text-blue-800 underline break-all"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {resetUrl}
+                  </a>
+                </div>
+                <p className="text-xs text-gray-500">
+                  Este link expira em 1 hora
+                </p>
+              </div>
+            ) : (
+              <p className="text-brand-dark-teal mb-6">
+                Enviamos um link de recuperação para <strong>{email}</strong>.
+                Verifique sua caixa de entrada e clique no link para redefinir sua senha.
+              </p>
+            )}
 
             <div className="space-y-3">
               <Button
@@ -99,6 +132,7 @@ const ForgotPassword = () => {
                 onClick={() => {
                   setEmailSent(false);
                   setEmail("");
+                  setResetUrl(null);
                 }}
                 variant="outline"
                 className="w-full"
