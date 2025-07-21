@@ -8,6 +8,8 @@ import { profileImageAPI } from "@/lib/profile-image-api";
 import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
 import { useStatusBar } from "@/hooks/use-status-bar";
 import Logo from "@/components/Logo";
+import ConnectivityStatus from "@/components/ConnectivityStatus";
+import SafeImage from "@/components/SafeImage";
 
 interface SidebarItem {
   id: string;
@@ -183,11 +185,12 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
           >
             <div className="w-8 h-8 bg-gray-100 rounded-full overflow-hidden flex items-center justify-center border border-gray-200">
               {profileImage ? (
-                <img
+                <SafeImage
                   src={profileImage}
                   alt="Foto de perfil"
                   className="w-full h-full object-cover"
                   onError={() => setProfileImage(null)}
+                  placeholder={<User className="w-4 h-4 text-gray-600" />}
                 />
               ) : (
                 <User className="w-4 h-4 text-gray-600" />
@@ -222,6 +225,11 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
             })}
           </ul>
         </nav>
+
+        {/* Connectivity Status */}
+        <div className="p-4 border-t border-gray-200">
+          <ConnectivityStatus className="justify-center" showDetails={true} />
+        </div>
 
         {/* Logout */}
         <div className="p-4 border-t border-gray-200">
@@ -286,11 +294,12 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
                 >
                   <div className="w-8 h-8 bg-gray-100 rounded-full overflow-hidden flex items-center justify-center border border-gray-200">
                     {profileImage ? (
-                      <img
+                      <SafeImage
                         src={profileImage}
                         alt="Foto de perfil"
                         className="w-full h-full object-cover"
                         onError={() => setProfileImage(null)}
+                        placeholder={<User className="w-4 h-4 text-gray-600" />}
                       />
                     ) : (
                       <User className="w-4 h-4 text-gray-600" />
@@ -325,6 +334,11 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
                   })}
                 </ul>
               </nav>
+
+              {/* Connectivity Status */}
+              <div className="p-4 border-t border-gray-200">
+                <ConnectivityStatus className="justify-center" showDetails={false} />
+              </div>
 
               {/* Logout */}
               <div className="p-4 border-t border-gray-200">
