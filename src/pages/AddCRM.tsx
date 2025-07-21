@@ -14,6 +14,12 @@ const AddCRM = () => {
   const { register } = useAuth();
 
   useEffect(() => {
+    // If mobile app, redirect to main page
+    if (isMobileApp()) {
+      navigate("/", { replace: true });
+      return;
+    }
+
     // Get temporary registration data
     const tempData = sessionStorage.getItem("temp_registration");
     if (!tempData) {
