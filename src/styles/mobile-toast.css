@@ -1,0 +1,35 @@
+/* Estilos específicos para toasts em mobile */
+@media (max-width: 768px) {
+  /* Para apps nativos mobile, ajustar padding bottom para safe area */
+  .mobile-toast-viewport {
+    padding-bottom: env(safe-area-inset-bottom, 1rem);
+  }
+  
+  /* Toast mais compacto no mobile */
+  .mobile-toast {
+    margin: 0.5rem;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    max-width: calc(100vw - 2rem);
+  }
+  
+  /* Texto mais legível no mobile */
+  .mobile-toast .toast-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  
+  .mobile-toast .toast-description {
+    font-size: 0.8125rem;
+    margin-top: 0.25rem;
+  }
+}
+
+/* Classes utilitárias para safe area */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 1rem);
+}
+
+.mb-safe {
+  margin-bottom: env(safe-area-inset-bottom, 1rem);
+}
