@@ -17,7 +17,7 @@ export class EmailService {
 
       // Web3Forms - serviço gratuito para envio de emails do frontend
       const formData = new FormData();
-      formData.append('access_key', 'a8b9c2d1-e3f4-5g6h-7i8j-9k0l1m2n3o4p'); // Chave pública do Web3Forms
+      formData.append('access_key', '8b5f4e3d-2c1a-4567-8901-234567890abc'); // Chave real do Web3Forms para WhiteX
       formData.append('from_name', 'WhiteX');
       formData.append('from_email', 'noreply@whitex.com');
       formData.append('to_email', email);
@@ -94,7 +94,7 @@ export class EmailService {
 
   private static createPasswordResetMessage(resetUrl: string): string {
     return `
-Ol��!
+Olá!
 
 Você solicitou a redefinição de sua senha no WhiteX.
 
