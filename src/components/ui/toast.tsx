@@ -50,10 +50,16 @@ const Toast = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Root> &
     VariantProps<typeof toastVariants>
 >(({ className, variant, ...props }, ref) => {
+  const isNativeMobile = isMobileApp();
+
+  const mobileAnimations = isNativeMobile
+    ? "data-[state=closed]:slide-out-to-bottom-full data-[state=open]:slide-in-from-bottom-full"
+    : "data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full";
+
   return (
     <ToastPrimitives.Root
       ref={ref}
-      className={cn(toastVariants({ variant }), className)}
+      className={cn(toastVariants({ variant }), mobileAnimations, className)}
       {...props}
     />
   );
