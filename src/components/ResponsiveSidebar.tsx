@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/AuthContextHybrid";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
-import Logo from "@/components/Logo";
+
 
 interface SidebarItem {
   id: string;
