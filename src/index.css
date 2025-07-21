@@ -174,19 +174,19 @@
   }
 
   .mobile-content {
-    padding-bottom: max(2rem, env(safe-area-inset-bottom, 1rem));
-    margin-bottom: env(safe-area-inset-bottom, 0);
+    padding-bottom: 1rem;
+    margin-bottom: 0;
     flex: 1;
   }
 
   /* iOS specific fixes */
   .ios-safe-content {
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+    padding-bottom: 1rem;
   }
 
   /* Fix para elementos que ficam presos na safe area */
   .mobile-page-content {
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 2rem);
+    padding-bottom: 1.5rem;
     min-height: calc(
       100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)
     );
@@ -209,7 +209,7 @@
 @media (max-width: 768px) {
   /* Safe area específica para mobile */
   .ios-device .mobile-content {
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem) !important;
+    padding-bottom: 1rem !important;
     margin-bottom: 0 !important;
   }
 
@@ -219,13 +219,13 @@
 
   /* Garantir que páginas com conteúdo longo tenham espaço no final */
   .ios-device .mobile-page-content {
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 2rem) !important;
+    padding-bottom: 1.5rem !important;
   }
 
   /* Específico para formulários e listas */
   .ios-device .form-container,
   .ios-device .list-container {
-    margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+    margin-bottom: 1rem;
   }
 
   /* Garantir que botões no final da página tenham espaço */
