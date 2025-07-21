@@ -30,7 +30,7 @@ const AppMobile = () => (
     <TooltipProvider>
       <AuthProvider>
         <MobileToaster />
-        <Sonner />
+        <MobileSonner />
         <BrowserRouter>
           <Routes>
             {/* Rota inicial - redireciona baseado no login */}
