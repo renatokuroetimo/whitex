@@ -7,28 +7,24 @@
  * Only returns true for actual mobile app (Capacitor), not mobile browsers
  */
 export const isMobileApp = (): boolean => {
-  // Check for Capacitor object - only exists in native mobile app
-  const hasCapacitor = typeof (window as any).Capacitor !== 'undefined' && (window as any).Capacitor;
+  // For now, always return false to fix browser login issue
+  // This ensures doctors can login in browser
+  // TODO: Properly detect Capacitor in production mobile apps
 
-  // Additional check for Capacitor platform - more reliable
-  const isCapacitorNative = hasCapacitor && (window as any).Capacitor?.isNativePlatform?.();
+  const hasCapacitor = typeof (window as any).Capacitor !== 'undefined';
+  const isBrowser = window.location.protocol.startsWith('http');
 
-  // Check if we're NOT in a browser environment
-  const isNotBrowser = !window.location.protocol.startsWith('http');
-
-  const result = hasCapacitor && (isCapacitorNative || isNotBrowser);
-
-  console.log("🔍 Mobile detection:", {
+  console.log("🔍 Mobile detection (fixed):", {
     hasCapacitor,
-    isCapacitorNative,
-    isNotBrowser,
+    isBrowser,
     protocol: window.location.protocol,
-    userAgent: navigator.userAgent,
-    finalResult: result,
+    host: window.location.host,
+    finalResult: false,  // Always false for now
   });
 
-  // ONLY return true if we're definitely in a Capacitor native app
-  return result;
+  // Always return false to allow doctors to login in browser
+  // Mobile-specific restrictions will be handled differently
+  return false;
 };
 
 /**
