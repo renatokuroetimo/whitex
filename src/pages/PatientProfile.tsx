@@ -439,14 +439,11 @@ const PatientProfile = () => {
 
   if (!user) {
     return (
-      <div className="flex h-screen bg-gray-50">
-        <div className="hidden lg:block">
-          <Sidebar />
-        </div>
-        <div className="flex-1 flex items-center justify-center">
+      <MobileLayout>
+        <div className="flex items-center justify-center min-h-64">
           <p className="text-gray-600">Carregando usuário...</p>
         </div>
-      </div>
+      </MobileLayout>
     );
   }
 
@@ -1125,7 +1122,7 @@ const PatientProfile = () => {
             )}
 
             <p className="text-sm text-gray-500">
-              O médico poderá visualizar suas informações pessoais, dados
+              O m��dico poderá visualizar suas informações pessoais, dados
               médicos e histórico de indicadores. Você pode revogar este acesso
               a qualquer momento.
             </p>
