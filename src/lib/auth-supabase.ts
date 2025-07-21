@@ -256,59 +256,7 @@ class AuthSupabaseAPI {
     return { success: true };
   }
 
-  // EMERGENCY LOGIN - Bypass Supabase Auth (temporary solution)
-  async emergencyLogin(credentials: LoginCredentials): Promise<ApiResponse<User>> {
-    await this.delay(500);
 
-    if (!supabase) {
-      throw new Error("Sistema não disponível");
-    }
-
-    console.log("🚨 EMERGENCY LOGIN para:", credentials.email);
-    console.warn("⚠️ Este é um login de emergência que bypassa a autenticação Supabase");
-
-    // Verificar se usuário existe na tabela
-    const { data: existingUsers, error: dbError } = await supabase
-      .from("users")
-      .select("*")
-      .eq("email", credentials.email.toLowerCase())
-      .limit(1);
-
-    if (dbError) {
-      throw new Error("Erro interno do sistema");
-    }
-
-    if (!existingUsers || existingUsers.length === 0) {
-      throw new Error("Email não encontrado");
-    }
-
-    // Validação básica de senha (TEMPORÁRIO)
-    if (!credentials.password || credentials.password.length < 3) {
-      throw new Error("Senha muito curta");
-    }
-
-    const userData = existingUsers[0];
-
-    const convertedUser: User = {
-      id: userData.id,
-      email: userData.email,
-      profession: userData.profession,
-      crm: userData.crm,
-      fullName: userData.full_name || userData.name,
-      city: userData.city,
-      state: userData.state,
-      specialty: userData.specialty,
-      phone: userData.phone,
-      createdAt: userData.created_at,
-    };
-
-    MobileSessionManager.saveSession(convertedUser);
-
-    console.log("🚨 EMERGENCY LOGIN bem-sucedido:", convertedUser.email);
-    console.warn("⚠️ IMPORTANTE: Configure Supabase Auth o quanto antes!");
-
-    return { success: true, data: convertedUser };
-  }
 
   // DEBUG FUNCTION - List all users in database
   async debugListUsers(): Promise<void> {
@@ -337,85 +285,7 @@ class AuthSupabaseAPI {
     }
   }
 
-  // MIGRAÇÃO DE USUÁRIO EXISTENTE
-  async migrateExistingUser(email: string, newPassword: string): Promise<ApiResponse<User>> {
-    await this.delay(500);
 
-    if (!supabase) {
-      throw new Error("Sistema não disponível");
-    }
-
-    console.log("🔄 Iniciando migração do usuário:", email);
-
-    // Verificar se usuário existe na tabela
-    const { data: existingUsers, error: dbError } = await supabase
-      .from("users")
-      .select("*")
-      .eq("email", email.toLowerCase())
-      .limit(1);
-
-    if (dbError) {
-      throw new Error("Erro ao verificar usuário existente");
-    }
-
-    if (!existingUsers || existingUsers.length === 0) {
-      throw new Error("Usuário não encontrado para migração");
-    }
-
-    const userData = existingUsers[0];
-
-    // Criar conta no Supabase Auth
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: email.toLowerCase(),
-      password: newPassword,
-      options: {
-        data: {
-          profession: userData.profession,
-          crm: userData.crm,
-          full_name: userData.full_name
-        }
-      }
-    });
-
-    if (authError) {
-      if (authError.message.includes("already registered")) {
-        // Se já existe no Auth, apenas fazer login
-        return this.login({ email, password: newPassword });
-      }
-      throw new Error(`Erro na migração: ${authError.message}`);
-    }
-
-    // Atualizar ID na tabela users para corresponder ao Auth
-    if (authData.user?.id && authData.user.id !== userData.id) {
-      const { error: updateError } = await supabase
-        .from("users")
-        .update({ id: authData.user.id })
-        .eq("email", email.toLowerCase());
-
-      if (updateError) {
-        console.warn("⚠️ Aviso: Não foi possível atualizar ID do usuário:", updateError);
-      }
-    }
-
-    const migratedUser: User = {
-      id: authData.user?.id || userData.id,
-      email: userData.email,
-      profession: userData.profession,
-      crm: userData.crm,
-      fullName: userData.full_name,
-      city: userData.city,
-      state: userData.state,
-      specialty: userData.specialty,
-      phone: userData.phone,
-      createdAt: userData.created_at,
-    };
-
-    // Salvar sessão
-    MobileSessionManager.saveSession(migratedUser);
-
-    console.log("✅ Usuário migrado com sucesso!");
-    return { success: true, data: migratedUser };
-  }
 }
 
 export const authSupabaseAPI = new AuthSupabaseAPI();
