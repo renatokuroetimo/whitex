@@ -285,7 +285,7 @@ class AuthSupabaseAPI {
 export const authSupabaseAPI = new AuthSupabaseAPI();
 
 // Expose debug functions to global console in development
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && import.meta.env.DEV) {
   (window as any).debugAuth = {
     listUsers: () => authSupabaseAPI.debugListUsers(),
     testConnection: async () => {
@@ -296,21 +296,7 @@ if (typeof window !== 'undefined') {
       } catch (e) {
         console.error("❌ Erro de conexão:", e);
       }
-    },
-    emergencyLogin: async (email: string, password: string) => {
-      console.log("🚨 Executando emergency login...");
-      try {
-        const result = await authSupabaseAPI.emergencyLogin({ email, password });
-        console.log("✅ Emergency login bem-sucedido:", result);
-        return result;
-      } catch (e) {
-        console.error("❌ Emergency login falhou:", e);
-        throw e;
-      }
     }
   };
-  console.log("🛠️ Debug functions available:");
-  console.log("  - window.debugAuth.listUsers()");
-  console.log("  - window.debugAuth.testConnection()");
-  console.log("  - window.debugAuth.emergencyLogin('email', 'password')");
+  console.log("🛠️ Debug functions: window.debugAuth.listUsers(), window.debugAuth.testConnection()");
 }
