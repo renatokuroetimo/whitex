@@ -198,9 +198,12 @@ const Login = () => {
 
           {/* Forgot password link */}
           <div className="mt-6 text-center">
-            <button className="text-brand-teal hover:text-brand-dark-teal text-sm underline transition-colors">
+            <Link
+              to="/forgot-password"
+              className="text-brand-teal hover:text-brand-dark-teal text-sm underline transition-colors"
+            >
               Esqueceu sua senha?
-            </button>
+            </Link>
           </div>
         </div>
       </div>
