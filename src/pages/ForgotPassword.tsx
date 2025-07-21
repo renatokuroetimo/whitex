@@ -13,7 +13,7 @@ const ForgotPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [resetToken, setResetToken] = useState<string | null>(null);
-  const [emailSent, setEmailSentFlag] = useState(false);
+  const [emailDelivered, setEmailDelivered] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -47,7 +47,7 @@ const ForgotPassword = () => {
 
       if (result.data && result.data.resetToken) {
         setResetToken(result.data.resetToken);
-        setEmailSentFlag(result.data.emailSent || false);
+        setEmailDelivered(result.data.emailSent || false);
 
         if (result.data.emailSent) {
           toast({
