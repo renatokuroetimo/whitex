@@ -6,22 +6,34 @@ export interface EmailOptions {
 
 export class EmailService {
   private static isConfigured(): boolean {
-    // Email service está temporariamente indisponível até configuração de backend
-    return false;
+    return false; // Mantém link direto até configuração de backend
   }
 
   static async sendPasswordResetEmail(email: string, resetToken: string): Promise<boolean> {
-    console.log("📧 Sistema de recuperação de senha:", email);
-    console.log("🔗 Token gerado:", resetToken);
+    console.log("📧 Sistema de recuperação configurado para:", email);
+    console.log("🔗 Token de reset:", resetToken);
 
-    // Para envio REAL de emails, é necessário:
-    // 1. Backend/API própria, ou
-    // 2. Supabase Edge Functions (requer CLI e deploy), ou
-    // 3. Serviços como Vercel/Netlify Functions
+    const resetUrl = `${window.location.origin}/reset-password?token=${resetToken}`;
 
-    // Por enquanto, o sistema fornece link direto que funciona perfeitamente
-    console.log("ℹ️ Link direto disponível para o usuário usar");
+    // Para demonstração, vou mostrar como seria o email:
+    console.log("📄 Conteúdo do email que seria enviado:");
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    console.log("Para:", email);
+    console.log("Assunto: WhiteX - Redefinir sua senha");
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    console.log("Olá,");
+    console.log("");
+    console.log("Você solicitou a redefinição de sua senha no WhiteX.");
+    console.log("Clique no link abaixo para criar uma nova senha:");
+    console.log("");
+    console.log("🔗", resetUrl);
+    console.log("");
+    console.log("⏰ Este link expira em 1 hora por segurança.");
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-    return false; // Retorna false para mostrar link direto
+    // Simular processamento
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    return false; // Retorna false para mostrar link direto na UI
   }
 }
