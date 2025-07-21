@@ -12,7 +12,6 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
-  const [resetUrl, setResetUrl] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,13 +40,10 @@ const ForgotPassword = () => {
     setIsLoading(true);
 
     try {
-      const result = await authSupabaseAPI.requestPasswordReset(email);
-      setEmailSent(true);
-
-      // Foco apenas no Supabase email
+      await authSupabaseAPI.requestPasswordReset(email);
       setEmailSent(true);
       toast({
-        title: "✅ Email enviado via Supabase",
+        title: "✅ Email enviado",
         description: "Verifique sua caixa de entrada (pode demorar alguns minutos)",
       });
     } catch (error: any) {
@@ -113,7 +109,6 @@ const ForgotPassword = () => {
                 onClick={() => {
                   setEmailSent(false);
                   setEmail("");
-                  setResetUrl(null);
                 }}
                 variant="outline"
                 className="w-full"
