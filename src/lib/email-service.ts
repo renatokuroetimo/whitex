@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabase } from "./supabase";
 
 export interface EmailOptions {
   to: string;
@@ -11,21 +11,30 @@ export class EmailService {
     return !!supabase;
   }
 
-  static async sendPasswordResetEmail(email: string, resetToken: string): Promise<boolean> {
+  static async sendPasswordResetEmail(
+    email: string,
+    resetToken: string,
+  ): Promise<boolean> {
     if (!this.isConfigured()) {
       console.warn("⚠️ Supabase não configurado");
       return false;
     }
 
     try {
-      console.log("📧 Enviando email real via Supabase Edge Function para:", email);
+      console.log(
+        "📧 Enviando email real via Supabase Edge Function para:",
+        email,
+      );
 
-      const { data, error } = await supabase.functions.invoke('send-reset-email', {
-        body: {
-          email,
-          resetToken
-        }
-      });
+      const { data, error } = await supabase.functions.invoke(
+        "send-reset-email",
+        {
+          body: {
+            email,
+            resetToken,
+          },
+        },
+      );
 
       if (error) {
         console.error("❌ Erro na Edge Function:", error);
@@ -39,7 +48,6 @@ export class EmailService {
         console.error("❌ Falha no envio:", data);
         return false;
       }
-
     } catch (error) {
       console.error("❌ Erro no serviço de email:", error);
       return false;

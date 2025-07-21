@@ -1,78 +1,75 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
 
 serve(async (req) => {
   // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    const { email, resetToken, resetUrl } = await req.json()
-    
+    const { email, resetToken, resetUrl } = await req.json();
+
     // Inicializar Resend
-    const resendApiKey = Deno.env.get('RESEND_API_KEY')
-    
+    const resendApiKey = Deno.env.get("RESEND_API_KEY");
+
     if (!resendApiKey) {
-      throw new Error('RESEND_API_KEY não configurada')
+      throw new Error("RESEND_API_KEY não configurada");
     }
 
     const emailData = {
-      from: 'WhiteX <onboarding@resend.dev>',
+      from: "WhiteX <onboarding@resend.dev>",
       to: email,
-      subject: 'WhiteX - Redefinir sua senha',
-      html: createPasswordResetTemplate(resetUrl)
-    }
+      subject: "WhiteX - Redefinir sua senha",
+      html: createPasswordResetTemplate(resetUrl),
+    };
 
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${resendApiKey}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${resendApiKey}`,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(emailData),
-    })
+    });
 
     if (!response.ok) {
-      const error = await response.text()
-      throw new Error(`Resend API error: ${error}`)
+      const error = await response.text();
+      throw new Error(`Resend API error: ${error}`);
     }
 
-    const result = await response.json()
-    
-    return new Response(
-      JSON.stringify({ success: true, data: result }),
-      { 
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
-        } 
-      }
-    )
+    const result = await response.json();
 
+    return new Response(JSON.stringify({ success: true, data: result }), {
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/json",
+      },
+    });
   } catch (error) {
-    console.error('Erro ao enviar email:', error)
-    
+    console.error("Erro ao enviar email:", error);
+
     return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: error.message 
+      JSON.stringify({
+        success: false,
+        error: error.message,
       }),
-      { 
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
+      {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json",
         },
-        status: 400
-      }
-    )
+        status: 400,
+      },
+    );
   }
-})
+});
 
 function createPasswordResetTemplate(resetUrl: string): string {
   return `

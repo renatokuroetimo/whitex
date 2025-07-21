@@ -52,7 +52,8 @@ const ForgotPassword = () => {
         if (result.data.emailSent) {
           toast({
             title: "✅ Email enviado",
-            description: "Verifique sua caixa de entrada para redefinir sua senha",
+            description:
+              "Verifique sua caixa de entrada para redefinir sua senha",
           });
         } else {
           toast({
@@ -99,14 +100,15 @@ const ForgotPassword = () => {
             </div>
 
             <h1 className="text-2xl font-bold text-brand-primary mb-2">
-              {emailDelivered ? "Email enviado!" : "Link de recuperação gerado!"}
+              {emailDelivered
+                ? "Email enviado!"
+                : "Link de recuperação gerado!"}
             </h1>
 
             <p className="text-brand-dark-teal mb-4">
               {emailDelivered
                 ? `Enviamos um email para ${email} com instruções para redefinir sua senha.`
-                : `Link de recuperação gerado para ${email}.`
-              }
+                : `Link de recuperação gerado para ${email}.`}
             </p>
 
             {emailDelivered ? (

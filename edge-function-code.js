@@ -1,28 +1,29 @@
 // CÓDIGO PARA COPIAR E COLAR NO SUPABASE EDGE FUNCTION
 // Nome da função: send-reset-email
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    const { email, resetToken } = await req.json()
-    
-    const resendApiKey = 're_dzLVA7A2_7JznwHEgUDxXbzf9wz19oMmA'
-    const resetUrl = `https://833e787f10e948cdbd860feb88237398-69bbc4c149874c3f98caa7fe5.fly.dev/reset-password?token=${resetToken}`
+    const { email, resetToken } = await req.json();
+
+    const resendApiKey = "re_dzLVA7A2_7JznwHEgUDxXbzf9wz19oMmA";
+    const resetUrl = `https://833e787f10e948cdbd860feb88237398-69bbc4c149874c3f98caa7fe5.fly.dev/reset-password?token=${resetToken}`;
 
     const emailData = {
-      from: 'WhiteX <onboarding@resend.dev>',
+      from: "WhiteX <onboarding@resend.dev>",
       to: email,
-      subject: 'WhiteX - Redefinir sua senha',
+      subject: "WhiteX - Redefinir sua senha",
       html: `
         <!DOCTYPE html>
         <html>
@@ -65,50 +66,46 @@ serve(async (req) => {
           </div>
         </body>
         </html>
-      `
-    }
+      `,
+    };
 
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${resendApiKey}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${resendApiKey}`,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(emailData),
-    })
+    });
 
     if (!response.ok) {
-      const error = await response.text()
-      throw new Error(`Resend API error: ${error}`)
+      const error = await response.text();
+      throw new Error(`Resend API error: ${error}`);
     }
 
-    const result = await response.json()
-    
-    return new Response(
-      JSON.stringify({ success: true, emailId: result.id }),
-      { 
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
-        } 
-      }
-    )
+    const result = await response.json();
 
+    return new Response(JSON.stringify({ success: true, emailId: result.id }), {
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/json",
+      },
+    });
   } catch (error) {
-    console.error('Erro ao enviar email:', error)
-    
+    console.error("Erro ao enviar email:", error);
+
     return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: error.message 
+      JSON.stringify({
+        success: false,
+        error: error.message,
       }),
-      { 
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
+      {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json",
         },
-        status: 400
-      }
-    )
+        status: 400,
+      },
+    );
   }
-})
+});

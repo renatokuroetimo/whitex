@@ -178,7 +178,9 @@ class AuthSupabaseAPI {
   }
 
   // RECUPERAÇÃO DE SENHA (Sistema próprio - não usa Supabase Auth)
-  async requestPasswordReset(email: string): Promise<ApiResponse<{ resetToken: string }>> {
+  async requestPasswordReset(
+    email: string,
+  ): Promise<ApiResponse<{ resetToken: string }>> {
     await this.delay(500);
 
     if (!supabase) {
@@ -201,16 +203,19 @@ class AuthSupabaseAPI {
     console.log("🔧 Gerando token de reset para:", email);
 
     // Gerar token de reset
-    const resetToken = Math.random().toString(36).substring(2, 15) +
-                      Math.random().toString(36).substring(2, 15) +
-                      Date.now().toString(36);
+    const resetToken =
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15) +
+      Date.now().toString(36);
 
     // Salvar token temporário na tabela users
     const { error: updateError } = await supabase
       .from("users")
       .update({
         reset_token: resetToken,
-        reset_token_expires: new Date(Date.now() + 60 * 60 * 1000).toISOString() // 1 hora
+        reset_token_expires: new Date(
+          Date.now() + 60 * 60 * 1000,
+        ).toISOString(), // 1 hora
       })
       .eq("email", email.toLowerCase());
 
@@ -222,20 +227,26 @@ class AuthSupabaseAPI {
     console.log("✅ Token de reset gerado com sucesso");
 
     // Tentar enviar email
-    const emailSent = await EmailService.sendPasswordResetEmail(email, resetToken);
+    const emailSent = await EmailService.sendPasswordResetEmail(
+      email,
+      resetToken,
+    );
 
     if (emailSent) {
       console.log("📧 Email de recuperação enviado com sucesso");
       return {
         success: true,
-        data: { resetToken, emailSent: true }
+        data: { resetToken, emailSent: true },
       };
     } else {
       console.log("⚠️ Email não configurado - fornecendo link direto");
-      console.log("🔗 Link de reset:", `${window.location.origin}/reset-password?token=${resetToken}`);
+      console.log(
+        "🔗 Link de reset:",
+        `${window.location.origin}/reset-password?token=${resetToken}`,
+      );
       return {
         success: true,
-        data: { resetToken, emailSent: false }
+        data: { resetToken, emailSent: false },
       };
     }
   }
@@ -270,7 +281,10 @@ class AuthSupabaseAPI {
     const user = users[0];
 
     // Verificar se token não expirou
-    if (user.reset_token_expires && new Date(user.reset_token_expires) < new Date()) {
+    if (
+      user.reset_token_expires &&
+      new Date(user.reset_token_expires) < new Date()
+    ) {
       throw new Error("Token expirado");
     }
 
@@ -280,7 +294,7 @@ class AuthSupabaseAPI {
       .update({
         password: newPassword,
         reset_token: null,
-        reset_token_expires: null
+        reset_token_expires: null,
       })
       .eq("id", user.id);
 
@@ -318,7 +332,10 @@ class AuthSupabaseAPI {
     const user = users[0];
 
     // Verificar se token não expirou
-    if (user.reset_token_expires && new Date(user.reset_token_expires) < new Date()) {
+    if (
+      user.reset_token_expires &&
+      new Date(user.reset_token_expires) < new Date()
+    ) {
       throw new Error("Token expirado");
     }
 
