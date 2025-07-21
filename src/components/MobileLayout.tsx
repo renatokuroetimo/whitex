@@ -273,12 +273,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
               {/* Header */}
               <div className="p-3 border-b border-gray-200">
                 <div className="flex justify-center">
-                  <Logo
-                    variant="primary"
-                    size="3xl"
-                    showText={false}
-                    className="justify-center"
-                  />
+                  <span className="text-2xl font-bold text-gray-900">WhiteX</span>
                 </div>
               </div>
 
