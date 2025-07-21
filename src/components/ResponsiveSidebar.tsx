@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
 
-
 interface SidebarItem {
   id: string;
   label: string;
@@ -174,7 +173,9 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ children }) => {
                 </SheetContent>
               </Sheet>
 
-              <span className="text-lg font-semibold text-gray-900">WhiteX</span>
+              <span className="text-lg font-semibold text-gray-900">
+                WhiteX
+              </span>
             </div>
           </div>
         </div>

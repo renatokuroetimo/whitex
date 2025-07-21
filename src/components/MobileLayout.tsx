@@ -258,7 +258,9 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Abrir menu</span>
               </Button>
-              <span className="text-lg font-semibold text-gray-900">WhiteX</span>
+              <span className="text-lg font-semibold text-gray-900">
+                WhiteX
+              </span>
             </div>
           </div>
         </div>
@@ -270,7 +272,9 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
               {/* Header */}
               <div className="p-3 border-b border-gray-200">
                 <div className="flex justify-center">
-                  <span className="text-2xl font-bold text-gray-900">WhiteX</span>
+                  <span className="text-2xl font-bold text-gray-900">
+                    WhiteX
+                  </span>
                 </div>
               </div>
 
