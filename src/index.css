@@ -201,15 +201,9 @@
 }
 
 .ios-device #root {
-  /* No iOS, aplicar safe area ao elemento root */
-  padding-top: env(safe-area-inset-top, 0px);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  height: calc(
-    100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)
-  );
-  height: calc(
-    100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)
-  );
+  /* No iOS, não aplicar padding ao root para evitar duplicação */
+  height: 100vh;
+  height: 100dvh;
 }
 
 @media (max-width: 768px) {
