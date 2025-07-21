@@ -177,7 +177,7 @@ const ResponsiveSidebar: React.FC<ResponsiveSidebarProps> = ({ children }) => {
                 </SheetContent>
               </Sheet>
 
-              <Logo variant="primary" size="md" showText={false} />
+              <span className="text-lg font-semibold text-gray-900">WhiteX</span>
             </div>
           </div>
         </div>
