@@ -214,7 +214,7 @@
   }
 
   .ios-device .mobile-header {
-    padding-top: calc(env(safe-area-inset-top, 0px) + 0.75rem) !important;
+    /* Já está sendo aplicado no CSS geral */
   }
 
   /* Garantir que páginas com conteúdo longo tenham espaço no final */
