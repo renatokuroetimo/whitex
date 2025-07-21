@@ -72,8 +72,12 @@ const Login = () => {
       }
     }
 
+    console.log("🚀 Iniciando processo de login...", { email: email, hasPassword: !!password });
+
     try {
       const success = await login({ email, password });
+      console.log("✅ Login bem-sucedido:", success);
+
       if (success) {
         // Additional check for mobile after successful login
         if (isMobileApp()) {
@@ -95,7 +99,14 @@ const Login = () => {
         navigate("/dashboard");
       }
     } catch (error: any) {
+      console.error("❌ Erro capturado na página de login:", {
+        message: error.message,
+        type: typeof error,
+        error: error
+      });
+
       if (error.message === "MIGRATION_REQUIRED") {
+        console.log("🔄 Redirecionando para migração...");
         toast({
           title: "Migração necessária",
           description: "Sua conta precisa ser migrada. Redirecionando...",
@@ -107,8 +118,11 @@ const Login = () => {
         return;
       }
 
-      // Re-throw other errors to be handled by the auth context
-      throw error;
+      // Log outros tipos de erro para debug
+      console.error("🚨 Erro não tratado na página de login:", error);
+
+      // Deixar o contexto de auth lidar com outros erros
+      // Não re-throw para evitar interferir com o tratamento do contexto
     }
   };
 
