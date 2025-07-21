@@ -164,7 +164,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Desktop Sidebar */}
-      <div className="hidden lg:flex w-64 flex-col bg-white border-r border-gray-200">
+      <div className="hidden lg:flex w-64 flex-col bg-white border-r border-gray-200 pt-8">
         {/* Header */}
         <div className="p-6 border-b border-gray-200">
           {/* Header da sidebar - removido WhiteX */}
@@ -269,7 +269,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
         {/* Mobile Menu Overlay */}
         {isMobileMenuOpen && (
           <div className="lg:hidden fixed inset-0 z-50 bg-black bg-opacity-50">
-            <div className="w-64 h-full bg-white border-r border-gray-200 flex flex-col">
+            <div className="w-64 h-full bg-white border-r border-gray-200 flex flex-col pt-8">
               {/* Header */}
               <div className="p-3 border-b border-gray-200">
                 {/* Header do menu lateral - removido WhiteX */}

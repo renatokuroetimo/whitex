@@ -66,7 +66,7 @@ const SidebarContent: React.FC<SidebarContentProps> = ({ onItemClick }) => {
   };
 
   return (
-    <div className="h-full bg-white border-r border-gray-200 flex flex-col">
+    <div className="h-full bg-white border-r border-gray-200 flex flex-col pt-8">
       {/* Header */}
       <div className="p-6 border-b border-gray-200">
         {/* Header da sidebar - removido WhiteX */}

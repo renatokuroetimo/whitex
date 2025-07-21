@@ -143,7 +143,7 @@ const Sidebar: React.FC = () => {
     userProfession === "paciente" ? "/patient-profile" : "/profile";
 
   return (
-    <div className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col">
+    <div className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col pt-8">
       {/* Header com timestamp para forçar atualização */}
       <div className="p-6 border-b border-gray-200">
         {/* Header da sidebar - removido WhiteX */}
