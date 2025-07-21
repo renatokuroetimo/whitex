@@ -72,57 +72,26 @@ const Login = () => {
       }
     }
 
-    console.log("🚀 Iniciando processo de login...", { email: email, hasPassword: !!password });
-
-    try {
-      const success = await login({ email, password });
-      console.log("✅ Login bem-sucedido:", success);
-
-      if (success) {
-        // Additional check for mobile after successful login
-        if (isMobileApp()) {
-          const currentUser = JSON.parse(
-            localStorage.getItem("medical_app_current_user") || "{}",
-          );
-          if (currentUser.profession === "medico") {
-            console.log("🚫 Doctor detected after login on mobile - logging out");
-            await logout();
-            toast({
-              variant: "destructive",
-              title: "Acesso Restrito",
-              description: "Este aplicativo é exclusivo para pacientes.",
-            });
-            return;
-          }
+    const success = await login({ email, password });
+    if (success) {
+      // Additional check for mobile after successful login
+      if (isMobileApp()) {
+        const currentUser = JSON.parse(
+          localStorage.getItem("medical_app_current_user") || "{}",
+        );
+        if (currentUser.profession === "medico") {
+          console.log("🚫 Doctor detected after login on mobile - logging out");
+          await logout();
+          toast({
+            variant: "destructive",
+            title: "Acesso Restrito",
+            description: "Este aplicativo é exclusivo para pacientes.",
+          });
+          return;
         }
-
-        navigate("/dashboard");
-      }
-    } catch (error: any) {
-      console.error("❌ Erro capturado na página de login:", {
-        message: error.message,
-        type: typeof error,
-        error: error
-      });
-
-      if (error.message === "MIGRATION_REQUIRED") {
-        console.log("🔄 Redirecionando para migração...");
-        toast({
-          title: "Migração necessária",
-          description: "Sua conta precisa ser migrada. Redirecionando...",
-        });
-
-        setTimeout(() => {
-          navigate(`/migrate-user?email=${encodeURIComponent(email)}`);
-        }, 2000);
-        return;
       }
 
-      // Log outros tipos de erro para debug
-      console.error("🚨 Erro não tratado na página de login:", error);
-
-      // Deixar o contexto de auth lidar com outros erros
-      // Não re-throw para evitar interferir com o tratamento do contexto
+      navigate("/dashboard");
     }
   };
 
