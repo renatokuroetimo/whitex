@@ -189,7 +189,7 @@ const PatientIndicators = () => {
 
   return (
     <MobileLayout>
-      <div className="p-4 sm:p-6 lg:p-8">
+      <div className="p-4 sm:p-6 lg:p-8 list-container">
         {/* Header */}
         <div className="mb-6">
           {/* Mobile Header */}
