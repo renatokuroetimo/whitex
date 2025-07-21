@@ -354,6 +354,130 @@ class AuthSupabaseAPI {
       console.warn("⚠️ Erro na migração de usuários:", error);
     }
   }
+
+  // MÉTODOS DE RECUPERAÇÃO DE SENHA
+  async requestPasswordReset(email: string): Promise<ApiResponse> {
+    await this.delay(500);
+
+    return withSupabaseFallback(
+      // Operação Supabase
+      async () => {
+        if (!supabase) throw new Error("Supabase not available");
+
+        // Verificar se o usuário existe primeiro
+        const { data: users, error: queryError } = await supabase
+          .from("users")
+          .select("id, email, profession")
+          .eq("email", email.toLowerCase())
+          .limit(1);
+
+        if (queryError) throw queryError;
+
+        if (!users || users.length === 0) {
+          throw new Error("Email não encontrado");
+        }
+
+        // Solicitar reset de senha via Supabase Auth
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`
+        });
+
+        if (error) throw error;
+
+        console.log("✅ Email de recuperação enviado via Supabase");
+        return { success: true };
+      },
+      // Fallback localStorage (simular envio de email)
+      async () => {
+        const users = this.getStoredUsers();
+        const user = users.find(
+          (u) => u.email.toLowerCase() === email.toLowerCase()
+        );
+
+        if (!user) {
+          throw new Error("Email não encontrado");
+        }
+
+        // Em ambiente local, apenas simular o envio
+        console.log("📧 Simulando envio de email de recuperação para:", email);
+
+        // Salvar token temporário no localStorage para teste
+        const resetToken = Math.random().toString(36).substring(2, 15);
+        localStorage.setItem(`reset_token_${email}`, JSON.stringify({
+          token: resetToken,
+          email: email,
+          expiry: Date.now() + (60 * 60 * 1000) // 1 hora
+        }));
+
+        return { success: true };
+      }
+    );
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<ApiResponse> {
+    await this.delay(500);
+
+    return withSupabaseFallback(
+      // Operação Supabase
+      async () => {
+        if (!supabase) throw new Error("Supabase not available");
+
+        const { error } = await supabase.auth.updateUser({
+          password: newPassword
+        });
+
+        if (error) throw error;
+
+        console.log("✅ Senha redefinida via Supabase");
+        return { success: true };
+      },
+      // Fallback localStorage
+      async () => {
+        // Em ambiente local, apenas limpar o token
+        const allKeys = Object.keys(localStorage);
+        const resetKey = allKeys.find(key => key.startsWith("reset_token_"));
+
+        if (resetKey) {
+          const resetData = JSON.parse(localStorage.getItem(resetKey) || "{}");
+          if (resetData.token === token && resetData.expiry > Date.now()) {
+            localStorage.removeItem(resetKey);
+            console.log("✅ Token de reset validado e removido (localStorage)");
+            return { success: true };
+          }
+        }
+
+        throw new Error("Token inválido ou expirado");
+      }
+    );
+  }
+
+  async validateResetToken(token: string): Promise<ApiResponse<{ email: string }>> {
+    await this.delay(200);
+
+    return withSupabaseFallback(
+      // Operação Supabase
+      async () => {
+        // No Supabase, a validação do token é feita automaticamente
+        // quando o usuário clica no link do email
+        console.log("🔍 Validando token via Supabase");
+        return { success: true, data: { email: "" } };
+      },
+      // Fallback localStorage
+      async () => {
+        const allKeys = Object.keys(localStorage);
+        const resetKey = allKeys.find(key => key.startsWith("reset_token_"));
+
+        if (resetKey) {
+          const resetData = JSON.parse(localStorage.getItem(resetKey) || "{}");
+          if (resetData.token === token && resetData.expiry > Date.now()) {
+            return { success: true, data: { email: resetData.email } };
+          }
+        }
+
+        throw new Error("Token inválido ou expirado");
+      }
+    );
+  }
 }
 
 export const authSupabaseAPI = new AuthSupabaseAPI();
