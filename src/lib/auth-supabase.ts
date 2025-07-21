@@ -102,21 +102,44 @@ class AuthSupabaseAPI {
 
     console.log("🔍 Fazendo login no Supabase para:", credentials.email);
 
-    const { data: users, error } = await supabase
+    // 🚨 SECURITY FIX: Use Supabase Auth for proper password validation
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      email: credentials.email.toLowerCase(),
+      password: credentials.password
+    });
+
+    console.log("🔐 Resposta da autenticação Supabase:", {
+      user: authData.user?.email,
+      session: !!authData.session,
+      error: authError?.message,
+    });
+
+    if (authError) {
+      console.error("❌ Erro de autenticação:", authError.message);
+      if (authError.message.includes("Invalid login credentials")) {
+        throw new Error("Email ou senha incorretos");
+      }
+      throw new Error(authError.message);
+    }
+
+    if (!authData.user) {
+      throw new Error("Falha na autenticação");
+    }
+
+    // Buscar dados adicionais do usuário na tabela users
+    const { data: users, error: dbError } = await supabase
       .from("users")
       .select("*")
       .eq("email", credentials.email.toLowerCase())
       .limit(1);
 
-    console.log("📊 Resposta do login Supabase:", {
-      users: users?.length,
-      error,
-    });
-
-    if (error) throw error;
+    if (dbError) {
+      console.error("❌ Erro ao buscar dados do usuário:", dbError);
+      throw dbError;
+    }
 
     if (!users || users.length === 0) {
-      throw new Error("Email não encontrado");
+      throw new Error("Dados do usuário não encontrados");
     }
 
     const user = users[0];
@@ -126,28 +149,26 @@ class AuthSupabaseAPI {
       email: user.email,
       profession: user.profession,
       full_name: user.full_name,
-      name: user.name, // Check if 'name' field exists
       city: user.city,
       state: user.state,
       phone: user.phone,
-      allFields: Object.keys(user), // Log all available fields
     });
 
-    // Converter formato Supabase para formato local com TODOS os campos
+    // Converter formato Supabase para formato local
     const convertedUser: User = {
       id: user.id,
       email: user.email,
       profession: user.profession,
       crm: user.crm,
-      fullName: user.full_name || user.name, // Try both full_name and name fields
+      fullName: user.full_name || user.name,
       city: user.city,
       state: user.state,
       specialty: user.specialty,
-      phone: user.phone, // Incluir telefone
+      phone: user.phone,
       createdAt: user.created_at,
     };
 
-    console.log("✅ Usuário convertido para o contexto:", convertedUser);
+    console.log("✅ Usuário autenticado com segurança:", convertedUser.email);
 
     return { success: true, data: convertedUser };
   }
