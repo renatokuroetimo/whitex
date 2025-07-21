@@ -89,11 +89,19 @@ class AuthSupabaseAPI {
     }
 
     console.log("🔍 Fazendo login no Supabase para:", credentials.email);
+    console.log("🔐 Tentando autenticação via Supabase Auth...");
 
     // 🔐 SECURITY: Use Supabase Auth for proper password validation
     const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
       email: credentials.email.toLowerCase(),
       password: credentials.password
+    });
+
+    console.log("📊 Resultado da autenticação Supabase:", {
+      success: !authError,
+      user: authData?.user?.email,
+      error: authError?.message,
+      errorCode: authError?.status
     });
 
     if (authError) {
@@ -105,13 +113,22 @@ class AuthSupabaseAPI {
 
         const { data: existingUsers, error: dbError } = await supabase
           .from("users")
-          .select("email, profession")
+          .select("email, profession, id, full_name")
           .eq("email", credentials.email.toLowerCase())
           .limit(1);
 
+        console.log("📋 Resultado da busca na tabela users:", {
+          found: existingUsers?.length || 0,
+          error: dbError?.message,
+          users: existingUsers
+        });
+
         if (!dbError && existingUsers && existingUsers.length > 0) {
-          console.warn("⚠️ Usuário existe na tabela mas não no Auth");
+          console.warn("⚠️ Usuário existe na tabela mas não no Auth - MIGRAÇÃO NECESSÁRIA");
+          console.log("👤 Dados do usuário encontrado:", existingUsers[0]);
           throw new Error("MIGRATION_REQUIRED");
+        } else {
+          console.log("ℹ️ Usuário não encontrado na tabela users");
         }
 
         throw new Error("Email ou senha incorretos");
@@ -284,7 +301,7 @@ class AuthSupabaseAPI {
     return { success: true };
   }
 
-  // MIGRAÇÃO DE USUÁRIO EXISTENTE
+  // MIGRAÇÃO DE USU��RIO EXISTENTE
   async migrateExistingUser(email: string, newPassword: string): Promise<ApiResponse<User>> {
     await this.delay(500);
 
