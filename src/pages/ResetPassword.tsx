@@ -154,7 +154,7 @@ const ResetPassword = () => {
             </p>
 
             <Button
-              onClick={() => window.location.href = "https://whitex.app.br"}
+              onClick={() => (window.location.href = "https://whitex.app.br")}
               className="w-full bg-[#00B1BB] hover:bg-[#01485E] text-white"
             >
               Ir para o WhiteX

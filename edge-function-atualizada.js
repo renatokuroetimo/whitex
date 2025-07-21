@@ -92,7 +92,6 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
     });
-
   } catch (error) {
     console.error("Erro ao enviar email:", error);
 
