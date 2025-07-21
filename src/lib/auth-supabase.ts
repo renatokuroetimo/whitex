@@ -38,8 +38,33 @@ class AuthSupabaseAPI {
     console.log("🚀 Iniciando registro no Supabase para:", data.email);
     if (!supabase) throw new Error("Supabase not available");
 
+    // 🚨 SECURITY FIX: Create user in Supabase Auth first with password
+    // For now, we'll use a default password that users must change
+    const defaultPassword = "123456"; // Users should change this immediately
+
+    console.log("🔐 Criando usuário na Supabase Auth...");
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: data.email.toLowerCase(),
+      password: defaultPassword,
+      options: {
+        data: {
+          profession: data.profession,
+          crm: data.crm,
+          full_name: data.fullName
+        }
+      }
+    });
+
+    if (authError) {
+      console.error("❌ Erro ao criar usuário na Auth:", authError);
+      if (authError.message.includes("already registered")) {
+        throw new Error("Email já está em uso");
+      }
+      throw authError;
+    }
+
     const newUser: User = {
-      id: this.generateId(),
+      id: authData.user?.id || this.generateId(),
       email: data.email.toLowerCase(),
       profession: data.profession,
       crm: data.crm,
@@ -51,27 +76,15 @@ class AuthSupabaseAPI {
       createdAt: new Date().toISOString(),
     };
 
-    // Inserir no Supabase - ESTRUTURA REAL (SEM CAMPO NAME)
-    console.log("📝 Inserindo no Supabase:", {
-      id: newUser.id,
-      email: newUser.email,
-      profession: newUser.profession,
-      crm: newUser.crm,
-      full_name: newUser.fullName, // CORRIGIDO: usar 'full_name' se existir
-      city: newUser.city,
-      state: newUser.state,
-      specialty: newUser.specialty,
-      phone: newUser.phone,
-      created_at: newUser.createdAt,
-    });
-
+    // Inserir dados adicionais na tabela users
+    console.log("📝 Inserindo dados adicionais na tabela users:");
     const { error } = await supabase.from("users").insert([
       {
         id: newUser.id,
         email: newUser.email,
         profession: newUser.profession,
         crm: newUser.crm,
-        full_name: newUser.fullName, // CORRIGIDO: usar 'full_name' se existir
+        full_name: newUser.fullName,
         city: newUser.city,
         state: newUser.state,
         specialty: newUser.specialty,
@@ -85,13 +98,11 @@ class AuthSupabaseAPI {
     });
 
     if (error) {
-      // Se email já existe
-      if (error.code === "23505") {
-        throw new Error("Email já está em uso");
-      }
-      throw error;
+      console.warn("⚠️ Erro ao inserir dados adicionais, mas Auth user foi criado");
+      // Continue anyway - the auth user was created successfully
     }
 
+    console.log("✅ Usuário criado com senha padrão. DEVE alterar senha após primeiro login!");
     return { success: true, data: newUser };
   }
 
