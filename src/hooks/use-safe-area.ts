@@ -43,12 +43,8 @@ export const useSafeArea = () => {
         // Adicionar classe ao body para indicar que é iOS
         document.body.classList.add("ios-device");
 
-        // Forçar recálculo de safe area
-        const rootElement = document.getElementById("root");
-        if (rootElement) {
-          rootElement.style.paddingTop = "env(safe-area-inset-top, 0px)";
-          rootElement.style.paddingBottom = "env(safe-area-inset-bottom, 0px)";
-        }
+        // Não aplicar padding ao root para evitar duplicação
+        // O CSS já cuida do safe area via mobile-header e mobile-content
       } else {
         // Para web ou Android, remover safe area
         document.body.classList.remove("ios-device");
