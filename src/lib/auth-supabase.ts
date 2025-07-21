@@ -117,7 +117,7 @@ class AuthSupabaseAPI {
       }
       console.log("✅ Senha validada contra coluna password");
     } else {
-      // Se não existe coluna password, usar valida��ão temporária
+      // Se não existe coluna password, usar validação temporária
       // Esta é uma validação básica temporária para usuários sem senha cadastrada
       console.warn("⚠️ Usuário sem senha cadastrada - usando validação temporária");
 
@@ -243,6 +243,46 @@ class AuthSupabaseAPI {
 
   isAuthenticated(): boolean {
     return this.getCurrentUser() !== null;
+  }
+
+  // DEFINIR SENHA PARA USUÁRIO EXISTENTE
+  async setPasswordForExistingUser(email: string, newPassword: string): Promise<ApiResponse> {
+    await this.delay(300);
+
+    if (!supabase) {
+      throw new Error("Sistema não disponível");
+    }
+
+    console.log("🔐 Definindo senha para usuário existente:", email);
+
+    // Verificar se usuário existe
+    const { data: existingUsers, error: checkError } = await supabase
+      .from("users")
+      .select("id, email, password")
+      .eq("email", email.toLowerCase())
+      .limit(1);
+
+    if (checkError) {
+      throw new Error("Erro ao verificar usuário");
+    }
+
+    if (!existingUsers || existingUsers.length === 0) {
+      throw new Error("Usuário não encontrado");
+    }
+
+    // Atualizar senha
+    const { error } = await supabase
+      .from("users")
+      .update({ password: newPassword })
+      .eq("email", email.toLowerCase());
+
+    if (error) {
+      console.error("❌ Erro ao definir senha:", error);
+      throw new Error("Erro ao definir senha");
+    }
+
+    console.log("✅ Senha definida com sucesso para:", email);
+    return { success: true };
   }
 
   // DELETE ACCOUNT
