@@ -101,10 +101,31 @@ class AuthSupabaseAPI {
     }
 
     const userData = existingUsers[0];
+    console.log("🔍 Campos disponíveis no usuário:", Object.keys(userData));
 
-    // Validação simples de senha (o sistema usa tabela própria, não Supabase Auth)
+    // Validação de senha
     if (!credentials.password || credentials.password.length < 1) {
       throw new Error("Senha é obrigatória");
+    }
+
+    // Verificar se existe coluna de senha na tabela
+    if (userData.password) {
+      // Se existe coluna password, validar contra ela
+      if (userData.password !== credentials.password) {
+        throw new Error("Email ou senha incorretos");
+      }
+      console.log("✅ Senha validada contra coluna password");
+    } else {
+      // Se não existe coluna password, usar validação temporária
+      // Esta é uma validação básica temporária para usuários sem senha cadastrada
+      console.warn("⚠️ Usuário sem senha cadastrada - usando validação temporária");
+
+      // Para usuários existentes sem senha, aceitar apenas senhas específicas
+      const allowedPasswords = ["123456", "admin", "test"];
+      if (!allowedPasswords.includes(credentials.password)) {
+        throw new Error("Email ou senha incorretos");
+      }
+      console.log("⚠️ Login temporário aceito - usuário deve cadastrar senha");
     }
 
     // Converter formato para o sistema
