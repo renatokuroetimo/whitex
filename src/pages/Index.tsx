@@ -73,9 +73,7 @@ const Index = () => {
     }
   };
 
-  const handleBack = () => {
-    navigate("/login");
-  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-brand-light via-white to-brand-light flex items-center justify-center p-4">
@@ -187,16 +185,7 @@ const Index = () => {
           </form>
         </div>
 
-        {/* Back to Login */}
-        <div className="text-center mt-6">
-          <button
-            onClick={handleBack}
-            className="text-brand-dark-teal hover:text-brand-primary text-sm underline transition-colors flex items-center justify-center gap-2 mx-auto"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Voltar para login
-          </button>
-        </div>
+
       </div>
     </div>
   );
