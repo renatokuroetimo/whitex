@@ -58,25 +58,8 @@ const Logo: React.FC<LogoProps> = ({
     }
   };
 
-  if (!showText) {
-    return (
-      <div className={`flex items-center ${className}`}>
-        <img
-          src={getLogoImage()}
-          alt="WhiteX"
-          className={`${sizeClasses[size]} w-auto object-contain`}
-        />
-      </div>
-    );
-  }
-
   return (
-    <div className={`flex items-center gap-3 ${className}`}>
-      <img
-        src={getLogoImage()}
-        alt="WhiteX"
-        className={`${sizeClasses[size]} w-auto object-contain`}
-      />
+    <div className={`flex items-center ${className}`}>
       <span className={`font-bold ${textSizeClasses[size]} ${getTextColor()}`}>
         WhiteX
       </span>
