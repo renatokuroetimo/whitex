@@ -382,14 +382,31 @@ class AuthSupabaseAPI {
           redirectTo: `${window.location.origin}/reset-password`
         });
 
+        // Sempre criar link de backup, mesmo se Supabase funcionou
+        const resetToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        localStorage.setItem(`reset_token_${email}`, JSON.stringify({
+          token: resetToken,
+          email: email,
+          expiry: Date.now() + (60 * 60 * 1000) // 1 hora
+        }));
+
+        const resetUrl = `${window.location.origin}/reset-password?token=${resetToken}`;
+
         if (error) {
           console.warn("⚠️ Supabase email failed, using fallback:", error.message);
-          // Se falhar, usar fallback local
-          throw error;
+          console.log("🔗 Link de recuperação gerado:", resetUrl);
+          return {
+            success: true,
+            data: { resetUrl }
+          };
         }
 
         console.log("✅ Email de recuperação enviado via Supabase");
-        return { success: true };
+        console.log("🔗 Link alternativo gerado:", resetUrl);
+        return {
+          success: true,
+          data: { resetUrl }
+        };
       },
       // Fallback localStorage (gerar link direto)
       async () => {
