@@ -1,7 +1,4 @@
-import { Resend } from 'resend';
-
-// Configuração do Resend
-const resend = new Resend(import.meta.env.VITE_RESEND_API_KEY);
+import { supabase } from './supabase';
 
 export interface EmailOptions {
   to: string;
@@ -11,20 +8,49 @@ export interface EmailOptions {
 
 export class EmailService {
   private static isConfigured(): boolean {
-    return !!import.meta.env.VITE_RESEND_API_KEY;
+    return !!import.meta.env.VITE_SUPABASE_URL && !!import.meta.env.VITE_RESEND_API_KEY;
   }
 
   static async sendPasswordResetEmail(email: string, resetToken: string): Promise<boolean> {
-    // CORS: APIs de email não podem ser chamadas diretamente do frontend
-    // Por questões de segurança, sempre retornamos false para mostrar o link direto
-    console.log("⚠️ Email service executando no frontend - não pode enviar emails diretamente");
-    console.log("🔗 Para implementar envio de email, seria necessário:");
-    console.log("  1. Criar uma API route no backend, ou");
-    console.log("  2. Usar Supabase Edge Functions, ou");
-    console.log("  3. Implementar um webhook/serverless function");
-    console.log("📧 Email alvo:", email);
-    console.log("🎯 Token gerado:", resetToken);
-    return false;
+    if (!this.isConfigured()) {
+      console.warn("⚠️ Supabase ou Resend API key não configurados");
+      return false;
+    }
+
+    if (!supabase) {
+      console.warn("⚠️ Supabase client não disponível");
+      return false;
+    }
+
+    const resetUrl = `${window.location.origin}/reset-password?token=${resetToken}`;
+
+    try {
+      console.log("📧 Enviando email via Supabase Edge Function para:", email);
+
+      const { data, error } = await supabase.functions.invoke('send-email', {
+        body: {
+          email,
+          resetToken,
+          resetUrl
+        }
+      });
+
+      if (error) {
+        console.error("❌ Erro na Edge Function:", error);
+        return false;
+      }
+
+      if (data && !data.success) {
+        console.error("❌ Erro no envio do email:", data.error);
+        return false;
+      }
+
+      console.log("✅ Email enviado com sucesso via Edge Function:", data);
+      return true;
+    } catch (error) {
+      console.error("❌ Erro no serviço de email:", error);
+      return false;
+    }
   }
 
   private static createPasswordResetTemplate(resetUrl: string): string {
