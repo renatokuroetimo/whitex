@@ -99,23 +99,47 @@ const ForgotPassword = () => {
             </div>
 
             <h1 className="text-2xl font-bold text-brand-primary mb-2">
-              Email enviado!
+              {emailDelivered ? "Email enviado!" : "Link de recuperação gerado!"}
             </h1>
 
-            <p className="text-brand-dark-teal mb-6">
-              Enviamos um link de recuperação para <strong>{email}</strong>.
+            <p className="text-brand-dark-teal mb-4">
+              {emailDelivered
+                ? `Enviamos um email para ${email} com instruções para redefinir sua senha.`
+                : `Link de recuperação gerado para ${email}.`
+              }
             </p>
 
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-              <p className="text-sm text-yellow-800">
-                <strong>📧 Verifique:</strong>
-              </p>
-              <ul className="text-sm text-yellow-700 mt-2 space-y-1">
-                <li>• Caixa de entrada</li>
-                <li>• Spam/Lixo eletrônico</li>
-                <li>• Pode demorar até 5 minutos</li>
-              </ul>
-            </div>
+            {emailDelivered ? (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                <p className="text-sm text-green-800">
+                  <strong>📧 Verifique seu email:</strong>
+                </p>
+                <ul className="text-sm text-green-700 mt-2 space-y-1">
+                  <li>• Caixa de entrada</li>
+                  <li>• Pasta de spam/lixo eletrônico</li>
+                  <li>• O email pode demorar alguns minutos para chegar</li>
+                </ul>
+              </div>
+            ) : (
+              resetToken && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                  <p className="text-sm text-blue-800 mb-2 font-medium">
+                    ⚠️ Email não configurado - use o link direto:
+                  </p>
+                  <a
+                    href={`${window.location.origin}/reset-password?token=${resetToken}`}
+                    className="text-sm text-blue-600 hover:text-blue-800 underline break-all font-mono block"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {`${window.location.origin}/reset-password?token=${resetToken}`}
+                  </a>
+                  <p className="text-xs text-blue-600 mt-2">
+                    ⏱️ Este link expira em 1 hora
+                  </p>
+                </div>
+              )
+            )}
 
             <div className="space-y-3">
               <Button
@@ -129,6 +153,8 @@ const ForgotPassword = () => {
                 onClick={() => {
                   setEmailSent(false);
                   setEmail("");
+                  setResetToken(null);
+                  setEmailDelivered(false);
                 }}
                 variant="outline"
                 className="w-full"
