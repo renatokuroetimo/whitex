@@ -282,9 +282,34 @@ class AuthSupabaseAPI {
   async validateResetToken(
     token: string,
   ): Promise<ApiResponse<{ email: string }>> {
-    // No Supabase, a validação do token é feita automaticamente
-    console.log("🔍 Validando token via Supabase");
-    return { success: true, data: { email: "" } };
+    if (!supabase) {
+      throw new Error("Sistema não disponível");
+    }
+
+    console.log("🔍 Validando token de reset:", token);
+
+    const { data: users, error } = await supabase
+      .from("users")
+      .select("email, reset_token_expires")
+      .eq("reset_token", token)
+      .limit(1);
+
+    if (error) {
+      throw new Error("Erro ao validar token");
+    }
+
+    if (!users || users.length === 0) {
+      throw new Error("Token inválido");
+    }
+
+    const user = users[0];
+
+    // Verificar se token não expirou
+    if (user.reset_token_expires && new Date(user.reset_token_expires) < new Date()) {
+      throw new Error("Token expirado");
+    }
+
+    return { success: true, data: { email: user.email } };
   }
 
   // MÉTODOS DE SESSÃO
