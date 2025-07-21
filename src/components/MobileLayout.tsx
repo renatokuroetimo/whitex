@@ -7,6 +7,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { profileImageAPI } from "@/lib/profile-image-api";
 import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
 import { useStatusBar } from "@/hooks/use-status-bar";
+import { useSafeArea } from "@/hooks/use-safe-area";
 import Logo from "@/components/Logo";
 import ConnectivityStatus from "@/components/ConnectivityStatus";
 import SafeImage from "@/components/SafeImage";
@@ -91,8 +92,9 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
   const { logout, user } = useAuth();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
-  // Configurar StatusBar para mobile
+  // Configurar StatusBar e Safe Area para mobile
   useStatusBar();
+  const { isIOS } = useSafeArea();
 
   // Obter dados do usuário com fallback
   const getUserData = () => {
@@ -160,7 +162,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
     currentUser?.profession === "paciente" ? "/profile" : "/profile";
 
   return (
-    <div className="flex h-screen bg-gray-50 capacitor-safe-area">
+    <div className={`flex h-screen bg-gray-50 ${isIOS ? 'capacitor-safe-area' : ''}`}>
       {/* Desktop Sidebar */}
       <div className="hidden lg:flex w-64 flex-col bg-white border-r border-gray-200">
         {/* Header */}
