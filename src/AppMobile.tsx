@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContextHybrid";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import "@/styles/mobile-toast.css";
 
 // Páginas específicas para pacientes
 import Index from "./pages/Index";
