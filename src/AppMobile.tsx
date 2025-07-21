@@ -38,6 +38,8 @@ const AppMobile = () => (
             {/* Auth routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/select-profession" element={<SelectProfession />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
             {/* Patient Dashboard - rota principal */}
             <Route
