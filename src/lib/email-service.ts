@@ -19,40 +19,16 @@ export class EmailService {
   }
 
   static async sendPasswordResetEmail(email: string, resetToken: string): Promise<boolean> {
-    if (!this.isConfigured()) {
-      console.warn("⚠️ VITE_RESEND_API_KEY não configurada - email não será enviado");
-      return false;
-    }
-
-    const resetUrl = `${window.location.origin}/reset-password?token=${resetToken}`;
-    
-    const emailOptions: EmailOptions = {
-      to: email,
-      subject: "WhiteX - Redefinir sua senha",
-      html: this.createPasswordResetTemplate(resetUrl)
-    };
-
-    try {
-      console.log("📧 Enviando email de recuperação para:", email);
-      
-      const { data, error } = await resend.emails.send({
-        from: 'WhiteX <onboarding@resend.dev>', // Usando domínio padrão do Resend
-        to: emailOptions.to,
-        subject: emailOptions.subject,
-        html: emailOptions.html,
-      });
-
-      if (error) {
-        console.error("❌ Erro ao enviar email:", error);
-        return false;
-      }
-
-      console.log("✅ Email enviado com sucesso:", data);
-      return true;
-    } catch (error) {
-      console.error("❌ Erro no serviço de email:", error);
-      return false;
-    }
+    // CORS: APIs de email não podem ser chamadas diretamente do frontend
+    // Por questões de segurança, sempre retornamos false para mostrar o link direto
+    console.log("⚠️ Email service executando no frontend - não pode enviar emails diretamente");
+    console.log("🔗 Para implementar envio de email, seria necessário:");
+    console.log("  1. Criar uma API route no backend, ou");
+    console.log("  2. Usar Supabase Edge Functions, ou");
+    console.log("  3. Implementar um webhook/serverless function");
+    console.log("📧 Email alvo:", email);
+    console.log("🎯 Token gerado:", resetToken);
+    return false;
   }
 
   private static createPasswordResetTemplate(resetUrl: string): string {
