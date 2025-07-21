@@ -9,7 +9,9 @@ class AuthSupabaseAPI {
   }
 
   // REGISTRO DE USUÁRIO
-  async register(data: RegisterData & { password: string }): Promise<ApiResponse<User>> {
+  async register(
+    data: RegisterData & { password: string },
+  ): Promise<ApiResponse<User>> {
     await this.delay(500);
 
     if (!supabase) {
@@ -119,7 +121,9 @@ class AuthSupabaseAPI {
     } else {
       // Se não existe coluna password, usar validação temporária
       // Esta é uma validação básica temporária para usuários sem senha cadastrada
-      console.warn("⚠️ Usuário sem senha cadastrada - usando validação temporária");
+      console.warn(
+        "⚠️ Usuário sem senha cadastrada - usando validação temporária",
+      );
 
       // Para usuários existentes sem senha, aceitar apenas senhas específicas
       const allowedPasswords = ["123456", "admin", "test"];
@@ -162,7 +166,7 @@ class AuthSupabaseAPI {
 
       // Limpar sessão local
       MobileSessionManager.clearSession();
-      
+
       return { success: true };
     } catch (error) {
       return {
@@ -198,7 +202,7 @@ class AuthSupabaseAPI {
     console.log("🔧 Configurações do reset de senha:");
     console.log("- Email:", email);
     console.log("- Redirect URL:", redirectUrl);
-    
+
     // Solicitar reset via Supabase Auth
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: redirectUrl,
@@ -213,7 +217,10 @@ class AuthSupabaseAPI {
     return { success: true };
   }
 
-  async resetPassword(token: string, newPassword: string): Promise<ApiResponse> {
+  async resetPassword(
+    token: string,
+    newPassword: string,
+  ): Promise<ApiResponse> {
     await this.delay(500);
 
     if (!supabase) {
@@ -221,7 +228,7 @@ class AuthSupabaseAPI {
     }
 
     const { error } = await supabase.auth.updateUser({
-      password: newPassword
+      password: newPassword,
     });
 
     if (error) throw error;
@@ -230,7 +237,9 @@ class AuthSupabaseAPI {
     return { success: true };
   }
 
-  async validateResetToken(token: string): Promise<ApiResponse<{ email: string }>> {
+  async validateResetToken(
+    token: string,
+  ): Promise<ApiResponse<{ email: string }>> {
     // No Supabase, a validação do token é feita automaticamente
     console.log("🔍 Validando token via Supabase");
     return { success: true, data: { email: "" } };
@@ -246,7 +255,10 @@ class AuthSupabaseAPI {
   }
 
   // DEFINIR SENHA PARA USUÁRIO EXISTENTE
-  async setPasswordForExistingUser(email: string, newPassword: string): Promise<ApiResponse> {
+  async setPasswordForExistingUser(
+    email: string,
+    newPassword: string,
+  ): Promise<ApiResponse> {
     await this.delay(300);
 
     if (!supabase) {
@@ -312,8 +324,6 @@ class AuthSupabaseAPI {
     return { success: true };
   }
 
-
-
   // DEBUG FUNCTION - List all users in database
   async debugListUsers(): Promise<void> {
     if (!supabase) {
@@ -340,20 +350,21 @@ class AuthSupabaseAPI {
       console.log("ℹ️ Nenhum usuário encontrado na tabela");
     }
   }
-
-
 }
 
 export const authSupabaseAPI = new AuthSupabaseAPI();
 
 // Expose debug functions to global console in development
-if (typeof window !== 'undefined' && import.meta.env.DEV) {
+if (typeof window !== "undefined" && import.meta.env.DEV) {
   (window as any).debugAuth = {
     listUsers: () => authSupabaseAPI.debugListUsers(),
     testConnection: async () => {
       console.log("🔧 Testando conexão com Supabase...");
       try {
-        const { data, error } = await supabase.from("users").select("count").limit(1);
+        const { data, error } = await supabase
+          .from("users")
+          .select("count")
+          .limit(1);
         console.log("✅ Conexão OK:", { data, error });
       } catch (e) {
         console.error("❌ Erro de conexão:", e);
@@ -362,14 +373,17 @@ if (typeof window !== 'undefined' && import.meta.env.DEV) {
     setPassword: async (email: string, password: string) => {
       console.log("🔐 Definindo senha para:", email);
       try {
-        const result = await authSupabaseAPI.setPasswordForExistingUser(email, password);
+        const result = await authSupabaseAPI.setPasswordForExistingUser(
+          email,
+          password,
+        );
         console.log("✅ Senha definida com sucesso");
         return result;
       } catch (e) {
         console.error("❌ Erro ao definir senha:", e);
         throw e;
       }
-    }
+    },
   };
   console.log("🛠️ Debug functions available:");
   console.log("  - window.debugAuth.listUsers()");

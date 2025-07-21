@@ -25,19 +25,21 @@ const ResetPassword = () => {
     const params = new URLSearchParams(location.search);
     const fragment = location.hash.substring(1);
     const fragmentParams = new URLSearchParams(fragment);
-    
+
     // Tentar pegar token tanto da query string quanto do fragment
-    return params.get("token") || 
-           fragmentParams.get("access_token") || 
-           params.get("access_token") ||
-           fragmentParams.get("token") ||
-           "";
+    return (
+      params.get("token") ||
+      fragmentParams.get("access_token") ||
+      params.get("access_token") ||
+      fragmentParams.get("token") ||
+      ""
+    );
   };
 
   useEffect(() => {
     const validateToken = async () => {
       const token = getTokenFromUrl();
-      
+
       if (!token) {
         toast({
           variant: "destructive",
@@ -59,7 +61,8 @@ const ResetPassword = () => {
         toast({
           variant: "destructive",
           title: "Token inválido",
-          description: error.message || "Link de recuperação inválido ou expirado",
+          description:
+            error.message || "Link de recuperação inválido ou expirado",
         });
         navigate("/forgot-password");
       }
@@ -103,7 +106,7 @@ const ResetPassword = () => {
     try {
       const token = getTokenFromUrl();
       await authSupabaseAPI.resetPassword(token, password);
-      
+
       setPasswordReset(true);
       toast({
         title: "Senha redefinida",
@@ -140,13 +143,14 @@ const ResetPassword = () => {
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
-            
+
             <h1 className="text-2xl font-bold text-brand-primary mb-2">
               Senha redefinida!
             </h1>
-            
+
             <p className="text-brand-dark-teal mb-6">
-              Sua senha foi alterada com sucesso. Agora você pode fazer login com sua nova senha.
+              Sua senha foi alterada com sucesso. Agora você pode fazer login
+              com sua nova senha.
             </p>
 
             <Button
@@ -167,7 +171,9 @@ const ResetPassword = () => {
         <div className="w-full max-w-md">
           <div className="text-center">
             <div className="w-4 h-4 border-2 border-brand-teal border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-brand-dark-teal">Validando link de recuperação...</p>
+            <p className="text-brand-dark-teal">
+              Validando link de recuperação...
+            </p>
           </div>
         </div>
       </div>
@@ -192,12 +198,8 @@ const ResetPassword = () => {
           <h1 className="text-3xl font-bold text-brand-primary mb-2">
             Redefinir senha
           </h1>
-          <p className="text-brand-dark-teal">
-            {email && `Para: ${email}`}
-          </p>
-          <p className="text-brand-dark-teal text-sm">
-            Digite sua nova senha
-          </p>
+          <p className="text-brand-dark-teal">{email && `Para: ${email}`}</p>
+          <p className="text-brand-dark-teal text-sm">Digite sua nova senha</p>
         </div>
 
         {/* Form */}
@@ -234,12 +236,16 @@ const ResetPassword = () => {
                   )}
                 </button>
               </div>
-              <p className="text-xs text-gray-500 mt-1">Mínimo de 6 caracteres</p>
+              <p className="text-xs text-gray-500 mt-1">
+                Mínimo de 6 caracteres
+              </p>
             </div>
 
             {/* Confirm Password */}
             <div>
-              <Label className="text-gray-700 mb-2 block">Confirmar nova senha</Label>
+              <Label className="text-gray-700 mb-2 block">
+                Confirmar nova senha
+              </Label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-gray-400" />

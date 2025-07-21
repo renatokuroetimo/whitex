@@ -44,7 +44,8 @@ const ForgotPassword = () => {
       setEmailSent(true);
       toast({
         title: "✅ Email enviado",
-        description: "Verifique sua caixa de entrada (pode demorar alguns minutos)",
+        description:
+          "Verifique sua caixa de entrada (pode demorar alguns minutos)",
       });
     } catch (error: any) {
       console.error("Erro ao solicitar reset de senha:", error);
@@ -77,7 +78,7 @@ const ForgotPassword = () => {
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
-            
+
             <h1 className="text-2xl font-bold text-brand-primary mb-2">
               Email enviado!
             </h1>
@@ -104,7 +105,7 @@ const ForgotPassword = () => {
               >
                 Voltar ao Login
               </Button>
-              
+
               <Button
                 onClick={() => {
                   setEmailSent(false);
