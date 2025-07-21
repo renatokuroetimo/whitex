@@ -72,26 +72,43 @@ const Login = () => {
       }
     }
 
-    const success = await login({ email, password });
-    if (success) {
-      // Additional check for mobile after successful login
-      if (isMobileApp()) {
-        const currentUser = JSON.parse(
-          localStorage.getItem("medical_app_current_user") || "{}",
-        );
-        if (currentUser.profession === "medico") {
-          console.log("🚫 Doctor detected after login on mobile - logging out");
-          await logout();
-          toast({
-            variant: "destructive",
-            title: "Acesso Restrito",
-            description: "Este aplicativo é exclusivo para pacientes.",
-          });
-          return;
+    try {
+      const success = await login({ email, password });
+      if (success) {
+        // Additional check for mobile after successful login
+        if (isMobileApp()) {
+          const currentUser = JSON.parse(
+            localStorage.getItem("medical_app_current_user") || "{}",
+          );
+          if (currentUser.profession === "medico") {
+            console.log("🚫 Doctor detected after login on mobile - logging out");
+            await logout();
+            toast({
+              variant: "destructive",
+              title: "Acesso Restrito",
+              description: "Este aplicativo é exclusivo para pacientes.",
+            });
+            return;
+          }
         }
+
+        navigate("/dashboard");
+      }
+    } catch (error: any) {
+      if (error.message === "MIGRATION_REQUIRED") {
+        toast({
+          title: "Migração necessária",
+          description: "Sua conta precisa ser migrada. Redirecionando...",
+        });
+
+        setTimeout(() => {
+          navigate(`/migrate-user?email=${encodeURIComponent(email)}`);
+        }, 2000);
+        return;
       }
 
-      navigate("/dashboard");
+      // Re-throw other errors to be handled by the auth context
+      throw error;
     }
   };
 
