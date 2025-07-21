@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import Sidebar from "@/components/Sidebar";
 import MobileLayout from "@/components/MobileLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -176,17 +175,14 @@ const PatientAddIndicator = () => {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen bg-gray-50">
-        <div className="hidden lg:block">
-          <Sidebar />
-        </div>
-        <div className="flex-1 flex items-center justify-center">
+      <MobileLayout>
+        <div className="flex items-center justify-center min-h-64">
           <div className="text-center">
             <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
             <p className="text-gray-600">Carregando...</p>
           </div>
         </div>
-      </div>
+      </MobileLayout>
     );
   }
 
