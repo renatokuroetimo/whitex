@@ -1,5 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContextHybrid";
+import MobileAccessRestricted from "./MobileAccessRestricted";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
