@@ -9,38 +9,32 @@ class AuthSupabaseAPI {
   }
 
   // REGISTRO DE USUÁRIO
-  async register(data: RegisterData & { password: string }): Promise<ApiResponse<User>> {
+  async register(data: RegisterData): Promise<ApiResponse<User>> {
     await this.delay(500);
 
     if (!supabase) {
       throw new Error("Sistema de autenticação não disponível");
     }
 
-    console.log("🚀 Iniciando registro no Supabase para:", data.email);
+    console.log("🚀 Iniciando registro para:", data.email);
 
-    // Criar usuário na Supabase Auth com a senha fornecida
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: data.email.toLowerCase(),
-      password: data.password,
-      options: {
-        data: {
-          profession: data.profession,
-          crm: data.crm,
-          full_name: data.fullName
-        }
-      }
-    });
+    // Verificar se email já existe
+    const { data: existingUsers, error: checkError } = await supabase
+      .from("users")
+      .select("email")
+      .eq("email", data.email.toLowerCase())
+      .limit(1);
 
-    if (authError) {
-      console.error("❌ Erro ao criar usuário na Auth:", authError);
-      if (authError.message.includes("already registered")) {
-        throw new Error("Email já está em uso");
-      }
-      throw authError;
+    if (checkError) {
+      throw new Error("Erro ao verificar email");
+    }
+
+    if (existingUsers && existingUsers.length > 0) {
+      throw new Error("Email já está em uso");
     }
 
     const newUser: User = {
-      id: authData.user?.id || Date.now().toString(36),
+      id: Date.now().toString(36) + Math.random().toString(36).substring(2),
       email: data.email.toLowerCase(),
       profession: data.profession,
       crm: data.crm,
@@ -52,7 +46,7 @@ class AuthSupabaseAPI {
       createdAt: new Date().toISOString(),
     };
 
-    // Inserir dados adicionais na tabela users
+    // Inserir na tabela users
     const { error } = await supabase.from("users").insert([
       {
         id: newUser.id,
@@ -69,7 +63,7 @@ class AuthSupabaseAPI {
     ]);
 
     if (error) {
-      console.error("❌ Erro ao inserir dados adicionais:", error);
+      console.error("❌ Erro ao criar usuário:", error);
       throw error;
     }
 
