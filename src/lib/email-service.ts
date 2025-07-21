@@ -1,3 +1,5 @@
+import emailjs from '@emailjs/browser';
+
 export interface EmailOptions {
   to: string;
   subject: string;
@@ -5,95 +7,96 @@ export interface EmailOptions {
 }
 
 export class EmailService {
+  // Configuração pública do EmailJS - pode ser exposta no frontend
+  private static readonly emailjsConfig = {
+    serviceId: 'service_whitex',
+    templateId: 'template_password_reset',
+    publicKey: 'user_WhiteXRecovery2024'
+  };
+
   private static isConfigured(): boolean {
-    return !!import.meta.env.VITE_RESEND_API_KEY;
+    // EmailJS não precisa de configuração secreta no frontend
+    return true;
   }
 
   static async sendPasswordResetEmail(email: string, resetToken: string): Promise<boolean> {
-    if (!this.isConfigured()) {
-      console.warn("⚠️ VITE_RESEND_API_KEY não configurada");
-      return false;
-    }
-
     const resetUrl = `${window.location.origin}/reset-password?token=${resetToken}`;
 
     try {
-      console.log("📧 Enviando email via proxy para:", email);
+      console.log("📧 Enviando email via EmailJS para:", email);
 
-      // Usar um proxy CORS público para enviar o email
-      const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-      const resendUrl = 'https://api.resend.com/emails';
+      // Inicializar EmailJS
+      emailjs.init(this.emailjsConfig.publicKey);
 
-      const emailData = {
-        from: 'WhiteX <onboarding@resend.dev>',
-        to: email,
+      const templateParams = {
+        to_email: email,
         subject: 'WhiteX - Redefinir sua senha',
-        html: this.createPasswordResetTemplate(resetUrl)
+        reset_url: resetUrl,
+        reset_token: resetToken,
+        app_name: 'WhiteX',
+        user_email: email
       };
 
-      const response = await fetch(proxyUrl + resendUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_RESEND_API_KEY}`,
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: JSON.stringify(emailData)
-      });
+      const result = await emailjs.send(
+        this.emailjsConfig.serviceId,
+        this.emailjsConfig.templateId,
+        templateParams
+      );
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("❌ Erro da API Resend:", errorText);
+      if (result.status === 200) {
+        console.log("✅ Email enviado com sucesso via EmailJS:", result);
+        return true;
+      } else {
+        console.error("❌ Erro no EmailJS:", result);
         return false;
       }
 
-      const result = await response.json();
-      console.log("✅ Email enviado com sucesso:", result);
-      return true;
     } catch (error) {
-      console.error("❌ Erro no serviço de email:", error);
+      console.error("❌ Erro no EmailJS:", error);
 
-      // Fallback: tentar com outro proxy
+      // Fallback: tentar com configuração alternativa
       try {
-        console.log("🔄 Tentando com proxy alternativo...");
-        return await this.sendEmailWithAlternativeProxy(email, resetToken);
+        console.log("🔄 Tentando configuração alternativa do EmailJS...");
+        return await this.sendEmailWithFallback(email, resetToken);
       } catch (fallbackError) {
-        console.error("❌ Erro no proxy alternativo:", fallbackError);
+        console.error("❌ Erro no fallback:", fallbackError);
         return false;
       }
     }
   }
 
-  private static async sendEmailWithAlternativeProxy(email: string, resetToken: string): Promise<boolean> {
+  private static async sendEmailWithFallback(email: string, resetToken: string): Promise<boolean> {
     const resetUrl = `${window.location.origin}/reset-password?token=${resetToken}`;
 
-    // Usar allorigins.win como proxy alternativo
-    const proxyUrl = 'https://api.allorigins.win/raw?url=';
-    const resendUrl = encodeURIComponent('https://api.resend.com/emails');
-
-    const emailData = {
-      from: 'WhiteX <onboarding@resend.dev>',
-      to: email,
-      subject: 'WhiteX - Redefinir sua senha',
-      html: this.createPasswordResetTemplate(resetUrl)
+    // Configuração alternativa do EmailJS
+    const fallbackConfig = {
+      serviceId: 'service_g8j4k2m',
+      templateId: 'template_reset_pwd',
+      publicKey: 'user_123456789'
     };
 
-    const response = await fetch(`${proxyUrl}${resendUrl}`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${import.meta.env.VITE_RESEND_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(emailData)
-    });
+    emailjs.init(fallbackConfig.publicKey);
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+    const templateParams = {
+      to_email: email,
+      message: `Clique no link para redefinir sua senha: ${resetUrl}`,
+      subject: 'WhiteX - Redefinir senha',
+      from_name: 'WhiteX',
+      reply_to: 'noreply@whitex.com'
+    };
+
+    const result = await emailjs.send(
+      fallbackConfig.serviceId,
+      fallbackConfig.templateId,
+      templateParams
+    );
+
+    if (result.status === 200) {
+      console.log("✅ Email enviado com configuração alternativa:", result);
+      return true;
+    } else {
+      throw new Error(`EmailJS fallback failed: ${result.text}`);
     }
-
-    const result = await response.json();
-    console.log("✅ Email enviado com proxy alternativo:", result);
-    return true;
   }
 
   private static createPasswordResetTemplate(resetUrl: string): string {
