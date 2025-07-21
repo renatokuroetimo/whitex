@@ -33,19 +33,16 @@ class AuthSupabaseAPI {
 
   // MÉTODOS SUPABASE
   private async registerUserSupabase(
-    data: RegisterData,
+    data: RegisterData & { password: string }
   ): Promise<ApiResponse<User>> {
     console.log("🚀 Iniciando registro no Supabase para:", data.email);
     if (!supabase) throw new Error("Supabase not available");
 
-    // 🚨 SECURITY FIX: Create user in Supabase Auth first with password
-    // For now, we'll use a default password that users must change
-    const defaultPassword = "123456"; // Users should change this immediately
-
+    // Criar usuário na Supabase Auth com a senha fornecida
     console.log("🔐 Criando usuário na Supabase Auth...");
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: data.email.toLowerCase(),
-      password: defaultPassword,
+      password: data.password,
       options: {
         data: {
           profession: data.profession,
@@ -93,16 +90,12 @@ class AuthSupabaseAPI {
       },
     ]);
 
-    console.log("📊 Resultado do insert:", {
-      error: error?.message || "sucesso",
-    });
-
     if (error) {
-      console.warn("⚠️ Erro ao inserir dados adicionais, mas Auth user foi criado");
-      // Continue anyway - the auth user was created successfully
+      console.error("❌ Erro ao inserir dados adicionais:", error);
+      throw error;
     }
 
-    console.log("✅ Usuário criado com senha padrão. DEVE alterar senha após primeiro login!");
+    console.log("✅ Usuário criado com sucesso!");
     return { success: true, data: newUser };
   }
 
@@ -184,63 +177,7 @@ class AuthSupabaseAPI {
     return { success: true, data: convertedUser };
   }
 
-  // MÉTODOS LOCALSTORAGE (original)
-  private async registerUserLocalStorage(
-    data: RegisterData,
-  ): Promise<ApiResponse<User>> {
-    const users = this.getStoredUsers();
-
-    // Verifica se email já existe
-    const existingUser = users.find(
-      (user) => user.email.toLowerCase() === data.email.toLowerCase(),
-    );
-    if (existingUser) {
-      throw new Error("Email já está em uso");
-    }
-
-    // Cria novo usuário
-    const newUser: User = {
-      id: this.generateId(),
-      email: data.email.toLowerCase(),
-      profession: data.profession,
-      crm: data.crm,
-      createdAt: new Date().toISOString(),
-    };
-
-    // Salva usuário
-    users.push(newUser);
-    this.saveUsers(users);
-
-    return { success: true, data: newUser };
-  }
-
-  private async loginUserLocalStorage(
-    credentials: LoginCredentials,
-  ): Promise<ApiResponse<User>> {
-    // 🚨 SECURITY NOTE: localStorage fallback is for development only
-    // In production, we should ONLY use Supabase Auth with proper password validation
-    console.warn("⚠️ Using localStorage fallback - this should only happen in development!");
-
-    const users = this.getStoredUsers();
-
-    // Encontra usuário por email
-    const user = users.find(
-      (u) => u.email.toLowerCase() === credentials.email.toLowerCase(),
-    );
-
-    if (!user) {
-      throw new Error("Email não encontrado");
-    }
-
-    // 🚨 TEMPORARY SECURITY MEASURE: In localStorage mode, any password works
-    // This is ONLY for development - production MUST use Supabase Auth
-    if (!credentials.password || credentials.password.length < 1) {
-      throw new Error("Senha é obrigatória");
-    }
-
-    console.warn("⚠️ localStorage mode: password validation bypassed for development");
-    return { success: true, data: user };
-  }
+  // 🚨 REMOVED: localStorage methods - using ONLY Supabase now
 
   // M��TODOS PÚBLICOS HÍBRIDOS
   async register(data: RegisterData): Promise<ApiResponse<User>> {
@@ -399,86 +336,53 @@ class AuthSupabaseAPI {
   }
 
   // MÉTODOS DE RECUPERAÇÃO DE SENHA
-  async requestPasswordReset(email: string): Promise<ApiResponse<{ resetUrl?: string }>> {
+  async requestPasswordReset(email: string): Promise<ApiResponse> {
     await this.delay(500);
 
-    return withSupabaseFallback(
-      // Operação Supabase
-      async () => {
-        if (!supabase) throw new Error("Supabase not available");
+    if (!supabase) {
+      throw new Error("Sistema de recuperação de senha não disponível");
+    }
 
-        // Verificar se o usuário existe primeiro
-        const { data: users, error: queryError } = await supabase
-          .from("users")
-          .select("id, email, profession")
-          .eq("email", email.toLowerCase())
-          .limit(1);
+    // Verificar se o usuário existe primeiro
+    const { data: users, error: queryError } = await supabase
+      .from("users")
+      .select("id, email, profession")
+      .eq("email", email.toLowerCase())
+      .limit(1);
 
-        if (queryError) throw queryError;
+    if (queryError) throw queryError;
 
-        if (!users || users.length === 0) {
-          throw new Error("Email não encontrado");
-        }
+    if (!users || users.length === 0) {
+      throw new Error("Email não encontrado");
+    }
 
-        // Configurações detalhadas para debug
-        const redirectUrl = `${window.location.origin}/reset-password`;
-        console.log("🔧 Configurações do reset de senha:");
-        console.log("- Email:", email);
-        console.log("- Redirect URL:", redirectUrl);
-        console.log("- Origin:", window.location.origin);
+    // Configurações detalhadas para debug
+    const redirectUrl = `${window.location.origin}/reset-password`;
+    console.log("🔧 Configurações do reset de senha:");
+    console.log("- Email:", email);
+    console.log("- Redirect URL:", redirectUrl);
+    console.log("- Origin:", window.location.origin);
 
-        // Tentar Supabase Auth com configurações mais específicas
-        const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: redirectUrl,
-          captchaToken: undefined // Explicitly set if needed
-        });
+    // Solicitar reset via Supabase Auth
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectUrl,
+    });
 
-        console.log("📧 Resposta do Supabase resetPasswordForEmail:");
-        console.log("- Data:", data);
-        console.log("- Error:", error);
+    console.log("📧 Resposta do Supabase resetPasswordForEmail:");
+    console.log("- Data:", data);
+    console.log("- Error:", error);
 
-        if (error) {
-          console.error("❌ Erro detalhado do Supabase:", {
-            message: error.message,
-            status: error.status,
-            details: error
-          });
-          throw new Error(`Supabase Auth Error: ${error.message}`);
-        }
+    if (error) {
+      console.error("❌ Erro detalhado do Supabase:", {
+        message: error.message,
+        status: error.status,
+        details: error
+      });
+      throw new Error(`Erro ao enviar email: ${error.message}`);
+    }
 
-        console.log("✅ Email de recuperação CONFIRMADO via Supabase");
-        console.log("📝 Dados retornados:", data);
-
-        return { success: true };
-      },
-      // Fallback localStorage (gerar link direto)
-      async () => {
-        const users = this.getStoredUsers();
-        const user = users.find(
-          (u) => u.email.toLowerCase() === email.toLowerCase()
-        );
-
-        if (!user) {
-          throw new Error("Email não encontrado");
-        }
-
-        // Criar token temporário
-        const resetToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-        localStorage.setItem(`reset_token_${email}`, JSON.stringify({
-          token: resetToken,
-          email: email,
-          expiry: Date.now() + (60 * 60 * 1000) // 1 hora
-        }));
-
-        const resetUrl = `${window.location.origin}/reset-password?token=${resetToken}`;
-        console.log("🔗 Link de recuperação gerado:", resetUrl);
-
-        return {
-          success: true,
-          data: { resetUrl }
-        };
-      }
-    );
+    console.log("✅ Email de recuperação enviado via Supabase");
+    return { success: true };
   }
 
   async resetPassword(token: string, newPassword: string): Promise<ApiResponse> {
