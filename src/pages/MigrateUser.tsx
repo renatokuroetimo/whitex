@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Eye, EyeOff, Lock, Mail, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { authSupabaseAPI } from "@/lib/auth-supabase";
 import { toast } from "@/hooks/use-toast";
 import Logo from "@/components/Logo";
@@ -16,6 +16,16 @@ const MigrateUser = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Pre-fill email from URL parameters
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const emailParam = params.get("email");
+    if (emailParam) {
+      setEmail(decodeURIComponent(emailParam));
+    }
+  }, [location]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
