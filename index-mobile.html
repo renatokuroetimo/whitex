@@ -17,14 +17,42 @@
 
     <!-- iOS specific meta tags -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
     <meta name="apple-mobile-web-app-title" content="Saúde+" />
+
+    <!-- Safe area and orientation -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
 
     <!-- Prevent iOS zoom on input focus -->
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, shrink-to-fit=no"
     />
+    <style>
+      /* Safe area CSS inline para carregamento imediato */
+      body {
+        padding: 0;
+        margin: 0;
+        background-color: #f9fafb;
+      }
+
+      #root {
+        min-height: 100vh;
+        min-height: 100dvh;
+      }
+
+      /* iOS safe area */
+      @supports (padding: max(0px)) {
+        body {
+          padding-top: env(safe-area-inset-top, 0px);
+          padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+      }
+    </style>
   </head>
 
   <body>

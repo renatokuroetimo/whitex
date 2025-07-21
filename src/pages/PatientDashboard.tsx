@@ -79,7 +79,7 @@ const PatientDashboard = () => {
 
   return (
     <MobileLayout>
-      <div className="p-4 sm:p-6 lg:p-8">
+      <div className="p-4 sm:p-6 lg:p-8 list-container">
         <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-6 sm:mb-8">
           Dashboard - Paciente
         </h1>

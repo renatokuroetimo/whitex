@@ -116,6 +116,19 @@
     padding-left: max(1rem, env(safe-area-inset-left));
     padding-right: max(1rem, env(safe-area-inset-right));
   }
+
+  /* Aplicar safe area automaticamente no Capacitor */
+  .capacitor-safe-area {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  .capacitor-safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+    margin-bottom: env(safe-area-inset-bottom);
+  }
 }
 
 /* Mobile viewport fixes */
@@ -153,14 +166,85 @@
     position: sticky;
     top: 0;
     z-index: 50;
-    padding-top: 0 !important;
+    padding-top: env(safe-area-inset-top, 0);
     margin-top: 0 !important;
   }
 
   .mobile-content {
-    padding-bottom: max(1rem, env(safe-area-inset-bottom, 1rem));
+    padding-bottom: max(2rem, env(safe-area-inset-bottom, 1rem));
+    margin-bottom: env(safe-area-inset-bottom, 0);
     flex: 1;
+  }
+
+  /* iOS specific fixes */
+  .ios-safe-content {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+  }
+
+  /* Fix para elementos que ficam presos na safe area */
+  .mobile-page-content {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 2rem);
+    min-height: calc(
+      100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)
+    );
   }
 }
 
 /* Prevent content from going under notch on iOS */
+.ios-device {
+  /* Garantir que em dispositivos iOS o conteúdo respeite a safe area */
+  height: 100vh;
+  height: 100dvh;
+}
+
+.ios-device #root {
+  /* No iOS, aplicar safe area ao elemento root */
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  height: calc(
+    100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)
+  );
+  height: calc(
+    100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)
+  );
+}
+
+@media (max-width: 768px) {
+  /* Safe area específica para mobile */
+  .ios-device .mobile-content {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem) !important;
+    margin-bottom: 0 !important;
+  }
+
+  .ios-device .mobile-header {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 0.75rem) !important;
+  }
+
+  /* Garantir que páginas com conteúdo longo tenham espaço no final */
+  .ios-device .mobile-page-content {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 2rem) !important;
+  }
+
+  /* Específico para formulários e listas */
+  .ios-device .form-container,
+  .ios-device .list-container {
+    margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+  }
+
+  /* Garantir que botões no final da página tenham espaço */
+  .ios-device .form-container > div:last-child,
+  .ios-device .list-container > div:last-child {
+    margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+  }
+
+  /* Fix para tabs e elementos interativos no final */
+  .ios-device [data-radix-tabs-content],
+  .ios-device .tab-content {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+  }
+
+  /* Universal safe area fix para qualquer conteúdo */
+  .safe-area-bottom-padding {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem) !important;
+  }
+}

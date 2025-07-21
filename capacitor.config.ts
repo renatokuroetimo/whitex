@@ -10,11 +10,14 @@ const config: CapacitorConfig = {
     // Remove hostname para produção - permite acesso externo
   },
   ios: {
-    contentInset: "automatic",
+    contentInset: "never",
     allowsLinkPreview: false,
     handleApplicationNotifications: false,
     // Configurações importantes para produção
     preferredContentMode: "mobile",
+    // Configurações para melhor suporte à safe area
+    backgroundColor: "#ffffff",
+    scrollEnabled: true,
   },
   android: {
     // Configurações importantes para produção
