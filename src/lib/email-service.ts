@@ -11,7 +11,11 @@ export interface EmailOptions {
 
 export class EmailService {
   private static isConfigured(): boolean {
-    return !!import.meta.env.VITE_RESEND_API_KEY;
+    const apiKey = import.meta.env.VITE_RESEND_API_KEY;
+    console.log("🔧 Verificando configuração do email:");
+    console.log("  - API Key exists:", !!apiKey);
+    console.log("  - API Key value:", apiKey ? `${apiKey.substring(0, 10)}...` : 'undefined');
+    return !!apiKey;
   }
 
   static async sendPasswordResetEmail(email: string, resetToken: string): Promise<boolean> {
