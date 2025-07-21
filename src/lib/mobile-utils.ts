@@ -7,18 +7,28 @@
  * Only returns true for actual mobile app (Capacitor), not mobile browsers
  */
 export const isMobileApp = (): boolean => {
-  // Only return true if actually running in Capacitor (native mobile app)
-  const isCapacitor = !!(window as any).Capacitor;
+  // Check for Capacitor object - only exists in native mobile app
+  const hasCapacitor = typeof (window as any).Capacitor !== 'undefined' && (window as any).Capacitor;
+
+  // Additional check for Capacitor platform - more reliable
+  const isCapacitorNative = hasCapacitor && (window as any).Capacitor?.isNativePlatform?.();
+
+  // Check if we're NOT in a browser environment
+  const isNotBrowser = !window.location.protocol.startsWith('http');
+
+  const result = hasCapacitor && (isCapacitorNative || isNotBrowser);
 
   console.log("🔍 Mobile detection:", {
-    hasCapacitor: isCapacitor,
+    hasCapacitor,
+    isCapacitorNative,
+    isNotBrowser,
+    protocol: window.location.protocol,
     userAgent: navigator.userAgent,
-    finalResult: isCapacitor,
+    finalResult: result,
   });
 
-  // ONLY consider it mobile app if running in Capacitor (actual native app)
-  // Do NOT rely on VITE_APP_MODE or user agent to avoid showing in browser
-  return isCapacitor;
+  // ONLY return true if we're definitely in a Capacitor native app
+  return result;
 };
 
 /**
