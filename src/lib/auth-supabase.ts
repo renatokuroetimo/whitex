@@ -199,7 +199,7 @@ class AuthSupabaseAPI {
     return { success: true, data: user };
   }
 
-  // MÉTODOS PÚBLICOS HÍBRIDOS
+  // M��TODOS PÚBLICOS HÍBRIDOS
   async register(data: RegisterData): Promise<ApiResponse<User>> {
     await this.delay(500);
 
@@ -377,36 +377,36 @@ class AuthSupabaseAPI {
           throw new Error("Email não encontrado");
         }
 
-        // Tentar Supabase Auth primeiro
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/reset-password`
+        // Configurações detalhadas para debug
+        const redirectUrl = `${window.location.origin}/reset-password`;
+        console.log("🔧 Configurações do reset de senha:");
+        console.log("- Email:", email);
+        console.log("- Redirect URL:", redirectUrl);
+        console.log("- Origin:", window.location.origin);
+
+        // Tentar Supabase Auth com configurações mais específicas
+        const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: redirectUrl,
+          captchaToken: undefined // Explicitly set if needed
         });
 
-        // Sempre criar link de backup, mesmo se Supabase funcionou
-        const resetToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-        localStorage.setItem(`reset_token_${email}`, JSON.stringify({
-          token: resetToken,
-          email: email,
-          expiry: Date.now() + (60 * 60 * 1000) // 1 hora
-        }));
-
-        const resetUrl = `${window.location.origin}/reset-password?token=${resetToken}`;
+        console.log("📧 Resposta do Supabase resetPasswordForEmail:");
+        console.log("- Data:", data);
+        console.log("- Error:", error);
 
         if (error) {
-          console.warn("⚠️ Supabase email failed, using fallback:", error.message);
-          console.log("🔗 Link de recuperação gerado:", resetUrl);
-          return {
-            success: true,
-            data: { resetUrl }
-          };
+          console.error("❌ Erro detalhado do Supabase:", {
+            message: error.message,
+            status: error.status,
+            details: error
+          });
+          throw new Error(`Supabase Auth Error: ${error.message}`);
         }
 
-        console.log("✅ Email de recuperação enviado via Supabase");
-        console.log("🔗 Link alternativo gerado:", resetUrl);
-        return {
-          success: true,
-          data: { resetUrl }
-        };
+        console.log("✅ Email de recuperação CONFIRMADO via Supabase");
+        console.log("📝 Dados retornados:", data);
+
+        return { success: true };
       },
       // Fallback localStorage (gerar link direto)
       async () => {
