@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContextHybrid";
+import { isMobileApp } from "@/lib/mobile-utils";
 
 const AddCRM = () => {
   const [crm, setCrm] = useState("");
@@ -13,6 +14,12 @@ const AddCRM = () => {
   const { register } = useAuth();
 
   useEffect(() => {
+    // If mobile app, redirect to main page
+    if (isMobileApp()) {
+      navigate("/", { replace: true });
+      return;
+    }
+
     // Get temporary registration data
     const tempData = sessionStorage.getItem("temp_registration");
     if (!tempData) {
