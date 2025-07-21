@@ -32,7 +32,7 @@ export class EmailService {
       console.log("📧 Enviando email de recuperação para:", email);
       
       const { data, error } = await resend.emails.send({
-        from: 'WhiteX <noreply@whitex.com>', // Configure seu domínio no Resend
+        from: 'WhiteX <onboarding@resend.dev>', // Usando domínio padrão do Resend
         to: emailOptions.to,
         subject: emailOptions.subject,
         html: emailOptions.html,
