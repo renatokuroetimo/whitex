@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, Building2, Lock, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -178,14 +178,24 @@ const HospitalLogin = () => {
           </form>
 
           {/* Default Password Info */}
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+          {/* Forgot password link */}
+          <div className="mt-6 text-center">
+            <Link
+              to="/forgot-password"
+              className="text-brand-teal hover:text-brand-dark-teal text-sm underline transition-colors"
+            >
+              Esqueceu sua senha?
+            </Link>
+          </div>
+
+          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
             <p className="text-gray-700 text-sm text-center">
               <strong>Primeira vez?</strong> Use a senha padrão: 123456
             </p>
           </div>
 
           {/* Footer */}
-          <div className="mt-6 text-center">
+          <div className="mt-4 text-center">
             <p className="text-gray-500 text-sm">
               Área restrita para hospitais e clínicas
             </p>
