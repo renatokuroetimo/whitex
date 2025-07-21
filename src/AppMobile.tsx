@@ -29,7 +29,7 @@ const AppMobile = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AuthProvider>
-        <Toaster />
+        <MobileToaster />
         <Sonner />
         <BrowserRouter>
           <Routes>
