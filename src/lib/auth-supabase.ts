@@ -111,7 +111,7 @@ class AuthSupabaseAPI {
 
         if (!dbError && existingUsers && existingUsers.length > 0) {
           console.warn("⚠️ Usuário existe na tabela mas não no Auth");
-          throw new Error("Este usuário precisa ser migrado. Contate o administrador ou crie uma nova conta.");
+          throw new Error("MIGRATION_REQUIRED");
         }
 
         throw new Error("Email ou senha incorretos");
