@@ -14,7 +14,7 @@ export const isMobileApp = (): boolean => {
     VITE_APP_MODE: mode,
     hasCapacitor: isCapacitor,
     isWebBrowser: !isCapacitor && !mode,
-    finalResult: mode === "mobile" || isCapacitor
+    finalResult: mode === "mobile" || isCapacitor,
   });
 
   // Only consider it mobile app if explicitly set to mobile mode OR running in Capacitor

@@ -8,9 +8,9 @@ interface ConnectivityStatusProps {
   showDetails?: boolean;
 }
 
-export const ConnectivityStatus: React.FC<ConnectivityStatusProps> = ({ 
-  className = "", 
-  showDetails = false 
+export const ConnectivityStatus: React.FC<ConnectivityStatusProps> = ({
+  className = "",
+  showDetails = false,
 }) => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [supabaseStatus, setSupabaseStatus] = useState<{
@@ -25,14 +25,14 @@ export const ConnectivityStatus: React.FC<ConnectivityStatusProps> = ({
       setIsOnline(true);
       checkSupabaseConnectivity();
     };
-    
+
     const handleOffline = () => {
       setIsOnline(false);
       setSupabaseStatus({ connected: false });
     };
 
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
 
     // Initial check
     if (isOnline) {
@@ -40,8 +40,8 @@ export const ConnectivityStatus: React.FC<ConnectivityStatusProps> = ({
     }
 
     return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
     };
   }, []);
 
@@ -52,12 +52,12 @@ export const ConnectivityStatus: React.FC<ConnectivityStatusProps> = ({
       setSupabaseStatus({
         connected: result.success,
         responseTime: result.responseTime,
-        error: result.error
+        error: result.error,
       });
     } catch (error) {
       setSupabaseStatus({
         connected: false,
-        error: error instanceof Error ? error.message : 'Erro desconhecido'
+        error: error instanceof Error ? error.message : "Erro desconhecido",
       });
     } finally {
       setIsChecking(false);
@@ -66,7 +66,8 @@ export const ConnectivityStatus: React.FC<ConnectivityStatusProps> = ({
 
   const getStatusColor = () => {
     if (!isOnline || !supabaseStatus.connected) return "destructive";
-    if (supabaseStatus.responseTime && supabaseStatus.responseTime > 3000) return "secondary";
+    if (supabaseStatus.responseTime && supabaseStatus.responseTime > 3000)
+      return "secondary";
     return "default";
   };
 
@@ -82,7 +83,9 @@ export const ConnectivityStatus: React.FC<ConnectivityStatusProps> = ({
 
   const getIcon = () => {
     if (isChecking) {
-      return <div className="w-3 h-3 animate-spin border border-current border-t-transparent rounded-full" />;
+      return (
+        <div className="w-3 h-3 animate-spin border border-current border-t-transparent rounded-full" />
+      );
     }
     if (!isOnline || !supabaseStatus.connected) {
       return <WifiOff className="w-3 h-3" />;
@@ -92,16 +95,16 @@ export const ConnectivityStatus: React.FC<ConnectivityStatusProps> = ({
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <Badge 
+      <Badge
         variant={getStatusColor()}
         className="flex items-center gap-1 text-xs"
         onClick={checkSupabaseConnectivity}
-        style={{ cursor: 'pointer' }}
+        style={{ cursor: "pointer" }}
       >
         {getIcon()}
         {getStatusText()}
       </Badge>
-      
+
       {showDetails && supabaseStatus.error && (
         <div className="flex items-center gap-1 text-xs text-red-600">
           <AlertCircle className="w-3 h-3" />

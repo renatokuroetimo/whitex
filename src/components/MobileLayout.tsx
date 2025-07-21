@@ -337,7 +337,10 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
 
               {/* Connectivity Status */}
               <div className="p-4 border-t border-gray-200">
-                <ConnectivityStatus className="justify-center" showDetails={false} />
+                <ConnectivityStatus
+                  className="justify-center"
+                  showDetails={false}
+                />
               </div>
 
               {/* Logout */}
