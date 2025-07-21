@@ -251,13 +251,8 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
       {/* Mobile Layout */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile Header */}
-        <div
-          className="lg:hidden px-4 py-3 mobile-header"
-          style={{
-            paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.75rem)",
-          }}
-        >
-          <div className="flex items-center justify-between">
+        <div className="lg:hidden mobile-header">
+          <div className="flex items-center justify-between px-4 py-3">
             <div className="flex items-center gap-3">
               <Button
                 variant="ghost"
@@ -268,6 +263,12 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Abrir menu</span>
               </Button>
+              <Logo
+                variant="primary"
+                size="lg"
+                showText={false}
+                className="flex items-center"
+              />
             </div>
           </div>
         </div>

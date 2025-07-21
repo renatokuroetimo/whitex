@@ -150,8 +150,8 @@
   }
 
   body {
-    padding-top: 0 !important;
-    margin-top: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
   .mobile-container {
@@ -166,8 +166,11 @@
     position: sticky;
     top: 0;
     z-index: 50;
-    padding-top: env(safe-area-inset-top, 0);
+    padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
     margin-top: 0 !important;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
   }
 
   .mobile-content {
