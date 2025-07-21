@@ -12,6 +12,7 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [resetToken, setResetToken] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,19 +41,27 @@ const ForgotPassword = () => {
     setIsLoading(true);
 
     try {
-      await authSupabaseAPI.requestPasswordReset(email);
+      const result = await authSupabaseAPI.requestPasswordReset(email);
       setEmailSent(true);
-      toast({
-        title: "✅ Email enviado",
-        description:
-          "Verifique sua caixa de entrada (pode demorar alguns minutos)",
-      });
+
+      if (result.data && result.data.resetToken) {
+        setResetToken(result.data.resetToken);
+        toast({
+          title: "✅ Link de recuperação gerado",
+          description: "Use o link abaixo para redefinir sua senha",
+        });
+      } else {
+        toast({
+          title: "✅ Recuperação solicitada",
+          description: "Token gerado com sucesso",
+        });
+      }
     } catch (error: any) {
       console.error("Erro ao solicitar reset de senha:", error);
       toast({
         variant: "destructive",
         title: "Erro",
-        description: error.message || "Erro ao enviar email de recuperação",
+        description: error.message || "Erro ao gerar link de recuperação",
       });
     } finally {
       setIsLoading(false);
