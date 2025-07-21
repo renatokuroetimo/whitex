@@ -68,9 +68,7 @@ const SidebarContent: React.FC<SidebarContentProps> = ({ onItemClick }) => {
     <div className="h-full bg-white border-r border-gray-200 flex flex-col">
       {/* Header */}
       <div className="p-6 border-b border-gray-200">
-        <div className="flex justify-center">
-          <span className="text-2xl font-bold text-gray-900">WhiteX</span>
-        </div>
+        {/* Header da sidebar - removido WhiteX */}
       </div>
 
       {/* User Profile */}
