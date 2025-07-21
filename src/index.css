@@ -224,4 +224,21 @@
   .ios-device .list-container {
     margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
   }
+
+  /* Garantir que botões no final da página tenham espaço */
+  .ios-device .form-container > div:last-child,
+  .ios-device .list-container > div:last-child {
+    margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+  }
+
+  /* Fix para tabs e elementos interativos no final */
+  .ios-device [data-radix-tabs-content],
+  .ios-device .tab-content {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+  }
+
+  /* Universal safe area fix para qualquer conteúdo */
+  .safe-area-bottom-padding {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem) !important;
+  }
 }
