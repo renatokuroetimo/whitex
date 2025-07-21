@@ -1,5 +1,3 @@
-import { supabase } from './supabase';
-
 export interface EmailOptions {
   to: string;
   subject: string;
@@ -8,49 +6,94 @@ export interface EmailOptions {
 
 export class EmailService {
   private static isConfigured(): boolean {
-    return !!import.meta.env.VITE_SUPABASE_URL && !!import.meta.env.VITE_RESEND_API_KEY;
+    return !!import.meta.env.VITE_RESEND_API_KEY;
   }
 
   static async sendPasswordResetEmail(email: string, resetToken: string): Promise<boolean> {
     if (!this.isConfigured()) {
-      console.warn("⚠️ Supabase ou Resend API key não configurados");
-      return false;
-    }
-
-    if (!supabase) {
-      console.warn("⚠️ Supabase client não disponível");
+      console.warn("⚠️ VITE_RESEND_API_KEY não configurada");
       return false;
     }
 
     const resetUrl = `${window.location.origin}/reset-password?token=${resetToken}`;
 
     try {
-      console.log("📧 Enviando email via Supabase Edge Function para:", email);
+      console.log("📧 Enviando email via proxy para:", email);
 
-      const { data, error } = await supabase.functions.invoke('send-email', {
-        body: {
-          email,
-          resetToken,
-          resetUrl
-        }
+      // Usar um proxy CORS público para enviar o email
+      const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+      const resendUrl = 'https://api.resend.com/emails';
+
+      const emailData = {
+        from: 'WhiteX <onboarding@resend.dev>',
+        to: email,
+        subject: 'WhiteX - Redefinir sua senha',
+        html: this.createPasswordResetTemplate(resetUrl)
+      };
+
+      const response = await fetch(proxyUrl + resendUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_RESEND_API_KEY}`,
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify(emailData)
       });
 
-      if (error) {
-        console.error("❌ Erro na Edge Function:", error);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("❌ Erro da API Resend:", errorText);
         return false;
       }
 
-      if (data && !data.success) {
-        console.error("❌ Erro no envio do email:", data.error);
-        return false;
-      }
-
-      console.log("✅ Email enviado com sucesso via Edge Function:", data);
+      const result = await response.json();
+      console.log("✅ Email enviado com sucesso:", result);
       return true;
     } catch (error) {
       console.error("❌ Erro no serviço de email:", error);
-      return false;
+
+      // Fallback: tentar com outro proxy
+      try {
+        console.log("🔄 Tentando com proxy alternativo...");
+        return await this.sendEmailWithAlternativeProxy(email, resetToken);
+      } catch (fallbackError) {
+        console.error("❌ Erro no proxy alternativo:", fallbackError);
+        return false;
+      }
     }
+  }
+
+  private static async sendEmailWithAlternativeProxy(email: string, resetToken: string): Promise<boolean> {
+    const resetUrl = `${window.location.origin}/reset-password?token=${resetToken}`;
+
+    // Usar allorigins.win como proxy alternativo
+    const proxyUrl = 'https://api.allorigins.win/raw?url=';
+    const resendUrl = encodeURIComponent('https://api.resend.com/emails');
+
+    const emailData = {
+      from: 'WhiteX <onboarding@resend.dev>',
+      to: email,
+      subject: 'WhiteX - Redefinir sua senha',
+      html: this.createPasswordResetTemplate(resetUrl)
+    };
+
+    const response = await fetch(`${proxyUrl}${resendUrl}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${import.meta.env.VITE_RESEND_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(emailData)
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+    }
+
+    const result = await response.json();
+    console.log("✅ Email enviado com proxy alternativo:", result);
+    return true;
   }
 
   private static createPasswordResetTemplate(resetUrl: string): string {
