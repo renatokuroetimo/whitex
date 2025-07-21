@@ -9,7 +9,7 @@ class AuthSupabaseAPI {
   }
 
   // REGISTRO DE USUÁRIO
-  async register(data: RegisterData): Promise<ApiResponse<User>> {
+  async register(data: RegisterData & { password: string }): Promise<ApiResponse<User>> {
     await this.delay(500);
 
     if (!supabase) {
@@ -46,11 +46,12 @@ class AuthSupabaseAPI {
       createdAt: new Date().toISOString(),
     };
 
-    // Inserir na tabela users
+    // Inserir na tabela users (incluindo senha)
     const { error } = await supabase.from("users").insert([
       {
         id: newUser.id,
         email: newUser.email,
+        password: data.password, // Armazenar senha (em produção, use hash)
         profession: newUser.profession,
         crm: newUser.crm,
         full_name: newUser.fullName,
@@ -116,7 +117,7 @@ class AuthSupabaseAPI {
       }
       console.log("✅ Senha validada contra coluna password");
     } else {
-      // Se não existe coluna password, usar validação temporária
+      // Se não existe coluna password, usar valida��ão temporária
       // Esta é uma validação básica temporária para usuários sem senha cadastrada
       console.warn("⚠️ Usuário sem senha cadastrada - usando validação temporária");
 
