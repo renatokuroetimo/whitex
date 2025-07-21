@@ -358,7 +358,21 @@ if (typeof window !== 'undefined' && import.meta.env.DEV) {
       } catch (e) {
         console.error("❌ Erro de conexão:", e);
       }
+    },
+    setPassword: async (email: string, password: string) => {
+      console.log("🔐 Definindo senha para:", email);
+      try {
+        const result = await authSupabaseAPI.setPasswordForExistingUser(email, password);
+        console.log("✅ Senha definida com sucesso");
+        return result;
+      } catch (e) {
+        console.error("❌ Erro ao definir senha:", e);
+        throw e;
+      }
     }
   };
-  console.log("🛠️ Debug functions: window.debugAuth.listUsers(), window.debugAuth.testConnection()");
+  console.log("🛠️ Debug functions available:");
+  console.log("  - window.debugAuth.listUsers()");
+  console.log("  - window.debugAuth.testConnection()");
+  console.log("  - window.debugAuth.setPassword('email', 'senha')");
 }
