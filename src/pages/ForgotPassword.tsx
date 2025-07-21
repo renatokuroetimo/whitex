@@ -44,20 +44,12 @@ const ForgotPassword = () => {
       const result = await authSupabaseAPI.requestPasswordReset(email);
       setEmailSent(true);
 
-      // Sempre mostrar URL de reset como alternativa
-      if (result.data && result.data.resetUrl) {
-        setResetUrl(result.data.resetUrl);
-        toast({
-          title: "Email enviado + Link alternativo",
-          description: "Verifique seu email OU use o link direto abaixo",
-        });
-      } else {
-        // Fallback caso não tenha URL
-        toast({
-          title: "Email enviado",
-          description: "Verifique sua caixa de entrada para redefinir sua senha",
-        });
-      }
+      // Foco apenas no Supabase email
+      setEmailSent(true);
+      toast({
+        title: "✅ Email enviado via Supabase",
+        description: "Verifique sua caixa de entrada (pode demorar alguns minutos)",
+      });
     } catch (error: any) {
       console.error("Erro ao solicitar reset de senha:", error);
       toast({
@@ -91,33 +83,23 @@ const ForgotPassword = () => {
             </div>
             
             <h1 className="text-2xl font-bold text-brand-primary mb-2">
-              Email enviado + Link alternativo!
+              Email enviado!
             </h1>
 
-            {resetUrl ? (
-              <div className="mb-6">
-                <p className="text-brand-dark-teal mb-4">
-                  Enviamos um email para <strong>{email}</strong>. Se não chegar, use o link direto:
-                </p>
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                  <p className="text-sm text-blue-800 mb-2 font-medium">Link direto (clique para usar):</p>
-                  <a
-                    href={resetUrl}
-                    className="text-sm text-blue-600 hover:text-blue-800 underline break-all font-mono"
-                  >
-                    {resetUrl}
-                  </a>
-                </div>
-                <p className="text-xs text-gray-500">
-                  ⏱️ Este link expira em 1 hora
-                </p>
-              </div>
-            ) : (
-              <p className="text-brand-dark-teal mb-6">
-                Enviamos um link de recuperação para <strong>{email}</strong>.
-                Verifique sua caixa de entrada e clique no link para redefinir sua senha.
+            <p className="text-brand-dark-teal mb-6">
+              Enviamos um link de recuperação para <strong>{email}</strong>.
+            </p>
+
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+              <p className="text-sm text-yellow-800">
+                <strong>📧 Verifique:</strong>
               </p>
-            )}
+              <ul className="text-sm text-yellow-700 mt-2 space-y-1">
+                <li>• Caixa de entrada</li>
+                <li>• Spam/Lixo eletrônico</li>
+                <li>• Pode demorar até 5 minutos</li>
+              </ul>
+            </div>
 
             <div className="space-y-3">
               <Button
