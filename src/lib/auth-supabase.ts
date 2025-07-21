@@ -1,6 +1,7 @@
 import { User, LoginCredentials, RegisterData, ApiResponse } from "./types";
 import { supabase } from "./supabase";
 import { MobileSessionManager } from "./mobile-session";
+import { EmailService } from "./email-service";
 
 class AuthSupabaseAPI {
   // Simula um delay de rede
@@ -219,12 +220,24 @@ class AuthSupabaseAPI {
     }
 
     console.log("✅ Token de reset gerado com sucesso");
-    console.log("🔗 Link de reset:", `${window.location.origin}/reset-password?token=${resetToken}`);
 
-    return {
-      success: true,
-      data: { resetToken }
-    };
+    // Tentar enviar email
+    const emailSent = await EmailService.sendPasswordResetEmail(email, resetToken);
+
+    if (emailSent) {
+      console.log("📧 Email de recuperação enviado com sucesso");
+      return {
+        success: true,
+        data: { resetToken, emailSent: true }
+      };
+    } else {
+      console.log("⚠️ Email não configurado - fornecendo link direto");
+      console.log("🔗 Link de reset:", `${window.location.origin}/reset-password?token=${resetToken}`);
+      return {
+        success: true,
+        data: { resetToken, emailSent: false }
+      };
+    }
   }
 
   async resetPassword(
