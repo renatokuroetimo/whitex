@@ -6,102 +6,28 @@ export interface EmailOptions {
 
 export class EmailService {
   private static isConfigured(): boolean {
-    return true; // Web3Forms sempre funciona
+    // Para demonstração, sempre retorna false para mostrar o link direto
+    // Em produção, seria implementado um backend real para envio de emails
+    return false;
   }
 
   static async sendPasswordResetEmail(email: string, resetToken: string): Promise<boolean> {
-    const resetUrl = `${window.location.origin}/reset-password?token=${resetToken}`;
+    console.log("📧 Sistema de recuperação de senha ativado para:", email);
+    console.log("🔗 Token gerado:", resetToken);
 
-    try {
-      console.log("📧 Enviando notificação de reset para:", email);
+    // Simular processamento
+    await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Abrir cliente de email com template pré-preenchido
-      const subject = encodeURIComponent('WhiteX - Redefinir sua senha');
-      const body = encodeURIComponent(this.createPasswordResetMessage(resetUrl));
-      const mailtoUrl = `mailto:${email}?subject=${subject}&body=${body}`;
+    // Para aplicações frontend, o envio real de emails deve ser feito via:
+    // 1. API backend própria
+    // 2. Supabase Edge Functions
+    // 3. Vercel/Netlify Functions
+    // 4. AWS SES, SendGrid, etc.
 
-      // Tentar primeiro via navegador
-      try {
-        window.open(mailtoUrl, '_blank');
-        console.log("✅ Cliente de email aberto com template pré-preenchido");
+    console.log("ℹ️ Em produção, aqui seria feita a chamada para API backend");
+    console.log("ℹ️ Por enquanto, fornecendo link direto para o usuário");
 
-        // Simular "envio" bem-sucedido após 1 segundo
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        return true;
-      } catch (mailtoError) {
-        console.log("📱 Cliente de email não disponível, tentando método alternativo...");
-      }
-
-      // Fallback: usar navigator.share se disponível
-      if (navigator.share) {
-        try {
-          await navigator.share({
-            title: 'WhiteX - Redefinir sua senha',
-            text: this.createPasswordResetMessage(resetUrl),
-            url: resetUrl
-          });
-          console.log("✅ Email compartilhado via navigator.share");
-          return true;
-        } catch (shareError) {
-          console.log("❌ Erro no navigator.share:", shareError);
-        }
-      }
-
-      // Último fallback: copiar para clipboard
-      try {
-        await navigator.clipboard.writeText(resetUrl);
-        console.log("✅ Link copiado para clipboard");
-        console.log("🔗 Link para o usuário:", resetUrl);
-        return true;
-      } catch (clipboardError) {
-        console.log("❌ Erro ao copiar para clipboard:", clipboardError);
-      }
-
-      // Se tudo falhar, pelo menos registrar o sucesso da geração do token
-      console.log("✅ Token de reset gerado com sucesso");
-      console.log("🔗 Link disponível:", resetUrl);
-      return true;
-
-    } catch (error) {
-      console.error("❌ Erro geral no serviço de email:", error);
-      return false;
-    }
-  }
-
-  private static async sendEmailSimple(email: string, resetToken: string): Promise<boolean> {
-    const resetUrl = `${window.location.origin}/reset-password?token=${resetToken}`;
-
-    try {
-      // Usar um serviço público simples que realmente funciona
-      const response = await fetch('https://httpbin.org/post', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          service: 'email',
-          to: email,
-          subject: 'WhiteX - Redefinir sua senha',
-          message: this.createPasswordResetMessage(resetUrl),
-          reset_url: resetUrl,
-          timestamp: new Date().toISOString()
-        })
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log("✅ Email 'enviado' via serviço de teste:", result);
-        console.log("🔗 Link de reset disponível:", resetUrl);
-
-        // Para demonstração, vamos simular sucesso
-        // Em produção, aqui deveria haver integração real com serviço de email
-        return true;
-      } else {
-        throw new Error(`Serviço teste falhou: ${response.status}`);
-      }
-    } catch (error) {
-      throw new Error(`Erro no serviço teste: ${error.message}`);
-    }
+    return false; // Sempre retorna false para mostrar link direto
   }
 
   private static createPasswordResetMessage(resetUrl: string): string {
