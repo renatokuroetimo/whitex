@@ -106,8 +106,6 @@ const Index = () => {
           </p>
         </div>
 
-
-
         {/* Form */}
         <div className="bg-white/90 backdrop-blur-lg rounded-2xl border border-gray-200 p-8 shadow-xl">
           <form onSubmit={handleCreateAccount} className="space-y-6">
