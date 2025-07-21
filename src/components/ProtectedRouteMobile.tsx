@@ -33,22 +33,12 @@ const ProtectedRouteMobile = ({
   // Bloquear acesso de outros tipos de usuário
   if (user.profession !== "paciente") {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            Acesso Restrito
-          </h1>
-          <p className="text-gray-600 mb-6">
-            Este aplicativo é exclusivo para pacientes.
-          </p>
-          <button
-            onClick={() => (window.location.href = "/login")}
-            className="bg-[#00B1BB] text-white px-6 py-2 rounded-lg"
-          >
-            Fazer Login como Paciente
-          </button>
-        </div>
-      </div>
+      <MobileAccessRestricted
+        title="Acesso Restrito"
+        message="Este aplicativo é exclusivo para pacientes."
+        actionText="Fazer Login como Paciente"
+        actionPath="/login"
+      />
     );
   }
 
