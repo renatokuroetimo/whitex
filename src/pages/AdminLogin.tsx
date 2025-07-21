@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, Shield, Lock, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -170,8 +170,18 @@ const AdminLogin = () => {
             </Button>
           </form>
 
-          {/* Footer */}
+          {/* Forgot password link */}
           <div className="mt-6 text-center">
+            <Link
+              to="/forgot-password"
+              className="text-brand-teal hover:text-brand-dark-teal text-sm underline transition-colors"
+            >
+              Esqueceu sua senha?
+            </Link>
+          </div>
+
+          {/* Footer */}
+          <div className="mt-4 text-center">
             <p className="text-gray-500 text-sm">
               Área restrita para administradores do sistema
             </p>
