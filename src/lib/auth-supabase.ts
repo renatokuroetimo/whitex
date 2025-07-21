@@ -98,7 +98,22 @@ class AuthSupabaseAPI {
 
     if (authError) {
       console.error("❌ Erro de autenticação:", authError.message);
+
+      // Verificar se o usuário existe na tabela mas não no Auth
       if (authError.message.includes("Invalid login credentials")) {
+        console.log("🔍 Verificando se usuário existe na tabela users...");
+
+        const { data: existingUsers, error: dbError } = await supabase
+          .from("users")
+          .select("email, profession")
+          .eq("email", credentials.email.toLowerCase())
+          .limit(1);
+
+        if (!dbError && existingUsers && existingUsers.length > 0) {
+          console.warn("⚠️ Usuário existe na tabela mas não no Auth");
+          throw new Error("Este usuário precisa ser migrado. Contate o administrador ou crie uma nova conta.");
+        }
+
         throw new Error("Email ou senha incorretos");
       }
       throw new Error(authError.message);
