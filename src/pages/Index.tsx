@@ -106,7 +106,24 @@ const Index = () => {
           </p>
         </div>
 
-
+        {/* Mobile Patient-Only Notice */}
+        {isMobileApp() && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center w-8 h-8 bg-green-100 rounded-full">
+                <span className="text-green-600 text-sm font-semibold">🏥</span>
+              </div>
+              <div>
+                <p className="text-green-800 font-medium text-sm">
+                  Cadastro de Paciente
+                </p>
+                <p className="text-green-600 text-xs">
+                  Sua conta será criada automaticamente como paciente
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Form */}
         <div className="bg-white/90 backdrop-blur-lg rounded-2xl border border-gray-200 p-8 shadow-xl">
