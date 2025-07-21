@@ -18,7 +18,7 @@ serve(async (req) => {
     const { email, resetToken } = await req.json();
 
     const resendApiKey = "re_dzLVA7A2_7JznwHEgUDxXbzf9wz19oMmA";
-    const resetUrl = `https://833e787f10e948cdbd860feb88237398-69bbc4c149874c3f98caa7fe5.fly.dev/reset-password?token=${resetToken}`;
+    const resetUrl = `https://whitex.app.br/reset-password?token=${resetToken}`;
 
     const emailData = {
       from: "WhiteX <onboarding@resend.dev>",
