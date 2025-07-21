@@ -189,3 +189,39 @@
 }
 
 /* Prevent content from going under notch on iOS */
+.ios-device {
+  /* Garantir que em dispositivos iOS o conteúdo respeite a safe area */
+  height: 100vh;
+  height: 100dvh;
+}
+
+.ios-device #root {
+  /* No iOS, aplicar safe area ao elemento root */
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+}
+
+@media (max-width: 768px) {
+  /* Safe area específica para mobile */
+  .ios-device .mobile-content {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem) !important;
+    margin-bottom: 0 !important;
+  }
+
+  .ios-device .mobile-header {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 0.75rem) !important;
+  }
+
+  /* Garantir que páginas com conteúdo longo tenham espaço no final */
+  .ios-device .mobile-page-content {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 2rem) !important;
+  }
+
+  /* Específico para formulários e listas */
+  .ios-device .form-container,
+  .ios-device .list-container {
+    margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+  }
+}
