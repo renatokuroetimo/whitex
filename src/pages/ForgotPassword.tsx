@@ -13,6 +13,7 @@ const ForgotPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [resetToken, setResetToken] = useState<string | null>(null);
+  const [emailSent, setEmailSentFlag] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,10 +47,19 @@ const ForgotPassword = () => {
 
       if (result.data && result.data.resetToken) {
         setResetToken(result.data.resetToken);
-        toast({
-          title: "✅ Link de recuperação gerado",
-          description: "Use o link abaixo para redefinir sua senha",
-        });
+        setEmailSentFlag(result.data.emailSent || false);
+
+        if (result.data.emailSent) {
+          toast({
+            title: "✅ Email enviado",
+            description: "Verifique sua caixa de entrada para redefinir sua senha",
+          });
+        } else {
+          toast({
+            title: "✅ Link de recuperação gerado",
+            description: "Use o link abaixo para redefinir sua senha",
+          });
+        }
       } else {
         toast({
           title: "✅ Recuperação solicitada",
