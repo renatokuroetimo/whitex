@@ -17,19 +17,23 @@ export function MobileToaster() {
     <ToastProvider>
       {toasts.map(function ({ id, title, description, action, ...props }) {
         return (
-          <Toast 
-            key={id} 
+          <Toast
+            key={id}
             {...props}
             className={isNativeMobile ? "mobile-toast" : undefined}
           >
             <div className="grid gap-1">
               {title && (
-                <ToastTitle className={isNativeMobile ? "toast-title" : undefined}>
+                <ToastTitle
+                  className={isNativeMobile ? "toast-title" : undefined}
+                >
                   {title}
                 </ToastTitle>
               )}
               {description && (
-                <ToastDescription className={isNativeMobile ? "toast-description" : undefined}>
+                <ToastDescription
+                  className={isNativeMobile ? "toast-description" : undefined}
+                >
                   {description}
                 </ToastDescription>
               )}
@@ -39,7 +43,9 @@ export function MobileToaster() {
           </Toast>
         );
       })}
-      <ToastViewport className={isNativeMobile ? "mobile-toast-viewport" : undefined} />
+      <ToastViewport
+        className={isNativeMobile ? "mobile-toast-viewport" : undefined}
+      />
     </ToastProvider>
   );
 }

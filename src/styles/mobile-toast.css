@@ -4,7 +4,7 @@
   .mobile-toast-viewport {
     padding-bottom: env(safe-area-inset-bottom, 1rem);
   }
-  
+
   /* Toast mais compacto no mobile */
   .mobile-toast {
     margin: 0.5rem;
@@ -12,13 +12,13 @@
     border-radius: 0.75rem;
     max-width: calc(100vw - 2rem);
   }
-  
+
   /* Texto mais legível no mobile */
   .mobile-toast .toast-title {
     font-size: 0.875rem;
     font-weight: 600;
   }
-  
+
   .mobile-toast .toast-description {
     font-size: 0.8125rem;
     margin-top: 0.25rem;
