@@ -1,5 +1,5 @@
 import { MobileToaster } from "@/components/ui/mobile-toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
+import { MobileSonner } from "@/components/ui/mobile-sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
