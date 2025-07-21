@@ -1,3 +1,5 @@
+import { supabase } from './supabase';
+
 export interface EmailOptions {
   to: string;
   subject: string;
@@ -6,34 +8,41 @@ export interface EmailOptions {
 
 export class EmailService {
   private static isConfigured(): boolean {
-    return false; // Mantém link direto até configuração de backend
+    return !!supabase;
   }
 
   static async sendPasswordResetEmail(email: string, resetToken: string): Promise<boolean> {
-    console.log("📧 Sistema de recuperação configurado para:", email);
-    console.log("🔗 Token de reset:", resetToken);
+    if (!this.isConfigured()) {
+      console.warn("⚠️ Supabase não configurado");
+      return false;
+    }
 
-    const resetUrl = `${window.location.origin}/reset-password?token=${resetToken}`;
+    try {
+      console.log("📧 Enviando email real via Supabase Edge Function para:", email);
 
-    // Para demonstração, vou mostrar como seria o email:
-    console.log("📄 Conteúdo do email que seria enviado:");
-    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-    console.log("Para:", email);
-    console.log("Assunto: WhiteX - Redefinir sua senha");
-    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-    console.log("Olá,");
-    console.log("");
-    console.log("Você solicitou a redefinição de sua senha no WhiteX.");
-    console.log("Clique no link abaixo para criar uma nova senha:");
-    console.log("");
-    console.log("🔗", resetUrl);
-    console.log("");
-    console.log("⏰ Este link expira em 1 hora por segurança.");
-    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      const { data, error } = await supabase.functions.invoke('send-reset-email', {
+        body: {
+          email,
+          resetToken
+        }
+      });
 
-    // Simular processamento
-    await new Promise(resolve => setTimeout(resolve, 1000));
+      if (error) {
+        console.error("❌ Erro na Edge Function:", error);
+        return false;
+      }
 
-    return false; // Retorna false para mostrar link direto na UI
+      if (data && data.success) {
+        console.log("✅ Email enviado com sucesso! ID:", data.emailId);
+        return true;
+      } else {
+        console.error("❌ Falha no envio:", data);
+        return false;
+      }
+
+    } catch (error) {
+      console.error("❌ Erro no serviço de email:", error);
+      return false;
+    }
   }
 }
