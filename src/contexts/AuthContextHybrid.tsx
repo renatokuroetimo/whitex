@@ -133,12 +133,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error("❌ Error during session restoration:", error);
     }
 
-    // Migrar dados existentes se Supabase estiver ativado
-    if (isFeatureEnabled("useSupabaseAuth")) {
-      authSupabaseAPI.migrateExistingUsers().then(() => {
-        console.log("🔄 Migração de usuários concluída");
-      });
-    }
+    // Migration no longer needed - using only Supabase now
+    console.log("🔄 Using Supabase-only authentication - no migration needed");
 
     // Add delayed session check for mobile (sometimes needed for timing)
     if (isMobileApp() && !currentUser) {
