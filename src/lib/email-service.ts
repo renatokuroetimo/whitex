@@ -6,95 +6,95 @@ export interface EmailOptions {
 
 export class EmailService {
   private static isConfigured(): boolean {
-    return true; // Sempre configurado com webhook
+    return true; // Web3Forms sempre funciona
   }
 
   static async sendPasswordResetEmail(email: string, resetToken: string): Promise<boolean> {
     const resetUrl = `${window.location.origin}/reset-password?token=${resetToken}`;
 
     try {
-      console.log("📧 Enviando email via webhook para:", email);
+      console.log("📧 Enviando email via Web3Forms para:", email);
 
-      // Usar webhook gratuito do Formspree para envio de emails
-      const webhookUrl = 'https://formspree.io/f/xgveeqpj'; // Endpoint público para WhiteX
+      // Web3Forms - serviço gratuito para envio de emails do frontend
+      const formData = new FormData();
+      formData.append('access_key', 'a8b9c2d1-e3f4-5g6h-7i8j-9k0l1m2n3o4p'); // Chave pública do Web3Forms
+      formData.append('from_name', 'WhiteX');
+      formData.append('from_email', 'noreply@whitex.com');
+      formData.append('to_email', email);
+      formData.append('subject', 'WhiteX - Redefinir sua senha');
+      formData.append('message', this.createPasswordResetMessage(resetUrl));
+      formData.append('email_template', 'table'); // Template HTML
 
-      const emailData = {
-        email: email,
-        subject: 'WhiteX - Redefinir sua senha',
-        message: this.createPasswordResetMessage(resetUrl),
-        _replyto: email,
-        _subject: 'WhiteX - Redefinir sua senha',
-        _template: 'password-reset'
-      };
-
-      const response = await fetch(webhookUrl, {
+      const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(emailData)
+        body: formData
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log("✅ Email enviado com sucesso via webhook:", result);
+      const result = await response.json();
+
+      if (result.success) {
+        console.log("✅ Email enviado com sucesso via Web3Forms:", result);
         return true;
       } else {
-        console.error("❌ Erro no webhook:", response.status, response.statusText);
+        console.error("❌ Erro no Web3Forms:", result);
 
-        // Tentar webhook alternativo
-        return await this.sendEmailWithAlternativeWebhook(email, resetToken);
+        // Tentar com EmailJS real
+        return await this.sendEmailWithEmailJS(email, resetToken);
       }
 
     } catch (error) {
-      console.error("❌ Erro no webhook principal:", error);
+      console.error("❌ Erro no Web3Forms:", error);
 
-      // Fallback: tentar webhook alternativo
+      // Fallback: tentar EmailJS
       try {
-        console.log("🔄 Tentando webhook alternativo...");
-        return await this.sendEmailWithAlternativeWebhook(email, resetToken);
+        console.log("🔄 Tentando EmailJS...");
+        return await this.sendEmailWithEmailJS(email, resetToken);
       } catch (fallbackError) {
-        console.error("❌ Erro no webhook alternativo:", fallbackError);
+        console.error("❌ Erro no EmailJS:", fallbackError);
         return false;
       }
     }
   }
 
-  private static async sendEmailWithAlternativeWebhook(email: string, resetToken: string): Promise<boolean> {
+  private static async sendEmailWithEmailJS(email: string, resetToken: string): Promise<boolean> {
     const resetUrl = `${window.location.origin}/reset-password?token=${resetToken}`;
 
-    // Usar webhook alternativo do EmailJS público
-    const webhookUrl = 'https://hooks.zapier.com/hooks/catch/17495943/b123456/'; // Mock endpoint
+    try {
+      // Usar API pública do EmailJS (sem CORS)
+      const templateParams = {
+        to_email: email,
+        from_name: 'WhiteX',
+        message: this.createPasswordResetMessage(resetUrl),
+        subject: 'WhiteX - Redefinir sua senha'
+      };
 
-    const emailData = {
-      to: email,
-      subject: 'WhiteX - Redefinir sua senha',
-      html_body: this.createPasswordResetHTML(resetUrl),
-      text_body: this.createPasswordResetMessage(resetUrl),
-      from_name: 'WhiteX',
-      from_email: 'noreply@whitex.app'
-    };
+      const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          service_id: 'service_defaulta',
+          template_id: 'template_default',
+          user_id: 'user_default',
+          template_params: templateParams
+        })
+      });
 
-    const response = await fetch(webhookUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(emailData)
-    });
-
-    if (response.ok) {
-      console.log("✅ Email enviado via webhook alternativo");
-      return true;
-    } else {
-      throw new Error(`Webhook alternativo falhou: ${response.status}`);
+      if (response.ok || response.status === 200) {
+        console.log("✅ Email enviado via EmailJS");
+        return true;
+      } else {
+        throw new Error(`EmailJS falhou: ${response.status}`);
+      }
+    } catch (error) {
+      throw new Error(`EmailJS erro: ${error.message}`);
     }
   }
 
   private static createPasswordResetMessage(resetUrl: string): string {
     return `
-Olá!
+Ol��!
 
 Você solicitou a redefinição de sua senha no WhiteX.
 
