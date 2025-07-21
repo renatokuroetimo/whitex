@@ -13,7 +13,7 @@ class AuthSupabaseAPI {
     await this.delay(500);
 
     if (!supabase) {
-      throw new Error("Sistema de autenticação não dispon��vel");
+      throw new Error("Sistema de autenticação não disponível");
     }
 
     console.log("🚀 Iniciando registro no Supabase para:", data.email);
@@ -115,7 +115,7 @@ class AuthSupabaseAPI {
     }
 
     const userData = existingUsers[0];
-    console.log("👤 Dados do usuário encontrado:", {
+    console.log("���� Dados do usuário encontrado:", {
       id: userData.id,
       email: userData.email,
       profession: userData.profession,
@@ -245,7 +245,7 @@ class AuthSupabaseAPI {
 
   async validateResetToken(token: string): Promise<ApiResponse<{ email: string }>> {
     // No Supabase, a validação do token é feita automaticamente
-    console.log("🔍 Validando token via Supabase");
+    console.log("��� Validando token via Supabase");
     return { success: true, data: { email: "" } };
   }
 
@@ -283,6 +283,60 @@ class AuthSupabaseAPI {
     await this.logout();
 
     return { success: true };
+  }
+
+  // EMERGENCY LOGIN - Bypass Supabase Auth (temporary solution)
+  async emergencyLogin(credentials: LoginCredentials): Promise<ApiResponse<User>> {
+    await this.delay(500);
+
+    if (!supabase) {
+      throw new Error("Sistema não disponível");
+    }
+
+    console.log("🚨 EMERGENCY LOGIN para:", credentials.email);
+    console.warn("⚠️ Este é um login de emergência que bypassa a autenticação Supabase");
+
+    // Verificar se usuário existe na tabela
+    const { data: existingUsers, error: dbError } = await supabase
+      .from("users")
+      .select("*")
+      .eq("email", credentials.email.toLowerCase())
+      .limit(1);
+
+    if (dbError) {
+      throw new Error("Erro interno do sistema");
+    }
+
+    if (!existingUsers || existingUsers.length === 0) {
+      throw new Error("Email não encontrado");
+    }
+
+    // Validação básica de senha (TEMPORÁRIO)
+    if (!credentials.password || credentials.password.length < 3) {
+      throw new Error("Senha muito curta");
+    }
+
+    const userData = existingUsers[0];
+
+    const convertedUser: User = {
+      id: userData.id,
+      email: userData.email,
+      profession: userData.profession,
+      crm: userData.crm,
+      fullName: userData.full_name || userData.name,
+      city: userData.city,
+      state: userData.state,
+      specialty: userData.specialty,
+      phone: userData.phone,
+      createdAt: userData.created_at,
+    };
+
+    MobileSessionManager.saveSession(convertedUser);
+
+    console.log("🚨 EMERGENCY LOGIN bem-sucedido:", convertedUser.email);
+    console.warn("⚠️ IMPORTANTE: Configure Supabase Auth o quanto antes!");
+
+    return { success: true, data: convertedUser };
   }
 
   // DEBUG FUNCTION - List all users in database
