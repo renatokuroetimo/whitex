@@ -50,6 +50,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import MigrateUser from "./pages/MigrateUser";
 import TermsOfService from "./pages/TermsOfService";
+import TermsTest from "./pages/TermsTest";
 
 const queryClient = new QueryClient();
 
