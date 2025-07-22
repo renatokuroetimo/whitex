@@ -65,7 +65,7 @@ const App = () => (
           <AutoRedirect>
             <Routes>
               {/* Public routes */}
-              <Route path="/terms" element={<TermsOfService />} />
+              <Route path="/terms" element={<TermsTest />} />
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
