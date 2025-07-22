@@ -24,7 +24,10 @@ const AutoRedirect: React.FC<AutoRedirectProps> = ({ children }) => {
 
     // Don't redirect from public pages - let them handle themselves
     if (location.pathname === "/login" || location.pathname === "/terms") {
-      console.log("⏭️ Skipping AutoRedirect on public page:", location.pathname);
+      console.log(
+        "⏭️ Skipping AutoRedirect on public page:",
+        location.pathname,
+      );
       return;
     }
 
