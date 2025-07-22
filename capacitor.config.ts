@@ -1,8 +1,8 @@
 import { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: "com.medical.patient.app",
-  appName: "Saúde+",
+  appId: "br.com.timo.whitex",
+  appName: "WhiteX",
   webDir: "dist",
   server: {
     androidScheme: "https",
