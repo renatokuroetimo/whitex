@@ -177,7 +177,12 @@ const Index = () => {
             <p className="text-xs text-gray-500 text-center mt-4">
               Ao criar uma conta você concorda com os{" "}
               <button
-                onClick={() => window.open("https://cdn.builder.io/o/assets%2F6c764843f8bb4491bc67ad730818e264%2Fd3b3ceabfc4f401ab859ae08be32afaa?alt=media&token=9af82e30-247c-48f5-9aed-be14fdea298a&apiKey=6c764843f8bb4491bc67ad730818e264", "_blank")}
+                onClick={() =>
+                  window.open(
+                    "https://cdn.builder.io/o/assets%2F6c764843f8bb4491bc67ad730818e264%2Fd3b3ceabfc4f401ab859ae08be32afaa?alt=media&token=9af82e30-247c-48f5-9aed-be14fdea298a&apiKey=6c764843f8bb4491bc67ad730818e264",
+                    "_blank",
+                  )
+                }
                 className="text-brand-teal hover:text-brand-dark-teal underline transition-colors"
               >
                 Termos de Serviço
