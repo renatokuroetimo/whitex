@@ -179,7 +179,7 @@ const Index = () => {
               <button
                 onClick={() =>
                   window.open(
-                    "https://cdn.builder.io/o/assets%2F6c764843f8bb4491bc67ad730818e264%2Fd3b3ceabfc4f401ab859ae08be32afaa?alt=media&token=9af82e30-247c-48f5-9aed-be14fdea298a&apiKey=6c764843f8bb4491bc67ad730818e264",
+                    "https://whitex.app.br/termos.pdf",
                     "_blank",
                   )
                 }
