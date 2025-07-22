@@ -1,0 +1,120 @@
+%PDF-1.4
+1 0 obj
+<<
+/Type /Catalog
+/Pages 2 0 R
+>>
+endobj
+
+2 0 obj
+<<
+/Type /Pages
+/Kids [3 0 R]
+/Count 1
+>>
+endobj
+
+3 0 obj
+<<
+/Type /Page
+/Parent 2 0 R
+/MediaBox [0 0 612 792]
+/Contents 4 0 R
+/Resources <<
+/Font <<
+/F1 5 0 R
+>>
+>>
+>>
+endobj
+
+4 0 obj
+<<
+/Length 3500
+>>
+stream
+BT
+/F1 18 Tf
+50 750 Td
+(Termos de Uso - WhiteX) Tj
+0 -40 Td
+/F1 12 Tf
+(1. Informações da Empresa) Tj
+0 -30 Td
+(Razão Social: Timo Soluções Web e Mobile LTDA) Tj
+0 -20 Td
+(CNPJ: 17.902.232/0001-38) Tj
+0 -40 Td
+(2. Escopo do Serviço) Tj
+0 -30 Td
+(O WhiteX é uma plataforma digital voltada para o acompanhamento de indicadores clínicos e informações) Tj
+0 -20 Td
+(de saúde, disponível nas versões Web, iOS e Android.) Tj
+0 -20 Td
+(A versão Web oferece acesso para médicos e pacientes. Os aplicativos móveis \(iOS e Android\) são) Tj
+0 -20 Td
+(destinados exclusivamente aos pacientes.) Tj
+0 -40 Td
+(3. Funcionalidades e Perfis de Usuário) Tj
+0 -30 Td
+(Médicos cadastrados mediante verificação de CRM podem registrar diagnósticos e indicadores clínicos.) Tj
+0 -20 Td
+(Pacientes podem inserir dados de saúde e optar por compartilhá-los com médicos de sua confiança.) Tj
+0 -20 Td
+(Não há funcionalidades de comunicação direta entre pacientes e médicos na plataforma.) Tj
+0 -40 Td
+(4. Dados Pessoais e Proteção de Dados) Tj
+0 -30 Td
+(O WhiteX armazena dados pessoais e sensíveis de saúde de acordo com a Lei Geral de Proteção de Dados) Tj
+0 -20 Td
+(\(LGPD - Lei 13.709/18\).) Tj
+0 -20 Td
+(Esses dados são criptografados e armazenados com segurança nos servidores da AWS e Supabase, ambos) Tj
+0 -20 Td
+(em conformidade com padrões internacionais de proteção de dados.) Tj
+0 -20 Td
+(O usuário poderá, a qualquer momento, solicitar a exclusão de sua conta e dados, conforme previsto por lei.) Tj
+0 -40 Td
+(5. Inteligência Artificial e Limitações) Tj
+0 -30 Td
+(A plataforma utiliza inteligência artificial para auxiliar na organização e análise de dados clínicos. Essa) Tj
+0 -20 Td
+(funcionalidade não substitui o diagnóstico presencial ou a consulta médica formal.) Tj
+0 -20 Td
+(A Timo Soluções Web e Mobile LTDA não se responsabiliza por decisões clínicas tomadas exclusivamente) Tj
+0 -20 Td
+(com base nos dados ou sugestões geradas pela IA.) Tj
+0 -40 Td
+(6. Compartilhamento e Consentimento) Tj
+0 -30 Td
+(O compartilhamento de dados com médicos se dá única e exclusivamente por iniciativa do paciente,) Tj
+0 -20 Td
+(mediante consentimento ativo.) Tj
+ET
+endstream
+endobj
+
+5 0 obj
+<<
+/Type /Font
+/Subtype /Type1
+/BaseFont /Helvetica
+>>
+endobj
+
+xref
+0 6
+0000000000 65535 f 
+0000000010 00000 n 
+0000000053 00000 n 
+0000000110 00000 n 
+0000000264 00000 n 
+0000003816 00000 n 
+trailer
+<<
+/Size 6
+/Root 1 0 R
+>>
+startxref
+3883
+%%EOF
