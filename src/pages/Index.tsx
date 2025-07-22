@@ -178,7 +178,13 @@ const Index = () => {
               Ao criar uma conta você concorda com os{" "}
               <button
                 type="button"
-                onClick={() => window.open("/termos-whitex.pdf", "_blank")}
+                onClick={() => {
+                  if (isMobileApp()) {
+                    navigate("/terms");
+                  } else {
+                    window.open("/termos-whitex.pdf", "_blank");
+                  }
+                }}
                 className="text-brand-teal hover:text-brand-dark-teal underline transition-colors"
               >
                 Termos de Serviço
