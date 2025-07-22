@@ -358,6 +358,7 @@ const App = () => (
               />
 
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="/terms" element={<TermsTest />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AutoRedirect>
