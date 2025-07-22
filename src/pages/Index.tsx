@@ -177,12 +177,7 @@ const Index = () => {
             <p className="text-xs text-gray-500 text-center mt-4">
               Ao criar uma conta você concorda com os{" "}
               <button
-                onClick={() =>
-                  window.open(
-                    "/termos.pdf",
-                    "_blank",
-                  )
-                }
+                onClick={() => window.open("/termos.pdf", "_blank")}
                 className="text-brand-teal hover:text-brand-dark-teal underline transition-colors"
               >
                 Termos de Serviço
