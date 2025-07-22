@@ -358,32 +358,47 @@ const App = () => (
               />
 
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="/terms" element={
-                <div style={{ padding: '20px', backgroundColor: 'white', minHeight: '100vh' }}>
-                  <h1 style={{ fontSize: '24px', marginBottom: '20px' }}>Termos de Uso - WhiteX</h1>
-                  <button
-                    onClick={() => window.history.back()}
+              <Route
+                path="/terms"
+                element={
+                  <div
                     style={{
-                      backgroundColor: '#00B1BB',
-                      color: 'white',
-                      padding: '10px 20px',
-                      border: 'none',
-                      borderRadius: '5px',
-                      marginBottom: '20px'
+                      padding: "20px",
+                      backgroundColor: "white",
+                      minHeight: "100vh",
                     }}
                   >
-                    Voltar
-                  </button>
-                  <div style={{ lineHeight: '1.6' }}>
-                    <h2>1. Informações da Empresa</h2>
-                    <p>Razão Social: Timo Soluções Web e Mobile LTDA</p>
-                    <p>CNPJ: 17.902.232/0001-38</p>
+                    <h1 style={{ fontSize: "24px", marginBottom: "20px" }}>
+                      Termos de Uso - WhiteX
+                    </h1>
+                    <button
+                      onClick={() => window.history.back()}
+                      style={{
+                        backgroundColor: "#00B1BB",
+                        color: "white",
+                        padding: "10px 20px",
+                        border: "none",
+                        borderRadius: "5px",
+                        marginBottom: "20px",
+                      }}
+                    >
+                      Voltar
+                    </button>
+                    <div style={{ lineHeight: "1.6" }}>
+                      <h2>1. Informações da Empresa</h2>
+                      <p>Razão Social: Timo Soluções Web e Mobile LTDA</p>
+                      <p>CNPJ: 17.902.232/0001-38</p>
 
-                    <h2>2. Escopo do Serviço</h2>
-                    <p>O WhiteX é uma plataforma digital voltada para o acompanhamento de indicadores clínicos e informações de saúde.</p>
+                      <h2>2. Escopo do Serviço</h2>
+                      <p>
+                        O WhiteX é uma plataforma digital voltada para o
+                        acompanhamento de indicadores clínicos e informações de
+                        saúde.
+                      </p>
+                    </div>
                   </div>
-                </div>
-              } />
+                }
+              />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AutoRedirect>
