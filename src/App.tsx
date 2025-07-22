@@ -61,8 +61,14 @@ const App = () => (
         <Sonner />
         <MigrationPanel />
         <BrowserRouter>
-          <AutoRedirect>
-            <Routes>
+          <Routes>
+            {/* Public routes - outside AutoRedirect */}
+            <Route path="/terms" element={<TermsOfService />} />
+
+            {/* Protected/Auto-redirected routes */}
+            <Route path="/*" element={
+              <AutoRedirect>
+                <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -356,13 +362,12 @@ const App = () => (
                 element={<HospitalGraphView />}
               />
 
-              {/* Terms of Service */}
-              <Route path="/terms" element={<TermsOfService />} />
-
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
-            </Routes>
-          </AutoRedirect>
+                </Routes>
+              </AutoRedirect>
+            } />
+          </Routes>
         </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>
