@@ -179,7 +179,7 @@ const Index = () => {
               <button
                 onClick={() =>
                   window.open(
-                    "https://whitex.app.br/termos.pdf",
+                    "/termos.pdf",
                     "_blank",
                   )
                 }
