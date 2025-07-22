@@ -356,6 +356,9 @@ const App = () => (
                 element={<HospitalGraphView />}
               />
 
+              {/* Terms of Service */}
+              <Route path="/terms" element={<TermsOfService />} />
+
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
