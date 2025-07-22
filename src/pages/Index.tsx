@@ -181,7 +181,10 @@ const Index = () => {
                 onClick={() => {
                   if (isMobileApp()) {
                     // Mobile: abre no navegador externo do sistema
-                    window.open("https://7c0faea39f7b4ebb816c4dcc6ca5fe71-b4c4dd486ccc471291da138bf.fly.dev/termos-whitex.pdf", "_blank");
+                    window.open(
+                      "https://7c0faea39f7b4ebb816c4dcc6ca5fe71-b4c4dd486ccc471291da138bf.fly.dev/termos-whitex.pdf",
+                      "_blank",
+                    );
                   } else {
                     window.open("/termos-whitex.pdf", "_blank");
                   }
