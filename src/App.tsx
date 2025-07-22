@@ -66,307 +66,319 @@ const App = () => (
             <Route path="/terms" element={<TermsOfService />} />
 
             {/* Protected/Auto-redirected routes */}
-            <Route path="/*" element={
-              <AutoRedirect>
-                <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/migrate-user" element={<MigrateUser />} />
-              <Route path="/select-profession" element={<SelectProfession />} />
-              <Route path="/add-crm" element={<AddCRM />} />
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/patient-dashboard"
-                element={
-                  <ProtectedRoute>
-                    <PatientDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              {/* Redirecionamentos para rotas corretas */}
-              <Route
-                path="/patient/dashboard"
-                element={<Navigate to="/patient-dashboard" replace />}
-              />
-              <Route
-                path="/patients"
-                element={<Navigate to="/pacientes" replace />}
-              />
-              <Route
-                path="/profile"
-                element={
-                  <ProtectedRoute>
-                    <ProfilePage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/patient-profile"
-                element={
-                  <ProtectedRoute>
-                    <PatientProfile />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/patient/indicadores"
-                element={
-                  <ProtectedRoute>
-                    <PatientIndicators />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/patient/adicionar-indicador"
-                element={
-                  <ProtectedRoute>
-                    <PatientAddIndicator />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/patient/buscar-medicos"
-                element={
-                  <ProtectedRoute>
-                    <DoctorSearch />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/patient/graficos"
-                element={
-                  <ProtectedRoute>
-                    <PatientGraphSelector />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/patient/graficos/visualizar"
-                element={
-                  <ProtectedRoute>
-                    <PatientGraphView />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/pacientes"
-                element={
-                  <ProtectedRoute>
-                    <Pacientes />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/indicadores"
-                element={
-                  <ProtectedRoute>
-                    <Indicadores />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/indicadores/criar"
-                element={
-                  <ProtectedRoute>
-                    <CreateIndicator />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/indicadores/editar/:id"
-                element={
-                  <ProtectedRoute>
-                    <CreateIndicator />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/indicadores/criados"
-                element={
-                  <ProtectedRoute>
-                    <CreatedIndicators />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/indicadores/padrao"
-                element={
-                  <ProtectedRoute>
-                    <StandardIndicators />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/pacientes/novo"
-                element={
-                  <ProtectedRoute>
-                    <PatientForm />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/pacientes/:id"
-                element={
-                  <ProtectedRoute>
-                    <PatientDetailView />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/pacientes/:id/editar"
-                element={
-                  <ProtectedRoute>
-                    <PatientForm />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/pacientes/:patientId/adicionar-indicador"
-                element={
-                  <ProtectedRoute>
-                    <AddIndicatorToPatient />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/pacientes/:patientId/indicadores"
-                element={
-                  <ProtectedRoute>
-                    <PatientIndicators />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/pacientes/:patientId/graficos"
-                element={
-                  <ProtectedRoute>
-                    <PatientGraphSelector />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/pacientes/:patientId/graficos/visualizar"
-                element={
-                  <ProtectedRoute>
-                    <PatientGraphView />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/pacientes/:patientId/indicadores/:indicatorId/editar"
-                element={
-                  <ProtectedRoute>
-                    <EditPatientIndicator />
-                  </ProtectedRoute>
-                }
-              />
+            <Route
+              path="/*"
+              element={
+                <AutoRedirect>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route
+                      path="/forgot-password"
+                      element={<ForgotPassword />}
+                    />
+                    <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route path="/migrate-user" element={<MigrateUser />} />
+                    <Route
+                      path="/select-profession"
+                      element={<SelectProfession />}
+                    />
+                    <Route path="/add-crm" element={<AddCRM />} />
+                    <Route
+                      path="/dashboard"
+                      element={
+                        <ProtectedRoute>
+                          <Dashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/patient-dashboard"
+                      element={
+                        <ProtectedRoute>
+                          <PatientDashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                    {/* Redirecionamentos para rotas corretas */}
+                    <Route
+                      path="/patient/dashboard"
+                      element={<Navigate to="/patient-dashboard" replace />}
+                    />
+                    <Route
+                      path="/patients"
+                      element={<Navigate to="/pacientes" replace />}
+                    />
+                    <Route
+                      path="/profile"
+                      element={
+                        <ProtectedRoute>
+                          <ProfilePage />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/patient-profile"
+                      element={
+                        <ProtectedRoute>
+                          <PatientProfile />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/patient/indicadores"
+                      element={
+                        <ProtectedRoute>
+                          <PatientIndicators />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/patient/adicionar-indicador"
+                      element={
+                        <ProtectedRoute>
+                          <PatientAddIndicator />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/patient/buscar-medicos"
+                      element={
+                        <ProtectedRoute>
+                          <DoctorSearch />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/patient/graficos"
+                      element={
+                        <ProtectedRoute>
+                          <PatientGraphSelector />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/patient/graficos/visualizar"
+                      element={
+                        <ProtectedRoute>
+                          <PatientGraphView />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/pacientes"
+                      element={
+                        <ProtectedRoute>
+                          <Pacientes />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/indicadores"
+                      element={
+                        <ProtectedRoute>
+                          <Indicadores />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/indicadores/criar"
+                      element={
+                        <ProtectedRoute>
+                          <CreateIndicator />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/indicadores/editar/:id"
+                      element={
+                        <ProtectedRoute>
+                          <CreateIndicator />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/indicadores/criados"
+                      element={
+                        <ProtectedRoute>
+                          <CreatedIndicators />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/indicadores/padrao"
+                      element={
+                        <ProtectedRoute>
+                          <StandardIndicators />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/pacientes/novo"
+                      element={
+                        <ProtectedRoute>
+                          <PatientForm />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/pacientes/:id"
+                      element={
+                        <ProtectedRoute>
+                          <PatientDetailView />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/pacientes/:id/editar"
+                      element={
+                        <ProtectedRoute>
+                          <PatientForm />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/pacientes/:patientId/adicionar-indicador"
+                      element={
+                        <ProtectedRoute>
+                          <AddIndicatorToPatient />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/pacientes/:patientId/indicadores"
+                      element={
+                        <ProtectedRoute>
+                          <PatientIndicators />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/pacientes/:patientId/graficos"
+                      element={
+                        <ProtectedRoute>
+                          <PatientGraphSelector />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/pacientes/:patientId/graficos/visualizar"
+                      element={
+                        <ProtectedRoute>
+                          <PatientGraphView />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/pacientes/:patientId/indicadores/:indicatorId/editar"
+                      element={
+                        <ProtectedRoute>
+                          <EditPatientIndicator />
+                        </ProtectedRoute>
+                      }
+                    />
 
-              {/* Admin Routes */}
-              <Route path="/admin" element={<AdminLogin />} />
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route
-                path="/admin/dashboard"
-                element={
-                  <AdminProtectedRoute>
-                    <AdminDashboard />
-                  </AdminProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/indicators"
-                element={
-                  <AdminProtectedRoute>
-                    <AdminIndicators />
-                  </AdminProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/hospitals"
-                element={
-                  <AdminProtectedRoute>
-                    <AdminHospitals />
-                  </AdminProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/indicators/create"
-                element={
-                  <AdminProtectedRoute>
-                    <AdminCreateIndicator />
-                  </AdminProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/indicators/edit/:id"
-                element={
-                  <AdminProtectedRoute>
-                    <AdminEditIndicator />
-                  </AdminProtectedRoute>
-                }
-              />
+                    {/* Admin Routes */}
+                    <Route path="/admin" element={<AdminLogin />} />
+                    <Route path="/admin/login" element={<AdminLogin />} />
+                    <Route
+                      path="/admin/dashboard"
+                      element={
+                        <AdminProtectedRoute>
+                          <AdminDashboard />
+                        </AdminProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/indicators"
+                      element={
+                        <AdminProtectedRoute>
+                          <AdminIndicators />
+                        </AdminProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/hospitals"
+                      element={
+                        <AdminProtectedRoute>
+                          <AdminHospitals />
+                        </AdminProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/indicators/create"
+                      element={
+                        <AdminProtectedRoute>
+                          <AdminCreateIndicator />
+                        </AdminProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/indicators/edit/:id"
+                      element={
+                        <AdminProtectedRoute>
+                          <AdminEditIndicator />
+                        </AdminProtectedRoute>
+                      }
+                    />
 
-              {/* Hospital Management Routes */}
-              <Route path="/gerenciamento" element={<HospitalLogin />} />
-              <Route path="/gerenciamento/login" element={<HospitalLogin />} />
-              <Route
-                path="/gerenciamento/dashboard"
-                element={<HospitalDashboard />}
-              />
-              <Route
-                path="/gerenciamento/doctors/create"
-                element={<HospitalCreateDoctor />}
-              />
-              <Route
-                path="/gerenciamento/doctors"
-                element={<HospitalDoctors />}
-              />
-              <Route
-                path="/gerenciamento/patients"
-                element={<HospitalPatients />}
-              />
-              <Route
-                path="/gerenciamento/patients/:id"
-                element={<PatientDetailView />}
-              />
-              <Route
-                path="/gerenciamento/patients/:patientId/indicadores"
-                element={<PatientIndicators />}
-              />
-              <Route
-                path="/gerenciamento/patients/:patientId/adicionar-indicador"
-                element={<AddIndicatorToPatient />}
-              />
-              <Route
-                path="/gerenciamento/patients/:patientId/graficos"
-                element={<PatientGraphSelector />}
-              />
-              <Route
-                path="/gerenciamento/patients/:patientId/graficos/visualizar"
-                element={<PatientGraphView />}
-              />
-              <Route
-                path="/gerenciamento/patients/graphs"
-                element={<HospitalGraphSelector />}
-              />
-              <Route
-                path="/gerenciamento/patients/graphs/view"
-                element={<HospitalGraphView />}
-              />
+                    {/* Hospital Management Routes */}
+                    <Route path="/gerenciamento" element={<HospitalLogin />} />
+                    <Route
+                      path="/gerenciamento/login"
+                      element={<HospitalLogin />}
+                    />
+                    <Route
+                      path="/gerenciamento/dashboard"
+                      element={<HospitalDashboard />}
+                    />
+                    <Route
+                      path="/gerenciamento/doctors/create"
+                      element={<HospitalCreateDoctor />}
+                    />
+                    <Route
+                      path="/gerenciamento/doctors"
+                      element={<HospitalDoctors />}
+                    />
+                    <Route
+                      path="/gerenciamento/patients"
+                      element={<HospitalPatients />}
+                    />
+                    <Route
+                      path="/gerenciamento/patients/:id"
+                      element={<PatientDetailView />}
+                    />
+                    <Route
+                      path="/gerenciamento/patients/:patientId/indicadores"
+                      element={<PatientIndicators />}
+                    />
+                    <Route
+                      path="/gerenciamento/patients/:patientId/adicionar-indicador"
+                      element={<AddIndicatorToPatient />}
+                    />
+                    <Route
+                      path="/gerenciamento/patients/:patientId/graficos"
+                      element={<PatientGraphSelector />}
+                    />
+                    <Route
+                      path="/gerenciamento/patients/:patientId/graficos/visualizar"
+                      element={<PatientGraphView />}
+                    />
+                    <Route
+                      path="/gerenciamento/patients/graphs"
+                      element={<HospitalGraphSelector />}
+                    />
+                    <Route
+                      path="/gerenciamento/patients/graphs/view"
+                      element={<HospitalGraphView />}
+                    />
 
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-                </Routes>
-              </AutoRedirect>
-            } />
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </AutoRedirect>
+              }
+            />
           </Routes>
         </BrowserRouter>
       </AuthProvider>
