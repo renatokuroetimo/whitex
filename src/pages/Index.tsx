@@ -181,7 +181,10 @@ const Index = () => {
                 onClick={() => {
                   if (isMobileApp()) {
                     // Mobile: abre no navegador externo do sistema
-                    window.open(`${window.location.origin}/termos-whitex.pdf`, "_blank");
+                    window.open(
+                      `${window.location.origin}/termos-whitex.pdf`,
+                      "_blank",
+                    );
                   } else {
                     window.open("/termos-whitex.pdf", "_blank");
                   }
