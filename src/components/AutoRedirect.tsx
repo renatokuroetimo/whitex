@@ -22,9 +22,9 @@ const AutoRedirect: React.FC<AutoRedirectProps> = ({ children }) => {
       isMobile: isMobileApp(),
     });
 
-    // Don't redirect from login page - let the Login component handle it
-    if (location.pathname === "/login") {
-      console.log("⏭️ Skipping AutoRedirect on login page");
+    // Don't redirect from public pages - let them handle themselves
+    if (location.pathname === "/login" || location.pathname === "/terms") {
+      console.log("⏭️ Skipping AutoRedirect on public page:", location.pathname);
       return;
     }
 
