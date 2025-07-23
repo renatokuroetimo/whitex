@@ -162,32 +162,33 @@ const DoctorSearch = () => {
         <Sidebar />
       </div>
 
-      {/* Mobile Header */}
-      <div className="lg:hidden mobile-header">
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="p-2"
-              onClick={() => navigate(-1)}
-            >
-              <ArrowLeft className="h-5 w-5" />
-              <span className="sr-only">Voltar</span>
-            </Button>
-            <Logo
-              variant="primary"
-              size="md"
-              showText={false}
-              className="flex items-center"
-            />
+      <div className="flex-1 flex flex-col overflow-auto">
+        {/* Mobile Header */}
+        <div className="lg:hidden mobile-header">
+          <div className="flex items-center justify-between px-4 py-3">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="p-2"
+                onClick={() => navigate("/patient-profile")}
+              >
+                <ArrowLeft className="h-5 w-5" />
+                <span className="sr-only">Voltar</span>
+              </Button>
+              <Logo
+                variant="primary"
+                size="md"
+                showText={false}
+                className="flex items-center"
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="flex-1 overflow-auto">
-        <div className="p-4 sm:p-6 lg:p-8">
-          <div className="max-w-4xl mx-auto">
+        <div className="flex-1 overflow-auto">
+          <div className="p-4 sm:p-6 lg:p-8">
+            <div className="max-w-4xl mx-auto">
             {/* Header */}
             <div className="flex items-center gap-4 mb-8">
               <button
@@ -444,6 +445,7 @@ const DoctorSearch = () => {
                 </div>
               </div>
             )}
+            </div>
           </div>
         </div>
       </div>
