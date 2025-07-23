@@ -65,17 +65,23 @@ export const useCamera = () => {
       console.error("❌ Detalhes do erro:", {
         message: error?.message,
         code: error?.code,
-        stack: error?.stack
+        stack: error?.stack,
       });
 
       // Tratar diferentes tipos de erro
-      if (error?.message?.includes("User cancelled") || error?.code === "USER_CANCELLED") {
+      if (
+        error?.message?.includes("User cancelled") ||
+        error?.code === "USER_CANCELLED"
+      ) {
         console.log("⏹️ Usuário cancelou");
         // Usuário cancelou, não mostrar erro
         return null;
       }
 
-      if (error?.message?.includes("permission") || error?.code === "PERMISSION_DENIED") {
+      if (
+        error?.message?.includes("permission") ||
+        error?.code === "PERMISSION_DENIED"
+      ) {
         console.log("🚫 Permissão negada");
         toast({
           variant: "destructive",
