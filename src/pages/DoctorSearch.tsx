@@ -191,12 +191,6 @@ const DoctorSearch = () => {
             <div className="max-w-4xl mx-auto">
             {/* Header */}
             <div className="flex items-center gap-4 mb-8">
-              <button
-                onClick={() => navigate("/patient-profile")}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <ArrowLeft className="h-5 w-5 text-gray-600" />
-              </button>
               <div>
                 <h1 className="text-2xl font-semibold text-gray-900">
                   Buscar Médicos
