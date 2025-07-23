@@ -1,9 +1,11 @@
 # Correção do Campo de Telefone
 
 ## Problema Identificado
+
 O campo de telefone no perfil do paciente não estava sendo salvo no banco de dados.
 
 ## Causa do Problema
+
 A tabela `patient_personal_data` no Supabase não possui a coluna `phone`, causando dois problemas:
 
 1. **Recuperação**: O telefone estava sendo fixado como string vazia na linha 101
@@ -12,11 +14,13 @@ A tabela `patient_personal_data` no Supabase não possui a coluna `phone`, causa
 ## Código Problemático
 
 ### Recuperação (Linha 101):
+
 ```typescript
 phone: "", // Phone não existe na tabela, usar valor vazio
 ```
 
 ### Salvamento (Linhas 179-192):
+
 ```typescript
 const insertData = {
   // ... outros campos
@@ -32,11 +36,13 @@ const insertData = {
 ### 1. Correção do Código TypeScript
 
 #### Recuperação de Dados:
+
 ```typescript
 phone: supabaseData.phone || "", // Incluir telefone se existir na tabela
 ```
 
 #### Salvamento de Dados:
+
 ```typescript
 const insertData = {
   // ... outros campos
@@ -50,6 +56,7 @@ const insertData = {
 ### 2. Script SQL para Atualizar Banco
 
 Criado `add_phone_column.sql` para:
+
 - Verificar se a coluna já existe
 - Adicionar coluna `phone VARCHAR(20)` se necessário
 - Validar a estrutura atualizada
@@ -57,17 +64,21 @@ Criado `add_phone_column.sql` para:
 ## Como Aplicar a Correção
 
 ### 1. Executar Script SQL
+
 No Supabase SQL Editor, execute:
+
 ```sql
 -- O conteúdo completo está em add_phone_column.sql
-ALTER TABLE patient_personal_data 
+ALTER TABLE patient_personal_data
 ADD COLUMN phone VARCHAR(20);
 ```
 
 ### 2. Deploy do Código
+
 O código TypeScript já foi corrigido e precisa ser deployado.
 
 ### 3. Testar Funcionalidade
+
 1. Ir para Perfil do Paciente
 2. Inserir telefone no formato: (11) 99999-9999
 3. Salvar dados pessoais
@@ -76,11 +87,13 @@ O código TypeScript já foi corrigido e precisa ser deployado.
 ## Validação do Funcionamento
 
 ### Antes da Correção:
+
 - ❌ Telefone sempre voltava vazio
 - ❌ Não era salvo no banco
 - ❌ Perdia dados ao recarregar
 
 ### Depois da Correção:
+
 - ✅ Telefone é salvo corretamente
 - ✅ Persiste no banco de dados
 - ✅ Mantém formatação com máscara
@@ -91,7 +104,7 @@ O código TypeScript já foi corrigido e precisa ser deployado.
 ```sql
 patient_personal_data
 ├── id (varchar)
-├── user_id (varchar) 
+├── user_id (varchar)
 ├── full_name (varchar)
 ├── email (varchar)
 ├── birth_date (date)
