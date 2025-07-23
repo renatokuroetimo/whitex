@@ -155,14 +155,9 @@ const DoctorSearch = () => {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <div className="hidden lg:block">
-        <Sidebar />
-      </div>
-
-      <div className="flex-1 overflow-auto">
-        <div className="p-4 sm:p-6 lg:p-8">
-          <div className="max-w-4xl mx-auto">
+    <MobileLayout>
+      <div className="p-4 sm:p-6 lg:p-8">
+        <div className="max-w-4xl mx-auto">
             {/* Header */}
             <div className="flex items-center gap-4 mb-8">
               <button
@@ -419,7 +414,6 @@ const DoctorSearch = () => {
                 </div>
               </div>
             )}
-          </div>
         </div>
       </div>
 
@@ -474,7 +468,7 @@ const DoctorSearch = () => {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </MobileLayout>
   );
 };
 
