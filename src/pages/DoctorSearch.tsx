@@ -258,7 +258,7 @@ const DoctorSearch = () => {
                       toast({
                         title: "Como encontrar médicos",
                         description:
-                          "Apenas médicos que se cadastraram no sistema aparecerão na busca. Para criar uma conta de médico, use a tela de registro.",
+                          "Apenas médicos que se cadastraram no sistema aparecerão na busca.",
                       });
                     }}
                     variant="secondary"
