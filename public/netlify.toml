@@ -1,0 +1,36 @@
+[build]
+  publish = "dist"
+  command = "npm run build"
+
+[[redirects]]
+  from = "/privacy-policy.html"
+  to = "/privacy-policy.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/robots.txt"
+  to = "/robots.txt" 
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/termos.pdf"
+  to = "/termos.pdf"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/termos-whitex.pdf"
+  to = "/termos-whitex.pdf"
+  status = 200
+  force = true
+
+# SPA fallback
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[build.environment]
+  NODE_VERSION = "18"
