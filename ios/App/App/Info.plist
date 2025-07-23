@@ -47,5 +47,7 @@
 	<string>Este aplicativo precisa acessar sua biblioteca de fotos para que você possa selecionar uma foto de perfil.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Este aplicativo precisa acessar sua biblioteca de fotos para salvar suas fotos de perfil.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Este aplicativo pode precisar acessar o microfone para gravar vídeos junto com a câmera.</string>
 </dict>
 </plist>
