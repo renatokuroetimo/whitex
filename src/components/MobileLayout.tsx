@@ -244,7 +244,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
       {/* Mobile Layout */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile Header */}
-        <div className="mobile-header block">
+        <div className="mobile-header block lg:hidden">
           <div className="flex items-center justify-between px-4 py-3">
             <div className="flex items-center gap-3">
               <Button
