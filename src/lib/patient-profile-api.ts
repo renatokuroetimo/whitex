@@ -186,6 +186,7 @@ class PatientProfileAPI {
           state: resultData.state,
           city: resultData.city,
           health_plan: resultData.healthPlan,
+          phone: resultData.phone, // Incluir telefone no salvamento
           profile_image: resultData.profileImage,
           created_at: resultData.createdAt,
           updated_at: resultData.updatedAt,
