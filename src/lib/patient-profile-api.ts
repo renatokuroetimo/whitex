@@ -98,7 +98,7 @@ class PatientProfileAPI {
             state: supabaseData.state,
             city: supabaseData.city,
             healthPlan: supabaseData.health_plan,
-            phone: "", // Phone não existe na tabela, usar valor vazio
+            phone: supabaseData.phone || "", // Incluir telefone se existir na tabela
             profileImage: supabaseData.profile_image,
             createdAt: supabaseData.created_at,
             updatedAt: supabaseData.updated_at,
