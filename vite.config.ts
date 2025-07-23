@@ -26,9 +26,14 @@ export default defineConfig(({ mode }) => ({
         },
       },
     },
+    // Garantir que arquivos estáticos sejam copiados
+    assetsDir: "assets",
+    copyPublicDir: true,
   },
   preview: {
     port: 3000,
     host: true,
   },
+  // Configuração para desenvolvimento local
+  publicDir: "public",
 }));
