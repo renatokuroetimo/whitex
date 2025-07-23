@@ -1,0 +1,8 @@
+# Serve arquivos estáticos diretamente
+/privacy-policy.html   /privacy-policy.html   200
+/robots.txt            /robots.txt            200
+/termos.pdf            /termos.pdf            200
+/termos-whitex.pdf     /termos-whitex.pdf     200
+
+# SPA fallback - todas as outras rotas vão para index.html
+/*    /index.html   200
