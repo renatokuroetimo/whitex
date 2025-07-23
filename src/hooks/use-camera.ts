@@ -10,8 +10,12 @@ export const useCamera = () => {
     setIsProcessing(true);
 
     try {
+      console.log("🔍 Verificando plataforma:", Capacitor.getPlatform());
+      console.log("🔍 É nativo?", Capacitor.isNativePlatform());
+
       // Verificar se está rodando em dispositivo nativo
       if (!Capacitor.isNativePlatform()) {
+        console.log("📱 Usando fallback web");
         // Fallback para web - usar input file
         return new Promise((resolve) => {
           const input = document.createElement("input");
@@ -44,6 +48,8 @@ export const useCamera = () => {
         });
       }
 
+      console.log("📸 Tentando usar plugin Capacitor Camera");
+
       // Para dispositivos nativos, usar o plugin do Capacitor
       const image = await Camera.getPhoto({
         quality: 80,
@@ -52,17 +58,25 @@ export const useCamera = () => {
         source: CameraSource.Prompt, // Permite escolher entre câmera e galeria
       });
 
+      console.log("✅ Foto capturada com sucesso");
       return image.dataUrl || null;
     } catch (error: any) {
-      console.error("Erro ao acessar câmera:", error);
+      console.error("❌ Erro ao acessar câmera:", error);
+      console.error("❌ Detalhes do erro:", {
+        message: error?.message,
+        code: error?.code,
+        stack: error?.stack
+      });
 
       // Tratar diferentes tipos de erro
-      if (error?.message?.includes("User cancelled")) {
+      if (error?.message?.includes("User cancelled") || error?.code === "USER_CANCELLED") {
+        console.log("⏹️ Usuário cancelou");
         // Usuário cancelou, não mostrar erro
         return null;
       }
 
-      if (error?.message?.includes("permission")) {
+      if (error?.message?.includes("permission") || error?.code === "PERMISSION_DENIED") {
+        console.log("🚫 Permissão negada");
         toast({
           variant: "destructive",
           title: "Permissão necessária",
@@ -70,10 +84,11 @@ export const useCamera = () => {
             "É necessário permitir o acesso à câmera e galeria nas configurações do app",
         });
       } else {
+        console.log("💥 Erro genérico na câmera");
         toast({
           variant: "destructive",
           title: "Erro na câmera",
-          description: "Não foi possível acessar a câmera. Tente novamente.",
+          description: `Não foi possível acessar a câmera: ${error?.message || "Erro desconhecido"}`,
         });
       }
 
