@@ -212,7 +212,9 @@ const DoctorSearch = () => {
                     ) : (
                       <Search className="h-4 w-4" />
                     )}
-                    {!isSearching && <span className="hidden sm:inline ml-2">Buscar</span>}
+                    {!isSearching && (
+                      <span className="hidden sm:inline ml-2">Buscar</span>
+                    )}
                   </Button>
                 </div>
 
@@ -225,7 +227,8 @@ const DoctorSearch = () => {
                         // Clear and load registered doctors only
                         patientProfileAPI.clearDoctorsData();
                         await patientProfileAPI.loadRegisteredDoctors();
-                        const results = await patientProfileAPI.searchDoctors("");
+                        const results =
+                          await patientProfileAPI.searchDoctors("");
                         console.log("All doctors:", results);
                         const sharedDoctorIds = sharedDoctors.map((d) => d.id);
                         const availableDoctors = results.filter(

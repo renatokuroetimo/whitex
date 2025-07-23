@@ -1,24 +1,24 @@
-import { useState } from 'react';
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { Capacitor } from '@capacitor/core';
-import { toast } from '@/hooks/use-toast';
+import { useState } from "react";
+import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
+import { Capacitor } from "@capacitor/core";
+import { toast } from "@/hooks/use-toast";
 
 export const useCamera = () => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const takePhoto = async (): Promise<string | null> => {
     setIsProcessing(true);
-    
+
     try {
       // Verificar se está rodando em dispositivo nativo
       if (!Capacitor.isNativePlatform()) {
         // Fallback para web - usar input file
         return new Promise((resolve) => {
-          const input = document.createElement('input');
-          input.type = 'file';
-          input.accept = 'image/*';
-          input.capture = 'environment'; // Use camera if available
-          
+          const input = document.createElement("input");
+          input.type = "file";
+          input.accept = "image/*";
+          input.capture = "environment"; // Use camera if available
+
           input.onchange = (event) => {
             const file = (event.target as HTMLInputElement).files?.[0];
             if (file) {
@@ -39,7 +39,7 @@ export const useCamera = () => {
               resolve(null);
             }
           };
-          
+
           input.click();
         });
       }
@@ -54,19 +54,20 @@ export const useCamera = () => {
 
       return image.dataUrl || null;
     } catch (error: any) {
-      console.error('Erro ao acessar câmera:', error);
-      
+      console.error("Erro ao acessar câmera:", error);
+
       // Tratar diferentes tipos de erro
-      if (error?.message?.includes('User cancelled')) {
+      if (error?.message?.includes("User cancelled")) {
         // Usuário cancelou, não mostrar erro
         return null;
       }
-      
-      if (error?.message?.includes('permission')) {
+
+      if (error?.message?.includes("permission")) {
         toast({
           variant: "destructive",
           title: "Permissão necessária",
-          description: "É necessário permitir o acesso à câmera e galeria nas configurações do app",
+          description:
+            "É necessário permitir o acesso à câmera e galeria nas configurações do app",
         });
       } else {
         toast({
@@ -75,7 +76,7 @@ export const useCamera = () => {
           description: "Não foi possível acessar a câmera. Tente novamente.",
         });
       }
-      
+
       return null;
     } finally {
       setIsProcessing(false);
@@ -84,15 +85,15 @@ export const useCamera = () => {
 
   const pickFromGallery = async (): Promise<string | null> => {
     setIsProcessing(true);
-    
+
     try {
       if (!Capacitor.isNativePlatform()) {
         // Fallback para web
         return new Promise((resolve) => {
-          const input = document.createElement('input');
-          input.type = 'file';
-          input.accept = 'image/*';
-          
+          const input = document.createElement("input");
+          input.type = "file";
+          input.accept = "image/*";
+
           input.onchange = (event) => {
             const file = (event.target as HTMLInputElement).files?.[0];
             if (file) {
@@ -135,7 +136,7 @@ export const useCamera = () => {
               resolve(null);
             }
           };
-          
+
           input.click();
         });
       }
@@ -149,17 +150,18 @@ export const useCamera = () => {
 
       return image.dataUrl || null;
     } catch (error: any) {
-      console.error('Erro ao acessar galeria:', error);
-      
-      if (error?.message?.includes('User cancelled')) {
+      console.error("Erro ao acessar galeria:", error);
+
+      if (error?.message?.includes("User cancelled")) {
         return null;
       }
-      
-      if (error?.message?.includes('permission')) {
+
+      if (error?.message?.includes("permission")) {
         toast({
           variant: "destructive",
           title: "Permissão necessária",
-          description: "É necessário permitir o acesso à galeria nas configurações do app",
+          description:
+            "É necessário permitir o acesso à galeria nas configurações do app",
         });
       } else {
         toast({
@@ -168,7 +170,7 @@ export const useCamera = () => {
           description: "Não foi possível acessar a galeria. Tente novamente.",
         });
       }
-      
+
       return null;
     } finally {
       setIsProcessing(false);
@@ -178,6 +180,6 @@ export const useCamera = () => {
   return {
     takePhoto,
     pickFromGallery,
-    isProcessing
+    isProcessing,
   };
 };

@@ -1,11 +1,13 @@
 # Correção do Crash de Câmera no iOS
 
 ## Problema
+
 O app estava crashando no iOS ao tentar usar a câmera para salvar foto de perfil devido à falta de permissões necessárias.
 
 ## Correções Implementadas
 
 ### 1. Permissões no Info.plist
+
 Adicionadas as seguintes permissões no arquivo `ios/App/App/Info.plist`:
 
 ```xml
@@ -18,19 +20,24 @@ Adicionadas as seguintes permissões no arquivo `ios/App/App/Info.plist`:
 ```
 
 ### 2. Plugin Oficial do Capacitor
-- Instalado o plugin `@capacitor/camera` 
+
+- Instalado o plugin `@capacitor/camera`
 - Atualizado o `Podfile` para incluir o plugin
 - Sincronizado com `npx cap sync ios`
 
 ### 3. Hook Customizado para Câmera
+
 Criado `src/hooks/use-camera.ts` com:
+
 - Tratamento adequado de erros de permissão
 - Fallback para web usando input file
 - Melhor experiência do usuário com mensagens de erro claras
 - Suporte tanto para câmera quanto galeria
 
 ### 4. Interface Melhorada
+
 Atualizado `PatientProfile.tsx` com:
+
 - Botões separados para Câmera e Galeria
 - Indicador de processamento
 - Melhor tratamento de erros
@@ -39,6 +46,7 @@ Atualizado `PatientProfile.tsx` com:
 ## Como Testar
 
 1. **Build e Deploy iOS:**
+
    ```bash
    npm run build
    npx cap sync ios
