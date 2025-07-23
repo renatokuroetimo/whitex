@@ -176,6 +176,15 @@
     opacity: 1 !important;
   }
 
+  /* Força header mobile em telas pequenas */
+  @media (max-width: 1023px) {
+    .mobile-header {
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+  }
+
   .mobile-content {
     padding-bottom: 1rem;
     margin-bottom: 0;
