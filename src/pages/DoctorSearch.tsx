@@ -189,256 +189,260 @@ const DoctorSearch = () => {
         <div className="flex-1 overflow-auto">
           <div className="p-4 sm:p-6 lg:p-8">
             <div className="max-w-4xl mx-auto">
-            {/* Header */}
-            <div className="flex items-center gap-4 mb-8">
-              <div>
-                <h1 className="text-2xl font-semibold text-gray-900">
-                  Buscar Médicos
-                </h1>
-                <p className="text-gray-600">
-                  Encontre e compartilhe seus dados com médicos de sua confiança
-                </p>
-              </div>
-            </div>
-
-            {/* Search Section */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-              <div className="mb-4">
-                <h2 className="text-lg font-medium text-gray-900 mb-2">
-                  Buscar por Médico
-                </h2>
-                <p className="text-sm text-gray-600">
-                  Digite o nome do médico ou CRM-UF (exemplo: João Silva ou
-                  123456-SP)
-                </p>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex gap-2">
-                  <Input
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder="Digite o nome do médico ou CRM-UF"
-                    className="flex-1"
-                  />
-                  <Button
-                    onClick={handleSearch}
-                    disabled={isSearching}
-                    className="bg-[#00B1BB] hover:bg-[#01485E] shrink-0"
-                  >
-                    {isSearching ? (
-                      <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
-                    ) : (
-                      <Search className="h-4 w-4" />
-                    )}
-                    {!isSearching && (
-                      <span className="hidden sm:inline ml-2">Buscar</span>
-                    )}
-                  </Button>
-                </div>
-
-                <div className="flex gap-2 flex-wrap sm:flex-nowrap">
-                  <Button
-                    onClick={async () => {
-                      setSearchQuery("");
-                      setIsSearching(true);
-                      try {
-                        // Clear and load registered doctors only
-                        patientProfileAPI.clearDoctorsData();
-                        await patientProfileAPI.loadRegisteredDoctors();
-                        const results =
-                          await patientProfileAPI.searchDoctors("");
-                        console.log("All doctors:", results);
-                        const sharedDoctorIds = sharedDoctors.map((d) => d.id);
-                        const availableDoctors = results.filter(
-                          (doctor) => !sharedDoctorIds.includes(doctor.id),
-                        );
-                        setSearchResults(availableDoctors);
-                        toast({
-                          title: "Médicos carregados",
-                          description: `${availableDoctors.length} médico(s) disponível(is)`,
-                        });
-                      } catch (error) {
-                        console.error("Error loading doctors:", error);
-                        toast({
-                          variant: "destructive",
-                          title: "Erro",
-                          description: "Erro ao carregar médicos",
-                        });
-                      } finally {
-                        setIsSearching(false);
-                      }
-                    }}
-                    variant="outline"
-                    disabled={isSearching}
-                    className="flex-1 sm:flex-none"
-                  >
-                    Ver Todos
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      toast({
-                        title: "Como encontrar médicos",
-                        description:
-                          "Apenas médicos que se cadastraram no sistema aparecerão na busca.",
-                      });
-                    }}
-                    variant="secondary"
-                    size="sm"
-                    className="flex-1 sm:flex-none"
-                  >
-                    Como Funciona
-                  </Button>
+              {/* Header */}
+              <div className="flex items-center gap-4 mb-8">
+                <div>
+                  <h1 className="text-2xl font-semibold text-gray-900">
+                    Buscar Médicos
+                  </h1>
+                  <p className="text-gray-600">
+                    Encontre e compartilhe seus dados com médicos de sua
+                    confiança
+                  </p>
                 </div>
               </div>
-            </div>
 
-            {/* Search Results */}
-            {searchResults.length > 0 && (
-              <div className="bg-white rounded-lg border border-gray-200 mb-6">
-                <div className="p-6 border-b border-gray-200">
-                  <h3 className="text-lg font-medium text-gray-900">
-                    Resultados da Busca ({searchResults.length})
-                  </h3>
+              {/* Search Section */}
+              <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+                <div className="mb-4">
+                  <h2 className="text-lg font-medium text-gray-900 mb-2">
+                    Buscar por Médico
+                  </h2>
                   <p className="text-sm text-gray-600">
-                    Clique em um médico para compartilhar seus dados
+                    Digite o nome do médico ou CRM-UF (exemplo: João Silva ou
+                    123456-SP)
                   </p>
                 </div>
 
-                <div className="divide-y divide-gray-200">
-                  {searchResults.map((doctor) => (
-                    <div
-                      key={doctor.id}
-                      className="p-6 hover:bg-gray-50 cursor-pointer transition-colors"
-                      onClick={() => {
-                        setSelectedDoctor(doctor);
-                        setShowShareDialog(true);
-                      }}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h4 className="text-lg font-medium text-gray-900">
-                              {doctor.name}
-                            </h4>
-                          </div>
-                          <div className="flex items-center gap-4 text-sm text-gray-600">
-                            <span>
-                              CRM: {doctor.crm}
-                              {doctor.state ? `-${doctor.state}` : ""}
-                            </span>
-                            <span>
-                              •{" "}
-                              {doctor.city && doctor.state
-                                ? `${doctor.city}`
-                                : "Sem cidade e estado cadastrado"}
-                            </span>
-                          </div>
-                        </div>
-                        <Button
-                          size="sm"
-                          className="bg-green-600 hover:bg-green-700"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedDoctor(doctor);
-                            setShowShareDialog(true);
-                          }}
-                        >
-                          <UserPlus className="h-4 w-4 mr-2" />
-                          Compartilhar
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Shared Doctors Summary */}
-            {sharedDoctors.length > 0 && (
-              <div className="bg-white rounded-lg border border-gray-200">
-                <div className="p-6 border-b border-gray-200">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-lg font-medium text-gray-900">
-                        Médicos Compartilhados ({sharedDoctors.length})
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        Seus dados estão sendo compartilhados com estes médicos
-                      </p>
-                    </div>
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <Input
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      placeholder="Digite o nome do médico ou CRM-UF"
+                      className="flex-1"
+                    />
                     <Button
-                      variant="outline"
-                      onClick={() => navigate("/patient-profile")}
+                      onClick={handleSearch}
+                      disabled={isSearching}
+                      className="bg-[#00B1BB] hover:bg-[#01485E] shrink-0"
                     >
-                      <Users className="h-4 w-4 mr-2" />
-                      Gerenciar
+                      {isSearching ? (
+                        <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                      ) : (
+                        <Search className="h-4 w-4" />
+                      )}
+                      {!isSearching && (
+                        <span className="hidden sm:inline ml-2">Buscar</span>
+                      )}
+                    </Button>
+                  </div>
+
+                  <div className="flex gap-2 flex-wrap sm:flex-nowrap">
+                    <Button
+                      onClick={async () => {
+                        setSearchQuery("");
+                        setIsSearching(true);
+                        try {
+                          // Clear and load registered doctors only
+                          patientProfileAPI.clearDoctorsData();
+                          await patientProfileAPI.loadRegisteredDoctors();
+                          const results =
+                            await patientProfileAPI.searchDoctors("");
+                          console.log("All doctors:", results);
+                          const sharedDoctorIds = sharedDoctors.map(
+                            (d) => d.id,
+                          );
+                          const availableDoctors = results.filter(
+                            (doctor) => !sharedDoctorIds.includes(doctor.id),
+                          );
+                          setSearchResults(availableDoctors);
+                          toast({
+                            title: "Médicos carregados",
+                            description: `${availableDoctors.length} médico(s) disponível(is)`,
+                          });
+                        } catch (error) {
+                          console.error("Error loading doctors:", error);
+                          toast({
+                            variant: "destructive",
+                            title: "Erro",
+                            description: "Erro ao carregar médicos",
+                          });
+                        } finally {
+                          setIsSearching(false);
+                        }
+                      }}
+                      variant="outline"
+                      disabled={isSearching}
+                      className="flex-1 sm:flex-none"
+                    >
+                      Ver Todos
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        toast({
+                          title: "Como encontrar médicos",
+                          description:
+                            "Apenas médicos que se cadastraram no sistema aparecerão na busca.",
+                        });
+                      }}
+                      variant="secondary"
+                      size="sm"
+                      className="flex-1 sm:flex-none"
+                    >
+                      Como Funciona
                     </Button>
                   </div>
                 </div>
+              </div>
 
-                <div className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {sharedDoctors.map((doctor) => (
+              {/* Search Results */}
+              {searchResults.length > 0 && (
+                <div className="bg-white rounded-lg border border-gray-200 mb-6">
+                  <div className="p-6 border-b border-gray-200">
+                    <h3 className="text-lg font-medium text-gray-900">
+                      Resultados da Busca ({searchResults.length})
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Clique em um médico para compartilhar seus dados
+                    </p>
+                  </div>
+
+                  <div className="divide-y divide-gray-200">
+                    {searchResults.map((doctor) => (
                       <div
                         key={doctor.id}
-                        className="p-4 border border-gray-200 rounded-lg"
+                        className="p-6 hover:bg-gray-50 cursor-pointer transition-colors"
+                        onClick={() => {
+                          setSelectedDoctor(doctor);
+                          setShowShareDialog(true);
+                        }}
                       >
-                        <div className="flex items-center gap-3 mb-2">
-                          <h5 className="font-medium text-gray-900">
-                            {doctor.name}
-                          </h5>
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h4 className="text-lg font-medium text-gray-900">
+                                {doctor.name}
+                              </h4>
+                            </div>
+                            <div className="flex items-center gap-4 text-sm text-gray-600">
+                              <span>
+                                CRM: {doctor.crm}
+                                {doctor.state ? `-${doctor.state}` : ""}
+                              </span>
+                              <span>
+                                •{" "}
+                                {doctor.city && doctor.state
+                                  ? `${doctor.city}`
+                                  : "Sem cidade e estado cadastrado"}
+                              </span>
+                            </div>
+                          </div>
+                          <Button
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedDoctor(doctor);
+                              setShowShareDialog(true);
+                            }}
+                          >
+                            <UserPlus className="h-4 w-4 mr-2" />
+                            Compartilhar
+                          </Button>
                         </div>
-                        <p className="text-sm text-gray-600">
-                          CRM: {doctor.crm}
-                          {doctor.state ? `-${doctor.state}` : ""} •{" "}
-                          {doctor.city && doctor.state
-                            ? `${doctor.city}`
-                            : "Sem cidade e estado cadastrado"}
-                        </p>
                       </div>
                     ))}
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Empty State */}
-            {searchResults.length === 0 && searchQuery === "" && (
-              <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Search className="w-8 h-8 text-blue-600" />
-                </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  Busque por Médicos Cadastrados
-                </h3>
-                <p className="text-gray-600 mb-6">
-                  Apenas médicos que se cadastraram no sistema aparecerão na
-                  busca. Use o campo acima para encontrar médicos pelo nome ou
-                  CRM-UF.
-                </p>
-                <div className="max-w-md mx-auto">
-                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-                    <p className="text-sm text-yellow-800">
-                      <strong>Importante:</strong> Médicos precisam se cadastrar
-                      primeiro no sistema para aparecerem na busca.
-                    </p>
+              {/* Shared Doctors Summary */}
+              {sharedDoctors.length > 0 && (
+                <div className="bg-white rounded-lg border border-gray-200">
+                  <div className="p-6 border-b border-gray-200">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="text-lg font-medium text-gray-900">
+                          Médicos Compartilhados ({sharedDoctors.length})
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          Seus dados estão sendo compartilhados com estes
+                          médicos
+                        </p>
+                      </div>
+                      <Button
+                        variant="outline"
+                        onClick={() => navigate("/patient-profile")}
+                      >
+                        <Users className="h-4 w-4 mr-2" />
+                        Gerenciar
+                      </Button>
+                    </div>
                   </div>
-                  <div className="text-left">
-                    <h4 className="text-sm font-medium text-gray-900 mb-2">
-                      Como buscar:
-                    </h4>
-                    <ul className="text-sm text-gray-600 space-y-1">
-                      <li>• Nome completo ou parcial</li>
-                      <li>• Número do CRM</li>
-                      <li>• CRM com estado (ex: 123456-SP)</li>
-                      <li>• Especialidade médica</li>
-                    </ul>
+
+                  <div className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {sharedDoctors.map((doctor) => (
+                        <div
+                          key={doctor.id}
+                          className="p-4 border border-gray-200 rounded-lg"
+                        >
+                          <div className="flex items-center gap-3 mb-2">
+                            <h5 className="font-medium text-gray-900">
+                              {doctor.name}
+                            </h5>
+                          </div>
+                          <p className="text-sm text-gray-600">
+                            CRM: {doctor.crm}
+                            {doctor.state ? `-${doctor.state}` : ""} •{" "}
+                            {doctor.city && doctor.state
+                              ? `${doctor.city}`
+                              : "Sem cidade e estado cadastrado"}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+
+              {/* Empty State */}
+              {searchResults.length === 0 && searchQuery === "" && (
+                <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Search className="w-8 h-8 text-blue-600" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    Busque por Médicos Cadastrados
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    Apenas médicos que se cadastraram no sistema aparecerão na
+                    busca. Use o campo acima para encontrar médicos pelo nome ou
+                    CRM-UF.
+                  </p>
+                  <div className="max-w-md mx-auto">
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                      <p className="text-sm text-yellow-800">
+                        <strong>Importante:</strong> Médicos precisam se
+                        cadastrar primeiro no sistema para aparecerem na busca.
+                      </p>
+                    </div>
+                    <div className="text-left">
+                      <h4 className="text-sm font-medium text-gray-900 mb-2">
+                        Como buscar:
+                      </h4>
+                      <ul className="text-sm text-gray-600 space-y-1">
+                        <li>• Nome completo ou parcial</li>
+                        <li>• Número do CRM</li>
+                        <li>• CRM com estado (ex: 123456-SP)</li>
+                        <li>• Especialidade médica</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
