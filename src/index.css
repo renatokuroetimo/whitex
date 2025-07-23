@@ -169,8 +169,11 @@
     padding-top: env(safe-area-inset-top, 0px);
     margin-top: 0 !important;
     min-height: calc(60px + env(safe-area-inset-top, 0px));
-    display: flex;
+    display: flex !important;
     align-items: center;
+    width: 100%;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   .mobile-content {
