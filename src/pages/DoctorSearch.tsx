@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, ArrowLeft, UserPlus, Users } from "lucide-react";
-import MobileLayout from "@/components/MobileLayout";
+import { Search, ArrowLeft, UserPlus, Users, Menu } from "lucide-react";
+import Sidebar from "@/components/Sidebar";
+import Logo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -155,9 +156,38 @@ const DoctorSearch = () => {
   }
 
   return (
-    <MobileLayout>
-      <div className="p-4 sm:p-6 lg:p-8">
-        <div className="max-w-4xl mx-auto">
+    <div className="flex h-screen bg-gray-50">
+      {/* Desktop Sidebar */}
+      <div className="hidden lg:block">
+        <Sidebar />
+      </div>
+
+      {/* Mobile Header */}
+      <div className="lg:hidden mobile-header">
+        <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="p-2"
+              onClick={() => navigate(-1)}
+            >
+              <ArrowLeft className="h-5 w-5" />
+              <span className="sr-only">Voltar</span>
+            </Button>
+            <Logo
+              variant="primary"
+              size="md"
+              showText={false}
+              className="flex items-center"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-auto">
+        <div className="p-4 sm:p-6 lg:p-8">
+          <div className="max-w-4xl mx-auto">
             {/* Header */}
             <div className="flex items-center gap-4 mb-8">
               <button
@@ -414,6 +444,7 @@ const DoctorSearch = () => {
                 </div>
               </div>
             )}
+          </div>
         </div>
       </div>
 
@@ -468,7 +499,7 @@ const DoctorSearch = () => {
           </div>
         </DialogContent>
       </Dialog>
-    </MobileLayout>
+    </div>
   );
 };
 
