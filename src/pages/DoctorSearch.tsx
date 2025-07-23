@@ -193,74 +193,81 @@ const DoctorSearch = () => {
                 </p>
               </div>
 
-              <div className="flex gap-3">
-                <Input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Digite o nome do médico ou CRM-UF"
-                  className="flex-1"
-                />
-                <Button
-                  onClick={handleSearch}
-                  disabled={isSearching}
-                  className="bg-[#00B1BB] hover:bg-[#01485E]"
-                >
-                  {isSearching ? (
-                    <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
-                  ) : (
-                    <Search className="h-4 w-4" />
-                  )}
-                  {!isSearching && <span className="ml-2">Buscar</span>}
-                </Button>
-                <Button
-                  onClick={async () => {
-                    setSearchQuery("");
-                    setIsSearching(true);
-                    try {
-                      // Clear and load registered doctors only
-                      patientProfileAPI.clearDoctorsData();
-                      await patientProfileAPI.loadRegisteredDoctors();
-                      const results = await patientProfileAPI.searchDoctors("");
-                      console.log("All doctors:", results);
-                      const sharedDoctorIds = sharedDoctors.map((d) => d.id);
-                      const availableDoctors = results.filter(
-                        (doctor) => !sharedDoctorIds.includes(doctor.id),
-                      );
-                      setSearchResults(availableDoctors);
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <Input
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder="Digite o nome do médico ou CRM-UF"
+                    className="flex-1"
+                  />
+                  <Button
+                    onClick={handleSearch}
+                    disabled={isSearching}
+                    className="bg-[#00B1BB] hover:bg-[#01485E] shrink-0"
+                  >
+                    {isSearching ? (
+                      <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                    ) : (
+                      <Search className="h-4 w-4" />
+                    )}
+                    {!isSearching && <span className="hidden sm:inline ml-2">Buscar</span>}
+                  </Button>
+                </div>
+
+                <div className="flex gap-2 flex-wrap sm:flex-nowrap">
+                  <Button
+                    onClick={async () => {
+                      setSearchQuery("");
+                      setIsSearching(true);
+                      try {
+                        // Clear and load registered doctors only
+                        patientProfileAPI.clearDoctorsData();
+                        await patientProfileAPI.loadRegisteredDoctors();
+                        const results = await patientProfileAPI.searchDoctors("");
+                        console.log("All doctors:", results);
+                        const sharedDoctorIds = sharedDoctors.map((d) => d.id);
+                        const availableDoctors = results.filter(
+                          (doctor) => !sharedDoctorIds.includes(doctor.id),
+                        );
+                        setSearchResults(availableDoctors);
+                        toast({
+                          title: "Médicos carregados",
+                          description: `${availableDoctors.length} médico(s) disponível(is)`,
+                        });
+                      } catch (error) {
+                        console.error("Error loading doctors:", error);
+                        toast({
+                          variant: "destructive",
+                          title: "Erro",
+                          description: "Erro ao carregar médicos",
+                        });
+                      } finally {
+                        setIsSearching(false);
+                      }
+                    }}
+                    variant="outline"
+                    disabled={isSearching}
+                    className="flex-1 sm:flex-none"
+                  >
+                    Ver Todos
+                  </Button>
+                  <Button
+                    onClick={() => {
                       toast({
-                        title: "Médicos carregados",
-                        description: `${availableDoctors.length} médico(s) disponível(is)`,
+                        title: "Como encontrar médicos",
+                        description:
+                          "Apenas médicos que se cadastraram no sistema aparecerão na busca. Para criar uma conta de médico, use a tela de registro.",
                       });
-                    } catch (error) {
-                      console.error("Error loading doctors:", error);
-                      toast({
-                        variant: "destructive",
-                        title: "Erro",
-                        description: "Erro ao carregar médicos",
-                      });
-                    } finally {
-                      setIsSearching(false);
-                    }
-                  }}
-                  variant="outline"
-                  disabled={isSearching}
-                >
-                  Ver Todos
-                </Button>
-                <Button
-                  onClick={() => {
-                    toast({
-                      title: "Como encontrar médicos",
-                      description:
-                        "Apenas médicos que se cadastraram no sistema aparecerão na busca. Para criar uma conta de médico, use a tela de registro.",
-                    });
-                  }}
-                  variant="secondary"
-                  size="sm"
-                >
-                  Como Funciona
-                </Button>
+                    }}
+                    variant="secondary"
+                    size="sm"
+                    className="flex-1 sm:flex-none"
+                  >
+                    Como Funciona
+                  </Button>
+                </div>
               </div>
             </div>
 
