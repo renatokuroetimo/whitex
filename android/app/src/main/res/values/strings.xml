@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">WhiteX</string>
+    <string name="title_activity_main">WhiteX</string>
+    <string name="package_name">br.com.timo.whitex</string>
+    <string name="custom_url_scheme">br.com.timo.whitex</string>
+</resources>
