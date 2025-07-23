@@ -37,6 +37,9 @@ const config: CapacitorConfig = {
     Keyboard: {
       resize: "ionic",
     },
+    Camera: {
+      // Configurações para melhor funcionamento da câmera
+    },
     // Configurações de rede importantes para produção
     CapacitorHttp: {
       enabled: true,
