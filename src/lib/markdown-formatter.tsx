@@ -16,9 +16,37 @@ export function formatChatGPTText(text: string): React.ReactNode[] {
   const elements: React.ReactNode[] = [];
   let key = 0;
 
-  for (const line of lines) {
+  let inCodeBlock = false;
+  let codeBlockContent: string[] = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
     const trimmedLine = line.trim();
-    
+
+    // Handle code blocks (```)
+    if (trimmedLine.startsWith('```')) {
+      if (inCodeBlock) {
+        // End of code block
+        elements.push(
+          <pre key={key++} className="bg-gray-800 text-green-400 rounded-lg p-3 mt-2 mb-2 text-sm font-mono overflow-x-auto">
+            <code>{codeBlockContent.join('\n')}</code>
+          </pre>
+        );
+        codeBlockContent = [];
+        inCodeBlock = false;
+      } else {
+        // Start of code block
+        inCodeBlock = true;
+      }
+      continue;
+    }
+
+    // If we're inside a code block, collect the content
+    if (inCodeBlock) {
+      codeBlockContent.push(line);
+      continue;
+    }
+
     // Empty line - add spacing
     if (!trimmedLine) {
       elements.push(<br key={key++} />);
@@ -47,13 +75,24 @@ export function formatChatGPTText(text: string): React.ReactNode[] {
       continue;
     }
 
+    // Primary headers (# text)
+    if (trimmedLine.startsWith('#') && !trimmedLine.startsWith('##')) {
+      const headerText = trimmedLine.replace(/^#\s*/, '');
+      elements.push(
+        <h1 key={key++} className="text-2xl font-bold text-gray-900 mt-6 mb-3">
+          {formatInlineText(headerText)}
+        </h1>
+      );
+      continue;
+    }
+
     // Bullet points (- text or * text)
     if (trimmedLine.match(/^[-*]\s+/)) {
       const bulletText = trimmedLine.replace(/^[-*]\s+/, '');
       elements.push(
         <div key={key++} className="flex items-start gap-2 ml-4 mb-1">
-          <span className="text-gray-600 mt-1">•</span>
-          <span>{formatInlineText(bulletText)}</span>
+          <span className="text-gray-600 mt-1 text-sm">•</span>
+          <span className="flex-1">{formatInlineText(bulletText)}</span>
         </div>
       );
       continue;
@@ -66,8 +105,8 @@ export function formatChatGPTText(text: string): React.ReactNode[] {
         const [, number, listText] = match;
         elements.push(
           <div key={key++} className="flex items-start gap-2 ml-4 mb-1">
-            <span className="text-gray-600 font-medium min-w-6">{number}.</span>
-            <span>{formatInlineText(listText)}</span>
+            <span className="text-gray-600 font-medium min-w-6 text-sm">{number}.</span>
+            <span className="flex-1">{formatInlineText(listText)}</span>
           </div>
         );
         continue;
@@ -79,6 +118,15 @@ export function formatChatGPTText(text: string): React.ReactNode[] {
       <p key={key++} className="mb-2 leading-relaxed">
         {formatInlineText(trimmedLine)}
       </p>
+    );
+  }
+
+  // If there's an unclosed code block, add it
+  if (inCodeBlock && codeBlockContent.length > 0) {
+    elements.push(
+      <pre key={key++} className="bg-gray-800 text-green-400 rounded-lg p-3 mt-2 mb-2 text-sm font-mono overflow-x-auto">
+        <code>{codeBlockContent.join('\n')}</code>
+      </pre>
     );
   }
 
