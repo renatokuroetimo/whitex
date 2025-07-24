@@ -1,37 +1,48 @@
 import React from 'react';
 import { FormattedChatGPTText } from '@/lib/markdown-formatter';
 
-const testText = `# Resultado do Diagnóstico
+const testText = `# Resultado do Diagnóstico Médico
 
-## Análise dos Dados
+## Análise dos Dados do Paciente
 
-Com base nos indicadores analisados, posso observar:
+Com base nos indicadores analisados durante o período de monitoramento, posso observar os seguintes padrões:
 
 ### Principais Observações:
 
-1. **Tendência de Aumento de Peso**: O paciente apresentou ganho de peso progressivo nos últimos meses
-2. **Pressão Arterial**: Valores consistentemente elevados
-3. **Glicemia**: Oscilações significativas foram detectadas
+1. **Tendência de Aumento de Peso**: O paciente apresentou ganho de peso progressivo nos últimos 3 meses, com *variação* de aproximadamente 5kg
+2. **Pressão Arterial**: Valores consistentemente elevados, especialmente no período matutino
+3. **Glicemia**: Oscilações significativas foram detectadas, com picos após as refeições
+4. **Frequência Cardíaca**: Padrão *irregular* durante exercícios físicos
 
-### Recomendações:
+### Recomendações Médicas:
 
-- Monitoramento *contínuo* da pressão arterial
-- Ajuste na medicação conforme protocolo
-- Acompanhamento nutricional especializado
+- Monitoramento **contínuo** da pressão arterial (3x ao dia)
+- Ajuste na medicação conforme protocolo estabelecido
+- Acompanhamento nutricional especializado com \`dieta hipossódica\`
+- Exercícios físicos moderados sob supervisão
+- Controle glicêmico rigoroso
 
-#### Código de Exemplo:
+#### Parâmetros de Referência:
 
 \`\`\`
-// Exemplo de monitoramento
-const pressao = {
-  sistolica: 140,
-  diastolica: 90
-};
+Pressão Arterial Normal:
+- Sistólica: < 120 mmHg
+- Diastólica: < 80 mmHg
+
+Glicemia de Jejum:
+- Normal: 70-99 mg/dL
+- Pré-diabetes: 100-125 mg/dL
 \`\`\`
 
-**Observação importante**: Este diagnóstico deve ser \`validado\` por um médico especialista.
+### Próximas Consultas:
 
-*Consulte sempre um profissional de saúde qualificado.*`;
+- **Cardiologia**: Em 15 dias
+- **Endocrinologia**: Em 30 dias
+- **Nutrição**: Semanal por 1 mês
+
+**Observação importante**: Este diagnóstico deve ser \`validado\` por um médico especialista. Não interrompa medicações sem orientação médica.
+
+*Consulte sempre um profissional de saúde qualificado para esclarecimentos adicionais.*`;
 
 export function MarkdownTest() {
   return (
