@@ -86,42 +86,99 @@ export function formatChatGPTText(text: string): React.ReactNode[] {
 }
 
 /**
- * Formats inline text with bold (**text**) and other inline formatting
+ * Formats inline text with bold (**text**), italic (*text*), and inline code (`text`)
  */
 function formatInlineText(text: string): React.ReactNode[] {
   if (!text) return [];
 
+  let currentText = text;
   const parts: React.ReactNode[] = [];
   let key = 0;
-  let currentIndex = 0;
 
-  // Handle **bold** text
-  const boldRegex = /\*\*(.*?)\*\*/g;
-  let match;
+  // Process all inline formatting patterns
+  const patterns = [
+    // Bold text **text**
+    {
+      regex: /\*\*(.*?)\*\*/g,
+      component: (content: string) => (
+        <strong key={key++} className="font-semibold text-gray-900">
+          {content}
+        </strong>
+      ),
+    },
+    // Italic text *text* (but not when part of **text**)
+    {
+      regex: /(?<!\*)\*([^*\n]+?)\*(?!\*)/g,
+      component: (content: string) => (
+        <em key={key++} className="italic text-gray-800">
+          {content}
+        </em>
+      ),
+    },
+    // Inline code `text`
+    {
+      regex: /`([^`\n]+?)`/g,
+      component: (content: string) => (
+        <code key={key++} className="bg-gray-200 text-gray-800 px-1 py-0.5 rounded text-xs font-mono">
+          {content}
+        </code>
+      ),
+    },
+  ];
 
-  while ((match = boldRegex.exec(text)) !== null) {
-    // Add text before the bold part
-    if (match.index > currentIndex) {
-      const beforeText = text.slice(currentIndex, match.index);
-      parts.push(beforeText);
+  // Split text into segments and process each formatting pattern
+  const segments = [{ text: currentText, isFormatted: false }];
+
+  for (const pattern of patterns) {
+    const newSegments: Array<{ text: string; isFormatted: boolean; component?: React.ReactNode }> = [];
+
+    for (const segment of segments) {
+      if (segment.isFormatted) {
+        newSegments.push(segment);
+        continue;
+      }
+
+      let lastIndex = 0;
+      let match;
+      const regex = new RegExp(pattern.regex.source, pattern.regex.flags);
+
+      while ((match = regex.exec(segment.text)) !== null) {
+        // Add text before the match
+        if (match.index > lastIndex) {
+          newSegments.push({
+            text: segment.text.slice(lastIndex, match.index),
+            isFormatted: false,
+          });
+        }
+
+        // Add the formatted component
+        newSegments.push({
+          text: match[0],
+          isFormatted: true,
+          component: pattern.component(match[1]),
+        });
+
+        lastIndex = match.index + match[0].length;
+      }
+
+      // Add remaining text
+      if (lastIndex < segment.text.length) {
+        newSegments.push({
+          text: segment.text.slice(lastIndex),
+          isFormatted: false,
+        });
+      }
     }
 
-    // Add the bold text
-    parts.push(
-      <strong key={key++} className="font-semibold text-gray-900">
-        {match[1]}
-      </strong>
-    );
-
-    currentIndex = match.index + match[0].length;
+    segments.splice(0, segments.length, ...newSegments);
   }
 
-  // Add remaining text
-  if (currentIndex < text.length) {
-    parts.push(text.slice(currentIndex));
-  }
-
-  return parts.length > 0 ? parts : [text];
+  // Build final parts array
+  return segments.map(segment =>
+    segment.component || segment.text
+  ).filter(part =>
+    typeof part === 'string' ? part.length > 0 : true
+  );
 }
 
 /**
