@@ -26,6 +26,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { FormattedChatGPTText } from "@/lib/markdown-formatter";
 import {
   LineChart,
   Line,
