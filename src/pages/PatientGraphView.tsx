@@ -836,9 +836,7 @@ const PatientGraphView = () => {
           </DialogHeader>
           <div className="space-y-4">
             <div className="bg-gray-50 rounded-lg p-4">
-              <div className="whitespace-pre-wrap text-sm text-gray-800 leading-relaxed">
-                {diagnosisResult}
-              </div>
+              <FormattedChatGPTText text={diagnosisResult} />
             </div>
             <div className="flex justify-end">
               <Button
