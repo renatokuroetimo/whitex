@@ -51,6 +51,7 @@ import ResetPassword from "./pages/ResetPassword";
 import MigrateUser from "./pages/MigrateUser";
 import TermsOfService from "./pages/TermsOfService";
 import TermsTest from "./pages/TermsTest";
+import { MarkdownTest } from "./components/MarkdownTest";
 
 const queryClient = new QueryClient();
 
