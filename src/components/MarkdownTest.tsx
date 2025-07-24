@@ -1,5 +1,5 @@
-import React from 'react';
-import { FormattedChatGPTText } from '@/lib/markdown-formatter';
+import React from "react";
+import { FormattedChatGPTText } from "@/lib/markdown-formatter";
 
 const testText = `# Resultado do Diagnóstico Médico
 

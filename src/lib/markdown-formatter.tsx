@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export interface MarkdownFormatterProps {
   text: string;
@@ -12,7 +12,7 @@ export interface MarkdownFormatterProps {
 export function formatChatGPTText(text: string): React.ReactNode[] {
   if (!text) return [];
 
-  const lines = text.split('\n');
+  const lines = text.split("\n");
   const elements: React.ReactNode[] = [];
   let key = 0;
 
@@ -24,13 +24,16 @@ export function formatChatGPTText(text: string): React.ReactNode[] {
     const trimmedLine = line.trim();
 
     // Handle code blocks (```)
-    if (trimmedLine.startsWith('```')) {
+    if (trimmedLine.startsWith("```")) {
       if (inCodeBlock) {
         // End of code block
         elements.push(
-          <pre key={key++} className="bg-gray-900 text-gray-100 rounded-lg p-4 mt-3 mb-3 text-sm font-mono overflow-x-auto border border-gray-700">
-            <code className="block">{codeBlockContent.join('\n')}</code>
-          </pre>
+          <pre
+            key={key++}
+            className="bg-gray-900 text-gray-100 rounded-lg p-4 mt-3 mb-3 text-sm font-mono overflow-x-auto border border-gray-700"
+          >
+            <code className="block">{codeBlockContent.join("\n")}</code>
+          </pre>,
         );
         codeBlockContent = [];
         inCodeBlock = false;
@@ -54,46 +57,49 @@ export function formatChatGPTText(text: string): React.ReactNode[] {
     }
 
     // Headers (### text)
-    if (trimmedLine.startsWith('###')) {
-      const headerText = trimmedLine.replace(/^###\s*/, '');
+    if (trimmedLine.startsWith("###")) {
+      const headerText = trimmedLine.replace(/^###\s*/, "");
       elements.push(
-        <h3 key={key++} className="text-lg font-semibold text-gray-900 mt-4 mb-2">
+        <h3
+          key={key++}
+          className="text-lg font-semibold text-gray-900 mt-4 mb-2"
+        >
           {formatInlineText(headerText)}
-        </h3>
+        </h3>,
       );
       continue;
     }
 
     // Secondary headers (## text)
-    if (trimmedLine.startsWith('##')) {
-      const headerText = trimmedLine.replace(/^##\s*/, '');
+    if (trimmedLine.startsWith("##")) {
+      const headerText = trimmedLine.replace(/^##\s*/, "");
       elements.push(
         <h2 key={key++} className="text-xl font-bold text-gray-900 mt-4 mb-2">
           {formatInlineText(headerText)}
-        </h2>
+        </h2>,
       );
       continue;
     }
 
     // Primary headers (# text)
-    if (trimmedLine.startsWith('#') && !trimmedLine.startsWith('##')) {
-      const headerText = trimmedLine.replace(/^#\s*/, '');
+    if (trimmedLine.startsWith("#") && !trimmedLine.startsWith("##")) {
+      const headerText = trimmedLine.replace(/^#\s*/, "");
       elements.push(
         <h1 key={key++} className="text-2xl font-bold text-gray-900 mt-6 mb-3">
           {formatInlineText(headerText)}
-        </h1>
+        </h1>,
       );
       continue;
     }
 
     // Bullet points (- text or * text)
     if (trimmedLine.match(/^[-*]\s+/)) {
-      const bulletText = trimmedLine.replace(/^[-*]\s+/, '');
+      const bulletText = trimmedLine.replace(/^[-*]\s+/, "");
       elements.push(
         <div key={key++} className="flex items-start gap-2 ml-4 mb-1">
           <span className="text-gray-600 mt-1 text-sm">•</span>
           <span className="flex-1">{formatInlineText(bulletText)}</span>
-        </div>
+        </div>,
       );
       continue;
     }
@@ -105,9 +111,11 @@ export function formatChatGPTText(text: string): React.ReactNode[] {
         const [, number, listText] = match;
         elements.push(
           <div key={key++} className="flex items-start gap-2 ml-4 mb-1">
-            <span className="text-gray-600 font-medium min-w-6 text-sm">{number}.</span>
+            <span className="text-gray-600 font-medium min-w-6 text-sm">
+              {number}.
+            </span>
             <span className="flex-1">{formatInlineText(listText)}</span>
-          </div>
+          </div>,
         );
         continue;
       }
@@ -117,16 +125,19 @@ export function formatChatGPTText(text: string): React.ReactNode[] {
     elements.push(
       <p key={key++} className="mb-2 leading-relaxed">
         {formatInlineText(trimmedLine)}
-      </p>
+      </p>,
     );
   }
 
   // If there's an unclosed code block, add it
   if (inCodeBlock && codeBlockContent.length > 0) {
     elements.push(
-      <pre key={key++} className="bg-gray-900 text-gray-100 rounded-lg p-4 mt-3 mb-3 text-sm font-mono overflow-x-auto border border-gray-700">
-        <code className="block">{codeBlockContent.join('\n')}</code>
-      </pre>
+      <pre
+        key={key++}
+        className="bg-gray-900 text-gray-100 rounded-lg p-4 mt-3 mb-3 text-sm font-mono overflow-x-auto border border-gray-700"
+      >
+        <code className="block">{codeBlockContent.join("\n")}</code>
+      </pre>,
     );
   }
 
@@ -167,7 +178,10 @@ function formatInlineText(text: string): React.ReactNode[] {
     {
       regex: /`([^`\n]+?)`/g,
       component: (content: string) => (
-        <code key={key++} className="bg-gray-200 text-gray-800 px-1 py-0.5 rounded text-xs font-mono">
+        <code
+          key={key++}
+          className="bg-gray-200 text-gray-800 px-1 py-0.5 rounded text-xs font-mono"
+        >
           {content}
         </code>
       ),
@@ -178,7 +192,11 @@ function formatInlineText(text: string): React.ReactNode[] {
   const segments = [{ text: currentText, isFormatted: false }];
 
   for (const pattern of patterns) {
-    const newSegments: Array<{ text: string; isFormatted: boolean; component?: React.ReactNode }> = [];
+    const newSegments: Array<{
+      text: string;
+      isFormatted: boolean;
+      component?: React.ReactNode;
+    }> = [];
 
     for (const segment of segments) {
       if (segment.isFormatted) {
@@ -222,17 +240,18 @@ function formatInlineText(text: string): React.ReactNode[] {
   }
 
   // Build final parts array
-  return segments.map(segment =>
-    segment.component || segment.text
-  ).filter(part =>
-    typeof part === 'string' ? part.length > 0 : true
-  );
+  return segments
+    .map((segment) => segment.component || segment.text)
+    .filter((part) => (typeof part === "string" ? part.length > 0 : true));
 }
 
 /**
  * React component that renders formatted ChatGPT text
  */
-export function FormattedChatGPTText({ text, className = "" }: MarkdownFormatterProps) {
+export function FormattedChatGPTText({
+  text,
+  className = "",
+}: MarkdownFormatterProps) {
   const formattedElements = formatChatGPTText(text);
 
   return (
