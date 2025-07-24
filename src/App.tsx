@@ -72,6 +72,7 @@ const App = () => (
               <Route path="/migrate-user" element={<MigrateUser />} />
               <Route path="/select-profession" element={<SelectProfession />} />
               <Route path="/add-crm" element={<AddCRM />} />
+              <Route path="/markdown-test" element={<MarkdownTest />} />
               <Route
                 path="/dashboard"
                 element={
