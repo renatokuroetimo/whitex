@@ -124,8 +124,8 @@ export function formatChatGPTText(text: string): React.ReactNode[] {
   // If there's an unclosed code block, add it
   if (inCodeBlock && codeBlockContent.length > 0) {
     elements.push(
-      <pre key={key++} className="bg-gray-800 text-green-400 rounded-lg p-3 mt-2 mb-2 text-sm font-mono overflow-x-auto">
-        <code>{codeBlockContent.join('\n')}</code>
+      <pre key={key++} className="bg-gray-900 text-gray-100 rounded-lg p-4 mt-3 mb-3 text-sm font-mono overflow-x-auto border border-gray-700">
+        <code className="block">{codeBlockContent.join('\n')}</code>
       </pre>
     );
   }
